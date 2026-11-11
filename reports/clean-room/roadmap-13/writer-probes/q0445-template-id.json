@@ -1,0 +1,15 @@
+{
+ "prelude": "template <class T> struct S;\ntemplate <class T> struct S { };\n",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "explicit specialization declared only: template <> struct [[deprecated]] S<int>;": "template <class T> struct P;\ntemplate <> struct [[deprecated]] P<int>;",
+  "partial specialization declared only: template <class T> struct [[deprecated]] P<T*>;": "template <class T> struct P;\ntemplate <class T> struct [[deprecated]] P<T*>;",
+  "explicit instantiation: template struct [[deprecated]] S<int>;": "template struct [[deprecated]] S<int>;",
+  "control: forward declaration struct [[deprecated]] F;": "struct [[deprecated]] F;",
+  "control: variable struct [[deprecated]] F* p;": "struct F;\nstruct [[deprecated]] F* p = nullptr;"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

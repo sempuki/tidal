@@ -1,0 +1,88 @@
+round12/new/bigint.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 210 (arguments evaluat
+round12/new/bigint_first_try.cpp | gcc FAILED: new/bigint_first_try.cpp:185:62: | clang FAILED: new/bigint_first_try.cpp:185:62: | edg rejects: "/w/bigint_first | fe rejected [OVL-35] at line 185: no viable function for operator '/' 
+round12/new/bigint_second_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 207 (arguments evaluat
+round12/new/bigint_third_try.cpp | gcc FAILED: new/bigint_third_try.cpp:209:20: | clang FAILED: new/bigint_third_try.cpp:209:17: | edg rejects: "/w/bigint_third | fe rejected [OVL-35] at line 209: no viable function for the call of an object of class 'BigUint' 
+round12/new/bugs/array_new_scalar_delete.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 2), exit 0  | edg accepts | fe undefined [NEW-5] at line 2: delete of an array from new[] 
+round12/new/bugs/enum_out_of_range.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe undefined [ENUM-6] at line 3: value 9 is outside the range of the enumeration 
+round12/new/bugs/min_divided_by_minus_one.cpp | gcc built (warnings 0), exit 136 timeout: th | clang built (warnings 0), exit 136 timeout: th | edg accepts | fe undefined [MUL-10] at line 2: quotient does not fit in the type 
+round12/new/bugs/missing_return.cpp | gcc built (warnings 1), exit 132 timeout: th | clang built (warnings 2), exit 132 timeout: th | edg accepts | fe undefined [FN-3] at line 2: control reaches the end of 'sign' without a return 
+round12/new/bugs/modify_const_through_cast.cpp | gcc built (warnings 0), exit 139 timeout: th | clang built (warnings 0), exit 139 timeout: th | edg accepts | fe undefined [CAST-5, CV-5] at line 3: write to a const object 
+round12/new/bugs/pointer_kept_across_growth.cpp | gcc built (warnings 0), exit 217  | clang built (warnings 0), exit 78  | edg accepts | fe undefined [OBJ-2] at line 5: indirection through a pointer to an object whose lifetime has ended 
+round12/new/bugs/pop_empty_list.cpp | gcc built (warnings 0), exit 139 timeout: th | clang built (warnings 0), exit 139 timeout: th | edg accepts | fe undefined [UN-7] at line 3: indirection through a null pointer 
+round12/new/bugs/read_uninitialized_local.cpp | gcc built (warnings 0), exit 4  | clang built (warnings 3), exit 200  | edg accepts | fe undefined [OBJ-2, INIT-1] at line 2: read of an object with no value 
+round12/new/matrix.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/matrix.cpp", | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-8 at line 88 (the left operand o
+round12/new/mistakes/abstract_instantiation.cpp | gcc FAILED: new/mistakes/abstract_instantiat | clang FAILED: new/mistakes/abstract_instantiat | edg rejects: "/w/abstract_ins | fe rejected [VIRT-8] at line 3: variable 'c' of an abstract class type 
+round12/new/mistakes/auto_return_mismatch.cpp | gcc FAILED: new/mistakes/auto_return_mismatc | clang FAILED: new/mistakes/auto_return_mismatc | edg rejects: "/w/auto_return_ | fe rejected [RET-7] at line 2: return statements deduce different types 
+round12/new/mistakes/binding_count_mismatch.cpp | gcc FAILED: new/mistakes/binding_count_misma | clang FAILED: new/mistakes/binding_count_misma | edg rejects: "/w/binding_coun | fe rejected [SB-2] at line 3: structured binding declares 3 names but the initializer has 2 elements 
+round12/new/mistakes/constexpr_from_runtime.cpp | gcc FAILED: new/mistakes/constexpr_from_runt | clang FAILED: new/mistakes/constexpr_from_runt | edg rejects: "/w/constexpr_fr | fe rejected [CX-1] at line 3: initializer is not a constant expression (CE-2: call of non-constexpr function 'read') 
+round12/new/mistakes/deleted_overload_call.cpp | gcc FAILED: new/mistakes/deleted_overload_ca | clang FAILED: new/mistakes/deleted_overload_ca | edg rejects: "/w/deleted_over | fe rejected [DEL-1] at line 4: call of deleted function 'set' 
+round12/new/mistakes/jump_past_initialization.cpp | gcc FAILED: new/mistakes/jump_past_initializ | clang FAILED: new/mistakes/jump_past_initializ | edg rejects: "/w/jump_past_in | fe rejected [JMP-6] at line 2: goto 'done' jumps past the initialization of a variable 
+round12/new/mistakes/override_without_base.cpp | gcc FAILED: new/mistakes/override_without_ba | clang FAILED: new/mistakes/override_without_ba | edg rejects: "/w/override_wit | fe rejected [VIRT-3] at line 3: 'area' is marked override but overrides no virtual function of a base 
+round12/new/mistakes/private_member_access.cpp | gcc FAILED: new/mistakes/private_member_acce | clang FAILED: new/mistakes/private_member_acce | edg rejects: "/w/private_memb | fe rejected [ACC-2] at line 3: 'balance' is a private member of 'Account' 
+round12/new/mistakes/write_in_const_member.cpp | gcc FAILED: new/mistakes/write_in_const_memb | clang FAILED: new/mistakes/write_in_const_memb | edg rejects: "/w/write_in_con | fe rejected [CV-4] at line 2: '++' on a const object 
+round12/new/one-line/assume_attribute.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/auto_decay_copy.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/bitfield_default_member_init.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/builder_explicit_object.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/class_type_template_parameter.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 4: cast of unknown operand 
+round12/new/one-line/conditional_explicit.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/consteval_constructor.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/constexpr_virtual.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/constrained_auto_parameter.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 5 (the left operand of '+' first) explore
+round12/new/one-line/defaulted_spaceship.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/defaulted_sp | fe result: 0 
+round12/new/one-line/enum_bitmask_operators.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/function_try_block_ctor.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/if_consteval.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/init_capture_pack.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/lambda_in_unevaluated_context.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/member_function_pointer_call.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/multidimensional_subscript.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 3 (the left operand of '+' first) explore
+round12/new/one-line/paren_aggregate_init.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/range_for_init_statement.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/rethrow_nested_handlers.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/size_literal_suffix.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/static_subscript_operator.cpp | gcc built (warnings 1), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (4 runs); unspecified choices: SEQ-8 at line 3 (the left operand of '+' first); SEQ-8 
+round12/new/one-line/tuple_like_binding.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/one-line/virtual_base_diamond.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/new/parse.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-1 at line 163 (arguments evaluated from left to rig
+round12/new/parse_first_try.cpp | gcc FAILED: new/parse_first_try.cpp:21:18: e | clang FAILED: new/parse_first_try.cpp:21:18: e | edg rejects: "/w/parse_first_ | fe rejected [CPT-34] at line 21: a type after '->' in a compound requirement; a type constraint is needed 
+round12/new/parse_second_try.cpp | gcc FAILED: new/parse_second_try.cpp:117:37: | clang FAILED: new/parse_second_try.cpp:117:32: | edg rejects: "/w/parse_second | fe rejected [DED-35] at line 117: no viable function for the call of 'many1': deduction fails for each template 
+round12/new/parse_third_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-1 at line 160 (arguments evaluated from left to rig
+round12/new/ring.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 128 (arguments evaluat
+round12/new/ring_fifth_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 128 (arguments evaluat
+round12/new/ring_first_try.cpp | gcc FAILED: new/ring_first_try.cpp:182:16: e | clang FAILED: new/ring_first_try.cpp:182:14: e | edg rejects: "/w/ring_first_t | fe rejected [SA-1] at line 195: static assertion failed 
+round12/new/ring_fourth_try.cpp | gcc FAILED: new/ring_fourth_try.cpp:96:49: e | clang FAILED: new/ring_fourth_try.cpp:96:49: e | edg rejects: "/w/ring_fourth_ | fe rejected [ACC-2] at line 96: 'r_' is a private member of 'Iter' 
+round12/new/ring_second_try.cpp | gcc FAILED: new/ring_second_try.cpp:199:31:  | clang FAILED: new/ring_second_try.cpp:199:15:  | edg rejects: "/w/ring_second_ | fe rejected [SA-1] at line 199: static assertion failed 
+round12/new/ring_third_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 125 (arguments evaluat
+round12/new/sso.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 172 (arguments evaluat
+round12/new/sso_first_try.cpp | gcc FAILED: new/sso_first_try.cpp:118:43: er | clang FAILED: new/sso_first_try.cpp:91:5: erro | edg rejects: "/w/sso_first_tr | fe rejected [UNI-9] at line 89: an anonymous union with a nested type (an unnamed class) 
+round12/probes/braced_init_constructor_template_arity.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/braced_init_constructor_template_paren.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/class_type_parameter_explicit_arguments.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/defaulted_equality_two_dimensional_array_constant.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/defaulted_eq | fe result: 0 
+round12/probes/friend_enclosing_absent.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/function_return_specialization_braced_return.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/lambda_return_named_in_return.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/lambda_return_specialization_made_before.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/placement_aggregate_through_byte_pointer.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/placement_class_through_void_pointer.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/placement_destructor_class_through_byte_pointer.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/probes/structural_class_with_array_member.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/braced_init_beside_constructor_template_no_conversion.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 9: constructor call 
+round12/reductions/braced_init_beside_failed_constructor_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 9: constructor call 
+round12/reductions/class_template_specialization_with_array_member_as_constant_parameter_type.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/friend_enclosing_class_in_nested_class.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/friend_enclosing_class_in_nested_class_of_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/lambda_return_specialization_braced_return.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/literal_operator_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/placement_class_through_byte_pointer_into_allocated_storage.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+round12/reductions/raw_literal_operator_long_literal.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+count bugs undefined: 8
+count mistakes rejected: 9
+count new rejected: 8
+count new result: 9
+count one-line result: 23
+count one-line unsupported: 1
+count probes result: 12
+count reductions result: 7
+count reductions unsupported: 2

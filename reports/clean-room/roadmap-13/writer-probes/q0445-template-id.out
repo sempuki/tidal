@@ -1,0 +1,17 @@
+| | program |
+|---|---|
+| explicit specialization declared only: template <> struct [[deprecated]] S<int>; | accept |
+| partial specialization declared only: template <class T> struct [[deprecated]] P<T*>; | accept |
+| explicit instantiation: template struct [[deprecated]] S<int>; | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 |
+| control: forward declaration struct [[deprecated]] F; | accept |
+| control: variable struct [[deprecated]] F* p; | accept: gcc-host, gcc-16, gcc-14; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 |
+explicit instantiation: template struct [[deprecated]] S<int>; / program / clang-18: /tidal/build/probes/q0445-template-id/0002-explicit-instantiation-template-struct-deprecated-s-int--program.cpp:4:19: error: an attribute list cannot appear here
+explicit instantiation: template struct [[deprecated]] S<int>; / program / clang-22: /tidal/build/probes/q0445-template-id/0002-explicit-instantiation-template-struct-deprecated-s-int--program.cpp:4:19: error: an attribute list cannot appear here
+explicit instantiation: template struct [[deprecated]] S<int>; / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/q0445-template-id/0002-explicit-instantiation-template-struct-deprecated-s-int--program.cpp:4:19: error: an attribute list cannot appear here
+explicit instantiation: template struct [[deprecated]] S<int>; / program / edg-7.0: uct-deprecated-s-int--program.cpp", line 4: error: attributes are not
+explicit instantiation: template struct [[deprecated]] S<int>; / program / edg-7.0-ilp32: uct-deprecated-s-int--program.cpp", line 4: error: attributes are not
+control: variable struct [[deprecated]] F* p; / program / clang-18: /tidal/build/probes/q0445-template-id/0004-control-variable-struct-deprecated-f-p--program.cpp:5:10: error: an attribute list cannot appear here
+control: variable struct [[deprecated]] F* p; / program / clang-22: /tidal/build/probes/q0445-template-id/0004-control-variable-struct-deprecated-f-p--program.cpp:5:10: error: an attribute list cannot appear here
+control: variable struct [[deprecated]] F* p; / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/q0445-template-id/0004-control-variable-struct-deprecated-f-p--program.cpp:5:10: error: an attribute list cannot appear here
+control: variable struct [[deprecated]] F* p; / program / edg-7.0: f-p--program.cpp", line 5: error: attributes are not allowed here
+control: variable struct [[deprecated]] F* p; / program / edg-7.0-ilp32: f-p--program.cpp", line 5: error: attributes are not allowed here

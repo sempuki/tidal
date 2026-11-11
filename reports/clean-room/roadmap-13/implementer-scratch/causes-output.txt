@@ -1,0 +1,169 @@
+tests that fail their check, in scope: 80; marked 32; unmarked 48
+out of scope: 9 (of 9 named)
+status of the unmarked: unsupported 23, MISSED-REJECT 20, EDG-AGREES 3, FALSE-REJECT 2
+status of the marked: MISSED-REJECT 18, unsupported 7, EDG-AGREES 4, FALSE-REJECT 3
+marked by section: 1: 4, 2: 6, 3: 11, 4: 4, 5: 7
+unmarked tests with no cause in report 26 or P4: 0 []
+
+Cause groups of the unmarked tests:
+   3  P4-1: the types of a member defined in its class, checked at the end of the class (FN-12)
+        FALSE-REJECT   FN-12 CLS-2 INST-1       declarations/functions/definitions/member-in-class-specialization-over-class.cpp
+        MISSED-REJECT  FN-12                    declarations/functions/definitions/member-in-class-type-completed-after-class.cpp
+        EDG-AGREES     OPR-8 OPR-9 OPR-10 CONV-4 MUL-6 MUL-7 LSUP-2 LSUP-12 DCMP-4 DCMP-6 TR-2 programs/P4/money-first-try.cpp
+   5  Class template argument deduction (CTAD-1, CTAD-19, CTAD-29)
+        unsupported    PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35 programs/roadmap/r10-tuple-second-try.cpp
+        unsupported    CTAD-1                   templates/class-template-deduction/sites-for-and-condition.cpp
+        unsupported    CTAD-1                   templates/class-template-deduction/sites.cpp
+        MISSED-REJECT  CTAD-19 CTAD-23          templates/class-template-deduction/tie-own-constructor-template.cpp
+        unsupported    CTAD-29 CTAD-11          templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp
+   3  A constant parameter whose type is a class template name (TPL-11)
+        unsupported    OPR-8 OPR-10             classes/operators/literal-operator-template-class-parameter.cpp
+        unsupported    CTAD-1 TPL-11            templates/class-template-deduction/constant-parameter-guide.cpp
+        unsupported    TPL-11 CTAD-1            templates/declarations/constant-parameter-class-template.cpp
+  10  Template checks outside the marks (missed rejects)
+        MISSED-REJECT  TARG-24                  templates/arguments/argument-makes-parameter-invalid.cpp
+        MISSED-REJECT  TARG-15                  templates/arguments/class-argument-reference-temporary.cpp
+        MISSED-REJECT  TARG-7                   templates/arguments/concept-for-template.cpp
+        MISSED-REJECT  CPT-37                   templates/concepts/placeholder-parameter-decltype-auto.cpp
+        MISSED-REJECT  CNS-13                   templates/constraints/explicit-instantiation-member-not-satisfied.cpp
+        MISSED-REJECT  TPL-31                   templates/declarations/alias-template-self-through-class.cpp
+        MISSED-REJECT  TPL-7                    templates/declarations/constant-parameter-no-constexpr-constructor.cpp
+        MISSED-REJECT  ORD-3 ORD-15             templates/ordering/nondeduced-only-parameter.cpp
+        MISSED-REJECT  PACK-26 PACK-6           templates/packs/member-template-pack-length.cpp
+        MISSED-REJECT  TSP-23                   templates/specialization/explicit-member-class-template-no-prefix.cpp
+   7  Template constructs outside the marks (unsupported)
+        unsupported    TARG-14                  templates/arguments/pointer-subobject.cpp
+        unsupported    CPT-1                    templates/concepts/concept-id-value.cpp
+        unsupported    CPT-20                   templates/concepts/placeholder-parameter.cpp
+        unsupported    CNS-30                   templates/constraints/function-type-specialization.cpp
+        unsupported    DEP-20                   templates/dependent-names/type-only-positions-more.cpp
+        unsupported    PACK-3                   templates/packs/ellipsis-after-parameter.cpp
+        unsupported    PACK-5                   templates/packs/expansion-elements.cpp
+   4  Constant evaluation of a construct (unsupported)
+        unsupported    PRIM-27 PRIM-28          expressions/primary/fold-expansion.cpp
+        unsupported    CE-3                     foundations/constant-evaluation/reference-to-local-not-usable.cpp
+        unsupported    LSUP-13                  foundations/language-support/ordering-defaulted-specified-needs-conversion.cpp
+        unsupported    OVL-40                   overloading/overload-resolution/init-direct-explicit-conversion.cpp
+   8  Missed rejects in other chapters
+        MISSED-REJECT  DCMP-11                  classes/comparisons/spaceship-member-returns-non-category.cpp
+        MISSED-REJECT  CTOR-12                  classes/constructors/base-init-dynamic-cast-early-constant.cpp
+        MISSED-REJECT  CEV-1                    declarations/constexpr/lambda-escalates-runtime.cpp
+        MISSED-REJECT  UNEV-1 PRIM-25           expressions/decltype/nested-class-member-evaluated.cpp
+        MISSED-REJECT  PFX-11 CLS-2             expressions/postfix/default-template-argument-incomplete-class.cpp
+        MISSED-REJECT  CE-3                     foundations/constant-evaluation/read-extended-temporary-not-const.cpp
+        MISSED-REJECT  NAM-8 NAM-27             foundations/names/adl-function-template-parameter-adds-nothing.cpp
+        MISSED-REJECT  OVL-20                   overloading/overload-resolution/address-no-target-auto-template-parameter.cpp
+   5  Unsupported constructs in other chapters
+        unsupported    AUTO-7                   declarations/auto/copy-list-deduces-initializer-list.cpp
+        unsupported    COND-3                   expressions/conditional/member-pointer-nullptr.cpp
+        unsupported    LAM-6                    expressions/lambdas/capture-default-in-member-initializer.cpp
+        unsupported    LAM-18                   expressions/lambdas/capture-visible-in-trailing-return.cpp
+        unsupported    ICS-47                   overloading/conversion-sequences/overload-set-argument-sequence.cpp
+   2  EDG-AGREES
+        EDG-AGREES     CPY-27 UNI-11            classes/copy-move/trivially-copyable-member-template-selected.cpp
+        EDG-AGREES     CNS-32 CNS-24            templates/constraints/friend-distinct-from-namespace.cpp
+   1  False reject
+        FALSE-REJECT   SB-5                     declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp
+
+unmarked against round 25 (b035efd4): 44 same status, 4 not in that baseline; tests that passed their check there and fail now: 0
+unmarked against round 24 (53577f27): 44 same status, 4 not in that baseline; tests that passed their check there and fail now: 0
+tests with no row in the round 26 baseline that do not pass: ['classes/operators/initializer-list-parameter.cpp', 'declarations/functions/definitions/member-in-class-specialization-over-class.cpp', 'declarations/functions/definitions/member-in-class-type-completed-after-class.cpp', 'programs/P4/money-first-try.cpp', 'programs/P4/sequences-first-try.cpp']
+
+run stops (pass their check): 31
+        run-unsupported  DCMP-4                   classes/comparisons/spaceship-specified-type-synthesized.cpp
+        run-unsupported  CVF-1                    classes/conversion-functions/call-by-name.cpp
+        run-unsupported  CVF-4                    classes/conversion-functions/conversion-to-void-explicit-call.cpp
+        run-unsupported  CVF-1                    classes/conversion-functions/deduced-auto.cpp
+        run-unsupported  CVF-5                    classes/conversion-functions/different-type-not-hidden.cpp
+        run-unsupported  ILC-3 DED-1 DED-35       classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp
+        run-unsupported  ILC-3 DED-28             classes/initializer-lists/braced-beside-constructor-template-no-conversion.cpp
+        run-unsupported  OPR-6 LSUP-1             classes/operators/initializer-list-parameter.cpp
+        run-unsupported  VIRT-12                  classes/virtual/pure-call-in-ctor-sanitizer.cpp
+        run-unsupported  SINIT-1                  declarations/initialization/static/reference-constant-initialized.cpp
+        run-unsupported  LNK-9                    declarations/storage-linkage/block-function-declaration.cpp
+        run-unsupported  TRY-10                   exceptions/handlers/dtor-try-block-member-destructor-throws.cpp
+        run-unsupported  TRY-10                   exceptions/handlers/dtor-try-block-rethrows.cpp
+        run-unsupported  NEW-23                   expressions/new-delete/throw-placement-default-argument.cpp
+        run-unsupported  NEW-24 DED-39            expressions/new-delete/throw-placement-templates-unordered.cpp
+        run-unsupported  ODR-15                   foundations/odr/variable-declaration-forms.cpp
+        run-unsupported  UN-7 STG-15              foundations/storage/integer-pointer-no-object-sanitizer.cpp
+        run-unsupported  OVL-7                    overloading/overload-resolution/assignment-operator-class-parameter.cpp
+        run-unsupported  OVL-42                   overloading/overload-resolution/deleted-defaulted-move-not-candidate.cpp
+        run-unsupported  LAM-2 VIRT-2 NEW-5       programs/P3/events-first-try.cpp
+        run-unsupported  RFOR-2 LAM-1 TPL-1 OBJ-9 programs/P3/pipeline-first-try.cpp
+        run-unsupported  RFOR-2 RFOR-3 RFOR-7 OPR-4 OPR-13 LSUP-1 CTAD-9 programs/P4/sequences-first-try.cpp
+        run-unsupported  RFOR-2                   statements/range-for/begin-end-from-base-over-derived.cpp
+        run-unsupported  TARG-12                  templates/arguments/constant-overloaded-function.cpp
+        run-unsupported  DED-39                   templates/deduction/placement-deallocation-match.cpp
+        run-unsupported  DED-39 ORD-9             templates/deduction/placement-deallocation-ordered.cpp
+        run-unsupported  DEP-11                   templates/dependent-names/dependent-base-conversion-function.cpp
+        run-unsupported  DEP-24 DEP-25            templates/dependent-names/template-keyword-forms.cpp
+        run-unsupported  DEP-20                   templates/dependent-names/type-only-positions.cpp
+        run-unsupported  INST-36                  templates/instantiation/local-entities-per-specialization.cpp
+        run-unsupported  TSP-22 TSP-8             templates/specialization/explicit-class-member-default.cpp
+program tests that do not run to their result: 5 ['programs/P3/events-first-try.cpp', 'programs/P3/pipeline-first-try.cpp', 'programs/P4/money-first-try.cpp', 'programs/P4/sequences-first-try.cpp', 'programs/roadmap/r10-tuple-second-try.cpp']
+
+failing tests that cite a rule changed after RV8: 8
+        OPR-10 OPR-8         unmarked   classes/operators/literal-operator-template-class-parameter.cpp
+        FN-12 INST-1         unmarked   declarations/functions/definitions/member-in-class-specialization-over-class.cpp
+        FN-12                unmarked   declarations/functions/definitions/member-in-class-type-completed-after-class.cpp
+        OPR-10 OPR-8         unmarked   programs/P4/money-first-try.cpp
+        INST-5               marked 3   templates/instantiation/class-point-static-const-member.cpp
+        INST-5               marked 3   templates/instantiation/class-point-static-constexpr-made-at-use.cpp
+        INST-5               marked 3   templates/instantiation/class-static-constexpr-member-initializer-waits.cpp
+        INST-5               marked 3   templates/instantiation/static-inline-member-incomplete-argument.cpp
+
+model section 1: 4 tests
+        MISSED-REJECT  templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
+        unsupported    templates/dependent-names/other-specialization-constant-argument-no-typename.cpp
+        EDG-AGREES     templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp
+        EDG-AGREES     templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp
+model section 2: 6 tests
+        unsupported    templates/dependent-names/current-instantiation-enclosing-base.cpp
+        FALSE-REJECT   templates/dependent-names/member-template-current-instantiation-pointer.cpp
+        MISSED-REJECT  templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp
+        FALSE-REJECT   templates/dependent-names/member-template-non-dependent-base.cpp
+        FALSE-REJECT   templates/dependent-names/member-template-through-current-instantiation-object.cpp
+        MISSED-REJECT  classes/copy-move/class-template-ctor-by-value.cpp
+model section 3: 11 tests
+        MISSED-REJECT  templates/instantiation/class-point-not-later-member-type.cpp
+        MISSED-REJECT  templates/instantiation/class-point-not-later-type.cpp
+        unsupported    templates/instantiation/class-point-not-later.cpp
+        unsupported    templates/instantiation/class-point-static-const-member.cpp
+        unsupported    templates/instantiation/class-point-static-constexpr-made-at-use.cpp
+        EDG-AGREES     templates/instantiation/class-static-constexpr-member-initializer-waits.cpp
+        EDG-AGREES     templates/instantiation/static-inline-member-incomplete-argument.cpp
+        MISSED-REJECT  templates/instantiation/local-class-default-argument.cpp
+        MISSED-REJECT  templates/instantiation/local-class-exception-specification.cpp
+        MISSED-REJECT  templates/instantiation/recursion-endless-function.cpp
+        MISSED-REJECT  templates/specialization/partial-no-primary-variable.cpp
+model section 4: 4 tests
+        unsupported    templates/deduction/substitution-explicit-specifier.cpp
+        MISSED-REJECT  templates/deduction/substitution-lambda-body.cpp
+        MISSED-REJECT  templates/deduction/substitution-lambda-default.cpp
+        unsupported    templates/deduction/substitution-member-wrong-kind.cpp
+model section 5: 7 tests
+        MISSED-REJECT  statements/if/constexpr-template-nondependent-call-checked.cpp
+        MISSED-REJECT  templates/constraints/out-of-class-other-clause.cpp
+        MISSED-REJECT  templates/constraints/out-of-class-without-clause.cpp
+        MISSED-REJECT  templates/dependent-names/binary-operator-pack-never-fits.cpp
+        MISSED-REJECT  templates/dependent-names/operator-pack-never-fits.cpp
+        MISSED-REJECT  templates/packs/fold-in-outer-pattern.cpp
+        MISSED-REJECT  templates/packs/size-operator-in-outer-pattern.cpp
+chapter by status (all): MISSED-REJECT | unsupported | FALSE-REJECT | EDG-AGREES
+  templates       27  19   3   5  = 54
+  expressions      2   4   0   0  = 6
+  classes          3   1   0   1  = 5
+  declarations     2   1   2   0  = 5
+  foundations      2   2   0   0  = 4
+  overloading      1   2   0   0  = 3
+  programs         0   1   0   1  = 2
+  statements       1   0   0   0  = 1
+chapter by status (unmarked): MISSED-REJECT | unsupported | FALSE-REJECT | EDG-AGREES
+  templates       11  12   0   1  = 24
+  expressions      2   4   0   0  = 6
+  declarations     2   1   2   0  = 5
+  classes          2   1   0   1  = 4
+  foundations      2   2   0   0  = 4
+  overloading      1   2   0   0  = 3
+  programs         0   1   0   1  = 2

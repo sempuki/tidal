@@ -1,0 +1,454 @@
+EDG-ONLY	classes/access/friend-member-of-explicit-specialization.cpp	ACC-20	
+EDG-ONLY	classes/access/friend-member-pattern-other-specialization.cpp	ACC-20	
+EDG-ONLY	classes/access/nested-class-friend-reads-enclosing.cpp	ACC-10 ACC-5	
+EDG-ONLY	classes/access/using-reduces-access.cpp	ACC-2	12:ACC-2 'x' is named by a using-declaration of 'D' that is not accessible here
+EDG-ONLY	classes/comparisons/eq-array-of-arrays-member-constant.cpp	DCMP-1	
+EDG-ONLY	classes/comparisons/out-of-class-reference-member-would-delete.cpp	DCMP-8	8:DCMP-8 'operator==' defaulted after its class would be deleted
+EDG-ONLY	classes/comparisons/out-of-class-would-delete.cpp	DCMP-8	9:DCMP-8 'operator==' defaulted after its class would be deleted
+MISSED-REJECT	classes/comparisons/spaceship-member-returns-non-category.cpp	DCMP-11	
+run-unsupported	classes/comparisons/spaceship-specified-type-synthesized.cpp	DCMP-4	unsupported at line 67: overloaded operator
+EDG-ONLY	classes/constructors/base-init-calls-member-of-member-constant.cpp	CTOR-12 OBJ-2	13:CX-1 initializer is not a constant expression (OBJ-2: call of a member function of a member whose lifetime has not begun)
+MISSED-REJECT	classes/constructors/base-init-dynamic-cast-early-constant.cpp	CTOR-12	
+EDG-ONLY	classes/constructors/const-object-only-anonymous-unions.cpp	CTOR-24	11:CTOR-4 const object of 'Cell' without an initializer leaves a member without a value
+EDG-ONLY	classes/constructors/delete-array-deleted-dtor.cpp	DTOR-3	8:DTOR-3 array new of 'S', whose destructor is deleted or not accessible
+EDG-ONLY	classes/constructors/double-destroy-constant.cpp	DTOR-7	13:DTOR-7 static_assert condition is not a constant expression: the end of the block destroys an object whose destructor already ran
+EDG-ONLY	classes/constructors/double-destroy-trivial-constant.cpp	DTOR-7	13:DTOR-7 static_assert condition is not a constant expression: the end of the block destroys an object whose destructor already ran
+EDG-ONLY	classes/constructors/initializer-list-default-member-from-braces.cpp	CTOR-17	17:CTOR-17 the default member initializer binds the member 'list' to a temporary object, and a constructor uses it
+EDG-ONLY	classes/constructors/initializer-list-member-from-braces.cpp	CTOR-17	17:CTOR-17 the mem-initializer binds the member 'list' to a temporary object
+EDG-ONLY	classes/constructors/nested-default-member-init-before-complete.cpp	CTOR-18	8:CTOR-18 the default argument uses a default member initializer of 'In' before the enclosing class is complete
+EDG-ONLY	classes/constructors/nested-default-member-init-read-in-default-argument.cpp	CTOR-18	10:CTOR-18 the default argument uses a default member initializer of 'In' before the enclosing class is complete
+EDG-ONLY	classes/constructors/parameter-destroyed-by-callee-constant.cpp	DTOR-7 VC-10	18:DTOR-7 static_assert condition is not a constant expression: the end of the block destroys an object whose destructor already ran
+EDG-ONLY	classes/constructors/reference-default-member-binds-temporary.cpp	CTOR-17	7:CTOR-17 the default member initializer binds the member 'r' to a temporary object, and the default constructor uses it
+EDG-ONLY	classes/constructors/reference-member-binds-converted-parameter.cpp	CTOR-17	9:CTOR-17 the mem-initializer binds the member 'r' to a temporary object
+EDG-ONLY	classes/constructors/reference-member-binds-temporary.cpp	CTOR-17	7:CTOR-17 the mem-initializer binds the member 'r' to a temporary object
+run-unsupported	classes/conversion-functions/call-by-name.cpp	CVF-1	unsupported at line 4: overload set
+run-unsupported	classes/conversion-functions/conversion-to-void-explicit-call.cpp	CVF-4	unsupported at line 5: overload set
+run-unsupported	classes/conversion-functions/deduced-auto.cpp	CVF-1	unsupported at line 8: conversion function
+run-unsupported	classes/conversion-functions/different-type-not-hidden.cpp	CVF-5	unsupported at line 5: overload set
+EDG-ONLY	classes/conversion-functions/template-deduced-auto.cpp	CVF-7	8:CVF-7 a conversion function template whose name is a placeholder
+EDG-ONLY	classes/conversion-functions/template-pointer-to-placeholder.cpp	CVF-7	10:CVF-7 a conversion function template whose name is a placeholder
+MISSED-REJECT	classes/copy-move/class-template-ctor-by-value.cpp	CPY-15	
+EDG-ONLY	classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp	CNS-11 CPY-1	
+EDG-ONLY	classes/copy-move/trivially-copyable-member-selected.cpp	CPY-27 CPY-19 UNI-3	
+EDG-AGREES	classes/copy-move/trivially-copyable-member-template-selected.cpp	CPY-27 UNI-11	
+EDG-ONLY	classes/derived/constexpr-dtor-virtual-base.cpp	DER-12	8:DER-12 a constexpr destructor of 'D', which has a virtual base
+run-unsupported	classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp	ILC-3 DED-1 DED-35	unsupported at line 10: constructor call
+run-unsupported	classes/initializer-lists/braced-beside-constructor-template-no-conversion.cpp	ILC-3 DED-28	unsupported at line 11: constructor call
+EDG-ONLY	classes/members/explicit-object-default-argument.cpp	CLS-14	8:CLS-14 a default argument on an explicit object parameter
+EDG-ONLY	classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-tail-padding-deleted-constructor.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-tail-padding-move-assignment-ilp32.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-tail-padding-move-assignment.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-union-end-padding-ilp32.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-union-end-padding.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/standard-layout-address-constant.cpp	CLS-30	
+run-unsupported	classes/operators/initializer-list-parameter.cpp	OPR-6 LSUP-1	unsupported at line 25: overloaded operator
+EDG-ONLY	classes/operators/literal-operator-template-class-parameter-and-string-form.cpp	OPR-8	
+EDG-ONLY	classes/operators/literal-operator-template-class-parameter-not-valid-argument.cpp	OPR-16	12:OPR-16 the string literal is not a valid template argument of the literal operator template for the suffix '_tag'
+unsupported	classes/operators/literal-operator-template-class-parameter.cpp	OPR-8 OPR-10	18:- static_assert: literal operator template
+EDG-ONLY	classes/operators/literal-reserved-suffix-u8.cpp	OPR-9	
+EDG-ONLY	classes/unions/anonymous-union-unnamed-namespace.cpp	UNI-9	
+EDG-ONLY	classes/unions/bitfield-width-scoped-enumeration.cpp	BF-2	8:BF-2 bit-field width has a scoped enumeration type
+EDG-ONLY	classes/unions/chain-assign-array-element-nontrivial-constant.cpp	UNI-6 UNI-13	21:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/chain-assign-nontrivial-constant.cpp	UNI-6 UNI-13	10:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/construct-at-array-member-element-constant.cpp	UNI-14 UNI-6	19:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/construct-in-member-of-inactive-member-union-constant.cpp	UNI-14 UNI-6 CE-6	21:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/union-copy-two-copy-constructors.cpp	UNI-3 CPY-27	
+EDG-ONLY	classes/unions/user-assignment-not-activating-constant.cpp	UNI-6	10:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/virtual/dynamic-cast-private-base-constant.cpp	VIRT-10	
+EDG-ONLY	classes/virtual/explicit-object-overrides.cpp	VIRT-19	8:VIRT-19 'f' is an explicit object member function with the name and parameters of a virtual function of a base
+EDG-ONLY	classes/virtual/override-independent-base-unused.cpp	VIRT-3 DEP-30	9:VIRT-3 'run' is marked override, and no base has a virtual function of that name
+run-unsupported	classes/virtual/pure-call-in-ctor-sanitizer.cpp	VIRT-12	unsupported at line 8: function 'area' has no definition in the program
+EDG-ONLY	declarations/alignment/enum.cpp	ALN-7	8:ALN-7 alignas applied to an enumeration
+EDG-ONLY	declarations/alignment/extended-edg-beyond-ilp32.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/extended-edg-beyond.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/extended-huge-ilp32.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/extended-huge.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/operand-scoped-enumeration.cpp	ALN-8	8:ALN-8 the operand of alignas has a scoped enumeration type
+EDG-ONLY	declarations/alignment/scoped-enum.cpp	ALN-7	8:ALN-7 alignas applied to an enumeration
+EDG-ALLOWED	declarations/attributes/vendor-attribute-changes-layout.cpp	ATTR-20	7:SA-1 static assertion failed
+unsupported	declarations/auto/copy-list-deduces-initializer-list.cpp	AUTO-7	17:- static_assert: the type of 'a', which its initializer does not give (in a variable template argument)
+EDG-ONLY	declarations/constexpr/consteval-conversion-for-parameter-not-constant.cpp	CEV-1	14:CEV-1 call of consteval constructor is not a constant expression (CE-2: call of non-constexpr function 'fail')
+EDG-ALLOWED	declarations/constexpr/constinit-added-late-thread-local.cpp	CINIT-3	
+EDG-ALLOWED	declarations/constexpr/constinit-added-late.cpp	CINIT-3	
+MISSED-REJECT	declarations/constexpr/lambda-escalates-runtime.cpp	CEV-1	
+EDG-ONLY	declarations/declarators/qualified-function-type-parameter.cpp	DCL-16	9:DCL-16 reference to a function type with qualifiers
+EDG-ONLY	declarations/enumerations/cast-out-of-range.cpp	ENUM-6	8:CX-1 initializer is not a constant expression (ENUM-6: value 8 is outside the range of the enumeration)
+EDG-ONLY	declarations/enumerations/using-enum-opaque.cpp	ENUM-20	8:ENUM-20 using enum names an incomplete enumeration
+EDG-ONLY	declarations/exception-specifications/defaulted-comparison-member-throwing.cpp	EXS-4	
+EDG-ONLY	declarations/exception-specifications/narrowing-operand.cpp	EXS-7	7:EXS-7 the operand of noexcept narrows in its conversion to bool
+EDG-ONLY	declarations/exception-specifications/pointer-operand.cpp	EXS-7	8:EXS-7 the operand of noexcept narrows in its conversion to bool
+EDG-ONLY	declarations/exception-specifications/throw-empty-pointer.cpp	EXS-5	
+EDG-ONLY	declarations/exception-specifications/throw-empty-removed-ilp32.cpp	EXS-5	
+EDG-ONLY	declarations/exception-specifications/throw-empty-removed.cpp	EXS-5	
+EDG-ONLY	declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp	DEFARG-10	
+EDG-ONLY	declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp	DEFARG-10	
+EDG-ONLY	declarations/functions/default-arguments/parameter-in-sizeof.cpp	DEFARG-4	
+EDG-ONLY	declarations/functions/definitions/main-four-params-ilp32.cpp	FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/functions/definitions/main-four-params.cpp	FN-6	7:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/functions/definitions/main-wrong-first-param-ilp32.cpp	FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/functions/definitions/main-wrong-first-param.cpp	FN-6	7:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+FALSE-REJECT	declarations/functions/definitions/member-in-class-specialization-over-class.cpp	FN-12 CLS-2 INST-1	4:CLS-1 data member of incomplete class type
+MISSED-REJECT	declarations/functions/definitions/member-in-class-type-completed-after-class.cpp	FN-12	
+EDG-ONLY	declarations/initialization/forms/read-uninitialized-array.cpp	INIT-1	12:OBJ-2, INIT-1 static_assert condition is not a constant expression: read of an object with no value
+EDG-ONLY	declarations/initialization/list/narrowing-bit-field-fits.cpp	LIST-2 CONV-21	
+EDG-ONLY	declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp	LIST-2 CONV-21	
+EDG-ONLY	declarations/initialization/list/paren-no-brace-elision.cpp	LIST-9	9:LIST-9 parenthesized aggregate initialization has more values than members; the values do not split across a nested aggregate
+EDG-ONLY	declarations/initialization/references/aggregate-member-paren-not-extended.cpp	REF-5	12:OBJ-2 static_assert condition is not a constant expression: access to an object whose lifetime has ended
+EDG-ONLY	declarations/initialization/references/extend-through-array-member-subscript.cpp	REF-4	
+EDG-ONLY	declarations/initialization/references/null-dereference-bind-constant.cpp	REF-5	10:UN-7 static_assert condition is not a constant expression: indirection through a null pointer
+run-unsupported	declarations/initialization/static/reference-constant-initialized.cpp	SINIT-1	unsupported at line 7: variable 'ref' has no definition in this translation unit
+EDG-ONLY	declarations/inline/inline-undefined-used.cpp	INL-6	
+MISSED-REJECT	declarations/inline/inline-variable-undefined-used.cpp	INL-6	
+EDG-ONLY	declarations/linkage-specifications/c-callback-alias.cpp	LSP-1 LSP-6	
+EDG-ONLY	declarations/linkage-specifications/c-function-pointer-assign-ilp32.cpp	LSP-6	
+EDG-ONLY	declarations/linkage-specifications/c-function-pointer-assign.cpp	LSP-6	
+EDG-ONLY	declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp	LSP-4 FN-14	8:FN-14 the C function 'code' is defined twice
+EDG-ONLY	declarations/linkage-specifications/c-parameter-type-linkage.cpp	LSP-1 LSP-6	
+EDG-ONLY	declarations/namespaces/qualified-definition-inline-member-inside-named.cpp	NS-15 NS-3	
+EDG-ONLY	declarations/namespaces/using-declaration-repeat-block.cpp	NS-7	
+EDG-ONLY	declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp	STO-11	
+run-unsupported	declarations/storage-linkage/block-function-declaration.cpp	LNK-9	unsupported at line 7: block-scope static variable used before its declaration ran
+EDG-ONLY	declarations/storage-linkage/extern-in-block-hidden.cpp	LNK-9	
+EDG-ONLY	declarations/structured-bindings/constinit-specifier.cpp	SB-11	10:SB-11 invalid specifier on a structured binding declaration
+EDG-ONLY	declarations/structured-bindings/constrained.cpp	SB-15	9:SB-15 structured binding declared with a constrained auto
+FALSE-REJECT	declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp	SB-5	17:DED-35 no viable function for the call of 'get': deduction fails for each template
+EDG-ONLY	declarations/structured-bindings/tuple-size-without-value.cpp	SB-5	
+EDG-ONLY	declarations/volatile/constant-read-through-plain.cpp	VOL-6 VOL-8	12:CX-1 initializer is not a constant expression (VOL-6: access to a volatile object through a glvalue of type int, which is not volatile)
+EDG-ONLY	declarations/volatile/static-const-volatile-in-class.cpp	CLS-23	7:CLS-23 in-class initializer for a static data member that is not const integral, inline, or constexpr
+run-unsupported	exceptions/handlers/dtor-try-block-member-destructor-throws.cpp	TRY-10	unsupported at line 8: destructor body the front end did not parse
+run-unsupported	exceptions/handlers/dtor-try-block-rethrows.cpp	TRY-10	unsupported at line 0: destructor body the front end did not parse
+EDG-ONLY	expressions/casts/static-cast-enum-out-of-range-constant.cpp	CAST-14	8:CX-1 initializer is not a constant expression (ENUM-6: value 9 is outside the range of the enumeration)
+EDG-ONLY	expressions/comparison/one-past-end-adjacent-constant.cpp	CMP-20	8:CMP-20 static_assert condition is not a constant expression: comparison of a past-the-end pointer with a pointer to another object
+EDG-ONLY	expressions/comparison/pointer-relational-nullptr.cpp	CMP-9	8:CMP-9 relational comparison of a pointer with a null pointer constant
+EDG-ONLY	expressions/comparison/pointer-relational-zero.cpp	CMP-9	8:CMP-9 relational comparison of a pointer with a null pointer constant
+EDG-ONLY	expressions/comparison/relational-nullptr-values.cpp	CMP-9	8:CMP-9 relational comparison of two nullptr values
+EDG-ONLY	expressions/comparison/struct-and-first-member-equal.cpp	CMP-15	
+EDG-ONLY	expressions/comparison/three-way-enum-float.cpp	CMP-18	36:CMP-18 three-way comparison of different enumerations, or of an enumeration and a floating value
+EDG-ONLY	expressions/comparison/three-way-pointer-zero.cpp	CMP-13	35:CMP-13 three-way comparison of a pointer with the literal 0
+EDG-ONLY	expressions/conditional/class-const-and-volatile-lvalues.cpp	COND-16 COND-3 COND-5	11:COND-5 conditional operands have no common type: const Box and volatile Box, and no built-in candidate is viable (COND-11)
+EDG-ONLY	expressions/conditional/class-const-and-volatile-xvalues.cpp	COND-3 COND-5 COND-16	12:COND-5 conditional operands have no common type: const Box and volatile Box, and no built-in candidate is viable (COND-11)
+unsupported	expressions/conditional/member-pointer-nullptr.cpp	COND-3	8:- static_assert: decltype of an expression of unknown type (in a variable template argument)
+EDG-ONLY	expressions/conditional/two-classes-float.cpp	COND-11	
+MISSED-REJECT	expressions/decltype/nested-class-member-evaluated.cpp	UNEV-1 PRIM-25	
+EDG-ONLY	expressions/lambdas/capture-default-at-namespace.cpp	LAM-6	7:LAM-6 capture default in a lambda outside a function
+unsupported	expressions/lambdas/capture-default-in-member-initializer.cpp	LAM-6	8:- static_assert: call of unknown callee
+EDG-ONLY	expressions/lambdas/capture-default-local-class-default-argument.cpp	LAM-6	9:LAM-6 capture default in a lambda that no block encloses, in a member declaration of a class
+EDG-ONLY	expressions/lambdas/capture-default-local-class-member.cpp	LAM-6	9:LAM-6 capture default in a lambda that no block encloses, in a member declaration of a class
+unsupported	expressions/lambdas/capture-visible-in-trailing-return.cpp	LAM-18	10:- static_assert: call of unknown callee (in a variable template argument)
+EDG-ONLY	expressions/member-pointers/converted-through-object-constant.cpp	MPTR-4	
+EDG-ONLY	expressions/multiplicative/floating-divide-by-zero.cpp	CE-28	8:CE-28 static_assert condition is not a constant expression: floating division by zero in constant evaluation
+EDG-ONLY	expressions/multiplicative/floating-zero-by-zero.cpp	CE-28	8:CE-28 static_assert condition is not a constant expression: floating division by zero in constant evaluation
+EDG-ONLY	expressions/multiplicative/signed-overflow-divide-long-long.cpp	MUL-10	8:CX-1 initializer is not a constant expression (MUL-10: quotient does not fit in the type)
+EDG-ONLY	expressions/multiplicative/signed-overflow-divide.cpp	MUL-10	9:MUL-10 static_assert condition is not a constant expression: quotient does not fit in the type
+EDG-ONLY	expressions/multiplicative/signed-overflow-remainder.cpp	MUL-10	9:MUL-10 static_assert condition is not a constant expression: quotient does not fit in the type
+EDG-ONLY	expressions/new-delete/constant-evaluation-nothrow.cpp	NEW-37 LSUP-6	
+run-unsupported	expressions/new-delete/throw-placement-default-argument.cpp	NEW-23	unsupported at line 11: missing argument
+EDG-ONLY	expressions/new-delete/throw-placement-deleted-function-and-template.cpp	NEW-24 DED-39	
+run-unsupported	expressions/new-delete/throw-placement-templates-unordered.cpp	NEW-24 DED-39	unsupported at line 18: new expression
+MISSED-REJECT	expressions/postfix/default-template-argument-incomplete-class.cpp	PFX-11 CLS-2	
+FALSE-REJECT	expressions/postfix/ellipsis-argument-conversions.cpp	PFX-22	10:NAM-8 use of undeclared name 'va_list'
+FALSE-REJECT	expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp	PFX-22	7:NAM-8 use of undeclared name 'va_list'
+EDG-ONLY	expressions/postfix/member-call-null-pointer-constant.cpp	PFX-21 UN-7 CE-9	12:PFX-21, UN-7 static_assert condition is not a constant expression: member function called through a null pointer
+EDG-ONLY	expressions/postfix/postfix-narrow-signed-wraps.cpp	PFX-12 UN-20	
+EDG-ONLY	expressions/postfix/subscript-prvalue-array.cpp	PFX-3	
+EDG-ALLOWED	expressions/primary/char-encoding-ilp32.cpp	PRIM-32	27:SA-1 static assertion failed
+EDG-ALLOWED	expressions/primary/char-encoding-lp64.cpp	PRIM-32	26:SA-1 static assertion failed
+unsupported	expressions/primary/char-named-escape-unknown.cpp	PRIM-18	7:- named escape \N{...} (needs Unicode name table)
+FALSE-REJECT	expressions/primary/char-named-escape.cpp	PRIM-5	4:SA-1 static assertion failed
+EDG-ONLY	expressions/primary/char-unknown-escape.cpp	PRIM-35	7:PRIM-18 unknown escape sequence '\q'
+EDG-ONLY	expressions/primary/double-overflow.cpp	PRIM-15	
+EDG-ONLY	expressions/primary/float-overflow.cpp	PRIM-15	
+unsupported	expressions/primary/fold-expansion.cpp	PRIM-27 PRIM-28	28:- static_assert: fold expression
+EDG-ONLY	expressions/primary/fold-operand-binary.cpp	PRIM-29	7:PRIM-29 a binary operator in the operand of a fold expression needs parentheses
+EDG-ONLY	expressions/primary/int-too-large-signed-decimal.cpp	PRIM-2	7:PRIM-2 integer literal too large for its candidate types
+EDG-ONLY	expressions/primary/string-compare-constant.cpp	PRIM-9	7:CE-13 static_assert condition is not a constant expression: comparison of the addresses of string literals
+EDG-ONLY	expressions/primary/string-unknown-escape.cpp	PRIM-35	7:PRIM-18 unknown escape sequence '\q'
+EDG-ONLY	expressions/unary/prefix-narrow-signed-wraps.cpp	UN-20	
+EDG-ONLY	foundations/constant-evaluation/allocator-result-other-type.cpp	CE-4	21:CE-4 static_assert condition is not a constant expression: conversion of the storage of std::allocator<T> to a pointer to a type other than T
+EDG-ONLY	foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp	CE-24 CE-21 CINIT-1	8:CINIT-1 constinit variable without an initializer
+EDG-ONLY	foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp	CE-24 CE-21 CINIT-1	9:CINIT-1 default-initialization is not a constant expression (CE-21: result has a scalar part with no value)
+EDG-ONLY	foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp	CE-24 CE-21 CINIT-1	8:CINIT-1 default-initialization is not a constant expression (CE-21: result has a scalar part with no value)
+EDG-ONLY	foundations/constant-evaluation/explicit-condition-narrowing.cpp	CE-19	7:CE-19 the condition of explicit narrows in its conversion to bool
+EDG-ONLY	foundations/constant-evaluation/extended-temporary-member.cpp	CE-14	
+EDG-ONLY	foundations/constant-evaluation/extended-temporary-nested.cpp	CE-14	
+EDG-ONLY	foundations/constant-evaluation/literal-temporary-volatile-member.cpp	CE-17 CE-23	
+EDG-ONLY	foundations/constant-evaluation/read-extended-temporary-nested.cpp	CE-3 CE-14	
+MISSED-REJECT	foundations/constant-evaluation/read-extended-temporary-not-const.cpp	CE-3	
+unsupported	foundations/constant-evaluation/reference-to-local-not-usable.cpp	CE-3	10:- constant initializer: pointer arithmetic
+EDG-ONLY	foundations/constant-evaluation/string-literal-identity-variables.cpp	CE-13	9:CE-13 static_assert condition is not a constant expression: comparison of the addresses of string literals
+EDG-ONLY	foundations/constant-evaluation/string-literal-identity.cpp	CE-13	8:CE-13 static_assert condition is not a constant expression: comparison of the addresses of string literals
+EDG-ONLY	foundations/conversions/char-zero-not-null.cpp	CONV-8	8:INIT-7 no implicit conversion from char to a pointer (CONV-8)
+EDG-ONLY	foundations/conversions/floating-narrowing-infinity-ilp32.cpp	CONV-11	
+EDG-ONLY	foundations/conversions/floating-narrowing-infinity.cpp	CONV-11	
+EDG-ONLY	foundations/conversions/floating-narrowing-out-of-range.cpp	CONV-11	
+MISSED-REJECT	foundations/language-support/alignment-enumeration-class.cpp	LSUP-5	
+EDG-ONLY	foundations/language-support/initializer-list-count-before-pointer.cpp	LSUP-1	18:LSUP-1 a braced list needs std::initializer_list, which is not declared as a class template of the needed shape
+unsupported	foundations/language-support/ordering-defaulted-specified-needs-conversion.cpp	LSUP-13	47:- static_assert: overloaded operator
+EDG-ONLY	foundations/language-support/ordering-strong-only-builtin.cpp	LSUP-2	
+EDG-ONLY	foundations/language-support/ordering-strong-only-defaulted.cpp	LSUP-2	
+MISSED-REJECT	foundations/names/adl-function-template-parameter-adds-nothing.cpp	NAM-8 NAM-27	
+EDG-ONLY	foundations/names/operator-lookup-block-declaration-keeps-adl.cpp	NAM-38	
+EDG-ONLY	foundations/objects/scalar-write-in-own-initializer-constant.cpp	OBJ-1 OBJ-2	8:OBJ-2 static_assert condition is not a constant expression: write to a variable inside its own initializer, before its lifetime begins
+EDG-ONLY	foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp	OBJ-1 OBJ-2	9:OBJ-2 static_assert condition is not a constant expression: write to a variable inside its own initializer, before its lifetime begins
+EDG-ONLY	foundations/odr/class-constant-copy-in-lambda.cpp	ODR-2 ODR-3	10:LAM-9 the lambda copies 'size', which it does not capture
+unsupported	foundations/odr/include-missing-file-angle.cpp	INC-3	7:- #include form other than "file" (outside the specification)
+EDG-ONLY	foundations/odr/local-class-binds-constant.cpp	ODR-2	10:CLS-28 a member function of a local class binds a reference to the automatic variable 'limit' of the enclosing function
+EDG-ONLY	foundations/odr/member-read-beside-mutable-in-lambda.cpp	ODR-2 ODR-3	10:LAM-9 the lambda names 'settings', which it does not capture
+EDG-ONLY	foundations/odr/mutable-member-read-in-lambda.cpp	ODR-2	10:LAM-9 the lambda names 'settings', which it does not capture
+run-unsupported	foundations/odr/variable-declaration-forms.cpp	ODR-15	unsupported at line 14: variable 'count' has no definition in this translation unit
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-double-element.cpp	LSUP-11 CE-9	25:CE-9 static_assert condition is not a constant expression: assignment to an element of allocated storage before its construction
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-int-element.cpp	LSUP-11 CE-9	26:CE-9 static_assert condition is not a constant expression: assignment to an element of allocated storage before its construction
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-pod-member.cpp	LSUP-11 CE-9	26:CE-9 static_assert condition is not a constant expression: assignment to an element of allocated storage before its construction
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-user-assignment.cpp	LSUP-11 CE-9	29:STG-18, STG-22 static_assert condition is not a constant expression: member function called on storage that holds no object of its class
+run-unsupported	foundations/storage/integer-pointer-no-object-sanitizer.cpp	UN-7 STG-15	unsupported at line 9: indirection through a non-pointer
+EDG-ONLY	foundations/storage/replace-base-old-pointer-constant.cpp	STG-19	16:STG-19, OBJ-2 static_assert condition is not a constant expression: indirection through a pointer to an object whose storage another object took
+EDG-ONLY	foundations/storage/reuse-const-automatic-object-constant.cpp	STG-20	14:STG-20 static_assert condition is not a constant expression: placement new in the storage of a const complete object
+EDG-ALLOWED	foundations/translation/limit-array-exceeded-gcc-lp64.cpp	TR-14	
+EDG-ALLOWED	foundations/translation/limit-array-largest-edg-lp64.cpp	TR-14	
+EDG-ALLOWED	foundations/translation/limit-class-exceeded-gcc-lp64.cpp	TR-15	
+EDG-ALLOWED	foundations/translation/limit-class-largest-edg-lp64.cpp	TR-15	
+EDG-ONLY	foundations/translation/limit-depth-one-template-100.cpp	TR-13	
+EDG-ONLY	foundations/translation/main-cpp-linkage-block.cpp	TR-3	
+EDG-ONLY	foundations/translation/main-cpp-linkage-specification.cpp	TR-3	
+EDG-ONLY	foundations/translation/main-wrong-parameter-types-ilp32.cpp	FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	foundations/translation/main-wrong-parameter-types.cpp	TR-3 FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	foundations/values/xvalue-array-subscript.cpp	VC-3	
+EDG-ONLY	overloading/conversion-sequences/bit-field-promotion.cpp	ICS-2	
+EDG-ONLY	overloading/conversion-sequences/chosen-explicit-copy-list.cpp	ICS-8 ILC-8	15:ILC-8 copy-list-initialization of 'Strict' chooses an explicit constructor
+unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp	ICS-44	11:- constant initializer: conversion function
+unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp	ICS-44	16:- constant initializer: conversion function
+EDG-ONLY	overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp	ICS-28 ICS-34	
+unsupported	overloading/conversion-sequences/floating-before-rvalue-reference.cpp	ICS-28 ICS-35	14:- static_assert: ambiguous call (in a variable template argument)
+unsupported	overloading/conversion-sequences/floating-equal-rank.cpp	ICS-35	12:- static_assert: ambiguous call (in a variable template argument)
+EDG-ONLY	overloading/conversion-sequences/initializer-list-over-kind.cpp	ICS-22 ICS-21	
+EDG-ONLY	overloading/conversion-sequences/list-class-nearest-base.cpp	ICS-19 ICS-36	
+unsupported	overloading/conversion-sequences/overload-set-argument-sequence.cpp	ICS-47	16:- static_assert: ambiguous call (needs full overload resolution) (in a variable template argument)
+EDG-ONLY	overloading/conversion-sequences/qualification-array-bound.cpp	ICS-31	
+EDG-ONLY	overloading/conversion-sequences/qualification-reference-temporary.cpp	ICS-31	
+EDG-ONLY	overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp	ICS-28 ICS-32 ICS-33 ICS-36	
+EDG-ONLY	overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp	ICS-45	
+EDG-ONLY	overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp	ICS-45	
+EDG-ONLY	overloading/overload-resolution/address-more-constrained.cpp	OVL-19	
+MISSED-REJECT	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp	OVL-20	
+EDG-ONLY	overloading/overload-resolution/address-no-target-constraints.cpp	OVL-20	
+EDG-ONLY	overloading/overload-resolution/address-no-target-more-constrained.cpp	OVL-20	
+run-unsupported	overloading/overload-resolution/assignment-operator-class-parameter.cpp	OVL-7	unsupported at line 9: class assignment
+EDG-ONLY	overloading/overload-resolution/builtin-chosen-other-operand.cpp	OVL-11	9:ADD-3 invalid operands to '+': int* and double
+EDG-ONLY	overloading/overload-resolution/call-through-address-parenthesized-qualified.cpp	OVL-44 OVL-21	10:OVL-44 a call through '&' of an unqualified or parenthesized name of a set with a non-static member
+EDG-ONLY	overloading/overload-resolution/call-through-address-static-member.cpp	OVL-21	
+EDG-ONLY	overloading/overload-resolution/call-through-address-unqualified-argument.cpp	OVL-21	
+EDG-ONLY	overloading/overload-resolution/call-through-address-unqualified.cpp	OVL-21 OVL-36	12:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/current-object-other-class.cpp	OVL-2 OVL-3	11:OVL-3 call of non-static member function 'f' without an object
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp	OVL-38	11:OVL-38 the call of 'tidal_ovl_p' uses a default argument that two declarations in different scopes give differently
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes-same-value.cpp	OVL-38	11:OVL-38 the call of 'tidal_ovl_k' uses a default argument that two declarations in different scopes give differently
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes.cpp	OVL-38	11:OVL-38 the call of 'tidal_ovl_f' uses a default argument that two declarations in different scopes give differently
+run-unsupported	overloading/overload-resolution/deleted-defaulted-move-not-candidate.cpp	OVL-42	unsupported at line 24: class assignment
+unsupported	overloading/overload-resolution/init-direct-explicit-conversion.cpp	OVL-40	14:- static_assert: constructor call
+EDG-ONLY	overloading/overload-resolution/tie-constraints-default-parameter.cpp	OVL-30 OVL-36	13:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/tie-constraints-different-parameters.cpp	OVL-36 OVL-41	10:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/tie-constraints-ellipsis.cpp	OVL-30 OVL-36	14:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/tie-conversion-result-noexcept.cpp	OVL-26	
+EDG-ONLY	overloading/overload-resolution/tie-conversion-result-templates.cpp	OVL-26	
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp	OVL-29 OVL-28	
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp	OVL-29 OVL-27	
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-template.cpp	OVL-29 OVL-27	
+run-unsupported	programs/P3/events-first-try.cpp	LAM-2 VIRT-2 NEW-5	unsupported at line 92: class assignment
+run-unsupported	programs/P3/pipeline-first-try.cpp	RFOR-2 LAM-1 TPL-1 OBJ-9	unsupported at line 107: range-based for
+EDG-AGREES	programs/P4/money-first-try.cpp	OPR-8 OPR-9 OPR-10 CONV-4 MUL-6 MUL-7 LSUP-2 LSUP-12 DCMP-4 DCMP-6 TR-2	62:DCL-20 array of incomplete class type
+EDG-ONLY	programs/P4/money.cpp	OPR-8 OPR-9 OPR-10 CONV-4 MUL-6 MUL-7 LSUP-2 LSUP-12 DCMP-4 DCMP-6 TR-2	
+run-unsupported	programs/P4/sequences-first-try.cpp	RFOR-2 RFOR-3 RFOR-7 OPR-4 OPR-13 LSUP-1 CTAD-9	unsupported at line 202: overloaded operator
+pass-partial	programs/W0/calc.cpp	UNI-4 UNI-7 CE-6 DCL-1 PFX-7 MUL-9 MUL-10 ADD-9 THR-1 TRY-2 CE-8	unspecified: result 0 with fixed choices: SEQ-1 at line 72 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+EDG-ONLY	programs/W12/compose.cpp	RET-2 LAM-1 LAM-7 LAM-15 AUTO-4 DED-8 PACK-24 AUTO-10 DTY-2 MPTR-3	
+pass-partial	programs/W16/evaluator.cpp	TYN-1 TYP-1 TYP-4 CPY-1 CPY-2 CPY-3 CPY-8 CPY-11 TPL-24 CONV-14 DED-8 VIRT-1 VIRT-3 VIRT-7 VIRT-8 VIRT-12 THR-1 THR-4 TRY-1 TRY-2 MUL-9 MUL-10 SW-2 SW-7	unspecified: result 0 with fixed choices: SEQ-1 at line 290 (arguments evaluated from left to right); SEQ-1 at line 277 (arguments evaluated from left to right); SEQ-8 at line 199 (the left operand of '+' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W16/textstats.cpp	LSUP-4 LSUP-7 NEW-33 STG-4 STG-5 STG-6 STG-29 DTOR-6 DED-8 IF-7 IF-9 SW-2 SW-7 TYN-1 TPL-28 SB-1 SB-3 SB-12	unspecified: result 0 with fixed choices: SEQ-8 at line 125 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W17/hashmap.cpp	LSUP-4 LSUP-7 NEW-33 STG-4 STG-5 STG-6 STG-17 STG-19 STG-29 ALN-1 DTOR-6 CPY-8 CPT-10 CPT-33 TSP-10 TPL-23 TPL-24 TPL-43 CNS-26 DEP-20 TR-2	unspecified: result 0 with fixed choices: SEQ-8 at line 192 (the left operand of '>=' first); explored: 2 runs, partial: 1 line was settled after another choice there gave the first outcome
+EDG-ONLY	programs/W18/container.cpp	CLS-13 CLS-14 CLS-15 OPR-3 DED-8 RET-2 LSUP-4	
+pass-partial	programs/W19/matrix.cpp	OPR-3 DCMP-1 CE-21 SA-1	unspecified: result 0 with fixed choices: SEQ-8 at line 28 (the left operand of '*' first); SEQ-1 at line 77 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W20/span_sort.cpp	CTAD-1 LAM-1 LAM-12 TPL-13 ADD-6 STG-5	unspecified: result 0 with fixed choices: SEQ-1 at line 97 (arguments evaluated from left to right); SEQ-8 at line 108 (the left operand of '<' first); SEQ-1 at line 91 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W3/nested.cpp	JMP-1 JMP-8 JMP-5 JMP-6 JMP-9 JMP-4 LOOP-3 CE-2 CE-17	unspecified: result 0 with fixed choices: SEQ-1 at line 93 (arguments evaluated from left to right); SEQ-1 at line 94 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W4/grid.cpp	NEW-2 NEW-9 NEW-5 PFX-1 PFX-4 ADD-6 ADD-10 DCL-5 DCL-19 DCL-1 ADD-7	unspecified: result 0 with fixed choices: SEQ-8 at line 66 (the left operand of '+' first); SEQ-8 at line 70 (the left operand of '!=' first); SEQ-8 at line 70 (the left operand of '-' first); SEQ-8 at line 71 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W5/recursion.cpp	RET-1 RET-3 RET-7 RET-4 DEFARG-1 DEFARG-3 DTY-2 CE-10	unspecified: result 0 with fixed choices: SEQ-8 at line 17 (the left operand of '+' first); explored: 2 runs, partial: 1 line was settled after another choice there gave the first outcome
+EDG-ONLY	programs/W9/memptr.cpp	MPTR-1 MPTR-2 MPTR-3 MPTR-4 MPTR-5 MPTR-10 VIRT-1	
+EDG-ONLY	programs/W9/mixin.cpp	DER-6 DER-7 DER-12 DER-13 DER-14 DER-16 ACC-4 ACC-8 ACC-9 MPTR-2 MPTR-4 CAST-15	
+EDG-ONLY	programs/W9/visitor.cpp	VIRT-1 VIRT-3 VIRT-8 DER-3 DER-14 ACC-4 ACC-9 CE-1	
+pass-partial	programs/roadmap/r10-hash-map.cpp	STG-5 STG-9 UNI-14 NEW-5 DTOR-6 CLS-9 TSP-15	unspecified: result 0 with fixed choices: SEQ-1 at line 80 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r10-list-first-try.cpp	TPL-13 OVL-35 DEP-15 RFOR-2 PRIM-27 CNS-13	unspecified: result 0 with fixed choices: SEQ-1 at line 76 (arguments evaluated from left to right); SEQ-1 at line 77 (arguments evaluated from left to right); SEQ-1 at line 145 (arguments evaluated from left to right); SEQ-1 at line 147 (arguments evaluated from left to right); SEQ-1 at line 157 (arguments evaluated from left to right); SEQ-1 at line 71 (arguments evaluated from left to right); SEQ-1 at line 24 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r10-list.cpp	TPL-13 OVL-35 RFOR-2 PRIM-27 CNS-13	unspecified: result 0 with fixed choices: SEQ-1 at line 79 (arguments evaluated from left to right); SEQ-1 at line 80 (arguments evaluated from left to right); SEQ-1 at line 148 (arguments evaluated from left to right); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-1 at line 160 (arguments evaluated from left to right); SEQ-1 at line 74 (arguments evaluated from left to right); SEQ-1 at line 24 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+unsupported	programs/roadmap/r10-tuple-second-try.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	162:- static_assert: deduction of class template arguments
+pass-partial	programs/roadmap/r10-tuple.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 57 (arguments evaluated from left to right); SEQ-1 at line 50 (arguments evaluated from left to right); SEQ-1 at line 77 (arguments evaluated from left to right); SEQ-1 at line 22 (arguments evaluated from left to right); SEQ-1 at line 143 (arguments evaluated from left to right); SEQ-1 at line 90 (arguments evaluated from left to right); SEQ-1 at line 149 (arguments evaluated from left to right); SEQ-8 at line 99 (the left operand of '==' first); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-8 at line 107 (the left operand of '<' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r11-views.cpp	CTAD-1 CTAD-11 DED-34 LAM-15	unspecified: result 0 with fixed choices: SEQ-1 at line 154 (arguments evaluated from left to right); SEQ-1 at line 68 (arguments evaluated from left to right); SEQ-1 at line 160 (arguments evaluated from left to right); SEQ-1 at line 131 (arguments evaluated from left to right); SEQ-1 at line 127 (arguments evaluated from left to right); SEQ-1 at line 164 (arguments evaluated from left to right); SEQ-1 at line 167 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-bigint-second-try.cpp	OPR-8 OPR-10 PRIM-2	unspecified: result 0 with fixed choices: SEQ-1 at line 211 (arguments evaluated from left to right); SEQ-1 at line 155 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-bigint.cpp	OPR-8 PRIM-2 NAM-2	unspecified: result 0 with fixed choices: SEQ-1 at line 214 (arguments evaluated from left to right); SEQ-1 at line 157 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-matrix.cpp	DCMP-1 OPR-3 CLS-13	unspecified: result 0 with fixed choices: SEQ-8 at line 94 (the left operand of '*' first); SEQ-8 at line 73 (the left operand of '+' first); SEQ-1 at line 147 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-ring-fifth-try.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 132 (arguments evaluated from left to right); SEQ-1 at line 199 (arguments evaluated from left to right); SEQ-8 at line 173 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-ring-third-try.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 129 (arguments evaluated from left to right); SEQ-1 at line 196 (arguments evaluated from left to right); SEQ-8 at line 170 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-ring.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 132 (arguments evaluated from left to right); SEQ-1 at line 201 (arguments evaluated from left to right); SEQ-8 at line 175 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-sso.cpp	UNI-9 OPR-8	unspecified: result 0 with fixed choices: SEQ-1 at line 176 (arguments evaluated from left to right); SEQ-1 at line 198 (arguments evaluated from left to right); SEQ-1 at line 200 (arguments evaluated from left to right); SEQ-8 at line 201 (the left operand of '+' first); SEQ-1 at line 205 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r6-scheduler.cpp	DER-7 DER-13 VIRT-4 VIRT-7 VIRT-12 TRY-1 TRY-8 TRY-10 THR-6 MPTR-3 STG-5 LSUP-7 ALN-1	unspecified: result 0 with fixed choices: SEQ-8 at line 133 (the left operand of '!=' first); SEQ-8 at line 133 (the left operand of '>' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r6-text.cpp	UNI-7 UNI-13 NEW-20 LSUP-7 LSUP-3 SB-5 CTAD-1 LIST-3 CTOR-10 OPR-8 IF-13	unspecified: result 0 with fixed choices: SEQ-1 at line 142 (arguments evaluated from left to right); SEQ-8 at line 78 (the left operand of '!=' first); SEQ-1 at line 108 (arguments evaluated from left to right); SEQ-8 at line 131 (the left operand of '>' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r7-lambdas.cpp	LAM-15 LAM-16 LAM-18 LAM-10	unspecified: result 0 with fixed choices: SEQ-8 at line 62 (the left operand of '+' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+EDG-ONLY	programs/roadmap/r7-registry/main.cpp	ENUM-20 SB-1 LIST-13 LAM-10 DCMP-4 LSUP-2 TR-4	
+EDG-ONLY	programs/roadmap/r8-config.cpp	ENUM-20 CLS-13 LIST-14 DCMP-1 DCMP-4 SB-5 CINIT-1	
+EDG-ONLY	programs/roadmap/r8-pipeline.cpp	CPT-1 CNS-12 CTAD-1 OPR-3 ACC-10 ACC-5	
+pass-partial	programs/roadmap/r9-map.cpp	PACK-13 SB-5 RFOR-1 CPT-1 OPR-8 INIT-9	unspecified: result 0 with fixed choices: SEQ-1 at line 69 (arguments evaluated from left to right); SEQ-1 at line 47 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r9-optional.cpp	UNI-7 UNI-13 NEW-20 LSUP-10 PACK-13 COND-16 CE-1	unspecified: result 0 with fixed choices: SEQ-8 at line 133 (the left operand of '+' first); SEQ-1 at line 54 (arguments evaluated from left to right); SEQ-1 at line 79 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r9-vec.cpp	NEW-19 PACK-13 STG-5 LSUP-7 CPY-3 REF-2 DCL-5	unspecified: result 0 with fixed choices: SEQ-1 at line 71 (arguments evaluated from left to right); SEQ-1 at line 154 (arguments evaluated from left to right); SEQ-1 at line 155 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+MISSED-REJECT	statements/if/constexpr-template-nondependent-call-checked.cpp	IF-22	
+EDG-ONLY	statements/jumps/goto-past-nontrivial-destructor.cpp	JMP-6	
+EDG-ONLY	statements/jumps/goto-skips-nontrivial-destructor.cpp	JMP-6	
+EDG-ONLY	statements/jumps/return-structured-binding-lvalue.cpp	JMP-10	
+run-unsupported	statements/range-for/begin-end-from-base-over-derived.cpp	RFOR-2	unsupported at line 15: range-based for
+EDG-ONLY	statements/range-for/callable-data-members.cpp	RFOR-2	
+EDG-ONLY	statements/range-for/data-member-begin-counts.cpp	RFOR-7	13:RFOR-7 the member 'begin' of 'Odd' is a data member that cannot be called
+EDG-ONLY	statements/range-for/data-member-begin-not-callable-class.cpp	RFOR-7	13:RFOR-7 the member 'begin' of 'Odd' is a data member that cannot be called
+EDG-ONLY	statements/range-for/data-member-function-pointers.cpp	RFOR-2 RFOR-7	
+EDG-ONLY	statements/switch/case-skips-nontrivial-destructor.cpp	SW-5	
+EDG-ONLY	statements/switch/skipped-declaration-written-then-read.cpp	JMP-16	
+MISSED-REJECT	templates/arguments/argument-makes-parameter-invalid.cpp	TARG-24	
+MISSED-REJECT	templates/arguments/class-argument-reference-temporary.cpp	TARG-15	
+MISSED-REJECT	templates/arguments/concept-for-template.cpp	TARG-7	
+run-unsupported	templates/arguments/constant-overloaded-function.cpp	TARG-12	unsupported at line 9: call of unknown callee
+unsupported	templates/arguments/pointer-subobject.cpp	TARG-14	8:- static_assert: dependent name
+EDG-ONLY	templates/arguments/same-specialization-alias-template-explicit.cpp	TARG-22	
+EDG-ONLY	templates/arguments/same-specialization-alias-template.cpp	TARG-22	
+EDG-ONLY	templates/arguments/template-template-constant-type.cpp	TARG-17	
+EDG-ONLY	templates/arguments/type-or-expression-constant.cpp	TARG-7 TARG-8	8:TARG-7 a type is given for a constant parameter
+EDG-ONLY	templates/class-template-deduction/aggregate-string-fixed-array.cpp	CTAD-9 CTAD-10	
+EDG-ONLY	templates/class-template-deduction/alias-template-fixed-argument.cpp	CTAD-14	
+EDG-ONLY	templates/class-template-deduction/alias-template-rvalue-reference.cpp	CTAD-28 CTAD-8 CTAD-24	10:CTAD-24 no deduction guide of 'Alias' is viable for the initializer
+unsupported	templates/class-template-deduction/constant-parameter-guide.cpp	CTAD-1 TPL-11	12:- static_assert: dependent name (in a variable template argument)
+EDG-ONLY	templates/class-template-deduction/guide-not-deducible-constant.cpp	CTAD-13	8:CTAD-13 the template parameter 'N' of a deduction guide cannot be deduced
+EDG-ONLY	templates/class-template-deduction/guide-not-deducible.cpp	CTAD-13	8:CTAD-13 the template parameter 'U' of a deduction guide cannot be deduced
+EDG-ONLY	templates/class-template-deduction/guide-same-parameters.cpp	CTAD-12	9:CTAD-12 two deduction guides that are not templates have the same parameters
+EDG-ONLY	templates/class-template-deduction/initializer-list-guide-empty-list-defaults.cpp	CTAD-18	
+EDG-ONLY	templates/class-template-deduction/initializer-list-guide-empty-list.cpp	CTAD-18 CTAD-17	
+EDG-ONLY	templates/class-template-deduction/initializer-list-guide-reference-parameter.cpp	CTAD-18	
+EDG-ONLY	templates/class-template-deduction/list-single-specialization-alias.cpp	CTAD-18	
+unsupported	templates/class-template-deduction/sites-for-and-condition.cpp	CTAD-1	16:- static_assert: the type of 'p', which the front end does not know (in a variable template argument)
+unsupported	templates/class-template-deduction/sites.cpp	CTAD-1	19:- static_assert: variable template with unknown arguments
+MISSED-REJECT	templates/class-template-deduction/tie-own-constructor-template.cpp	CTAD-19 CTAD-23	
+unsupported	templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp	CTAD-29 CTAD-11	13:- static_assert: deduction of class template arguments (in a variable template argument)
+unsupported	templates/concepts/concept-id-value.cpp	CPT-1	10:- static_assert: dependent name
+MISSED-REJECT	templates/concepts/placeholder-parameter-decltype-auto.cpp	CPT-37	
+unsupported	templates/concepts/placeholder-parameter.cpp	CPT-20	9:- static_assert: concept
+EDG-ONLY	templates/concepts/placeholder-structured-binding.cpp	CPT-37	9:SB-15 structured binding declared with a constrained auto
+EDG-ONLY	templates/concepts/trailing-clause-lambda.cpp	CPT-11	
+EDG-ONLY	templates/concepts/trailing-clause-local-class.cpp	CPT-11	
+EDG-ONLY	templates/concepts/trailing-clause-member-initializer-lambda.cpp	CPT-11	
+EDG-ONLY	templates/concepts/type-constraint-pack-one-atom.cpp	CPT-19 CNS-3 CNS-24	11:OVL-36 ambiguous call of 'count': no viable function is better than each of the others
+EDG-ONLY	templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp	CPT-19 CNS-4 OVL-36	11:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/constraints/constant-placeholder-more-constrained.cpp	CNS-1 CNS-23	
+EDG-ONLY	templates/constraints/eligible-copy.cpp	CNS-21	
+EDG-ONLY	templates/constraints/eligible-default.cpp	CNS-21	
+EDG-ONLY	templates/constraints/eligible-more-constrained.cpp	CNS-21	
+EDG-ONLY	templates/constraints/eligible-unsatisfied-more-constrained.cpp	CNS-21	
+EDG-ONLY	templates/constraints/exact-non-template-skips-constraint-check.cpp	CNS-11	
+MISSED-REJECT	templates/constraints/explicit-instantiation-member-not-satisfied.cpp	CNS-13	
+EDG-ONLY	templates/constraints/friend-definition-per-specialization.cpp	CNS-32	
+EDG-AGREES	templates/constraints/friend-distinct-from-namespace.cpp	CNS-32 CNS-24	
+EDG-ONLY	templates/constraints/friend-template-declaration.cpp	CNS-31	8:CNS-31 a friend declaration of 'touch' with a trailing requires clause is not a definition
+unsupported	templates/constraints/function-type-specialization.cpp	CNS-30	7:- static_assert: a template-id that names a function specialization (in a variable template argument)
+EDG-ONLY	templates/constraints/lambda-conversion-implicit.cpp	CNS-18	
+EDG-ONLY	templates/constraints/lambda-conversion.cpp	CNS-18	
+EDG-ONLY	templates/constraints/mapping-unused-parameter-not-substituted.cpp	CNS-4 CNS-7	
+EDG-ONLY	templates/constraints/mapping-unused-parameter.cpp	CNS-4	
+EDG-ONLY	templates/constraints/order-constant-placeholder-after-type.cpp	CNS-1 CNS-33	8:SA-1 static assertion failed
+MISSED-REJECT	templates/constraints/out-of-class-other-clause.cpp	CNS-29	
+MISSED-REJECT	templates/constraints/out-of-class-without-clause.cpp	CNS-29	
+EDG-ONLY	templates/constraints/partial-specialization-not-more-constrained.cpp	CNS-36	10:CNS-36 a partial specialization with the primary template's arguments is not more constrained than the primary template
+EDG-ONLY	templates/constraints/template-template-more-constrained.cpp	CNS-25	12:CNS-25 the template template parameter is not at least as constrained as the argument 'Box'
+EDG-ONLY	templates/constraints/template-template-parameter-constraint-alias.cpp	CNS-38	
+EDG-ONLY	templates/constraints/template-template-parameter-constraint-use.cpp	CNS-38	
+MISSED-REJECT	templates/declarations/alias-template-self-through-class.cpp	TPL-31	
+unsupported	templates/declarations/constant-parameter-class-template.cpp	TPL-11 CTAD-1	11:- static_assert: dependent name (in a variable template argument)
+MISSED-REJECT	templates/declarations/constant-parameter-no-constexpr-constructor.cpp	TPL-7	
+EDG-ONLY	templates/declarations/member-outside-clause-missing.cpp	TPL-23 CNS-26	15:CNS-26 the constraints of the head differ from those of the class template 'Cell'
+EDG-ONLY	templates/declarations/parameter-friend-name.cpp	TPL-48	
+EDG-ONLY	templates/deduction/address-deduced-result-body-instantiated.cpp	DED-29	9:NAM-8 no member named 'side'
+EDG-ONLY	templates/deduction/address-deduced-result-body-static-cast.cpp	DED-29	9:NAM-8 no member named 'side'
+EDG-ONLY	templates/deduction/match-noexcept.cpp	DED-11	
+run-unsupported	templates/deduction/placement-deallocation-match.cpp	DED-39	unsupported at line 16: new expression
+run-unsupported	templates/deduction/placement-deallocation-ordered.cpp	DED-39 ORD-9	unsupported at line 18: new expression
+EDG-ONLY	templates/deduction/substitution-default-before-check.cpp	DED-28 DED-29	8:NAM-16 'T' names a type that is not a class, enumeration, or namespace, and cannot come before '::'
+unsupported	templates/deduction/substitution-explicit-specifier.cpp	DED-24	9:- static_assert: class temporary
+EDG-ONLY	templates/deduction/substitution-failure-negative-bound-ellipsis.cpp	DED-24	
+MISSED-REJECT	templates/deduction/substitution-lambda-body.cpp	DED-29	
+MISSED-REJECT	templates/deduction/substitution-lambda-default.cpp	DED-29	
+unsupported	templates/deduction/substitution-member-wrong-kind.cpp	DED-24	15:- static_assert: call needing template deduction or unknown arguments
+MISSED-REJECT	templates/dependent-names/base-pack-expanded-twice.cpp	DEP-33	
+MISSED-REJECT	templates/dependent-names/binary-operator-pack-never-fits.cpp	DEP-37	
+EDG-ONLY	templates/dependent-names/current-instantiation-alias.cpp	DEP-15	
+unsupported	templates/dependent-names/current-instantiation-enclosing-base.cpp	DEP-11	10:- parse: unknown type name 'value_type' in uncertain scope
+run-unsupported	templates/dependent-names/dependent-base-conversion-function.cpp	DEP-11	unsupported at line 10: call of unknown callee
+MISSED-REJECT	templates/dependent-names/incomplete-then-complete.cpp	DEP-31	
+MISSED-REJECT	templates/dependent-names/independent-error-unused-call.cpp	DEP-30	
+FALSE-REJECT	templates/dependent-names/member-template-current-instantiation-pointer.cpp	DEP-24 DEP-2	10:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+MISSED-REJECT	templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp	DEP-24	
+FALSE-REJECT	templates/dependent-names/member-template-non-dependent-base.cpp	DEP-24	9:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+FALSE-REJECT	templates/dependent-names/member-template-through-current-instantiation-object.cpp	DEP-24 DEP-2	7:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+MISSED-REJECT	templates/dependent-names/operator-pack-never-fits.cpp	DEP-37	
+MISSED-REJECT	templates/dependent-names/other-specialization-constant-argument-member-missing.cpp	DEP-30 DEP-15	
+unsupported	templates/dependent-names/other-specialization-constant-argument-no-typename.cpp	DEP-15 DEP-1	6:- parse: unknown type name 'unit'
+EDG-ONLY	templates/dependent-names/qualified-call-later-default.cpp	DEP-31	
+EDG-AGREES	templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp	DEP-4 DEP-5	18:SA-1 static assertion failed
+EDG-AGREES	templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp	DEP-4	8:DEP-29 the grammar does not derive this: expected '(' or '{' after a type name in an expression (a member of a specialization other than the current instantiation needs 'typename')
+EDG-ONLY	templates/dependent-names/template-keyword-destructor-dot.cpp	DEP-34	8:DEP-34 the keyword 'template' comes before a destructor name
+EDG-ONLY	templates/dependent-names/template-keyword-destructor.cpp	DEP-34	8:DEP-34 the keyword 'template' comes before a destructor name
+run-unsupported	templates/dependent-names/template-keyword-forms.cpp	DEP-24 DEP-25	unsupported at line 15: dependent name
+EDG-ONLY	templates/dependent-names/template-keyword-in-declarator-class.cpp	DEP-27	9:TYN-7 variable of incomplete class type
+EDG-ONLY	templates/dependent-names/template-keyword-in-declarator-static.cpp	DEP-27	8:DEP-27 the keyword 'template' comes after the qualifier of the declared name
+EDG-ONLY	templates/dependent-names/template-keyword-in-declarator.cpp	DEP-27	8:DEP-27 the keyword 'template' comes after the qualifier of the declared name
+unsupported	templates/dependent-names/type-only-positions-more.cpp	DEP-20	14:- static_assert: variable template with unknown arguments (in a variable template argument)
+run-unsupported	templates/dependent-names/type-only-positions.cpp	DEP-20	unsupported at line 35: dependent name
+EDG-ONLY	templates/dependent-names/typename-needed-expression.cpp	DEP-19	8:DEP-19 'type' names a type, but the template reads it as a value without 'typename'
+EDG-ONLY	templates/instantiation/class-inline-static-member-unused.cpp	INST-5	
+MISSED-REJECT	templates/instantiation/class-point-not-later-member-type.cpp	INST-33 INST-30	
+MISSED-REJECT	templates/instantiation/class-point-not-later-type.cpp	INST-33	
+unsupported	templates/instantiation/class-point-not-later.cpp	INST-32 INST-31	8:- constant initializer: unqualified call to an undeclared name
+unsupported	templates/instantiation/class-point-static-const-member.cpp	INST-33 INST-5	8:- constant initializer: unqualified call to an undeclared name
+unsupported	templates/instantiation/class-point-static-constexpr-made-at-use.cpp	INST-33 INST-5 INST-8	7:- constant initializer: unqualified call to an undeclared name
+EDG-AGREES	templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	INST-5	7:NAM-9 no member named 'missing' in the named scope
+EDG-ONLY	templates/instantiation/explicit-array-bound-differs.cpp	INST-22	8:INST-22 the explicit instantiation writes the bound 4, and the specialization has the bound 3
+EDG-ONLY	templates/instantiation/explicit-declaration-internal-class.cpp	INST-29	9:INST-29 an explicit instantiation declaration of a specialization with internal linkage
+EDG-ONLY	templates/instantiation/explicit-declaration-internal-variable.cpp	INST-29	8:INST-29 an explicit instantiation declaration of a specialization with internal linkage
+EDG-ONLY	templates/instantiation/explicit-placeholder-variable.cpp	INST-22	
+EDG-ONLY	templates/instantiation/explicit-thread-local.cpp	INST-25	
+EDG-ONLY	templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp	INST-21	9:INST-21 an explicit instantiation outside the namespace of its template, or without a qualified name
+EDG-ONLY	templates/instantiation/explicit-unqualified-outside-namespace.cpp	INST-21	9:INST-21 an explicit instantiation outside the namespace of its template, or without a qualified name
+EDG-ALLOWED	templates/instantiation/function-point-constexpr-later.cpp	INST-32 INST-31	12:NAM-8 call of undeclared function 'probe': argument-dependent lookup finds no function
+EDG-ONLY	templates/instantiation/function-unevaluated-braced-untaken.cpp	INST-7 INST-6	6:SA-1 static assertion failed
+MISSED-REJECT	templates/instantiation/local-class-default-argument.cpp	INST-12 INST-6	
+MISSED-REJECT	templates/instantiation/local-class-exception-specification.cpp	INST-12 INST-6	
+EDG-ONLY	templates/instantiation/local-class-requires-clause-substitution-failure.cpp	INST-12 CNS-12	
+EDG-ONLY	templates/instantiation/local-class-requires-clause-waits.cpp	INST-12	
+run-unsupported	templates/instantiation/local-entities-per-specialization.cpp	INST-36	unsupported at line 16: call needing template deduction or unknown arguments
+EDG-ONLY	templates/instantiation/member-partial-specializations-collide.cpp	INST-6	10:INST-6 the instantiation makes two definitions of one partial specialization of 'In'
+MISSED-REJECT	templates/instantiation/recursion-endless-function.cpp	INST-15 TR-13	
+EDG-ONLY	templates/instantiation/specialization-after-explicit-declaration.cpp	INST-19	9:TSP-6 explicit specialization of 'get' after its first use
+EDG-AGREES	templates/instantiation/static-inline-member-incomplete-argument.cpp	INST-5	8:NAM-9 no type named 'value_type' in the named scope
+EDG-ONLY	templates/instantiation/virtual-called-through-pointer.cpp	INST-7 INST-6	7:NAM-16 'T' names a type that is not a class, enumeration, or namespace, and cannot come before '::'
+EDG-ONLY	templates/ordering/constraints-conversion-results-differ.cpp	ORD-13 ORD-15	11:ICS-8 ambiguous conversion from class#0 to int*
+EDG-ONLY	templates/ordering/constraints-default-parameter.cpp	ORD-13 ORD-15	9:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/constraints-different-heads.cpp	ORD-13 ORD-15	9:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/constraints-reference-against-value.cpp	ORD-13 ORD-15	10:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/member-object-const.cpp	ORD-6	
+EDG-ONLY	templates/ordering/member-object-rvalue.cpp	ORD-6 ORD-15	11:OVL-36 ambiguous operator '+': no viable candidate is better than each of the others
+MISSED-REJECT	templates/ordering/nondeduced-only-parameter.cpp	ORD-3 ORD-15	
+EDG-ONLY	templates/ordering/pack-default-parameter.cpp	ORD-12 ORD-15	9:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/partial-specializations-int-against-constrained-auto.cpp	ORD-14 ORD-17	
+EDG-ONLY	templates/ordering/reference-kind-and-qualifiers.cpp	ORD-11 ORD-15 ORD-8	13:ICS-8 ambiguous conversion from class#0 to int
+EDG-ONLY	templates/ordering/reversed-member-object.cpp	ORD-7 ORD-6	
+unsupported	templates/packs/ellipsis-after-parameter.cpp	PACK-3	5:- static_assert: call needing template deduction or unknown arguments
+unsupported	templates/packs/expansion-elements.cpp	PACK-5	15:- static_assert: a type the front end does not know (in a variable template argument)
+EDG-ONLY	templates/packs/expansion-to-concept-parameters.cpp	PACK-11	8:PACK-11 a pack expansion gives an argument to a parameter of 'Two' that is not a pack
+MISSED-REJECT	templates/packs/fold-in-outer-pattern.cpp	PACK-8	
+MISSED-REJECT	templates/packs/member-template-pack-length.cpp	PACK-26 PACK-6	
+MISSED-REJECT	templates/packs/size-operator-in-outer-pattern.cpp	PACK-8	
+run-unsupported	templates/specialization/explicit-class-member-default.cpp	TSP-22 TSP-8	unsupported at line 7: missing argument
+MISSED-REJECT	templates/specialization/explicit-member-class-template-no-prefix.cpp	TSP-23	
+EDG-ONLY	templates/specialization/explicit-thread-local-only.cpp	TSP-24 TSP-25	
+EDG-ONLY	templates/specialization/function-partial.cpp	TSP-7	8:TSP-7 a partial specialization of the function template 'pick'
+MISSED-REJECT	templates/specialization/partial-after-use.cpp	TSP-17	
+MISSED-REJECT	templates/specialization/partial-no-primary-variable.cpp	TSP-31	
+EDG-ONLY	templates/specialization/partial-reordered.cpp	TSP-11	8:TSP-11 the argument list of a partial specialization only reorders the parameters, so it is not more specialized than the primary template

@@ -1,0 +1,116 @@
+| Compiler | Program | Result | Note |
+|---|---|---|---|
+| clang-host | X25 a1 -DRUN, sanitizers | exit 0 |  |
+| clang-host | X25 m1 -DRUN, sanitizers | exit 0 |  |
+| clang-host | X25 a4 -DRUN, read items[1], sanitizers | exit 7 |  |
+| clang-host | X25 a4 -DRUN, read head, sanitizers | exit 3 |  |
+| clang-host | X25 a9 (exit 1: test of validity true) | exit 0 |  |
+| clang-host | P4 buffer.cpp, warnings | exit 0 |  |
+| clang-host | P4 buffer.cpp, sanitizers | exit 0 |  |
+| clang-host | P4 money-first-try.cpp, warnings | exit 0 |  |
+| clang-host | P4 money-first-try.cpp, sanitizers | exit 0 |  |
+| clang-host | P4 money.cpp, warnings | exit 0 |  |
+| clang-host | P4 money.cpp, sanitizers | exit 0 |  |
+| clang-host | P4 sequences-first-try.cpp, warnings | exit 0 |  |
+| clang-host | P4 sequences-first-try.cpp, sanitizers | exit 0 |  |
+| clang-host | P4 sequences.cpp, warnings | exit 0 |  |
+| clang-host | P4 sequences.cpp, sanitizers | exit 0 |  |
+| clang-host | P4 in-class-definition-returns-template-of-own-class.cpp, warnings | exit 0 |  |
+| clang-host | P4 in-class-definition-returns-template-of-own-class.cpp, sanitizers | exit 0 |  |
+| clang-host | P4 operator-initializer-list-parameter.cpp, warnings | exit 0 |  |
+| clang-host | P4 operator-initializer-list-parameter.cpp, sanitizers | exit 0 |  |
+| gcc-host | X25 a1 -DRUN, sanitizers | exit 0 |  |
+| gcc-host | X25 m1 -DRUN, sanitizers | exit 0 |  |
+| gcc-host | X25 a4 -DRUN, read items[1], sanitizers | exit 7 |  |
+| gcc-host | X25 a4 -DRUN, read head, sanitizers | exit 3 |  |
+| gcc-host | X25 a9 (exit 1: test of validity true) | exit 1 |  |
+| gcc-host | P4 buffer.cpp, warnings | exit 0 |  |
+| gcc-host | P4 buffer.cpp, sanitizers | exit 0 |  |
+| gcc-host | P4 money-first-try.cpp, warnings | exit 0 |  |
+| gcc-host | P4 money-first-try.cpp, sanitizers | exit 0 |  |
+| gcc-host | P4 money.cpp, warnings | exit 0 |  |
+| gcc-host | P4 money.cpp, sanitizers | exit 0 |  |
+| gcc-host | P4 sequences-first-try.cpp, warnings | exit 0 |  |
+| gcc-host | P4 sequences-first-try.cpp, sanitizers | exit 0 |  |
+| gcc-host | P4 sequences.cpp, warnings | exit 0 |  |
+| gcc-host | P4 sequences.cpp, sanitizers | exit 0 |  |
+| gcc-host | P4 in-class-definition-returns-template-of-own-class.cpp, warnings | exit 0 |  |
+| gcc-host | P4 in-class-definition-returns-template-of-own-class.cpp, sanitizers | exit 0 |  |
+| gcc-host | P4 operator-initializer-list-parameter.cpp, warnings | exit 0 |  |
+| gcc-host | P4 operator-initializer-list-parameter.cpp, sanitizers | exit 0 |  |
+| gcc-14 | X25 a1 -DRUN, sanitizers | exit 0 |  |
+| gcc-14 | X25 m1 -DRUN, sanitizers | exit 0 |  |
+| gcc-14 | X25 a4 -DRUN, read items[1], sanitizers | exit 7 |  |
+| gcc-14 | X25 a4 -DRUN, read head, sanitizers | exit 3 |  |
+| gcc-14 | X25 a9 (exit 1: test of validity true) | exit 0 |  |
+| gcc-14 | P4 buffer.cpp, warnings | exit 0 |  |
+| gcc-14 | P4 buffer.cpp, sanitizers | exit 0 |  |
+| gcc-14 | P4 money-first-try.cpp, warnings | exit 0 |  |
+| gcc-14 | P4 money-first-try.cpp, sanitizers | exit 0 |  |
+| gcc-14 | P4 money.cpp, warnings | exit 0 |  |
+| gcc-14 | P4 money.cpp, sanitizers | exit 0 |  |
+| gcc-14 | P4 sequences-first-try.cpp, warnings | build fails | /tidal/build/probes/writer13/p4-sequences-first-try-warnings.cpp: In substitution of 'template<class S> using IteratorOf = decltype (static_cast<const S*>(nullp |
+| gcc-14 | P4 sequences-first-try.cpp, sanitizers | exit 0 |  |
+| gcc-14 | P4 sequences.cpp, warnings | build fails | /tidal/build/probes/writer13/p4-sequences-warnings.cpp: In substitution of 'template<class S> using IteratorOf = decltype (static_cast<const S*>(nullptr)->begin |
+| gcc-14 | P4 sequences.cpp, sanitizers | exit 0 |  |
+| gcc-14 | P4 in-class-definition-returns-template-of-own-class.cpp, warnings | exit 0 |  |
+| gcc-14 | P4 in-class-definition-returns-template-of-own-class.cpp, sanitizers | exit 0 |  |
+| gcc-14 | P4 operator-initializer-list-parameter.cpp, warnings | exit 0 |  |
+| gcc-14 | P4 operator-initializer-list-parameter.cpp, sanitizers | exit 0 |  |
+| clang-18 | X25 a1 -DRUN, sanitizers | exit 0 |  |
+| clang-18 | X25 m1 -DRUN, sanitizers | exit 0 |  |
+| clang-18 | X25 a4 -DRUN, read items[1], sanitizers | exit 7 |  |
+| clang-18 | X25 a4 -DRUN, read head, sanitizers | exit 3 |  |
+| clang-18 | X25 a9 (exit 1: test of validity true) | exit 0 |  |
+| clang-18 | P4 buffer.cpp, warnings | exit 0 |  |
+| clang-18 | P4 buffer.cpp, sanitizers | exit 0 |  |
+| clang-18 | P4 money-first-try.cpp, warnings | exit 0 |  |
+| clang-18 | P4 money-first-try.cpp, sanitizers | exit 0 |  |
+| clang-18 | P4 money.cpp, warnings | exit 0 |  |
+| clang-18 | P4 money.cpp, sanitizers | exit 0 |  |
+| clang-18 | P4 sequences-first-try.cpp, warnings | exit 0 |  |
+| clang-18 | P4 sequences-first-try.cpp, sanitizers | exit 0 |  |
+| clang-18 | P4 sequences.cpp, warnings | exit 0 |  |
+| clang-18 | P4 sequences.cpp, sanitizers | exit 0 |  |
+| clang-18 | P4 in-class-definition-returns-template-of-own-class.cpp, warnings | exit 0 |  |
+| clang-18 | P4 in-class-definition-returns-template-of-own-class.cpp, sanitizers | exit 0 |  |
+| clang-18 | P4 operator-initializer-list-parameter.cpp, warnings | exit 0 |  |
+| clang-18 | P4 operator-initializer-list-parameter.cpp, sanitizers | exit 0 |  |
+| gcc-16 | X25 a1 -DRUN, sanitizers | exit 0 |  |
+| gcc-16 | X25 m1 -DRUN, sanitizers | exit 0 |  |
+| gcc-16 | X25 a4 -DRUN, read items[1], sanitizers | exit 7 |  |
+| gcc-16 | X25 a4 -DRUN, read head, sanitizers | exit 3 |  |
+| gcc-16 | X25 a9 (exit 1: test of validity true) | exit 1 |  |
+| gcc-16 | P4 buffer.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 buffer.cpp, sanitizers | exit 0 |  |
+| gcc-16 | P4 money-first-try.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 money-first-try.cpp, sanitizers | exit 0 |  |
+| gcc-16 | P4 money.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 money.cpp, sanitizers | exit 0 |  |
+| gcc-16 | P4 sequences-first-try.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 sequences-first-try.cpp, sanitizers | exit 0 |  |
+| gcc-16 | P4 sequences.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 sequences.cpp, sanitizers | exit 0 |  |
+| gcc-16 | P4 in-class-definition-returns-template-of-own-class.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 in-class-definition-returns-template-of-own-class.cpp, sanitizers | exit 0 |  |
+| gcc-16 | P4 operator-initializer-list-parameter.cpp, warnings | exit 0 |  |
+| gcc-16 | P4 operator-initializer-list-parameter.cpp, sanitizers | exit 0 |  |
+| clang-22 | X25 a1 -DRUN, sanitizers | exit 0 |  |
+| clang-22 | X25 m1 -DRUN, sanitizers | exit 0 |  |
+| clang-22 | X25 a4 -DRUN, read items[1], sanitizers | exit 7 |  |
+| clang-22 | X25 a4 -DRUN, read head, sanitizers | exit 3 |  |
+| clang-22 | X25 a9 (exit 1: test of validity true) | exit 0 |  |
+| clang-22 | P4 buffer.cpp, warnings | exit 0 |  |
+| clang-22 | P4 buffer.cpp, sanitizers | exit 0 |  |
+| clang-22 | P4 money-first-try.cpp, warnings | exit 0 |  |
+| clang-22 | P4 money-first-try.cpp, sanitizers | exit 0 |  |
+| clang-22 | P4 money.cpp, warnings | exit 0 |  |
+| clang-22 | P4 money.cpp, sanitizers | exit 0 |  |
+| clang-22 | P4 sequences-first-try.cpp, warnings | exit 0 |  |
+| clang-22 | P4 sequences-first-try.cpp, sanitizers | exit 0 |  |
+| clang-22 | P4 sequences.cpp, warnings | exit 0 |  |
+| clang-22 | P4 sequences.cpp, sanitizers | exit 0 |  |
+| clang-22 | P4 in-class-definition-returns-template-of-own-class.cpp, warnings | exit 0 |  |
+| clang-22 | P4 in-class-definition-returns-template-of-own-class.cpp, sanitizers | exit 0 |  |
+| clang-22 | P4 operator-initializer-list-parameter.cpp, warnings | exit 0 |  |
+| clang-22 | P4 operator-initializer-list-parameter.cpp, sanitizers | exit 0 |  |

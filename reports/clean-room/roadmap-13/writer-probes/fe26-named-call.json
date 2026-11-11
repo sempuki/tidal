@@ -1,0 +1,14 @@
+{
+ "prelude": "template <char... C> constexpr int operator\"\"_w() { return sizeof...(C) * 10 + ((C - '0') + ... + 0); }\n",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "the literal 12_w gives 23": "static_assert(12_w == 23);",
+  "operator\"\"_w<'1', '2'>() gives 23": "static_assert(operator\"\"_w<'1', '2'>() == 23);",
+  "operator\"\"_w<>() gives 0": "static_assert(operator\"\"_w<>() == 0);",
+  "operator\"\"_w() with no argument list deduces an empty pack and gives 0": "static_assert(operator\"\"_w() == 0);"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

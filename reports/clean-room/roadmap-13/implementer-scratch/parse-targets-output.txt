@@ -1,0 +1,9 @@
+test files (not .tu.cpp): 7015; extra translation units: 118
+   2818  reject, other rules (not judged)
+   2299  accept (needs a tree)
+   1747  run (needs a tree)
+     99  run-fail (needs a tree)
+     46  link-fail (needs a tree)
+      6  reject, TR-12 alone (stops in the parser)
+tests that cite TR-12 at all: 7
+grammar nonterminals in the Syntax segments: 256, on 62 pages

@@ -1,0 +1,23 @@
+changed 20 ADD-11 ADD-14 CTAD-18 DEP-40 DEP-P1 DTOR-8 FN-12 INST-1 INST-2 INST-5 OPR-10 OPR-16 OPR-8 OPR-P3 REF-2 STG-16 STG-28 TYN-10 TYN-6 UNI-P3
+new []
+ADD-11 rows: - | mentions: -
+ADD-14 rows: X25 | mentions: -
+CTAD-18 rows: - | mentions: -
+DEP-40 rows: - | mentions: -
+DEP-P1 rows: - | mentions: X15,X22
+DTOR-8 rows: - | mentions: -
+FN-12 rows: - | mentions: -
+INST-1 rows: - | mentions: X7
+INST-2 rows: - | mentions: -
+INST-5 rows: X18 | mentions: -
+OPR-10 rows: X8 | mentions: X13,X19
+OPR-16 rows: X19 | mentions: -
+OPR-8 rows: X19 | mentions: -
+OPR-P3 rows: X19 | mentions: -
+REF-2 rows: X14 | mentions: -
+STG-16 rows: X14 | mentions: -
+STG-28 rows: X9,X25 | mentions: X14
+TYN-10 rows: X20 | mentions: -
+TYN-6 rows: - | mentions: X12,X20
+UNI-P3 rows: - | mentions: -
+change-table rows 11 in 7 reports ['X8', 'X9', 'X14', 'X18', 'X19', 'X20', 'X25']

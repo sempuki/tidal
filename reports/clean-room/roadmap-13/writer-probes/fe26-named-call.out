@@ -1,0 +1,6 @@
+| | program |
+|---|---|
+| the literal 12_w gives 23 | accept |
+| operator""_w<'1', '2'>() gives 23 | accept |
+| operator""_w<>() gives 0 | accept |
+| operator""_w() with no argument list deduces an empty pack and gives 0 | accept |

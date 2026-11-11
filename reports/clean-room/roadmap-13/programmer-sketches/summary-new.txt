@@ -1,0 +1,109 @@
+new/algo.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 84 (arguments evaluate
+new/algo_first_try.cpp | gcc FAILED: new/algo_first_try.cpp:67:17: er | clang FAILED: new/algo_first_try.cpp:67:17: er | edg rejects: "/w/algo_first_t | fe rejected [CPT-34] at line 67: a type after '->' in a compound requirement; a type constraint is needed 
+new/algo_second_try.cpp | gcc FAILED: new/algo_second_try.cpp:86:41: e | clang FAILED: new/algo_second_try.cpp:86:35: e | edg rejects: "/w/algo_second_ | fe rejected [SA-1] at line 194: static assertion failed 
+new/algo_third_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [SA-1] at line 194: static assertion failed 
+new/bits.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/bits_first_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 175: check: static_assert: class assignment 
+new/bugs/bad_downcast.cpp | gcc built (warnings 0), exit 1  | clang built (warnings 0), exit 1  | edg accepts | fe undefined [DER-17] at line 5: cast to a derived class of an object that is not a base subobject of that class 
+new/bugs/division_by_zero.cpp | gcc built (warnings 0), exit 136 timeout: th | clang built (warnings 0), exit 136 timeout: th | edg accepts | fe undefined [MUL-9] at line 2: division by zero 
+new/bugs/double_delete.cpp | gcc built (warnings 0), exit 134 free(): dou | clang built (warnings 0), exit 134 free(): dou | edg accepts | fe undefined [NEW-5] at line 3: delete of an object that was already deleted 
+new/bugs/inactive_union_member.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe undefined [UNI-6] at line 3: read of a union member that is not active 
+new/bugs/off_by_one_read.cpp | gcc built (warnings 0), exit 1  | clang built (warnings 0), exit 1  | edg accepts | fe undefined [PFX-4] at line 2: subscript outside the array 
+new/bugs/pure_virtual_from_constructor.cpp | gcc built (warnings 0), exit 134 pure virtua | clang built (warnings 0), exit 134 pure virtua | edg accepts | fe unsupported at line 4: function 'run' has no definition in the program 
+new/bugs/shift_by_width.cpp | gcc built (warnings 0), exit 1  | clang built (warnings 0), exit 1  | edg accepts | fe undefined [SHF-7] at line 2: shift count negative or not less than the width 
+new/bugs/signed_overflow.cpp | gcc built (warnings 0), exit 1  | clang built (warnings 0), exit 1  | edg accepts | fe undefined [ADD-9] at line 2: signed overflow: 2147484000 does not fit in int 
+new/intrusive.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/intrusive_first_try.cpp | gcc FAILED: new/intrusive_first_try.cpp:127: | clang FAILED: new/intrusive_first_try.cpp:127: | edg rejects: "/w/intrusive_fi | fe unsupported at line 144: check: static_assert: object of unknown type 
+new/intrusive_second_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 155: check: static_assert: object of unknown type 
+new/mistakes/ambiguous_call.cpp | gcc FAILED: new/mistakes/ambiguous_call.cpp: | clang FAILED: new/mistakes/ambiguous_call.cpp: | edg rejects: "/w/ambiguous_ca | fe rejected [OVL-36] at line 4: ambiguous call of 'f': no viable function is better than each of the others 
+new/mistakes/explicit_copy_init.cpp | gcc FAILED: new/mistakes/explicit_copy_init. | clang FAILED: new/mistakes/explicit_copy_init. | edg rejects: "/w/explicit_cop | fe rejected [CTOR-9] at line 3: copy-initialization uses an explicit constructor 
+new/mistakes/incomplete_member_access.cpp | gcc FAILED: new/mistakes/incomplete_member_a | clang FAILED: new/mistakes/incomplete_member_a | edg rejects: "/w/incomplete_m | fe rejected [TYN-7] at line 3: member access into an incomplete class 
+new/mistakes/missing_template_keyword.cpp | gcc FAILED: new/mistakes/missing_template_ke | clang FAILED: new/mistakes/missing_template_ke | edg rejects: "/w/missing_temp | fe rejected [TR-12] at line 3: the grammar does not derive this: expected an expression, found ')' 
+new/mistakes/narrowing_braced.cpp | gcc FAILED: new/mistakes/narrowing_braced.cp | clang FAILED: new/mistakes/narrowing_braced.cp | edg rejects: "/w/narrowing_br | fe rejected [LIST-2] at line 3: narrowing conversion from double to int in braces 
+new/mistakes/no_default_constructor.cpp | gcc FAILED: new/mistakes/no_default_construc | clang FAILED: new/mistakes/no_default_construc | edg rejects: "/w/no_default_c | fe unsupported at line 4: default constructor 
+new/mistakes/nonconst_member_on_const.cpp | gcc FAILED: new/mistakes/nonconst_member_on_ | clang FAILED: new/mistakes/nonconst_member_on_ | edg rejects: "/w/nonconst_mem | fe rejected [CLS-25] at line 3: non-const member function called on a const object 
+new/mistakes/nonconst_ref_to_temporary.cpp | gcc FAILED: new/mistakes/nonconst_ref_to_tem | clang FAILED: new/mistakes/nonconst_ref_to_tem | edg rejects: "/w/nonconst_ref | fe rejected [OVL-35] at line 3: no viable function: an argument cannot be converted to the parameter type 
+new/mistakes/unsatisfied_concept.cpp | gcc FAILED: new/mistakes/unsatisfied_concept | clang FAILED: new/mistakes/unsatisfied_concept | edg rejects: "/w/unsatisfied_ | fe rejected [DED-35] at line 5: no viable function for the call of 'bucket': deduction fails for each template 
+new/one-line/abbreviated_pack.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 4 (the left operand of '+' first) explore
+new/one-line/aggregate_with_base.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 2), exit 0  | edg accepts | fe result: 0 
+new/one-line/alias_in_for_init.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/auto_constant_parameter.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/base_member_pointer_on_derived.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/conditional_noexcept.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/constexpr_new_delete.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/constinit_global.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/decltype_auto_reference.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/delegating_constructor.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/designated_init.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/implicit_move_rvalue_param.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/implicit_move_rvalue_param_first_try.cpp | gcc FAILED: new/one-line/implicit_move_rvalu | clang FAILED: new/one-line/implicit_move_rvalu | edg rejects: "/w/implicit_mov | fe rejected [SA-1] at line 8: static assertion failed 
+new/one-line/inherited_constructors.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/label_at_block_end.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/lambda_attribute.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/recursive_lambda_this.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-8 at line 3 (the left operand of
+new/one-line/reversed_mixed_comparison.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/static_lambda.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 5 (the left operand of '+' first) explore
+new/one-line/switch_init.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (4 runs); unspecified choices: SEQ-8 at line 9 (the left operand of '+' first) explore
+new/one-line/template_lambda_requires.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 5 (the left operand of '+' first) explore
+new/one-line/using_enum.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/one-line/variable_template_partial.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/slotmap.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+new/units.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units.cpp", | fe result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 169 (arguments evaluated from left to rig
+new/units_fifth_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units_fifth_ | fe rejected [TR-12] at line 148: the grammar does not derive this: expected '(' or '{' after a type name in an expression 
+new/units_first_try.cpp | gcc FAILED: new/units_first_try.cpp:149:21:  | clang FAILED: new/units_first_try.cpp:62:61: e | edg rejects: "/w/units_first_ | fe rejected [TR-12] at line 96: the grammar does not derive this: expected an expression, found '...' 
+new/units_fourth_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units_fourth | fe rejected [SA-1] at line 162: static assertion failed 
+new/units_second_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units_second | fe rejected [TR-12] at line 97: the grammar does not derive this: expected an expression, found '...' 
+new/units_seventh_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units_sevent | fe unsupported at line 149: check: static_assert: overloaded operator (in a variable template argument) 
+new/units_sixth_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units_sixth_ | fe unsupported at line 147: check: static_assert: member of unknown 
+new/units_third_try.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg rejects: "/w/units_third_ | fe rejected [SA-1] at line 155: static assertion failed 
+probes/adl_function_beside_deleted_template_in_requires.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [SA-1] at line 4: static assertion failed 
+probes/adl_function_beside_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/algo_second_try_without_deleted_swap.cpp | gcc FAILED: probes/algo_second_try_without_d | clang FAILED: probes/algo_second_try_without_d | edg rejects: "/w/algo_second_ | fe rejected [DED-35] at line 85: no viable function for the call of 'invoke': deduction fails for each template 
+probes/assignment_beside_converting_assignment_constant.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 13: check: static_assert: class assignment 
+probes/binary_operator_beside_constrained_conversion_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 9: check: static_assert: member of unknown 
+probes/conversion_functions_two_constraints.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 6: conversion function 
+probes/conversion_function_unsatisfied_constraint_implicit.cpp | gcc FAILED: probes/conversion_function_unsat | clang FAILED: probes/conversion_function_unsat | edg rejects: "/w/conversion_f | fe result: 0 
+probes/converting_constructor_unsatisfied_constraint.cpp | gcc FAILED: probes/converting_constructor_un | clang FAILED: probes/converting_constructor_un | edg rejects: "/w/converting_c | fe rejected [CTOR-25] at line 6: no constructor of 'It' accepts the arguments 
+probes/copy_assignment_beside_conversion_only.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/decltype_alias_specialization_from_template_return.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/decltype_one_operator_template_call.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/decltype_qualifier_operator_template_conversion_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [TR-12] at line 10: the grammar does not derive this: expected '(' or '{' after a type name in an expression 
+probes/explicit_specialization_class_type_constant_argument.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/fold_in_requires_clause_plain_expression.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [TR-12] at line 2: the grammar does not derive this: expected an expression, found '...' 
+probes/fold_of_concepts_in_return.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/friend_class_template_declared_before.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/friend_class_template_declared_later_in_class.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/intrusive_first_try_with_declaration.cpp | gcc FAILED: probes/intrusive_first_try_with_ | clang FAILED: probes/intrusive_first_try_with_ | edg rejects: "/w/intrusive_fi | fe unsupported at line 145: check: static_assert: range-based for 
+probes/member_function_unsatisfied_constraint.cpp | gcc FAILED: probes/member_function_unsatisfi | clang FAILED: probes/member_function_unsatisfi | edg rejects: "/w/member_funct | fe rejected [CNS-12] at line 5: no viable function for the call of 'get': its constraints are not satisfied 
+probes/member_without_default_constructor_used.cpp | gcc FAILED: probes/member_without_default_co | clang FAILED: probes/member_without_default_co | edg rejects: "/w/member_witho | fe unsupported at line 3: default constructor 
+probes/nested_operator_template_calls_evaluated.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/partial_specialization_int_constant_argument.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/plain_function_beside_deleted_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 0 
+probes/range_for_braced_list_without_initializer_list.cpp | gcc FAILED: probes/range_for_braced_list_wit | clang FAILED: probes/range_for_braced_list_wit | edg rejects: "/w/range_for_br | fe unsupported at line 2: range-based for 
+probes/units_first_try_without_fold.cpp | gcc FAILED: probes/units_first_try_without_f | clang FAILED: probes/units_first_try_without_f | edg rejects: "/w/units_first_ | fe rejected [DCMP-11] at line 151: use of the defaulted 'operator<=>', which is deleted 
+reductions/adl_function_beside_deleted_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [DEL-1] at line 3: use of the deleted function 'f' 
+reductions/assignment_beside_converting_assignment.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 10: class assignment 
+reductions/binary_operator_beside_conversion_function_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 7: check: static_assert: member of unknown 
+reductions/conversion_function_unsatisfied_constraint.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [SA-1] at line 7: static assertion failed 
+reductions/copy_constructor_unsatisfied_constraint.cpp | gcc FAILED: reductions/copy_constructor_unsa | clang FAILED: reductions/copy_constructor_unsa | edg rejects: "/w/copy_constru | fe result: 1 
+reductions/decltype_nested_operator_template_calls.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 5: check: static_assert: overloaded operator (in a variable template argument) 
+reductions/decltype_qualifier_specialization_from_template_return.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [NAM-9] at line 3: no member named 'dim' 
+reductions/fold_in_requires_clause.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe rejected [TR-12] at line 3: the grammar does not derive this: expected an expression, found '...' 
+reductions/friend_class_template_declared_later_in_class_template.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe unsupported at line 3: object of unknown type 
+reductions/member_without_default_constructor_not_initialized.cpp | gcc FAILED: reductions/member_without_defaul | clang FAILED: reductions/member_without_defaul | edg rejects: "/w/member_witho | fe result: 0 
+reductions/partial_specialization_class_type_constant_argument.cpp | gcc built (warnings 0), exit 0  | clang built (warnings 0), exit 0  | edg accepts | fe result: 2 
+count bugs undefined: 7
+count bugs unsupported: 1
+count mistakes rejected: 8
+count mistakes unsupported: 1
+count new rejected: 8
+count new result: 5
+count new unsupported: 5
+count one-line rejected: 1
+count one-line result: 22
+count probes rejected: 7
+count probes result: 12
+count probes unsupported: 6
+count reductions rejected: 4
+count reductions result: 3
+count reductions unsupported: 4

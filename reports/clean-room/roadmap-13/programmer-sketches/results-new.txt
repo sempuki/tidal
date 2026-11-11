@@ -1,0 +1,846 @@
+=== new/algo.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 84 (arguments evaluated from left to right) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+=== new/algo_first_try.cpp
+g++: FAILED: new/algo_first_try.cpp:67:17: error: return-type-requirement is not a type-constraint new/algo_first_try.cpp:75:16: error: return-type-requirement is not a type-constraint 
+g++ ped: FAILED: new/algo_first_try.cpp:67:17: error: return-type-requirement is not a type-constraint new/algo_first_try.cpp:75:16: error: return-type-requirement is not a type-constraint 
+g++ san: FAILED: new/algo_first_try.cpp:67:17: error: return-type-requirement is not a type-constraint new/algo_first_try.cpp:75:16: error: return-type-requirement is not a type-constraint 
+clang++: FAILED: new/algo_first_try.cpp:67:17: error: expected concept name with optional arguments new/algo_first_try.cpp:75:16: error: expected concept name with optional arguments 
+clang++ ped: FAILED: new/algo_first_try.cpp:67:17: error: expected concept name with optional arguments new/algo_first_try.cpp:75:16: error: expected concept name with optional arguments 
+clang++ san: FAILED: new/algo_first_try.cpp:67:17: error: expected concept name with optional arguments new/algo_first_try.cpp:75:16: error: expected concept name with optional arguments 
+EDG: rejects: "/w/algo_first_try.cpp", line 67: error: expected a concept name
+tidal-fe: rejected [CPT-34] at line 67: a type after '->' in a compound requirement; a type constraint is needed 
+=== new/algo_second_try.cpp
+g++: FAILED: new/algo_second_try.cpp:86:41: error: no matching function for call to ‘invoke(lib::less&, int&, int&)’ new/algo_second_try.cpp:203:24: error: non-constant condition for static assertion 
+g++ ped: FAILED: new/algo_second_try.cpp:86:41: error: no matching function for call to ‘invoke(lib::less&, int&, int&)’ new/algo_second_try.cpp:203:24: error: non-constant condition for static assertion 
+g++ san: FAILED: new/algo_second_try.cpp:86:41: error: no matching function for call to ‘invoke(lib::less&, int&, int&)’ new/algo_second_try.cpp:203:24: error: non-constant condition for static assertion 
+clang++: FAILED: new/algo_second_try.cpp:86:35: error: no matching function for call to 'invoke' new/algo_second_try.cpp:86:35: error: no matching function for call to 'invoke' 
+clang++ ped: FAILED: new/algo_second_try.cpp:86:35: error: no matching function for call to 'invoke' new/algo_second_try.cpp:86:35: error: no matching function for call to 'invoke' 
+clang++ san: FAILED: new/algo_second_try.cpp:86:35: error: no matching function for call to 'invoke' new/algo_second_try.cpp:86:35: error: no matching function for call to 'invoke' 
+EDG: rejects: "/w/algo_second_try.cpp", line 86: error: no instance of function template
+tidal-fe: rejected [SA-1] at line 194: static assertion failed 
+=== new/algo_third_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SA-1] at line 194: static assertion failed 
+=== new/bits.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/bits_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 175: check: static_assert: class assignment 
+=== new/bugs/bad_downcast.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 new/bugs/bad_downcast.cpp:5:56: runtime error: member access within address 0x7be65d0f0020 which does not point to an object of type 'Square' 0x7be65d0f0020: note: object is of type 'Circle'  fd 7f 00
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 
+EDG: accepts
+tidal-fe: undefined [DER-17] at line 5: cast to a derived class of an object that is not a base subobject of that class 
+=== new/bugs/division_by_zero.cpp
+g++: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 new/bugs/division_by_zero.cpp:2:95: runtime error: division by zero 
+clang++: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 new/bugs/division_by_zero.cpp:2:95: runtime error: division by zero SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/division_by_zero.cpp:2:95  
+EDG: accepts
+tidal-fe: undefined [MUL-9] at line 2: division by zero 
+=== new/bugs/double_delete.cpp
+g++: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 ================================================================= ==2137690==ERROR: AddressSanitizer: attempting double-free on 0x7b205bfe0010 in thread T0:     #0 0x7f005dcf13bf in operator delete(vo
+clang++: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==2137932==ERROR: AddressSanitizer: attempting double-free on 0x7b80531e0010 in thread T0:     #0 0x0000004eb816  (/tmp/claude-1000/-h
+EDG: accepts
+tidal-fe: undefined [NEW-5] at line 3: delete of an object that was already deleted 
+=== new/bugs/inactive_union_member.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: undefined [UNI-6] at line 3: read of a union member that is not active 
+=== new/bugs/off_by_one_read.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 ================================================================= ==2137942==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7b31ec0f0030 at pc 0x0000004005b1 bp 0x7ffd0621bbb0 sp 0x7ffd06
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==2138049==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7bd8b62f0030 at pc 0x0000004ec0a9 bp 0x7fff6b7cbb50 sp 0x7fff6b
+EDG: accepts
+tidal-fe: undefined [PFX-4] at line 2: subscript outside the array 
+=== new/bugs/pure_virtual_from_constructor.cpp
+g++: built (warnings 0), exit 134 pure virtual method called terminate called without an active exception timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 134 pure virtual method called terminate called without an active exception timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 134 pure virtual method called terminate called without an active exception 
+clang++: built (warnings 0), exit 134 pure virtual method called terminate called without an active exception timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 134 pure virtual method called terminate called without an active exception timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 134 pure virtual method called terminate called without an active exception 
+EDG: accepts
+tidal-fe: unsupported at line 4: function 'run' has no definition in the program 
+=== new/bugs/shift_by_width.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 new/bugs/shift_by_width.cpp:2:38: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int' 
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 new/bugs/shift_by_width.cpp:2:38: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/shift_by_width.cpp:2:38 
+EDG: accepts
+tidal-fe: undefined [SHF-7] at line 2: shift count negative or not less than the width 
+=== new/bugs/signed_overflow.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 new/bugs/signed_overflow.cpp:2:38: runtime error: signed integer overflow: 2147483000 + 1000 cannot be represented in type 'int' 
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 new/bugs/signed_overflow.cpp:2:36: runtime error: signed integer overflow: 2147483000 + 1000 cannot be represented in type 'int' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/signed
+EDG: accepts
+tidal-fe: undefined [ADD-9] at line 2: signed overflow: 2147484000 does not fit in int 
+=== new/intrusive.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/intrusive_first_try.cpp
+g++: FAILED: new/intrusive_first_try.cpp:127:31: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ new/intrusive_first_try.cpp:144:28: error: non-constant condition for static assertion 
+g++ ped: FAILED: new/intrusive_first_try.cpp:127:31: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ new/intrusive_first_try.cpp:144:28: error: non-constant condition for static assertion 
+g++ san: FAILED: new/intrusive_first_try.cpp:127:31: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ new/intrusive_first_try.cpp:144:28: error: non-constant condition for static assertion 
+clang++: FAILED: new/intrusive_first_try.cpp:127:20: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> new/intrusive_first_try.cpp:144:15: error: static assertion failed due to requirement 'constant_test()' 
+clang++ ped: FAILED: new/intrusive_first_try.cpp:127:20: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> new/intrusive_first_try.cpp:144:15: error: static assertion failed due to requirement 'constant_test()' 
+clang++ san: FAILED: new/intrusive_first_try.cpp:127:20: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> new/intrusive_first_try.cpp:144:15: error: static assertion failed due to requirement 'constant_test()' 
+EDG: rejects: "/w/intrusive_first_try.cpp", line 127: error: an #include <initializer_list>
+tidal-fe: unsupported at line 144: check: static_assert: object of unknown type 
+=== new/intrusive_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 155: check: static_assert: object of unknown type 
+=== new/mistakes/ambiguous_call.cpp
+g++: FAILED: new/mistakes/ambiguous_call.cpp:4:22: error: call of overloaded ‘f(int)’ is ambiguous 
+g++ ped: FAILED: new/mistakes/ambiguous_call.cpp:4:22: error: call of overloaded ‘f(int)’ is ambiguous 
+g++ san: FAILED: new/mistakes/ambiguous_call.cpp:4:22: error: call of overloaded ‘f(int)’ is ambiguous 
+clang++: FAILED: new/mistakes/ambiguous_call.cpp:4:21: error: call to 'f' is ambiguous 1 error generated. 
+clang++ ped: FAILED: new/mistakes/ambiguous_call.cpp:4:21: error: call to 'f' is ambiguous 1 error generated. 
+clang++ san: FAILED: new/mistakes/ambiguous_call.cpp:4:21: error: call to 'f' is ambiguous 1 error generated. 
+EDG: rejects: "/w/ambiguous_call.cpp", line 4: error: more than one instance of overloaded
+tidal-fe: rejected [OVL-36] at line 4: ambiguous call of 'f': no viable function is better than each of the others 
+=== new/mistakes/explicit_copy_init.cpp
+g++: FAILED: new/mistakes/explicit_copy_init.cpp:3:20: error: could not convert ‘7’ from ‘int’ to ‘Id’ 
+g++ ped: FAILED: new/mistakes/explicit_copy_init.cpp:3:20: error: could not convert ‘7’ from ‘int’ to ‘Id’ 
+g++ san: FAILED: new/mistakes/explicit_copy_init.cpp:3:20: error: could not convert ‘7’ from ‘int’ to ‘Id’ 
+clang++: FAILED: new/mistakes/explicit_copy_init.cpp:3:20: error: no viable conversion from returned value of type 'int' to function return type 'Id' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/explicit_copy_init.cpp:3:20: error: no viable conversion from returned value of type 'int' to function return type 'Id' 1 error generated. 
+clang++ san: FAILED: new/mistakes/explicit_copy_init.cpp:3:20: error: no viable conversion from returned value of type 'int' to function return type 'Id' 1 error generated. 
+EDG: rejects: "/w/explicit_copy_init.cpp", line 3: error: no suitable constructor exists to
+tidal-fe: rejected [CTOR-9] at line 3: copy-initialization uses an explicit constructor 
+=== new/mistakes/incomplete_member_access.cpp
+g++: FAILED: new/mistakes/incomplete_member_access.cpp:3:53: error: invalid use of incomplete type ‘struct Impl’ 
+g++ ped: FAILED: new/mistakes/incomplete_member_access.cpp:3:53: error: invalid use of incomplete type ‘struct Impl’ 
+g++ san: FAILED: new/mistakes/incomplete_member_access.cpp:3:53: error: invalid use of incomplete type ‘struct Impl’ 
+clang++: FAILED: new/mistakes/incomplete_member_access.cpp:3:53: error: member access into incomplete type 'Impl' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/incomplete_member_access.cpp:3:53: error: member access into incomplete type 'Impl' 1 error generated. 
+clang++ san: FAILED: new/mistakes/incomplete_member_access.cpp:3:53: error: member access into incomplete type 'Impl' 1 error generated. 
+EDG: rejects: "/w/incomplete_member_access.cpp", line 3: error: pointer or reference to
+tidal-fe: rejected [TYN-7] at line 3: member access into an incomplete class 
+=== new/mistakes/missing_template_keyword.cpp
+g++: FAILED: new/mistakes/missing_template_keyword.cpp:3:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:3:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+g++ ped: FAILED: new/mistakes/missing_template_keyword.cpp:3:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:3:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+g++ san: FAILED: new/mistakes/missing_template_keyword.cpp:3:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:3:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+clang++: FAILED: new/mistakes/missing_template_keyword.cpp:3:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/missing_template_keyword.cpp:3:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+clang++ san: FAILED: new/mistakes/missing_template_keyword.cpp:3:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+EDG: rejects: "/w/missing_template_keyword.cpp", line 3: error: expected an expression
+tidal-fe: rejected [TR-12] at line 3: the grammar does not derive this: expected an expression, found ')' 
+=== new/mistakes/narrowing_braced.cpp
+g++: FAILED: new/mistakes/narrowing_braced.cpp:3:38: error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing] 
+g++ ped: FAILED: new/mistakes/narrowing_braced.cpp:3:38: error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing] 
+g++ san: FAILED: new/mistakes/narrowing_braced.cpp:3:38: error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing] 
+clang++: FAILED: new/mistakes/narrowing_braced.cpp:3:38: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] 1 error generated. 
+clang++ ped: FAILED: new/mistakes/narrowing_braced.cpp:3:38: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] 1 error generated. 
+clang++ san: FAILED: new/mistakes/narrowing_braced.cpp:3:38: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] 1 error generated. 
+EDG: rejects: "/w/narrowing_braced.cpp", line 3: error: invalid narrowing conversion from
+tidal-fe: rejected [LIST-2] at line 3: narrowing conversion from double to int in braces 
+=== new/mistakes/no_default_constructor.cpp
+g++: FAILED: new/mistakes/no_default_constructor.cpp:3:51: error: no matching function for call to ‘Port::Port()’ 
+g++ ped: FAILED: new/mistakes/no_default_constructor.cpp:3:51: error: no matching function for call to ‘Port::Port()’ 
+g++ san: FAILED: new/mistakes/no_default_constructor.cpp:3:51: error: no matching function for call to ‘Port::Port()’ 
+clang++: FAILED: new/mistakes/no_default_constructor.cpp:3:42: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+clang++ ped: FAILED: new/mistakes/no_default_constructor.cpp:3:42: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+clang++ san: FAILED: new/mistakes/no_default_constructor.cpp:3:42: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+EDG: rejects: "/w/no_default_constructor.cpp", line 3: error: no default constructor exists
+tidal-fe: unsupported at line 4: default constructor 
+=== new/mistakes/nonconst_member_on_const.cpp
+g++: FAILED: new/mistakes/nonconst_member_on_const.cpp:3:42: error: passing ‘const Counter’ as ‘this’ argument discards qualifiers [-fpermissive] 
+g++ ped: FAILED: new/mistakes/nonconst_member_on_const.cpp:3:42: error: passing ‘const Counter’ as ‘this’ argument discards qualifiers [-fpermissive] 
+g++ san: FAILED: new/mistakes/nonconst_member_on_const.cpp:3:42: error: passing ‘const Counter’ as ‘this’ argument discards qualifiers [-fpermissive] 
+clang++: FAILED: new/mistakes/nonconst_member_on_const.cpp:3:36: error: 'this' argument to member function 'bump' has type 'const Counter', but function is not marked const 1 error generated. 
+clang++ ped: FAILED: new/mistakes/nonconst_member_on_const.cpp:3:36: error: 'this' argument to member function 'bump' has type 'const Counter', but function is not marked const 1 error generated. 
+clang++ san: FAILED: new/mistakes/nonconst_member_on_const.cpp:3:36: error: 'this' argument to member function 'bump' has type 'const Counter', but function is not marked const 1 error generated. 
+EDG: rejects: "/w/nonconst_member_on_const.cpp", line 3: error: the object has type
+tidal-fe: rejected [CLS-25] at line 3: non-const member function called on a const object 
+=== new/mistakes/nonconst_ref_to_temporary.cpp
+g++: FAILED: new/mistakes/nonconst_ref_to_temporary.cpp:3:27: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ 
+g++ ped: FAILED: new/mistakes/nonconst_ref_to_temporary.cpp:3:27: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ 
+g++ san: FAILED: new/mistakes/nonconst_ref_to_temporary.cpp:3:27: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ 
+clang++: FAILED: new/mistakes/nonconst_ref_to_temporary.cpp:3:21: error: no matching function for call to 'twice' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/nonconst_ref_to_temporary.cpp:3:21: error: no matching function for call to 'twice' 1 error generated. 
+clang++ san: FAILED: new/mistakes/nonconst_ref_to_temporary.cpp:3:21: error: no matching function for call to 'twice' 1 error generated. 
+EDG: rejects: "/w/nonconst_ref_to_temporary.cpp", line 3: error: initial value of reference
+tidal-fe: rejected [OVL-35] at line 3: no viable function: an argument cannot be converted to the parameter type 
+=== new/mistakes/unsatisfied_concept.cpp
+g++: FAILED: new/mistakes/unsatisfied_concept.cpp:5:27: error: no matching function for call to ‘bucket(Key)’ 
+g++ ped: FAILED: new/mistakes/unsatisfied_concept.cpp:5:27: error: no matching function for call to ‘bucket(Key)’ 
+g++ san: FAILED: new/mistakes/unsatisfied_concept.cpp:5:27: error: no matching function for call to ‘bucket(Key)’ 
+clang++: FAILED: new/mistakes/unsatisfied_concept.cpp:5:21: error: no matching function for call to 'bucket' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/unsatisfied_concept.cpp:5:21: error: no matching function for call to 'bucket' 1 error generated. 
+clang++ san: FAILED: new/mistakes/unsatisfied_concept.cpp:5:21: error: no matching function for call to 'bucket' 1 error generated. 
+EDG: rejects: "/w/unsatisfied_concept.cpp", line 5: error: no instance of function template
+tidal-fe: rejected [DED-35] at line 5: no viable function for the call of 'bucket': deduction fails for each template 
+=== new/one-line/abbreviated_pack.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 4 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+=== new/one-line/aggregate_with_base.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 2), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 2), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/alias_in_for_init.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/auto_constant_parameter.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/base_member_pointer_on_derived.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/conditional_noexcept.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/constexpr_new_delete.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/constinit_global.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/decltype_auto_reference.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/delegating_constructor.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/designated_init.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/implicit_move_rvalue_param.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/implicit_move_rvalue_param_first_try.cpp
+g++: FAILED: new/one-line/implicit_move_rvalue_param_first_try.cpp:8:17: error: static assertion failed 
+g++ ped: FAILED: new/one-line/implicit_move_rvalue_param_first_try.cpp:8:17: error: static assertion failed 
+g++ san: FAILED: new/one-line/implicit_move_rvalue_param_first_try.cpp:8:17: error: static assertion failed 
+clang++: FAILED: new/one-line/implicit_move_rvalue_param_first_try.cpp:8:17: error: static assertion failed due to requirement '!is_rref<Box &&>' 1 error generated. 
+clang++ ped: FAILED: new/one-line/implicit_move_rvalue_param_first_try.cpp:8:17: error: static assertion failed due to requirement '!is_rref<Box &&>' 1 error generated. 
+clang++ san: FAILED: new/one-line/implicit_move_rvalue_param_first_try.cpp:8:17: error: static assertion failed due to requirement '!is_rref<Box &&>' 1 error generated. 
+EDG: rejects: "/w/implicit_move_rvalue_param_first_try.cpp", line 8: error: static assertion
+tidal-fe: rejected [SA-1] at line 8: static assertion failed 
+=== new/one-line/inherited_constructors.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/label_at_block_end.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/lambda_attribute.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/recursive_lambda_this.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-8 at line 3 (the left operand of '+' first) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+=== new/one-line/reversed_mixed_comparison.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/static_lambda.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 5 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+=== new/one-line/switch_init.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (4 runs); unspecified choices: SEQ-8 at line 9 (the left operand of '+' first) explored: 4 runs; other outcomes: result 0 
+=== new/one-line/template_lambda_requires.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 5 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+=== new/one-line/using_enum.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/variable_template_partial.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/slotmap.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/units.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units.cpp", line 153: error: no valid std::weak_ordering type found
+tidal-fe: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 169 (arguments evaluated from left to right) explored: 4 runs; other outcomes: result 0 
+=== new/units_fifth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units_fifth_try.cpp", line 153: error: no valid std::weak_ordering type
+tidal-fe: rejected [TR-12] at line 148: the grammar does not derive this: expected '(' or '{' after a type name in an expression 
+=== new/units_first_try.cpp
+g++: FAILED: new/units_first_try.cpp:149:21: error: use of deleted function ‘constexpr auto Quantity<D, T>::operator<=>(const Quantity<D, T>&) const [with Dim D = Dim{1, 0, 0}; T = long long int]’ new/units_first_try.cpp:62:18: error: no match for ‘operator==’ (operand types are ‘std::strong_ordering’ and ‘int’)
+g++ ped: FAILED: new/units_first_try.cpp:149:21: error: use of deleted function ‘constexpr auto Quantity<D, T>::operator<=>(const Quantity<D, T>&) const [with Dim D = Dim{1, 0, 0}; T = long long int]’ new/units_first_try.cpp:62:18: error: no match for ‘operator==’ (operand types are ‘std::strong_ordering’ and ‘int’)
+g++ san: FAILED: new/units_first_try.cpp:149:21: error: use of deleted function ‘constexpr auto Quantity<D, T>::operator<=>(const Quantity<D, T>&) const [with Dim D = Dim{1, 0, 0}; T = long long int]’ new/units_first_try.cpp:62:18: error: no match for ‘operator==’ (operand types are ‘std::strong_ordering’ and ‘int’)
+clang++: FAILED: new/units_first_try.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') new/units_first_try.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') 
+clang++ ped: FAILED: new/units_first_try.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') new/units_first_try.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') 
+clang++ san: FAILED: new/units_first_try.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') new/units_first_try.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') 
+EDG: rejects: "/w/units_first_try.cpp", line 149: error: no operator "!=" matches these
+tidal-fe: rejected [TR-12] at line 96: the grammar does not derive this: expected an expression, found '...' 
+=== new/units_fourth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units_fourth_try.cpp", line 151: error: no valid std::weak_ordering type
+tidal-fe: rejected [SA-1] at line 162: static assertion failed 
+=== new/units_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units_second_try.cpp", line 150: error: no valid std::weak_ordering type
+tidal-fe: rejected [TR-12] at line 97: the grammar does not derive this: expected an expression, found '...' 
+=== new/units_seventh_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units_seventh_try.cpp", line 152: error: no valid std::weak_ordering type
+tidal-fe: unsupported at line 149: check: static_assert: overloaded operator (in a variable template argument) 
+=== new/units_sixth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units_sixth_try.cpp", line 154: error: no valid std::weak_ordering type
+tidal-fe: unsupported at line 147: check: static_assert: member of unknown 
+=== new/units_third_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/units_third_try.cpp", line 152: error: no valid std::weak_ordering type
+tidal-fe: rejected [SA-1] at line 155: static assertion failed 
+=== probes/adl_function_beside_deleted_template_in_requires.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SA-1] at line 4: static assertion failed 
+=== probes/adl_function_beside_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/algo_second_try_without_deleted_swap.cpp
+g++: FAILED: probes/algo_second_try_without_deleted_swap.cpp:85:41: error: no matching function for call to ‘invoke(lib::less&, int&, int&)’ probes/algo_second_try_without_deleted_swap.cpp:202:24: error: non-constant condition for static assertion 
+g++ ped: FAILED: probes/algo_second_try_without_deleted_swap.cpp:85:41: error: no matching function for call to ‘invoke(lib::less&, int&, int&)’ probes/algo_second_try_without_deleted_swap.cpp:202:24: error: non-constant condition for static assertion 
+g++ san: FAILED: probes/algo_second_try_without_deleted_swap.cpp:85:41: error: no matching function for call to ‘invoke(lib::less&, int&, int&)’ probes/algo_second_try_without_deleted_swap.cpp:202:24: error: non-constant condition for static assertion 
+clang++: FAILED: probes/algo_second_try_without_deleted_swap.cpp:85:35: error: no matching function for call to 'invoke' probes/algo_second_try_without_deleted_swap.cpp:85:35: error: no matching function for call to 'invoke' 
+clang++ ped: FAILED: probes/algo_second_try_without_deleted_swap.cpp:85:35: error: no matching function for call to 'invoke' probes/algo_second_try_without_deleted_swap.cpp:85:35: error: no matching function for call to 'invoke' 
+clang++ san: FAILED: probes/algo_second_try_without_deleted_swap.cpp:85:35: error: no matching function for call to 'invoke' probes/algo_second_try_without_deleted_swap.cpp:85:35: error: no matching function for call to 'invoke' 
+EDG: rejects: "/w/algo_second_try_without_deleted_swap.cpp", line 85: error: no instance of
+tidal-fe: rejected [DED-35] at line 85: no viable function for the call of 'invoke': deduction fails for each template 
+=== probes/assignment_beside_converting_assignment_constant.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 13: check: static_assert: class assignment 
+=== probes/binary_operator_beside_constrained_conversion_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 9: check: static_assert: member of unknown 
+=== probes/conversion_functions_two_constraints.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 6: conversion function 
+=== probes/conversion_function_unsatisfied_constraint_implicit.cpp
+g++: FAILED: probes/conversion_function_unsatisfied_constraint_implicit.cpp:5:34: error: cannot convert ‘Q<false>’ to ‘int’ in initialization 
+g++ ped: FAILED: probes/conversion_function_unsatisfied_constraint_implicit.cpp:5:34: error: cannot convert ‘Q<false>’ to ‘int’ in initialization 
+g++ san: FAILED: probes/conversion_function_unsatisfied_constraint_implicit.cpp:5:34: error: cannot convert ‘Q<false>’ to ‘int’ in initialization 
+clang++: FAILED: probes/conversion_function_unsatisfied_constraint_implicit.cpp:5:30: error: no viable conversion from 'Q<false>' to 'int' 1 error generated. 
+clang++ ped: FAILED: probes/conversion_function_unsatisfied_constraint_implicit.cpp:5:30: error: no viable conversion from 'Q<false>' to 'int' 1 error generated. 
+clang++ san: FAILED: probes/conversion_function_unsatisfied_constraint_implicit.cpp:5:30: error: no viable conversion from 'Q<false>' to 'int' 1 error generated. 
+EDG: rejects: "/w/conversion_function_unsatisfied_constraint_implicit.cpp", line 5: error: no
+tidal-fe: result: 0 
+=== probes/converting_constructor_unsatisfied_constraint.cpp
+g++: FAILED: probes/converting_constructor_unsatisfied_constraint.cpp:6:28: error: conversion from ‘int’ to non-scalar type ‘It<false>’ requested 
+g++ ped: FAILED: probes/converting_constructor_unsatisfied_constraint.cpp:6:28: error: conversion from ‘int’ to non-scalar type ‘It<false>’ requested 
+g++ san: FAILED: probes/converting_constructor_unsatisfied_constraint.cpp:6:28: error: conversion from ‘int’ to non-scalar type ‘It<false>’ requested 
+clang++: FAILED: probes/converting_constructor_unsatisfied_constraint.cpp:6:24: error: no viable conversion from 'int' to 'It<false>' 1 error generated. 
+clang++ ped: FAILED: probes/converting_constructor_unsatisfied_constraint.cpp:6:24: error: no viable conversion from 'int' to 'It<false>' 1 error generated. 
+clang++ san: FAILED: probes/converting_constructor_unsatisfied_constraint.cpp:6:24: error: no viable conversion from 'int' to 'It<false>' 1 error generated. 
+EDG: rejects: "/w/converting_constructor_unsatisfied_constraint.cpp", line 6: error: no
+tidal-fe: rejected [CTOR-25] at line 6: no constructor of 'It' accepts the arguments 
+=== probes/copy_assignment_beside_conversion_only.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/decltype_alias_specialization_from_template_return.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/decltype_one_operator_template_call.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/decltype_qualifier_operator_template_conversion_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TR-12] at line 10: the grammar does not derive this: expected '(' or '{' after a type name in an expression 
+=== probes/explicit_specialization_class_type_constant_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/fold_in_requires_clause_plain_expression.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TR-12] at line 2: the grammar does not derive this: expected an expression, found '...' 
+=== probes/fold_of_concepts_in_return.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/friend_class_template_declared_before.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/friend_class_template_declared_later_in_class.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/intrusive_first_try_with_declaration.cpp
+g++: FAILED: probes/intrusive_first_try_with_declaration.cpp:128:31: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ probes/intrusive_first_try_with_declaration.cpp:145:28: error: non-constant condition for static assertion 
+g++ ped: FAILED: probes/intrusive_first_try_with_declaration.cpp:128:31: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ probes/intrusive_first_try_with_declaration.cpp:145:28: error: non-constant condition for static assertion 
+g++ san: FAILED: probes/intrusive_first_try_with_declaration.cpp:128:31: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ probes/intrusive_first_try_with_declaration.cpp:145:28: error: non-constant condition for static assertion 
+clang++: FAILED: probes/intrusive_first_try_with_declaration.cpp:128:20: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> probes/intrusive_first_try_with_declaration.cpp:145:15: error: static assertion failed due to requirement 'constant_test()' 
+clang++ ped: FAILED: probes/intrusive_first_try_with_declaration.cpp:128:20: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> probes/intrusive_first_try_with_declaration.cpp:145:15: error: static assertion failed due to requirement 'constant_test()' 
+clang++ san: FAILED: probes/intrusive_first_try_with_declaration.cpp:128:20: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> probes/intrusive_first_try_with_declaration.cpp:145:15: error: static assertion failed due to requirement 'constant_test()' 
+EDG: rejects: "/w/intrusive_first_try_with_declaration.cpp", line 128: error: an #include
+tidal-fe: unsupported at line 145: check: static_assert: range-based for 
+=== probes/member_function_unsatisfied_constraint.cpp
+g++: FAILED: probes/member_function_unsatisfied_constraint.cpp:5:38: error: no matching function for call to ‘Q<false>::get()’ 
+g++ ped: FAILED: probes/member_function_unsatisfied_constraint.cpp:5:38: error: no matching function for call to ‘Q<false>::get()’ 
+g++ san: FAILED: probes/member_function_unsatisfied_constraint.cpp:5:38: error: no matching function for call to ‘Q<false>::get()’ 
+clang++: FAILED: probes/member_function_unsatisfied_constraint.cpp:5:35: error: invalid reference to function 'get': constraints not satisfied 1 error generated. 
+clang++ ped: FAILED: probes/member_function_unsatisfied_constraint.cpp:5:35: error: invalid reference to function 'get': constraints not satisfied 1 error generated. 
+clang++ san: FAILED: probes/member_function_unsatisfied_constraint.cpp:5:35: error: invalid reference to function 'get': constraints not satisfied 1 error generated. 
+EDG: rejects: "/w/member_function_unsatisfied_constraint.cpp", line 5: error: no instance of
+tidal-fe: rejected [CNS-12] at line 5: no viable function for the call of 'get': its constraints are not satisfied 
+=== probes/member_without_default_constructor_used.cpp
+g++: FAILED: probes/member_without_default_constructor_used.cpp:2:37: error: no matching function for call to ‘Port::Port()’ 
+g++ ped: FAILED: probes/member_without_default_constructor_used.cpp:2:37: error: no matching function for call to ‘Port::Port()’ 
+g++ san: FAILED: probes/member_without_default_constructor_used.cpp:2:37: error: no matching function for call to ‘Port::Port()’ 
+clang++: FAILED: probes/member_without_default_constructor_used.cpp:2:28: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+clang++ ped: FAILED: probes/member_without_default_constructor_used.cpp:2:28: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+clang++ san: FAILED: probes/member_without_default_constructor_used.cpp:2:28: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+EDG: rejects: "/w/member_without_default_constructor_used.cpp", line 2: error: no default
+tidal-fe: unsupported at line 3: default constructor 
+=== probes/nested_operator_template_calls_evaluated.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/partial_specialization_int_constant_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/plain_function_beside_deleted_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/range_for_braced_list_without_initializer_list.cpp
+g++: FAILED: probes/range_for_braced_list_without_initializer_list.cpp:3:24: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ ped: FAILED: probes/range_for_braced_list_without_initializer_list.cpp:3:24: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ san: FAILED: probes/range_for_braced_list_without_initializer_list.cpp:3:24: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+clang++: FAILED: probes/range_for_braced_list_without_initializer_list.cpp:3:17: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+clang++ ped: FAILED: probes/range_for_braced_list_without_initializer_list.cpp:3:17: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+clang++ san: FAILED: probes/range_for_braced_list_without_initializer_list.cpp:3:17: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+EDG: rejects: "/w/range_for_braced_list_without_initializer_list.cpp", line 3: error: an
+tidal-fe: unsupported at line 2: range-based for 
+=== probes/units_first_try_without_fold.cpp
+g++: FAILED: probes/units_first_try_without_fold.cpp:151:21: error: use of deleted function ‘constexpr auto Quantity<D, T>::operator<=>(const Quantity<D, T>&) const [with Dim D = Dim{1, 0, 0}; T = long long int]’ probes/units_first_try_without_fold.cpp:62:18: error: no match for ‘operator==’ (operand types are ‘
+g++ ped: FAILED: probes/units_first_try_without_fold.cpp:151:21: error: use of deleted function ‘constexpr auto Quantity<D, T>::operator<=>(const Quantity<D, T>&) const [with Dim D = Dim{1, 0, 0}; T = long long int]’ probes/units_first_try_without_fold.cpp:62:18: error: no match for ‘operator==’ (operand types are ‘
+g++ san: FAILED: probes/units_first_try_without_fold.cpp:151:21: error: use of deleted function ‘constexpr auto Quantity<D, T>::operator<=>(const Quantity<D, T>&) const [with Dim D = Dim{1, 0, 0}; T = long long int]’ probes/units_first_try_without_fold.cpp:62:18: error: no match for ‘operator==’ (operand types are ‘
+clang++: FAILED: probes/units_first_try_without_fold.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') probes/units_first_try_without_fold.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') 
+clang++ ped: FAILED: probes/units_first_try_without_fold.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') probes/units_first_try_without_fold.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') 
+clang++ san: FAILED: probes/units_first_try_without_fold.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') probes/units_first_try_without_fold.cpp:62:61: error: invalid operands to binary expression ('std::strong_ordering' and 'int') 
+EDG: rejects: "/w/units_first_try_without_fold.cpp", line 151: error: no operator "!="
+tidal-fe: rejected [DCMP-11] at line 151: use of the defaulted 'operator<=>', which is deleted 
+=== reductions/adl_function_beside_deleted_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [DEL-1] at line 3: use of the deleted function 'f' 
+=== reductions/assignment_beside_converting_assignment.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 10: class assignment 
+=== reductions/binary_operator_beside_conversion_function_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: check: static_assert: member of unknown 
+=== reductions/conversion_function_unsatisfied_constraint.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SA-1] at line 7: static assertion failed 
+=== reductions/copy_constructor_unsatisfied_constraint.cpp
+g++: FAILED: reductions/copy_constructor_unsatisfied_constraint.cpp:8:17: error: no matching function for call to ‘It<false>::It(It<false>&)’ 
+g++ ped: FAILED: reductions/copy_constructor_unsatisfied_constraint.cpp:8:17: error: no matching function for call to ‘It<false>::It(It<false>&)’ 
+g++ san: FAILED: reductions/copy_constructor_unsatisfied_constraint.cpp:8:17: error: no matching function for call to ‘It<false>::It(It<false>&)’ 
+clang++: FAILED: reductions/copy_constructor_unsatisfied_constraint.cpp:8:13: error: no matching constructor for initialization of 'It<false>' 1 error generated. 
+clang++ ped: FAILED: reductions/copy_constructor_unsatisfied_constraint.cpp:8:13: error: no matching constructor for initialization of 'It<false>' 1 error generated. 
+clang++ san: FAILED: reductions/copy_constructor_unsatisfied_constraint.cpp:8:13: error: no matching constructor for initialization of 'It<false>' 1 error generated. 
+EDG: rejects: "/w/copy_constructor_unsatisfied_constraint.cpp", line 8: error: class
+tidal-fe: result: 1 
+=== reductions/decltype_nested_operator_template_calls.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 5: check: static_assert: overloaded operator (in a variable template argument) 
+=== reductions/decltype_qualifier_specialization_from_template_return.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [NAM-9] at line 3: no member named 'dim' 
+=== reductions/fold_in_requires_clause.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TR-12] at line 3: the grammar does not derive this: expected an expression, found '...' 
+=== reductions/friend_class_template_declared_later_in_class_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 3: object of unknown type 
+=== reductions/member_without_default_constructor_not_initialized.cpp
+g++: FAILED: reductions/member_without_default_constructor_not_initialized.cpp:2:37: error: no matching function for call to ‘Port::Port()’ 
+g++ ped: FAILED: reductions/member_without_default_constructor_not_initialized.cpp:2:37: error: no matching function for call to ‘Port::Port()’ 
+g++ san: FAILED: reductions/member_without_default_constructor_not_initialized.cpp:2:37: error: no matching function for call to ‘Port::Port()’ 
+clang++: FAILED: reductions/member_without_default_constructor_not_initialized.cpp:2:28: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+clang++ ped: FAILED: reductions/member_without_default_constructor_not_initialized.cpp:2:28: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+clang++ san: FAILED: reductions/member_without_default_constructor_not_initialized.cpp:2:28: error: constructor for 'Server' must explicitly initialize the member 'port' which does not have a default constructor 1 error generated. 
+EDG: rejects: "/w/member_without_default_constructor_not_initialized.cpp", line 2: error: no
+tidal-fe: result: 0 
+=== reductions/partial_specialization_class_type_constant_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 2 

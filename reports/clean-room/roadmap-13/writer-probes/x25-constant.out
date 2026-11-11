@@ -1,0 +1,116 @@
+| | program |
+|---|---|
+| a1.cpp as written | accept: gcc-host, gcc-16, edg-7.0-ilp32, edg-7.0; reject: clang-18, gcc-14, clang-host, clang-22 |
+| a2.cpp CASE 1 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, clang-host, gcc-16, clang-18, gcc-14, clang-22 |
+| a2.cpp CASE 2 | accept: edg-7.0, gcc-host, edg-7.0-ilp32, gcc-16; reject: clang-18, clang-host, gcc-14, clang-22 |
+| a2.cpp CASE 3 | accept: edg-7.0, gcc-host, gcc-16, edg-7.0-ilp32; reject: gcc-14, clang-18, clang-host, clang-22 |
+| a2.cpp CASE 4 | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16; reject: clang-host, clang-18, gcc-14, clang-22 |
+| a3.cpp as written | accept |
+| a3b.cpp as written | accept: gcc-16, gcc-14, gcc-host; reject: clang-18, edg-7.0-ilp32, edg-7.0, clang-host, clang-22 |
+| a3c.cpp as written | accept: edg-7.0, edg-7.0-ilp32; reject: clang-18, clang-host, gcc-14, gcc-16, gcc-host, clang-22 |
+| a4.cpp CASE 1 | reject |
+| a4.cpp CASE 2 | accept: edg-7.0, gcc-16, gcc-host, edg-7.0-ilp32; reject: clang-18, clang-host, gcc-14, clang-22 |
+| a5.cpp CASE 1 | reject |
+| a5.cpp CASE 2 | accept: edg-7.0, edg-7.0-ilp32, gcc-16, gcc-host; reject: clang-host, gcc-14, clang-18, clang-22 |
+| a6.cpp as written | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16; reject: gcc-14, clang-18, clang-host, clang-22 |
+| a7.cpp CASE 1 | reject |
+| a7.cpp CASE 2 | accept: gcc-host, gcc-16; reject: edg-7.0-ilp32, gcc-14, edg-7.0, clang-host, clang-18, clang-22 |
+| a10.cpp as written | accept |
+| a10.cpp END | accept: gcc-14; reject: edg-7.0-ilp32, gcc-host, edg-7.0, gcc-16, clang-host, clang-18, clang-22 |
+| m1.cpp as written | accept: edg-7.0, edg-7.0-ilp32, gcc-16, gcc-host; reject: gcc-14, clang-host, clang-18, clang-22 |
+| a9.cpp test of validity is true | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16; reject: gcc-14, clang-host, clang-18, clang-22 |
+| a9.cpp test of validity is false | accept: gcc-14, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0, gcc-16, gcc-host |
+a1.cpp as written / program / clang-18: /tidal/build/probes/x25-constant/0000-a1-cpp-as-written--program.cpp:46:15: error: static assertion expression is not an integral constant expression
+a1.cpp as written / program / clang-22: /tidal/build/probes/x25-constant/0000-a1-cpp-as-written--program.cpp:46:15: error: static assertion expression is not an integral constant expression
+a1.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0000-a1-cpp-as-written--program.cpp:46:15: error: static assertion expression is not an integral constant expression
+a1.cpp as written / program / gcc-14: /tidal/build/probes/x25-constant/0000-a1-cpp-as-written--program.cpp:46:21: error: non-constant condition for static assertion
+a2.cpp CASE 1 / program / clang-18: /tidal/build/probes/x25-constant/0001-a2-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 1 / program / clang-22: /tidal/build/probes/x25-constant/0001-a2-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 1 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0001-a2-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 1 / program / gcc-14: /tidal/build/probes/x25-constant/0001-a2-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a2.cpp CASE 1 / program / gcc-16: /tidal/build/probes/x25-constant/0001-a2-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a2.cpp CASE 1 / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0001-a2-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a2.cpp CASE 2 / program / clang-18: /tidal/build/probes/x25-constant/0002-a2-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 2 / program / clang-22: /tidal/build/probes/x25-constant/0002-a2-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 2 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0002-a2-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 2 / program / gcc-14: /tidal/build/probes/x25-constant/0002-a2-cpp-case-2--program.cpp:30:19: error: non-constant condition for static assertion
+a2.cpp CASE 3 / program / clang-18: /tidal/build/probes/x25-constant/0003-a2-cpp-case-3--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 3 / program / clang-22: /tidal/build/probes/x25-constant/0003-a2-cpp-case-3--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 3 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0003-a2-cpp-case-3--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 3 / program / gcc-14: /tidal/build/probes/x25-constant/0003-a2-cpp-case-3--program.cpp:30:19: error: non-constant condition for static assertion
+a2.cpp CASE 4 / program / clang-18: /tidal/build/probes/x25-constant/0004-a2-cpp-case-4--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 4 / program / clang-22: /tidal/build/probes/x25-constant/0004-a2-cpp-case-4--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 4 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0004-a2-cpp-case-4--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a2.cpp CASE 4 / program / gcc-14: /tidal/build/probes/x25-constant/0004-a2-cpp-case-4--program.cpp:30:19: error: non-constant condition for static assertion
+a3b.cpp as written / program / clang-18: /tidal/build/probes/x25-constant/0006-a3b-cpp-as-written--program.cpp:10:15: error: static assertion expression is not an integral constant expression
+a3b.cpp as written / program / clang-22: /tidal/build/probes/x25-constant/0006-a3b-cpp-as-written--program.cpp:10:15: error: static assertion expression is not an integral constant expression
+a3b.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0006-a3b-cpp-as-written--program.cpp:10:15: error: static assertion expression is not an integral constant expression
+a3b.cpp as written / program / edg-7.0: 10: error: expression must have a constant value
+a3b.cpp as written / program / edg-7.0-ilp32: 10: error: expression must have a constant value
+a3c.cpp as written / program / clang-18: /tidal/build/probes/x25-constant/0007-a3c-cpp-as-written--program.cpp:9:15: error: static assertion expression is not an integral constant expression
+a3c.cpp as written / program / clang-22: /tidal/build/probes/x25-constant/0007-a3c-cpp-as-written--program.cpp:9:15: error: static assertion expression is not an integral constant expression
+a3c.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0007-a3c-cpp-as-written--program.cpp:9:15: error: static assertion expression is not an integral constant expression
+a3c.cpp as written / program / gcc-14: /tidal/build/probes/x25-constant/0007-a3c-cpp-as-written--program.cpp:9:19: error: non-constant condition for static assertion
+a3c.cpp as written / program / gcc-16: /tidal/build/probes/x25-constant/0007-a3c-cpp-as-written--program.cpp:9:19: error: non-constant condition for static assertion
+a3c.cpp as written / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0007-a3c-cpp-as-written--program.cpp:9:19: error: non-constant condition for static assertion
+a4.cpp CASE 1 / program / clang-18: /tidal/build/probes/x25-constant/0008-a4-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a4.cpp CASE 1 / program / clang-22: /tidal/build/probes/x25-constant/0008-a4-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a4.cpp CASE 1 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0008-a4-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a4.cpp CASE 1 / program / edg-7.0: error: expression must have a constant value
+a4.cpp CASE 1 / program / edg-7.0-ilp32: error: expression must have a constant value
+a4.cpp CASE 1 / program / gcc-14: /tidal/build/probes/x25-constant/0008-a4-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a4.cpp CASE 1 / program / gcc-16: /tidal/build/probes/x25-constant/0008-a4-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a4.cpp CASE 1 / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0008-a4-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a4.cpp CASE 2 / program / clang-18: /tidal/build/probes/x25-constant/0009-a4-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a4.cpp CASE 2 / program / clang-22: /tidal/build/probes/x25-constant/0009-a4-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a4.cpp CASE 2 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0009-a4-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a4.cpp CASE 2 / program / gcc-14: /tidal/build/probes/x25-constant/0009-a4-cpp-case-2--program.cpp:30:19: error: non-constant condition for static assertion
+a5.cpp CASE 1 / program / clang-18: /tidal/build/probes/x25-constant/0010-a5-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a5.cpp CASE 1 / program / clang-22: /tidal/build/probes/x25-constant/0010-a5-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a5.cpp CASE 1 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0010-a5-cpp-case-1--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a5.cpp CASE 1 / program / edg-7.0: error: expression must have a constant value
+a5.cpp CASE 1 / program / edg-7.0-ilp32: error: expression must have a constant value
+a5.cpp CASE 1 / program / gcc-14: /tidal/build/probes/x25-constant/0010-a5-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a5.cpp CASE 1 / program / gcc-16: /tidal/build/probes/x25-constant/0010-a5-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a5.cpp CASE 1 / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0010-a5-cpp-case-1--program.cpp:30:19: error: non-constant condition for static assertion
+a5.cpp CASE 2 / program / clang-18: /tidal/build/probes/x25-constant/0011-a5-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a5.cpp CASE 2 / program / clang-22: /tidal/build/probes/x25-constant/0011-a5-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a5.cpp CASE 2 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0011-a5-cpp-case-2--program.cpp:30:15: error: static assertion expression is not an integral constant expression
+a5.cpp CASE 2 / program / gcc-14: /tidal/build/probes/x25-constant/0011-a5-cpp-case-2--program.cpp:30:19: error: non-constant condition for static assertion
+a6.cpp as written / program / clang-18: /tidal/build/probes/x25-constant/0012-a6-cpp-as-written--program.cpp:18:15: error: static assertion expression is not an integral constant expression
+a6.cpp as written / program / clang-22: /tidal/build/probes/x25-constant/0012-a6-cpp-as-written--program.cpp:18:15: error: static assertion expression is not an integral constant expression
+a6.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0012-a6-cpp-as-written--program.cpp:18:15: error: static assertion expression is not an integral constant expression
+a6.cpp as written / program / gcc-14: /tidal/build/probes/x25-constant/0012-a6-cpp-as-written--program.cpp:18:19: error: non-constant condition for static assertion
+a7.cpp CASE 1 / program / clang-18: /tidal/build/probes/x25-constant/0013-a7-cpp-case-1--program.cpp:22:15: error: constexpr variable 'kept' must be initialized by a constant expression
+a7.cpp CASE 1 / program / clang-22: /tidal/build/probes/x25-constant/0013-a7-cpp-case-1--program.cpp:22:15: error: constexpr variable 'kept' must be initialized by a constant expression
+a7.cpp CASE 1 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0013-a7-cpp-case-1--program.cpp:22:15: error: constexpr variable 'kept' must be initialized by a constant expression
+a7.cpp CASE 1 / program / edg-7.0: error: expression must have a constant value
+a7.cpp CASE 1 / program / edg-7.0-ilp32: error: expression must have a constant value
+a7.cpp CASE 1 / program / gcc-14: /tidal/build/probes/x25-constant/0013-a7-cpp-case-1--program.cpp:11:10: error: accessing uninitialized member 'Vec::<unnamed union>::items'
+a7.cpp CASE 1 / program / gcc-16: /tidal/build/probes/x25-constant/0013-a7-cpp-case-1--program.cpp:22:27: error: 'Vec{Vec::<unnamed union>{int [4]{1, 2}}, 2}' is not a constant expression
+a7.cpp CASE 1 / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0013-a7-cpp-case-1--program.cpp:22:27: error: ‘Vec{Vec::<unnamed union>{int [4]{1, 2}}, 2}’ is not a constant expression
+a7.cpp CASE 2 / program / clang-18: /tidal/build/probes/x25-constant/0014-a7-cpp-case-2--program.cpp:26:15: error: static assertion expression is not an integral constant expression
+a7.cpp CASE 2 / program / clang-22: /tidal/build/probes/x25-constant/0014-a7-cpp-case-2--program.cpp:26:15: error: static assertion expression is not an integral constant expression
+a7.cpp CASE 2 / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0014-a7-cpp-case-2--program.cpp:26:15: error: static assertion expression is not an integral constant expression
+a7.cpp CASE 2 / program / edg-7.0: error: expression must have a constant value
+a7.cpp CASE 2 / program / edg-7.0-ilp32: error: expression must have a constant value
+a7.cpp CASE 2 / program / gcc-14: /tidal/build/probes/x25-constant/0014-a7-cpp-case-2--program.cpp:26:19: error: non-constant condition for static assertion
+a10.cpp END / program / clang-18: /tidal/build/probes/x25-constant/0016-a10-cpp-end--program.cpp:17:15: error: constexpr variable 'kept' must be initialized by a constant expression
+a10.cpp END / program / clang-22: /tidal/build/probes/x25-constant/0016-a10-cpp-end--program.cpp:17:15: error: constexpr variable 'kept' must be initialized by a constant expression
+a10.cpp END / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0016-a10-cpp-end--program.cpp:17:15: error: constexpr variable 'kept' must be initialized by a constant expression
+a10.cpp END / program / edg-7.0: error: expression must have a constant value
+a10.cpp END / program / edg-7.0-ilp32: error: expression must have a constant value
+a10.cpp END / program / gcc-16: /tidal/build/probes/x25-constant/0016-a10-cpp-end--program.cpp:17:27: error: 'Row{int [2]{1, (void)0}}' is not a constant expression
+a10.cpp END / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0016-a10-cpp-end--program.cpp:17:27: error: ‘Row{int [2]{1, (void)0}}’ is not a constant expression
+m1.cpp as written / program / clang-18: /tidal/build/probes/x25-constant/0017-m1-cpp-as-written--program.cpp:52:15: error: static assertion expression is not an integral constant expression
+m1.cpp as written / program / clang-22: /tidal/build/probes/x25-constant/0017-m1-cpp-as-written--program.cpp:52:15: error: static assertion expression is not an integral constant expression
+m1.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0017-m1-cpp-as-written--program.cpp:52:15: error: static assertion expression is not an integral constant expression
+m1.cpp as written / program / gcc-14: /tidal/build/probes/x25-constant/0017-m1-cpp-as-written--program.cpp:52:21: error: non-constant condition for static assertion
+a9.cpp test of validity is true / program / clang-18: /tidal/build/probes/x25-constant/0018-a9-cpp-test-of-validity-is-true--program.cpp:25:15: error: static assertion failed due to requirement 'is_constant<int>'
+a9.cpp test of validity is true / program / clang-22: /tidal/build/probes/x25-constant/0018-a9-cpp-test-of-validity-is-true--program.cpp:25:15: error: static assertion failed due to requirement 'is_constant<int>'
+a9.cpp test of validity is true / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/x25-constant/0018-a9-cpp-test-of-validity-is-true--program.cpp:25:15: error: static assertion failed due to requirement 'is_constant<int>'
+a9.cpp test of validity is true / program / gcc-14: /tidal/build/probes/x25-constant/0018-a9-cpp-test-of-validity-is-true--program.cpp:25:15: error: static assertion failed
+a9.cpp test of validity is false / program / edg-7.0: m.cpp", line 25: error: static assertion failed
+a9.cpp test of validity is false / program / edg-7.0-ilp32: m.cpp", line 25: error: static assertion failed
+a9.cpp test of validity is false / program / gcc-16: /tidal/build/probes/x25-constant/0019-a9-cpp-test-of-validity-is-false--program.cpp:25:15: error: static assertion failed
+a9.cpp test of validity is false / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/x25-constant/0019-a9-cpp-test-of-validity-is-false--program.cpp:25:15: error: static assertion failed

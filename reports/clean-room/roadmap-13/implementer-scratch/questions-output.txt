@@ -1,0 +1,31 @@
+Q-0092 (settled; waits for: -)
+        unmarked  expressions/lambdas/capture-visible-in-trailing-return.cpp
+Q-0231 (settled; waits for: -)
+        marked  templates/instantiation/class-point-static-constexpr-made-at-use.cpp
+        marked  templates/instantiation/class-static-constexpr-member-initializer-waits.cpp
+        marked  templates/instantiation/static-inline-member-incomplete-argument.cpp
+Q-0253 (settled; waits for: -)
+        marked  templates/instantiation/local-class-default-argument.cpp
+Q-0257 (settled; waits for: -)
+        marked  templates/instantiation/class-point-not-later.cpp
+Q-0268 (settled; waits for: -)
+        unmarked  templates/constraints/friend-distinct-from-namespace.cpp
+Q-0291 (settled; waits for: -)
+        unmarked  templates/constraints/explicit-instantiation-member-not-satisfied.cpp
+Q-0339 (provisional; waits for: newest families that agree)
+        unmarked  classes/copy-move/trivially-copyable-member-template-selected.cpp
+Q-0386 (settled; waits for: -)
+        unmarked  programs/P4/money-first-try.cpp
+Q-0406 (provisional; waits for: the maintainer (pending.md row 4))
+        unmarked  expressions/postfix/default-template-argument-incomplete-class.cpp
+Q-0427 (provisional; waits for: a use of DEP-P5)
+        marked  templates/dependent-names/member-template-current-instantiation-pointer.cpp
+        marked  templates/dependent-names/member-template-non-dependent-base.cpp
+        marked  templates/dependent-names/member-template-through-current-instantiation-object.cpp
+Q-0432 (provisional; waits for: a use of DEP-P2)
+        marked  templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp
+        marked  templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp
+Q-0433 (provisional; waits for: a review (doubt))
+        marked  templates/instantiation/class-point-static-const-member.cpp
+Q-0441 (provisional; waits for: a review (doubt); newest families that agree)
+        marked  templates/instantiation/static-inline-member-incomplete-argument.cpp

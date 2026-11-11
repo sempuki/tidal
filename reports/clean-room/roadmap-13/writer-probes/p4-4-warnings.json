@@ -1,0 +1,18 @@
+{
+ "prelude": "template <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\nstruct Done {};\nstruct Count { int n;\n  struct It { int i, n; constexpr int operator*() const { return i; }\n    constexpr It& operator++() { ++i; return *this; }\n    constexpr bool operator==(Done) const { return i == n; } };\n  constexpr It begin() const { return {0, n}; }\n  constexpr Done end() const { return {}; } };\n",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "null-pointer form, used directly": "template <class S> using It = decltype(static_cast<const S*>(nullptr)->begin());\nstatic_assert(same<It<Count>, Count::It>);",
+  "null-pointer form, through a member class of a class template": "template <class S> using It = decltype(static_cast<const S*>(nullptr)->begin());\ntemplate <class S> struct Wrap { S base; struct Cursor { It<S> at; }; };\nWrap<Count>::Cursor c{};",
+  "declared-function form, used directly": "template <class T> T&& fake();\ntemplate <class S> using It = decltype(fake<const S&>().begin());\nstatic_assert(same<It<Count>, Count::It>);",
+  "declared-function form, through a member class of a class template": "template <class T> T&& fake();\ntemplate <class S> using It = decltype(fake<const S&>().begin());\ntemplate <class S> struct Wrap { S base; struct Cursor { It<S> at; }; };\nWrap<Count>::Cursor c{};"
+ },
+ "cols": {
+  "-Wall -Wextra -Werror": ""
+ },
+ "flags": [
+  "-Wall",
+  "-Wextra",
+  "-Werror"
+ ]
+}

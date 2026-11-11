@@ -1,0 +1,57 @@
+| | program |
+|---|---|
+| P4-1 in-class body returns Box<Money>, Box has a member of type T | accept |
+| P4-1 in-class body takes Box<Money> by value | accept |
+| P4-1 in-class body returns List<Money, 16>, List has T items[16] | accept |
+| P4-1 declaration only in class returns Box<Money> | accept |
+| P4-1 control: in-class body returns a class completed only after the class | reject |
+| P4-1 control: data member of type Box<Money> in Money | reject |
+| P4-2 member operator== with an initializer_list parameter, named operand | accept |
+| P4-2 member operator== with an initializer_list parameter, operand std::initializer_list<int>{1, 2} | accept |
+| P4-2 control: the same operator with a braced list as the right operand | reject |
+| P4-2 control: operator[] with a braced list operand | accept |
+| P4-3 range-for over an end type compared by == only (!= rewritten) | accept |
+| P4-3 adaptor over any sequence, closure type as a template parameter, CTAD | accept |
+| P4-3 aggregate deduction Window{Count{6}, 3} gives Window<Count> | accept |
+| P4-4 decltype(static_cast<const S*>(nullptr)->begin()) names the iterator type | accept |
+| P4-4 requires-expression parameter of the iterator type | accept |
+| P4-4 a declared function in decltype names the iterator type | accept |
+| P4-5 Maybe with deleted copy and no move: return of a local | reject |
+| P4-5 Maybe with deleted copy and a move constructor: return of a local | accept |
+| P4-5 Maybe with deleted copy and no move: return of a prvalue | accept |
+| P4-7 19.99_usd through the long double form plus one half is 1999 | accept |
+| P4-7 the long double form receives the value of the unsuffixed literal 19.99L | accept |
+| P4-7 the long double form does not receive the double value 19.99 | accept |
+| P4-7 the integer form receives 18446744073709551615 | accept |
+P4-1 control: in-class body returns a class completed only after the class / program / clang-18: /tidal/build/probes/p4-points/0004-p4-1-control-in-class-body-returns-a-class-completed-only-after-the-class--program.cpp:11:41: error: incomplete result type 'Later' in function definition
+P4-1 control: in-class body returns a class completed only after the class / program / clang-22: /tidal/build/probes/p4-points/0004-p4-1-control-in-class-body-returns-a-class-completed-only-after-the-class--program.cpp:11:41: error: incomplete result type 'Later' in function definition
+P4-1 control: in-class body returns a class completed only after the class / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/p4-points/0004-p4-1-control-in-class-body-returns-a-class-completed-only-after-the-class--program.cpp:11:41: error: incomplete result type 'Later' in function definition
+P4-1 control: in-class body returns a class completed only after the class / program / edg-7.0: completed-only-after-the-class--program.cpp", line 11: error:
+P4-1 control: in-class body returns a class completed only after the class / program / edg-7.0-ilp32: completed-only-after-the-class--program.cpp", line 11: error:
+P4-1 control: in-class body returns a class completed only after the class / program / gcc-14: /tidal/build/probes/p4-points/0004-p4-1-control-in-class-body-returns-a-class-completed-only-after-the-class--program.cpp:11:55: error: return type 'struct Later' is incomplete
+P4-1 control: in-class body returns a class completed only after the class / program / gcc-16: /tidal/build/probes/p4-points/0004-p4-1-control-in-class-body-returns-a-class-completed-only-after-the-class--program.cpp:11:55: error: return type 'struct Later' is incomplete
+P4-1 control: in-class body returns a class completed only after the class / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/p4-points/0004-p4-1-control-in-class-body-returns-a-class-completed-only-after-the-class--program.cpp:11:55: error: return type ‘struct Later’ is incomplete
+P4-1 control: data member of type Box<Money> in Money / program / clang-18: /tidal/build/probes/p4-points/0005-p4-1-control-data-member-of-type-box-money-in-money--program.cpp:10:35: error: field has incomplete type 'Money'
+P4-1 control: data member of type Box<Money> in Money / program / clang-22: /tidal/build/probes/p4-points/0005-p4-1-control-data-member-of-type-box-money-in-money--program.cpp:10:35: error: field has incomplete type 'Money'
+P4-1 control: data member of type Box<Money> in Money / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/p4-points/0005-p4-1-control-data-member-of-type-box-money-in-money--program.cpp:10:35: error: field has incomplete type 'Money'
+P4-1 control: data member of type Box<Money> in Money / program / edg-7.0: in-money--program.cpp", line 10: error: incomplete type "Money" is
+P4-1 control: data member of type Box<Money> in Money / program / edg-7.0-ilp32: in-money--program.cpp", line 10: error: incomplete type "Money" is
+P4-1 control: data member of type Box<Money> in Money / program / gcc-14: /tidal/build/probes/p4-points/0005-p4-1-control-data-member-of-type-box-money-in-money--program.cpp:10:35: error: 'Box<T>::item' has incomplete type
+P4-1 control: data member of type Box<Money> in Money / program / gcc-16: /tidal/build/probes/p4-points/0005-p4-1-control-data-member-of-type-box-money-in-money--program.cpp:10:35: error: 'Box<T>::item' has incomplete type
+P4-1 control: data member of type Box<Money> in Money / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/p4-points/0005-p4-1-control-data-member-of-type-box-money-in-money--program.cpp:10:35: error: ‘Box<T>::item’ has incomplete type
+P4-2 control: the same operator with a braced list as the right operand / program / clang-18: /tidal/build/probes/p4-points/0008-p4-2-control-the-same-operator-with-a-braced-list-as-the-right-operand--program.cpp:11:20: error: initializer list cannot be used on the right hand side of operator '=='
+P4-2 control: the same operator with a braced list as the right operand / program / clang-22: /tidal/build/probes/p4-points/0008-p4-2-control-the-same-operator-with-a-braced-list-as-the-right-operand--program.cpp:11:20: error: initializer list cannot be used on the right hand side of operator '=='
+P4-2 control: the same operator with a braced list as the right operand / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/p4-points/0008-p4-2-control-the-same-operator-with-a-braced-list-as-the-right-operand--program.cpp:11:20: error: initializer list cannot be used on the right hand side of operator '=='
+P4-2 control: the same operator with a braced list as the right operand / program / edg-7.0: d-list-as-the-right-operand--program.cpp", line 11: error: expected
+P4-2 control: the same operator with a braced list as the right operand / program / edg-7.0-ilp32: d-list-as-the-right-operand--program.cpp", line 11: error: expected
+P4-2 control: the same operator with a braced list as the right operand / program / gcc-14: /tidal/build/probes/p4-points/0008-p4-2-control-the-same-operator-with-a-braced-list-as-the-right-operand--program.cpp:11:23: error: expected primary-expression before '{' token
+P4-2 control: the same operator with a braced list as the right operand / program / gcc-16: /tidal/build/probes/p4-points/0008-p4-2-control-the-same-operator-with-a-braced-list-as-the-right-operand--program.cpp:11:23: error: expected primary-expression before '{' token
+P4-2 control: the same operator with a braced list as the right operand / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/p4-points/0008-p4-2-control-the-same-operator-with-a-braced-list-as-the-right-operand--program.cpp:11:23: error: expected primary-expression before ‘{’ token
+P4-5 Maybe with deleted copy and no move: return of a local / program / clang-18: /tidal/build/probes/p4-points/0016-p4-5-maybe-with-deleted-copy-and-no-move-return-of-a-local--program.cpp:15:45: error: call to deleted constructor of 'Maybe<int>'
+P4-5 Maybe with deleted copy and no move: return of a local / program / clang-22: /tidal/build/probes/p4-points/0016-p4-5-maybe-with-deleted-copy-and-no-move-return-of-a-local--program.cpp:15:45: error: call to deleted constructor of 'Maybe<int>'
+P4-5 Maybe with deleted copy and no move: return of a local / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/clang-host/probes/p4-points/0016-p4-5-maybe-with-deleted-copy-and-no-move-return-of-a-local--program.cpp:15:45: error: call to deleted constructor of 'Maybe<int>'
+P4-5 Maybe with deleted copy and no move: return of a local / program / edg-7.0: turn-of-a-local--program.cpp", line 15: error: function
+P4-5 Maybe with deleted copy and no move: return of a local / program / edg-7.0-ilp32: turn-of-a-local--program.cpp", line 15: error: function
+P4-5 Maybe with deleted copy and no move: return of a local / program / gcc-14: /tidal/build/probes/p4-points/0016-p4-5-maybe-with-deleted-copy-and-no-move-return-of-a-local--program.cpp:15:45: error: use of deleted function 'Maybe<T>::Maybe(const Maybe<T>&) [with T = int]'
+P4-5 Maybe with deleted copy and no move: return of a local / program / gcc-16: /tidal/build/probes/p4-points/0016-p4-5-maybe-with-deleted-copy-and-no-move-return-of-a-local--program.cpp:15:45: error: use of deleted function 'Maybe<T>::Maybe(const Maybe<T>&) [with T = int]'
+P4-5 Maybe with deleted copy and no move: return of a local / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/w2/build/gcc-host/probes/p4-points/0016-p4-5-maybe-with-deleted-copy-and-no-move-return-of-a-local--program.cpp:15:45: error: use of deleted function ‘Maybe<T>::Maybe(const Maybe<T>&) [with T = int]’

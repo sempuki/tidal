@@ -1,0 +1,8 @@
+| | -Wall -Wextra -Werror |
+|---|---|
+| null-pointer form, used directly | accept: gcc-host, gcc-16, clang-host, clang-18, clang-22; reject: gcc-14 |
+| null-pointer form, through a member class of a class template | accept: gcc-host, gcc-16, clang-host, clang-18, clang-22; reject: gcc-14 |
+| declared-function form, used directly | accept |
+| declared-function form, through a member class of a class template | accept |
+null-pointer form, used directly / -Wall -Wextra -Werror / gcc-14: /tidal/build/probes/p4-4-warnings/0000-null-pointer-form-used-directly--wall-wextra-werror.cpp: In substitution of 'template<class S> using It = decltype (static_cast<const S*>(nullptr)->begin()) [with S = Count]':
+null-pointer form, through a member class of a class template / -Wall -Wextra -Werror / gcc-14: /tidal/build/probes/p4-4-warnings/0001-null-pointer-form-through-a-member-class-of-a-class-template--wall-wextra-werror.cpp: In substitution of 'template<class S> using It = decltype (static_cast<const S*>(nullptr)->begin()) [with S = Count]':

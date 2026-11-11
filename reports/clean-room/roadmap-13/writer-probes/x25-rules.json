@@ -1,0 +1,21 @@
+{
+ "prelude": "// std::construct_at in the shape that LSUP-10 gives, with the\n// non-allocating placement forms of LSUP-7.\ninline constexpr void* operator new(decltype(sizeof 0), void* place) noexcept { return place; }\ninline void operator delete(void*, void*) noexcept {}\nnamespace std {\ntemplate <class T, class... Args>\nconstexpr T* construct_at(T* location, Args&&... args) {\n  return ::new (static_cast<void*>(location)) T(static_cast<Args&&>(args)...);\n}\n}\nstruct Num { int v; constexpr Num(int x) : v(x) {} constexpr ~Num() {} };\n",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "X25-1 construct_at of a whole member that is not active, constant": "union U { Num a; int b; constexpr U() : b(0) {} constexpr ~U() {} };\nconstexpr int f() { U u; std::construct_at(&u.a, 4); int r = u.a.v; u.a.~Num(); return r; }\nstatic_assert(f() == 4);",
+  "X25-1 construct_at of a member of a union with no active member, constant": "union U { Num a; constexpr U() {} constexpr ~U() {} };\nconstexpr int f() { U u; std::construct_at(&u.a, 5); int r = u.a.v; u.a.~Num(); return r; }\nstatic_assert(f() == 5);",
+  "X25-1 construct_at of an element of an array member that is not active, constant": "union U { Num a[2]; constexpr U() {} constexpr ~U() {} };\nconstexpr int f() { U u; std::construct_at(&u.a[0], 6); int r = u.a[0].v; u.a[0].~Num(); return r; }\nstatic_assert(f() == 6);",
+  "X25-5 trivial copy of a union whose active int array has a part with no value": "union R { int items[2]; constexpr R() {} };\nconstexpr int f() { R r; r.items[0] = 1; R s = r; return s.items[0]; }\nstatic_assert(f() == 1);",
+  "X25-5 the same copy of a struct, not a union": "struct R { int items[2]; constexpr R() {} };\nconstexpr int f() { R r; r.items[0] = 1; R s = r; return s.items[0]; }\nstatic_assert(f() == 1);",
+  "X25-5 trivial copy assignment of the union": "union R { int items[2]; constexpr R() {} };\nconstexpr int f() { R r; r.items[0] = 1; R s; s = r; return s.items[0]; }\nstatic_assert(f() == 1);",
+  "X25-5 trivial copy of a union whose active struct member has a field with no value": "struct P { int x; int y; };\nunion R { P p; long b; constexpr R() {} };\nconstexpr int f() { R r; r.p.x = 1; R q = r; return q.p.x; }\nstatic_assert(f() == 1);",
+  "X25-5 control: read of that field in the copy": "struct P { int x; int y; };\nunion R { P p; long b; constexpr R() {} };\nconstexpr int f() { R r; r.p.x = 1; R q = r; return q.p.y; }\nstatic_assert(f() == 0);",
+  "X25-7 constexpr union variable, one element ended by a pseudo-destructor": "using Int = int;\nunion R { int items[2]; constexpr R() {} };\nconstexpr R make() { R r; r.items[0] = 1; r.items[1] = 2; r.items[1].~Int(); return r; }\nconstexpr R kept = make();",
+  "X25-7 constexpr struct variable, one element ended by a pseudo-destructor": "using Int = int;\nstruct R { int items[2]; };\nconstexpr R make() { R r{1, 2}; r.items[1].~Int(); return r; }\nconstexpr R kept = make();",
+  "X25-7 control: constexpr struct variable, nothing ended": "struct R { int items[2]; };\nconstexpr R make() { R r{1, 2}; return r; }\nconstexpr R kept = make();\nstatic_assert(kept.items[1] == 2);"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

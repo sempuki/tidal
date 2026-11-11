@@ -1,0 +1,15 @@
+copy constructor with a trailing requires clause | classes/copy-move/trivially-copyable-constraint-fails.cpp:12 | pass
+decltype as a qualifier | expressions/decltype/declarative-nested-name-static-member.cpp:9 | pass
+decltype as a qualifier | expressions/decltype/declarative-nested-name.cpp:9 | pass
+decltype as a qualifier | expressions/decltype/nested-name.cpp:5 | pass
+decltype as a qualifier | foundations/names/qualifier-decltype.cpp:5 | pass
+conversion function with a trailing requires clause | overloading/overload-resolution/tie-conversion-result-before-constraints.cpp:7 | pass
+conversion function template | overloading/overload-resolution/tie-conversion-result-before-template.cpp:6 | pass
+decltype as a qualifier | programs/W19/typelist.cpp:36 | pass
+deleted function template at namespace scope | programs/W5/deleted.cpp:13 | pass
+copy constructor with a trailing requires clause | programs/roadmap/r10-list.cpp:49 | pass-partial
+copy constructor with a trailing requires clause | templates/constraints/eligible-copy.cpp:7 | EDG-ONLY
+fold in a requires clause | templates/constraints/fold-atomic.cpp:9 | pass
+conversion function template | templates/deduction/context-conversion-reference-qualifiers.cpp:10 | pass
+conversion function template | templates/deduction/context-conversion.cpp:10 | pass
+conversion function template | templates/ordering/conversion-result.cpp:7 | pass
