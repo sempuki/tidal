@@ -251,6 +251,21 @@ RV6).
 | R7 | Done: repair the records that drift and extend the ledger check; the Propose prompt and P26's entry | none |
 | E | Done: port suite P2 on generic collections; Implement I6 on dependent names | P2 after FE; I6 none |
 
+## Phase 14: answer the open rows, review phase 13, and set the gate for the rewrite
+
+Decision 0062 (provisional) adopts this phase from the eleventh round of
+clean-room roadmaps (`reports/clean-room/roadmap-11/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| T3 | Tests for the round 11 reductions and probes, and the round 11 programs and clean first tries as program tests | none |
+| F4 | Answer the 24 `open` rows and G161 and G162, INST-33, DEP-4, and INST-5 first; text for a typed pointer over bytes | none |
+| FE | Front-end round 25: the T3 and F4 tests, the TR-13 stop, missed rejects outside templates, and a cause for each failure that needs the rewrite | T3; F4 for its tests |
+| RV7 | A gap review of the 22 rules and principles changed after RV6, the rest of 9c009448, F4's text, and a read of the RV6 repair diff; then repairs and a read of their diff | F4 |
+| RP | Rewrite preparation with no code change: a design document, a grammar start symbol, and the template model | none |
+| R8 | Records: front-end ledger hashes and a check; host-only claims in the prompts; the Propose portfolio refreshed | none |
+| E | Port suite P3 on pipelines and events; Implement I7 on class template argument deduction | P3 after FE; I7 none |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U

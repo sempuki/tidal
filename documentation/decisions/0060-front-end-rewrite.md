@@ -31,7 +31,11 @@ understand, and extend.
 
   The phase decision after that round adds the rewrite as an item. A
   roadmap round can propose the rewrite earlier, if the remaining
-  failures are few and stable over two rounds.
+  failures are few and stable over two rounds. Decision 0062 reads "few" as
+  at most 50 tests that fail their check by the completion line of
+  `tools/frontend_check.py`, and "stable" as no test moved from a
+  passing status to a failing one in either round, with a named cause
+  for each remaining test (provisional).
 - **What the rewrite gives.**
   - A design document in `frontend/` that names each stage (lexing,
     parsing, semantic analysis, constant evaluation, interpretation)

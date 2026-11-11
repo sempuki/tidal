@@ -189,18 +189,19 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, and 0061). Phases 1 to
-13 are done. Next:
+0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, and 0062). Phases
+1 to 13 are done. Phase 14 (decision 0062) is next:
 
-1. An eleventh round of clean-room roadmaps under
-   `reports/clean-room/roadmap-11/`, from the same five views, then a
-   decision that adopts phase 14. Its inputs include the open rows of
-   the exercise ledger (I6-1 to I6-10, I6-13 to I6-20, P2-1 to P2-4, and
-   P2-6 to P2-9), the open front-end rows G161 and G162, the 22 rules
-   and principles that changed after RV6 read the tree, and the
-   completion count of front-end round 24 (127 tests that fail their
-   check, and 2 of 123 program tests that do not run; P2 then added 3
-   program tests that run, so the line now reads 2 of 126).
+1. Items T3, F4, R8, RP, and Implement I7, which can run together. F4
+   answers 24 open exercise rows (I6 and P2) and the open front-end
+   rows G161 and G162.
+2. Front-end round 25 (item FE) after T3, then Port suite P3.
+3. RV7, the gap review, after F4, with a recorded read of the RV6 and
+   RV7 repair diffs.
+
+The rewrite starts when a front-end round ends with at most 50 tests
+that fail their check, no test made worse in two rounds, and a named
+cause for each remaining test (decision 0062).
 
 After the front end meets the completion test of decision 0060, a
 phase item rewrites it (roadmap item FR).
