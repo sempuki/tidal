@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** UNI-14, UNI-6, CE-6, STG-10, `tests/classes/unions/construct-in-member-of-inactive-member-union-constant.cpp`, `tests/classes/unions/construct-in-member-of-inactive-member-union-run.cpp`, `tests/classes/unions/construct-at-array-member-element-constant.cpp`, `tests/classes/unions/array-member-element-address-no-active-member.cpp`, `tests/classes/unions/array-member-element-steps-no-active-member-constant.cpp`
 **Source:** W20-2 (`reports/clean-room/W20/report.md`) with the writer probe `reports/clean-room/roadmap-10/writer-probes/w20-2-union-array-member.json`, and the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.4, 1.5, and 6), reduction `construct_in_member_of_inactive_union_member.cpp`.
-**Waits for:** a first review; newest families that agree
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -73,4 +73,10 @@ member union, and Clang and GCC 14 reject it with an array member. A
 program that only forms pointers into the member runs on every
 compiler.
 
+Kept open on 2026-11-10 under decision 0054, because the review reads the answer with a doubt on the run-time form, and two newest families (GCC 16 and EDG) differ in the array form (item RV6).
+
 ## Opinions
+
+### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV6-A-13, RV6-A-14). Constant evaluation rejects both constant forms, because the member that encloses the new object has not started its lifetime, which option 1 says. The doubt is at run time. The review reads the construction there as defined, against UNI-6's last sentence and the run test's expectation that the interpreter stops. The new object either reuses the union's storage, or, when a whole object of the enclosing member's type fits at the member's address, makes that member active. In the member-union form the inner union and the `double` have the same size, so the second outcome is possible. In the array form it is not.

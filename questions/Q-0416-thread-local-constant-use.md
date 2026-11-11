@@ -28,6 +28,8 @@ The test in **Affects**.
 
 It does not start it (option 1). Every newest family that runs the program agrees. `pending.md` row 4 keeps the matrix's answer where at most one newest family follows the review.
 
+Kept in `pending.md` row 4 on 2026-11-10 (decision 0061, item RV6), because the review still reads against the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 10 text)
@@ -37,3 +39,7 @@ The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11
 ### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
 
 The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) names the question in its reading of OBJ-11 (RV5-A-11). The reference starts a deferred construction on a use of any thread-local variable of the unit, so the review still reads against the answer that the matrix keeps. A read of a `const` integral thread-local variable with constant initialization may not be a use in the reference's sense. The question stays in `pending.md` row 4.
+
+### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) names the question in its reading of SINIT-6 (RV6-A-3). A use of any non-inline thread-local variable of the unit starts the deferred initialization, and OBJ-11's limit to a variable with dynamic initialization has no basis in the reference. The review still reads against the answer that the matrix keeps.

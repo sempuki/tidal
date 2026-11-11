@@ -16,7 +16,7 @@ each option.
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
-| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 201 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
+| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 202 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
 | 2 | The choices of decision 0051: settling when the newest version of each family agrees, and keeping the implementation-only operations referenced | Confirm or change each choice | Both choices | Q-0322 |
 | 3 | A report of EDG behavior to the EDG project ([groups below](#edg-report)) | Approve the report, or hold it | Tidal follows Clang 22 and GCC 16. Each test records EDG's result as an override | Q-0002, Q-0003, and the cluster 5 groups below |
 | 4 | A gap review reads the C++23 text against the matrix's answer, and at most one newest family follows the review ([items below](#matrix-against-review)) | Follow the review, against the compilers that differ from it, or follow the matrix | The matrix's answer in each, except Q-0307, where Tidal follows the review | Each question and rule in the section below |
@@ -45,6 +45,7 @@ each option.
 | 4 | phase 11 item RV4, the gap reviews of the text phase 10 wrote: Q-0263, Q-0386, Q-0395, Q-0413 | 1e51073 |
 | 2 | phase 12 item QR, question records: Q-0323, Q-0383 | da51ae9 |
 | 1 | phase 13 item QR2, question records: Q-0419 | |
+| 1 | phase 13 item RV6, the gap reviews of the text phase 13 wrote: Q-0428 | |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -71,8 +72,8 @@ whose last review finds the reference silent.
 | 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 | at most 23 |
 | 4a | Follow the compilers; answers stay | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | 0 |
 | 4a | Follow the review; answers change | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | at most 32 |
-| 4b | Follow the compilers; answers stay | 21: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418 | 44 | 0 |
-| 4b | Follow the review; answers change | 21: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418 | 44 | at most 44 |
+| 4b | Follow the compilers; answers stay | 22: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426 | 48 | 0 |
+| 4b | Follow the review; answers change | 22: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426 | 48 | at most 48 |
 | 4a | Follow the compilers, rule items; answers stay | 14: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; CMP-8 | 171 | 0 |
 | 4a | Follow the review, rule items; answers change | 14: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; CMP-8 | 171 | at most 171 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
@@ -82,9 +83,9 @@ whose last review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 16: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423 | 30 | 0 |
 
-Rows 1 to 9 hold 112 of the 181 open questions (62%). With row 10, the rows hold 126 (70%).
+Rows 1 to 9 hold 113 of the 180 open questions (63%). With row 10, the rows hold 127 (71%).
 
-75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 49 doubt, 16 silent, 9 against, 1 part.
+77 open questions wait for a review that supports the answer with no doubt. By what the last review found: 51 doubt, 16 silent, 9 against, 1 part.
 
 ## Matrix against review
 
@@ -153,6 +154,8 @@ each item, except Q-0307, where Tidal follows the review.
 | COND-16, Q-0418 | step 1 for an `A` xvalue against a `const A` lvalue | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
 | NEW-P5 | `new T` for a class that declares only an aligned allocation form and a `T` that is not over-aligned; the matrix rejects, the review adds the alignment on a second search | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
 | ICS-45 | an `explicit` conversion function whose result is a class derived from `C`, for the copy or move constructor of `C` in direct initialization | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
+| CNS-11, CPY-15, Q-0426 | the constraint check of a function template candidate when a candidate that is not a template takes every argument with no conversion; CNS-11 skips the check, the review checks every template candidate | matrix | matrix | review | `2026-11-10-gap-review-phase-13-expressions-overloading-templates`, `2026-11-10-gap-review-phase-13-classes-declarations-foundations` |
+| CPY-15, Q-0426 | the W20-3 copy of a `Holder` beside a constructor template whose constraint needs its own result; the program runs, the review checks the constraint for `Holder` | matrix | matrix | review (checks, then accepts) | `2026-11-10-gap-review-phase-13-expressions-overloading-templates` |
 | CMP-8 | a relational comparison of pointers to two members of a union, or to a member that occupies no storage, during constant evaluation; Tidal keeps a result | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-expressions-foundations-templates` |
 
 ## EDG report

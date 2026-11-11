@@ -1,9 +1,8 @@
 # Q-0428: Does a call of a virtual member function instantiate the function when no object of the class exists?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INST-7, INST-11, `tests/templates/instantiation/virtual-called-through-pointer.cpp`
 **Source:** G157 (`reports/clean-room/rust-frontend/report-23.md`) with the writer probe `reports/clean-room/roadmap-10/writer-probes/g157-virtual-instantiation-events.json`.
-**Waits for:** a first review
 
 ## Context
 
@@ -37,9 +36,15 @@ override.
    makes an object of the class, and a call through a pointer adds
    nothing (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; the call instantiates the function (option 1).
 Two of three newest families agree, and EDG alone differs.
 
+Settled on 2026-11-10 under decision 0054 (item RV6). The gap review of 2026-11-10 supports the answer with no doubt, and INST-P1 gives the same answer. The INST-P1 table says that a call instantiates a function, and a call through a pointer is a call. INST-P1 names INST-11 in `:exceptions:`, but INST-11 covers only a virtual function that no use names, and this call names the function. So the model rules out option 2. EDG 7.0 differs, and the test keeps its override.
+
 ## Opinions
+
+### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 13 wrote on expressions, overloading, and templates (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV6-B-10). A call through the pointer names the virtual function and uses it, and that use needs the definition, so the member is instantiated. The unspecified case covers only a virtual function that no other use needs. A call inside a function that the program never calls is still such a use. EDG's result is outside the unspecified case.

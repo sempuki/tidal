@@ -464,7 +464,7 @@ status, and the first sentence of its answer section.
 | [Q-0425](Q-0425-build-inside-inactive-union-member.md) | Can a program build an object inside a union member that is not active, as an element of an array member or a member of a member union? | provisional | No; the construction does not make the member active, and constant evaluation rejects it |
 | [Q-0426](Q-0426-by-value-constructor-template-constraint.md) | Does a copy of a class check the constraint of a constructor template with the class as the template's argument? | provisional | No; the copy does not check that constraint, and the program runs |
 | [Q-0427](Q-0427-member-template-current-instantiation-object.md) | Does a member template named after `.` need `template` when the object's type is the current instantiation? | provisional | No; the program runs without `template` |
-| [Q-0428](Q-0428-virtual-call-instantiation.md) | Does a call of a virtual member function instantiate the function when no object of the class exists? | provisional | Yes; the call instantiates the function |
+| [Q-0428](Q-0428-virtual-call-instantiation.md) | Does a call of a virtual member function instantiate the function when no object of the class exists? | settled | Yes; the call instantiates the function |
 
 ## Status values
 

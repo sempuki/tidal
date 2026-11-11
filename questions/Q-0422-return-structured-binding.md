@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** JMP-10, RET-6, `tests/statements/jumps/return-structured-binding-lvalue.cpp`
 **Source:** point RV5-A-16 of the gap review of the text phase 12 wrote on classes, declarations, and foundations (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`), with a probe that a clean-room writer ran for it.
-**Waits for:** a first review
+**Waits for:** a principle (JMP-P3)
 
 ## Context
 
@@ -40,4 +40,10 @@ The test in **Affects**, with an override for EDG.
 The name stays an lvalue (option 1). Two of three families agree, and
 the review reads the C++23 text this way.
 
+Kept open on 2026-11-10 under decision 0054 (item RV6). The review supports the answer with no doubt, and only EDG differs. No principle gives the answer. JMP-P3 names a local variable and a parameter, and a reader cannot tell from JMP-P3 whether a structured binding is a local variable. Both options fit JMP-P3, so JMP-P3 fails step 3 of the principle test.
+
 ## Opinions
+
+### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) reads the question: supports with no doubt (RV6-A-9). A structured binding is an entity of its own kind and is no variable. The rule that makes a name an xvalue in a `return` statement covers only variables with automatic storage, so the binding's name stays an lvalue. The same holds for a binding to the data members of a class and for the tuple-like form.

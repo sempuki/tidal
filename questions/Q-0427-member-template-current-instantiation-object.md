@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), reduction `member_template_through_current_instantiation_object.cpp`.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -52,4 +52,10 @@ Rule text on 2026-11-10 (decision 0061, item F3): DEP-24's bullet for
 instantiation when lookup at the definition finds the member template
 in the class. The question waits for a first review.
 
+Kept open on 2026-11-10 under decision 0054, because the review reads the answer with a doubt on DEP-24's wording (item RV6).
+
 ## Opinions
+
+### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 13 wrote on expressions, overloading, and templates (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV6-B-9). The name after the dot is looked up in the type of the object, and the lookup runs at the definition when that type is the current instantiation. A member template found there makes the `<` open an argument list, so no `template` is needed (option 1). The doubt is DEP-24's phrase "in the class": the lookup also searches the bases that are not dependent, and a member template that such a base declares needs no `template` either.

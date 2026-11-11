@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** CPY-15, CNS-35, CNS-11, `tests/templates/constraints/by-value-constructor-template-constraint-copies-class.cpp`, `tests/templates/constraints/exact-non-template-skips-constraint-check.cpp`, `tests/templates/constraints/added-const-non-template-checks-constraint.cpp`, `tests/classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp`, `tests/classes/copy-move/by-value-constructor-template-constraint-checked.cpp`
 **Source:** W20-3 (`reports/clean-room/W20/report.md`) with the writer probe `reports/clean-room/roadmap-10/writer-probes/w20-3-self-by-value-constraint.json`.
-**Waits for:** a first review
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
@@ -90,4 +90,14 @@ dropped, unless CNS-11 skips the check. GCC differs on the second
 point, and EDG on the first, so in each case one newest family
 differs. The question waits for a first review.
 
+Kept open on 2026-11-10 under decision 0054. The review reads against the answer, and Clang 22 and GCC 16 keep the matrix's answer, so the answer stays and the question joins `pending.md` row 4 (item RV6). EDG follows the review in the CNS-11 forms, and checks and still accepts in the W20-3 form.
+
 ## Opinions
+
+### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 13 wrote on expressions, overloading, and templates (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`) reads the question: reads against the answer (RV6-B-1). Every function template candidate goes through deduction, and deduction checks the constraints once the template arguments are known. The reference has no step that skips that check because a candidate that is not a template matches every argument exactly, and it gives an example where an error in that check makes a call not valid beside such a candidate. So the W20-3 copy checks the constraint for `Holder` itself (option 2), as Clang 18 and EDG do. CPY-15's order, a check before the by-value specialization is dropped, is a fair reading. The reference has no rule for a check that needs its own result, so it does not decide Clang 18's rejection beyond the check itself. The review of the first part (RV6-A-18) reads CPY-15's link to CNS-11 the same way.
+
+### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) names the question in its reading of CPY-15 (RV6-A-18). The main part of CPY-15 agrees. The last sentence, which lets CNS-11 skip the constraint check, reads against the reference: every template candidate has its constraints checked during deduction, also for the class type itself in every copy. The rule that a template never gives a by-value constructor of the class applies after that check.

@@ -1,0 +1,749 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   review/2026-10-30-gap-review.md:Tidal gap review against C++23 longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:statements/blocks longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:statements/if longest=0   overlap=0.05
+ok   review/2026-10-30-gap-review.md:statements/switch longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:statements/loops longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:statements/range-for longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:statements/jumps longest=0   overlap=0.02
+ok   review/2026-10-30-gap-review.md:expressions/value-categories longest=0   overlap=0.04
+ok   review/2026-10-30-gap-review.md:expressions/conversions longest=0   overlap=0.03
+ok   review/2026-10-30-gap-review.md:expressions/sequencing longest=0   overlap=0.03
+ok   review/2026-10-30-gap-review.md:expressions/multiplicative longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:expressions/additive longest=0   overlap=0.03
+ok   review/2026-10-30-gap-review.md:expressions/shift longest=0   overlap=0.03
+ok   review/2026-10-30-gap-review.md:expressions/comparison longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:expressions/bitwise longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:expressions/logical longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:expressions/conditional longest=0   overlap=0.06
+ok   review/2026-10-30-gap-review.md:expressions/assignment longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:expressions/comma longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:declarations/auto longest=0   overlap=0.04
+ok   review/2026-10-30-gap-review.md:declarations/storage-linkage longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:declarations/declarators longest=0   overlap=0.05
+ok   review/2026-10-30-gap-review.md:declarations/structured-bindings longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:declarations/enumerations longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:declarations/namespaces longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:declarations/attributes longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:declarations/constexpr longest=0   overlap=0.00
+ok   review/2026-10-30-gap-review.md:declarations/functions/definitions longest=0   overlap=0.06
+ok   review/2026-10-30-gap-review.md:declarations/functions/default-arguments longest=0   overlap=0.05
+ok   review/2026-10-30-gap-review.md:declarations/functions/deleted longest=0   overlap=0.07
+ok   review/2026-10-30-gap-review.md:declarations/functions/return-deduction longest=0   overlap=0.02
+ok   review/2026-10-30-gap-review.md:declarations/initialization/forms longest=0   overlap=0.03
+ok   review/2026-10-30-gap-review.md:declarations/initialization/list longest=0   overlap=0.01
+ok   review/2026-10-30-gap-review.md:declarations/initialization/references longest=0   overlap=0.07
+ok   review/2026-10-30-gap-review.md:declarations/initialization/static longest=0   overlap=0.02
+ok   review/2026-10-30-gap-review.md:classes/members longest=0   overlap=0.02
+ok   review/2026-10-30-gap-review.md:Glossary longest=0   overlap=0.02
+ok   review/2026-10-30-gap-review.md:Whole topics in charter scope with no pa longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-declarations.md:Tidal declarations review, round 3 (part longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/auto longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/storage-linkage longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/declarators longest=0   overlap=0.06
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/structured-bindings longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/enumerations longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/namespaces longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/attributes longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/constexpr longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/initialization/forms longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/initialization/list longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/initialization/references longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/initialization/static longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/functions/definitions longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/functions/default-arguments longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/functions/deleted longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-declarations.md:declarations/functions/return-deduction longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-operators.md:Second gap review: binary and assignment longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/multiplicative longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/additive longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/shift longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/comparison longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/bitwise longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/logical longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/conditional longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/assignment longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-operators.md:expressions/comma longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-statements-core.md:Tidal second gap review: statements, val longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-statements-core.md:statements/blocks longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-statements-core.md:statements/if longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-statements-core.md:statements/switch longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-3-statements-core.md:statements/loops longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-3-statements-core.md:statements/range-for longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-3-statements-core.md:statements/jumps longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-3-statements-core.md:expressions/value-categories longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-3-statements-core.md:expressions/conversions longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-3-statements-core.md:expressions/sequencing longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-classes.md:Review of the classes pages longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-classes.md:members longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-classes.md:access longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-classes.md:constructors longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-classes.md:initializer-lists longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-classes.md:copy-move longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-classes.md:derived longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-classes.md:virtual longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-classes.md:unions longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-classes.md:conversion-functions longest=0   overlap=0.06
+ok   review/2026-10-31-gap-review-classes.md:operators longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-classes.md:comparisons longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-concepts-and-constraints.md:intro longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-conversion-sequences.md:intro longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-deduction-and-ordering.md:intro longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-dependent-names-and-instantiation.md:intro longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-expr-decl.md:Review of selected expression and declar longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/primary.md longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/decltype.md longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/member-pointers.md longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/value-categories.md (VC-8 to longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/unary.md longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/postfix.md longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/casts.md longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/constant-expressions.md longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/new-delete.md longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-expr-decl.md:expressions/lambdas.md longest=0   overlap=0.03
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/type-names.md longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/static-assert.md longest=0   overlap=0.07
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/inline.md longest=0   overlap=0.06
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/alignment.md longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/linkage-specifications.md longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/exception-specifications.md longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-expr-decl.md:declarations/volatile.md longest=0   overlap=0.05
+ok   review/2026-10-31-gap-review-overload-resolution.md:intro longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-packs-and-ctad.md:intro longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-packs-and-ctad.md:Packs longest=0   overlap=0.01
+ok   review/2026-10-31-gap-review-packs-and-ctad.md:Class template argument deduction longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-packs-and-ctad.md:Structure longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-templates-n1.md:Gap review of item N1 longest=0   overlap=0.00
+ok   review/2026-10-31-gap-review-templates-n1.md:Template declarations and parameters longest=0   overlap=0.04
+ok   review/2026-10-31-gap-review-templates-n1.md:Template-ids and arguments longest=0   overlap=0.02
+ok   review/2026-10-31-gap-review-templates-n1.md:Explicit specialization longest=0   overlap=0.07
+ok   review/2026-10-31-gap-review-templates-n1.md:Partial specialization longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:intro longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:1. Categories for a probe grid longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:A. Concept definitions longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:B. Clauses longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:C. Type constraints and placeholders longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:D. Requires expressions longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:E. Normalization and atomic constraints longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:F. Satisfaction longest=0   overlap=0.05
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:G. Where constraints are checked longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:H. Subsumption and ordering longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:I. Declarations and redeclarations longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:3. Gaps and doubts longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-concepts-and-constraints.md:4. Already covered by Tidal longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-conversion-sequences.md:Behaviour inventory: implicit conversion longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-conversion-sequences.md:1. Categories (axes for the probe grid) longest=0   overlap=0.07
+ok   review/2026-10-31-inventory-conversion-sequences.md:2. Behaviours longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-conversion-sequences.md:3. Gaps and doubts longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-conversion-sequences.md:4. Already covered in Tidal longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-deduction.md:intro longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-deduction.md:1. Categories for a probe grid longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-deduction.md:A. Adjustments before matching in a call longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-deduction.md:B. Allowed differences after matching longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:C. Braced list arguments longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-deduction.md:D. Combining results longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-deduction.md:E. Deducible shapes longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-deduction.md:F. Explicit template arguments longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:G. Forwarding references longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-deduction.md:H. Non-deduced positions longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:I. Overload sets as arguments longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:J. Packs longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-deduction.md:K. Other deduction contexts longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-deduction.md:L. Partial ordering, the comparison longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:M. Partial ordering, the verdict and tie longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-deduction.md:N. Partial specializations, the order longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-deduction.md:P. Placeholders that use deduction longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:Q. Substitution and its failures longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-deduction.md:3. Gaps and doubts longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-deduction.md:4. Already covered in Tidal longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:intro longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:1. Categories (probe-grid axes) longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:A. Binding of names longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:B. Checking a template before instantiat longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:C. Current instantiation longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:D. Dependent expressions longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:E. Dependent types and arguments longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:F. Disambiguation keywords longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:G. Explicit instantiation longest=0   overlap=0.05
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:H. Implicit instantiation longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:I. Points of instantiation longest=0   overlap=0.07
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:3. Gaps and doubts longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-dependent-names-and-instantiation.md:4. Already covered by Tidal longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-overload-resolution.md:intro longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-overload-resolution.md:Behaviour inventory for item M (overload longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-overload-resolution.md:1. Categories for a probe grid longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-overload-resolution.md:Address of an overload set (AO) longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-overload-resolution.md:Ambiguity and failure (AF) longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-overload-resolution.md:Built-in operator candidates (BI) longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-overload-resolution.md:Candidates in calls (CC) longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-overload-resolution.md:Candidates in initialization (CI) longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-overload-resolution.md:Candidates for operators (CO) longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-overload-resolution.md:Deleted and excluded functions (DE) longest=0   overlap=0.07
+ok   review/2026-10-31-inventory-overload-resolution.md:Object parameter (OP) longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-overload-resolution.md:Ranking of viable functions (RK) longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-overload-resolution.md:Viability (VI) longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-overload-resolution.md:3. Gaps and doubts longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-overload-resolution.md:4. Already covered longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:intro longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:Inventory R: packs, forwarding reference longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:1. Categories (probe grid axes) longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:A. Capture packs in lambdas longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:B. Class template argument deduction: al longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:C. Class template argument deduction: ag longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:D. Class template argument deduction: im longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:E. Class template argument deduction: in longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:F. Class template argument deduction: se longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:G. Class template argument deduction: wh longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:H. Class template argument deduction: us longest=0   overlap=0.05
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:I. Declaring packs longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:J. Deduction with packs longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:K. Expansion mechanics longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:L. Expansion sites longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:M. Folds over packs longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:N. Pack-size operator longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:O. Packs in using-declarations longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:P. Reference collapsing and forwarding r longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:Q. Template-level checks for packs longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:3. Gaps and doubts longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-packs-forwarding-ctad.md:4. Already covered in Tidal longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Behaviour inventory for phase 5, items F longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:F1 categories (probe axes) longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Addresses, sizes, and layout longest=0   overlap=0.04
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Implicit object creation longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Lifetime boundaries and storage reuse longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Object representation and value represen longest=0   overlap=0.05
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Pointer arithmetic over arrays and stora longest=0   overlap=0.05
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Pointer values, interconvertibility, and longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Storage hosting and nesting longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Transparent replacement and use outside  longest=0   overlap=0.06
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Type-access rules longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:F1 gaps and doubts longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:F1 already covered longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:F2 categories (probe axes) longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Allocation forms with alignment longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Alignment enumeration type longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Allocation failure and array length exce longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Dynamic cast and typeid exceptions longest=0   overlap=0.03
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Common exception base longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Launder operation longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:New handler longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Nothrow forms and tag longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Non-allocating placement forms longest=0   overlap=0.02
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:Replaceable global functions longest=0   overlap=0.01
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:F2 gaps and doubts longest=0   overlap=0.00
+ok   review/2026-10-31-inventory-raw-storage-and-language-support.md:F2 already covered longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:How other language specifications put pr longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:What the complaint is about longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Go longest=0   overlap=0.01
+ok   review/2026-10-31-spec-structure-survey.md:Java Language Specification longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:R7RS Scheme longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:The Definition of Standard ML longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Ada Reference Manual and its Annotated e longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:WebAssembly longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Rust Reference and the Ferrocene Languag longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:ECMAScript longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Haskell Report longest=0   overlap=0.01
+ok   review/2026-10-31-spec-structure-survey.md:Dafny and Lean reference manuals longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:The C standard compared with the C++ sta longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Patterns across the survey longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Priority 1: add a foundations part with  longest=0   overlap=0.01
+ok   review/2026-10-31-spec-structure-survey.md:Priority 2: give each topic page a model longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Priority 3: keep the itemized rules, but longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Priority 4: organize by concept where th longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Priority 5: define the requirement vocab longest=0   overlap=0.00
+ok   review/2026-10-31-spec-structure-survey.md:Risks longest=0   overlap=0.01
+ok   review/2026-11-01-gap-review-question-cluster-1.md:Gap review: question cluster 1 longest=0   overlap=0.00
+ok   review/2026-11-01-gap-review-question-cluster-1.md:Result longest=0   overlap=0.00
+ok   review/2026-11-01-gap-review-question-cluster-1.md:Settled questions longest=0   overlap=0.02
+ok   review/2026-11-01-gap-review-question-cluster-1.md:Q-0300 in more detail longest=0   overlap=0.00
+ok   review/2026-11-01-gap-review-question-cluster-1.md:Q-0181 in more detail longest=0   overlap=0.02
+ok   review/2026-11-01-gap-review-question-cluster-1.md:Questions that stay open longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-exceptions.md:Gap review: the exceptions chapter longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-exceptions.md:Result longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-exceptions.md:Rules longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-exceptions.md:Questions longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-exceptions.md:THR-1 longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-exceptions.md:THR-3 and the copy constructor longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-exceptions.md:TRY-2 longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-exceptions.md:TRY-5 longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-exceptions.md:Function try blocks longest=0   overlap=0.07
+ok   review/2026-11-03-gap-review-exceptions.md:Unwinding longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-exceptions.md:Storage from a new expression longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-exceptions.md:Termination longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-item-o.md:Gap review: item O, class properties longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-item-o.md:Result longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-item-o.md:Rules longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-item-o.md:Glossary longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-item-o.md:Questions longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-item-o.md:Q-0343 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-item-o.md:Q-0041 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-item-o.md:CLS-32 longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-item-o.md:Empty bases longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-item-o.md:Layout classification longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-item-o.md:CPY-19 and const members longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-names.md:Gap review: names and lookup longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-names.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-names.md:Rules longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-names.md:Questions longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-names.md:Q-0311 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-names.md:Hiding and restricted lookups longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-names.md:Qualified lookup in a namespace longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-names.md:Qualifiers longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-names.md:Operator lookup longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-names.md:Associated entities longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-names.md:Directive regions longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-object-model.md:Gap review: the object model longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-object-model.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-object-model.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-object-model.md:Questions longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-object-model.md:Lifetime bounds longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-object-model.md:Static and thread objects longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-object-model.md:Transparent replacement longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-object-model.md:Byte copies longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-object-model.md:Constant evaluation of the construct-at  longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-object-model.md:Names that the program declares in the s longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-object-model.md:Q-0175 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-object-model.md:Q-0323 in more detail longest=0   overlap=0.07
+ok   review/2026-11-03-gap-review-object-model.md:Q-0334 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-object-model.md:Q-0336 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-object-model.md:Q-0350 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-program-structure.md:Gap review: program structure longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-program-structure.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-program-structure.md:Translation longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-program-structure.md:Use and the one-definition rule longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-program-structure.md:Fundamental types longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-program-structure.md:Keywords longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-program-structure.md:Questions longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-program-structure.md:Q-0129 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-program-structure.md:Q-0358 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-program-structure.md:Q-0176 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-program-structure.md:Q-0350 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-program-structure.md:Rejection and diagnostics longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-program-structure.md:The main function longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-program-structure.md:Constant evaluation longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-program-structure.md:Observable behavior longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-program-structure.md:Uses longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-program-structure.md:Definitions across units longest=0   overlap=0.06
+ok   review/2026-11-03-gap-review-program-structure.md:Widths longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Gap review: question cluster 2 longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Result longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Questions in the cluster longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Q-0133 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Q-0153 in more detail longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Q-0156 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Q-0161 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Q-0188 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-2.md:Q-0189 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Gap review: question cluster 3 longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Result longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Questions in the cluster longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Q-0216 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Q-0217 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Q-0220 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Q-0285 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-3.md:Q-0293 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Gap review: question cluster 4 longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Result longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Questions in the cluster longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0001 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0013 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0090 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0117 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0192 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0193 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0303 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0307 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0309 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0318 in more detail longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-question-cluster-4.md:Q-0320 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Gap review: question cluster 5 longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Result longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Questions in the cluster longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0195 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0197 in more detail longest=0   overlap=0.06
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0198 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0201 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0203 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0235 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0266 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0272 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0277 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0278 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0280 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-question-cluster-5.md:Q-0282 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Gap review: question cluster 6 longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Result longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Questions in the cluster longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Q-0225 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Q-0226 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Q-0235 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-question-cluster-6.md:Q-0346 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Gap review: open questions on classes an longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Questions in the cluster longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0062 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0082 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0083 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0084 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0087 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0126 in more detail longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0131 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0181 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0190 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-classes-statements.md:Q-0344 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Gap review: open questions on expression longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Questions in the cluster longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0025 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0032 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0033 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0045 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0063 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0074 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0077 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0079 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0080 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0092 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0123 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0124 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0191 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0222 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0300 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0330 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-expressions-declarations.md:Q-0335 in more detail longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-questions-overloading.md:Gap review: open questions on overloadin longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-overloading.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-overloading.md:Questions in the cluster longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0134 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0136 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0140 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0142 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0154 in more detail longest=0   overlap=0.03
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0155 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-overloading.md:Q-0165 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-templates.md:Gap review: open questions on templates longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-templates.md:Result longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-templates.md:Questions in the cluster longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0168 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0200 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0205 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0246 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0247 in more detail longest=0   overlap=0.05
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0248 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0263 in more detail longest=0   overlap=0.00
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0269 in more detail longest=0   overlap=0.02
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0273 in more detail longest=0   overlap=0.04
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0287 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-gap-review-questions-templates.md:Q-0295 in more detail longest=0   overlap=0.01
+ok   review/2026-11-03-inventory-class-properties.md:Behaviour inventory for phase 6, item O longest=0   overlap=0.02
+ok   review/2026-11-03-inventory-class-properties.md:Categories (probe axes) longest=0   overlap=0.02
+ok   review/2026-11-03-inventory-class-properties.md:Trivially copyable classes longest=0   overlap=0.01
+ok   review/2026-11-03-inventory-class-properties.md:Trivially copyable and other type catego longest=0   overlap=0.02
+ok   review/2026-11-03-inventory-class-properties.md:Trivial and eligible special members longest=0   overlap=0.02
+ok   review/2026-11-03-inventory-class-properties.md:Standard-layout classes longest=0   overlap=0.06
+ok   review/2026-11-03-inventory-class-properties.md:What standard-layout gives a program longest=0   overlap=0.07
+ok   review/2026-11-03-inventory-class-properties.md:Common initial sequence and layout-compa longest=0   overlap=0.02
+ok   review/2026-11-03-inventory-class-properties.md:Implicit-lifetime types and aggregates longest=0   overlap=0.03
+ok   review/2026-11-03-inventory-class-properties.md:Observation channels without the library longest=0   overlap=0.01
+ok   review/2026-11-03-inventory-class-properties.md:Class layout that varies by target longest=0   overlap=0.02
+ok   review/2026-11-03-inventory-class-properties.md:Gaps relative to Tidal longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Gap review: rules that phase 7 added or  longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Result longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Questions longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Q-0362 longest=0   overlap=0.09
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Q-0364 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Q-0366 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-7-additions.md:Q-0367 longest=0   overlap=0.07
+ok   review/2026-11-04-gap-review-phase-7-additions.md:CLS-35 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-additions.md:CNS-40 longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-7-additions.md:COND-16 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-7-additions.md:DEFARG-10 longest=0   overlap=0.13
+ok   review/2026-11-04-gap-review-phase-7-additions.md:OBJ-12 longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-7-additions.md:ODR-15 longest=0   overlap=0.18
+ok   review/2026-11-04-gap-review-phase-7-additions.md:STG-25 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-additions.md:OBJ-11 longest=0   overlap=0.07
+ok   review/2026-11-04-gap-review-phase-7-additions.md:LSUP-5 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-additions.md:CTOR-17 longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:Gap review: rules that the phase 7 front longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:Result longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:Questions longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:UNW-1 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:NS-15 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:C names in an unnamed namespace longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:SB-5 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:COND-16 longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:NEW-22 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:DEFARG-2 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:ALN-1 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:UNI-7 and braces longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:STG-18 exceptions longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:BF-9 and unnamed bit-fields longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-7-repairs.md:Q-0372 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:Gap review: the text phase 8 wrote on th longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:Result longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:Rules longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:Principle uses longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:Questions longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:ACC-20 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:CTOR-17 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:OPR-9 and Q-0383 longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:OVL-38 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:UNI-7 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:VIRT-1 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:CLS-P3 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:CVF-P1 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:VIRT-P4 longest=0   overlap=0.04
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:UNI-P4 longest=0   overlap=0.09
+ok   review/2026-11-04-gap-review-phase-8-classes-overloading.md:UNI-P6 longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Gap review: the text phase 8 wrote on th longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Result longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Principle uses longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Questions longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Q-0377 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:Q-0385 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:ATTR-P1 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:ATTR-6 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:ENUM-P1 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:ENUM-P3 and ENUM-5 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:EXS-P1 and EXS-7 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:DEFARG-P1 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:INIT-P2 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:TYN-P1 longest=0   overlap=0.08
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:TYN-P2 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:LNK-1 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:NS-P2 and NS-12 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-declarations-statements.md:IF-P4 longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Gap review: the text phase 8 wrote on th longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Result longest=0   overlap=0.01
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Principle uses longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Questions longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:COND-16 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:CMP-P3 longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:PFX-P3 longest=0   overlap=0.10
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:PFX-22 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:UNW-2 longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:TARG-13 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:INST-P3 longest=0   overlap=0.02
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:INST-33 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Q-0221 longest=0   overlap=0.00
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Q-0274 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Q-0290 longest=0   overlap=0.05
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Q-0383 longest=0   overlap=0.03
+ok   review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md:Q-0386 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Gap review: the text phase 10 wrote on c longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Result longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Principle uses longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Questions longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:ACC-20 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:ACC-10 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:CLS-2 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:CLS-26 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:OPR-P3 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:ENUM-10 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:CONV-9 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:NAM-21 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:OBJ-11 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:ICS-45 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:AUTO-P3 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:RET-2 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:SINIT-6 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:LSUP-P2 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:LSUP-2 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:TR-P1 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:TR-4 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:SW-P1 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Q-0414 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Q-0337 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md:Q-0402 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Gap review: the text phase 10 wrote on e longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Result longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Rules longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Principle uses longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Questions longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:LAM-6 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:LAM-29 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:TARG-27 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:CTAD-16 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:CPT-19 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:CNS-P2 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:CNS-14 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:DED-29 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:DEP-P6 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:ORD-P1 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:ORD-13 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Q-0411 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Q-0293 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-10-expressions-templates.md:Q-0396 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:Gap review: phase 12 text on classes, de longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:Result longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:Rules and principles longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:Questions longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-1 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-2 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-3 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-4 longest=0   overlap=0.13
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-5 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-6 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-7 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-8 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-9 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-10 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-11 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-12 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-13 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-14 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-15 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-16 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-17 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md:RV5-A-18 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:Gap review: phase 12 text on expressions longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:Result longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:Rules and principles longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:Questions longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-1 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-2 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-3 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-4 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-5 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-6 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-7 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-8 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-9 longest=0   overlap=0.11
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-10 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-11 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-12 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-13 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-14 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md:RV5-B-15 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Gap review: the text phase 9 wrote on cl longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Result longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Principle uses longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Questions longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:ACC-20 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:CTOR-17 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:CVF-7 longest=0   overlap=0.06
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:CLS-26 longest=0   overlap=0.11
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:OPR-P3 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:OPR-9 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:UNI-P4 longest=0   overlap=0.06
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:BF-1 longest=0   overlap=0.07
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:VIRT-1 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:OVL-38 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Q-0337 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Q-0361 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Q-0372 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Q-0381 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Q-0384 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md:Q-0394 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:Gap review: the text phase 9 wrote on th longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:Result longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:Rules longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:Principle uses longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:Questions longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:ALN-P1, ALN-8 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:ENUM-P1, ENUM-10 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:ENUM-P3, ENUM-5 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:DEFARG-P1 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:INIT-P2, INIT-1 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:SINIT-5 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:NS-P2, NS-12 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:CONV-P3, CONV-17 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:LSUP-P1, LSUP-2 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:NAM-21 longest=0   overlap=0.08
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:TR-4 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:TR-13 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md:VC-P3 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Gap review: the text phase 9 wrote on ex longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Result longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Rules longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Principle uses longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Questions longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:CMP-P3 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:CMP-8 longest=0   overlap=0.04
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:COND-P2 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:COND-16 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:LAM-P3 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:LAM-6 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:NEW-25 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:PFX-P3 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:PFX-11 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:PFX-15 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:TARG-27 longest=0   overlap=0.06
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:TARG-16 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:CTAD-16 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:TPL-49 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:DED-39 longest=0   overlap=0.06
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-P1 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-P2 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-P4 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-1 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-4 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-6 longest=0   overlap=0.06
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-9 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-12 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:ORD-13 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:TSP-14 longest=0   overlap=0.09
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0168 longest=0   overlap=0.13
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0263 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0269 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0293 longest=0   overlap=0.05
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0295 longest=0   overlap=0.10
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0318 longest=0   overlap=0.02
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0325 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0378 longest=0   overlap=0.03
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0386 longest=0   overlap=0.01
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0396 longest=0   overlap=0.00
+ok   review/2026-11-05-gap-review-phase-9-expressions-templates.md:Q-0401 longest=0   overlap=0.07
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:Gap review: phase 13 text on classes, de longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:Result longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:Rules and principles changed after RV5 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:Text that item F3 changed longest=0   overlap=0.02
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:Questions longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV5 point kept with a note longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-1 longest=0   overlap=0.04
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-2 longest=0   overlap=0.08
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-3 longest=0   overlap=0.03
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-4 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-5 longest=0   overlap=0.02
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-6 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-7 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-8 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-9 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-10 longest=0   overlap=0.02
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-11 longest=0   overlap=0.02
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-12 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-13 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-14 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-15 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-16 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-17 longest=0   overlap=0.03
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-18 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md:RV6-A-19 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:Gap review: phase 13 text on expressions longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:Result longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:Rules and principles longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:Questions longest=0   overlap=0.03
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-1 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-2 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-3 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-4 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-5 longest=0   overlap=0.05
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-6 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-7 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-8 longest=0   overlap=0.04
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-9 longest=0   overlap=0.06
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-10 longest=0   overlap=0.02
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-11 longest=0   overlap=0.01
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-12 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-13 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-14 longest=0   overlap=0.00
+ok   review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md:RV6-B-15 longest=0   overlap=0.01
+
+0 flagged

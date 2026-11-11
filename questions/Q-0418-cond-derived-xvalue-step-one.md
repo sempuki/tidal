@@ -38,8 +38,14 @@ every compiler gives the one-class case this answer.
 
 Kept open on 2026-11-05 under decision 0054. The review reads against the answer that the matrix keeps, so the question joins `pending.md` row 4 (item RV5).
 
+Kept in `pending.md` row 4 on 2026-11-10 (decision 0061, item RV6), because the review still reads against the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) reads the question: reads against the answer (RV5-B-1). The reference asks only that the other operand be an lvalue, and that the lvalue reference to its type bind directly to a glvalue. A reference to const binds directly to an xvalue of the same class or a derived class, so the xvalue operand converts to an lvalue, and both tests of the question get a const lvalue. Every compiler gives a prvalue in the one-class test, and Clang alone gives the lvalue in the derived-class test.
+
+### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 13 wrote on expressions, overloading, and templates (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`) names the question in its reading of COND-16 (RV6-B-11). The new sentence on bases agrees with the reference. Step 1 still needs both operands to be lvalues, and the reference needs only the other operand to be an lvalue and a direct binding to a glvalue. The review still reads against the answer that the matrix keeps.

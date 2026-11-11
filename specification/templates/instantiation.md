@@ -769,7 +769,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   initializer instantiates each one it names, also on a branch that is
   not taken, and other unevaluated operands do not. EDG differs on the
   braced conditional, and GCC 16 on `sizeof`.
-- {question}`Q-0428` (INST-7, INST-11; open):
+- {question}`Q-0428` (INST-7, INST-11; settled on INST-P1):
   whether a call of a virtual function through a pointer instantiates
   the function when the program has no object of the class. The call
   instantiates it, as Clang and GCC say. EDG does not.

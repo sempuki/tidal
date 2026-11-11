@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** UNI-9, `tests/classes/unions/anonymous-union-unnamed-struct-member.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), probe `anonymous_struct_member_in_anonymous_union.cpp`.
-**Waits for:** a first review
+**Waits for:** a principle (UNI-P3)
 
 ## Context
 
@@ -41,4 +41,10 @@ Rule text on 2026-11-10 (decision 0061, item F3): UNI-9's list of
 nested types names an unnamed class that a member declaration defines.
 The question waits for a first review.
 
+Kept open on 2026-11-10 under decision 0054 (item RV6). The review supports the answer with no doubt, and only GCC differs. No principle gives the answer. UNI-P3 says an anonymous union holds only plain public data members, and `pair` is such a member. Both options fit UNI-P3, so UNI-P3 fails step 3 of the principle test.
+
 ## Opinions
+
+### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) reads the question: supports with no doubt (RV6-A-17). A member declaration that defines an unnamed class declares a type inside the anonymous union. Nested types are not allowed there, and nothing exempts an unnamed one, so the program is not valid and a diagnostic is required. GCC's acceptance is a missing diagnostic.
