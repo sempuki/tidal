@@ -20,6 +20,9 @@ expectation (`tidal-expect`). The passing statuses:
   such line needs every rule that it cites to be of one of those kinds.
 - `pass-partial`: the run passes on every explored choice, but the
   exploration is partial (the bound stopped it, or a run was unsupported).
+- `NO-DIAGNOSTIC-ALLOWED`: the front end accepts a test that expects a
+  reject, and every rule that the test cites is `no-diagnostic`, so an
+  implementation may accept it (decision 0061, item CT).
 
 `EDG-AGREES` is a failed check: the answer matches only the EDG override,
 and the rules do not allow that answer.
@@ -42,7 +45,13 @@ The summary counts these tests and how many of them pass.
 Fails when a test's status changes to a failing status: a move from a
 passing status, and a move from one failing status to another, both fail.
 New tests and tests that improved are reported. --update rewrites the
-baseline. A baseline row is a status and a test path, separated by a tab;
+baseline.
+
+The last line gives the count that decision 0060's completion test
+uses: the tests that fail their check, and the program tests under
+tests/programs/ that do not run to their result. Both leave out the
+tests that a row of the front-end ledger in state `out of scope` names
+in its Record (decision 0061). A baseline row is a status and a test path, separated by a tab;
 later columns, if a row has any, are ignored.
 
 Usage:
@@ -60,7 +69,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
 BASELINE = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
-PASSING = {"pass", "EDG-ONLY", "EDG-ALLOWED", "pass-partial"}
+PASSING = {"pass", "EDG-ONLY", "EDG-ALLOWED", "pass-partial", "NO-DIAGNOSTIC-ALLOWED"}
+LEDGER = ROOT / "reports" / "clean-room" / "rust-frontend" / "ledger.md"
+SPEC = ROOT / "specification"
 INTERPRETER = re.compile(r"^// tidal-interpreter:\s*run-fail\s*$", re.M)
 
 
@@ -99,7 +110,33 @@ def results(cargo_bin: str) -> tuple[dict[str, str], str]:
         name = path.relative_to(tests).as_posix()
         if not name.endswith(".tu.cpp"):
             status.setdefault(name, "pass")
+    no_diagnostic = {m.group(1) for f in SPEC.rglob("*.md")
+                     for m in re.finditer(r"^:::\{rule\} (\S+)\n:kind: no-diagnostic$", f.read_text(), re.M)}
+    for name, s in status.items():
+        rules = cited_rules(tests / name)
+        if s == "MISSED-REJECT" and rules and rules <= no_diagnostic:
+            status[name] = "NO-DIAGNOSTIC-ALLOWED"
     return status, out
+
+
+def cited_rules(path: Path) -> set[str]:
+    """The rule IDs of a test's tidal-rules lines."""
+    rules: set[str] = set()
+    for line in path.read_text().splitlines():
+        if not line.startswith("//"):
+            break
+        if line.startswith("// tidal-rules:"):
+            rules |= set(line.split(":", 1)[1].split())
+    return rules
+
+
+def out_of_scope() -> set[str]:
+    """The tests that a front-end ledger row in state `out of scope` names."""
+    found: set[str] = set()
+    for line in LEDGER.read_text().splitlines():
+        if m := re.match(r"^\| G\d+ \| [^|]+ \| out of scope \| ([^|]*)\|", line):
+            found |= set(re.findall(r"`([^`]+\.cpp)`", m.group(1)))
+    return found
 
 
 def interpreter_tests() -> list[str]:
@@ -172,6 +209,16 @@ def main() -> int:
           f"{len(worse)} worse, {len(better)} better, {len(moved)} moved between passing statuses, {new} new ({len(new_failing)} not passing)")
     print(f"frontend: {sum(now.get(n) in PASSING for n in interp)}/{len(interp)} "
           f"interpreter-only expectations met")
+    oos = out_of_scope()
+    unknown = sorted(oos - set(now))
+    if unknown:
+        print(f"frontend: out-of-scope rows name tests that do not exist: {', '.join(unknown)}")
+    failed = sum(rank(s) == 0 for n, s in now.items() if n not in oos)
+    programs = [n for n in now if n.startswith("programs/") and n not in oos]
+    not_run = sum(rank(now[n]) < 2 for n in programs)
+    print(f"frontend: completion (decision 0060): {failed} tests fail their check, "
+          f"{not_run}/{len(programs)} program tests do not run to their result, "
+          f"{len(oos & set(now))} tests out of scope")
     no_base = sorted(n for n, s in now.items() if s == "NO-BASE")
     if no_base:
         print(f"frontend: {len(no_base)} tests with no base expectation: {', '.join(no_base)}")

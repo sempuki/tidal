@@ -10,7 +10,10 @@ how the clean-room writer answered the finding:
 - `out of scope`: the topic is outside Tidal's scope.
 - `open`: no answer yet.
 
-The Record column names the commits, questions, or rules. For a
+The Record column names the commits, questions, or rules. An `out of
+scope` row whose Record names tests takes those tests out of the count
+of decision 0060's completion test (decision 0061, item CT), and
+`tools/frontend_check.py` prints that count. For a
 `commit` row from before the ledger, the Record column names the
 first commit after the report that cites the finding.
 `tools/check_specification.py` fails when a report names a finding
@@ -59,7 +62,7 @@ that has no row.
 | G39 | `report-5.md` | commit | 85dc0a2 |
 | G40 | `report-5.md` | commit | 85dc0a2 |
 | G41 | `report-5.md` | commit | 987850f |
-| G42 | `report-5.md` | out of scope | extended floating-point types stay out of scope (status page, *(referenced)* markers) |
+| G42 | `report-5.md` | out of scope | extended floating-point types stay out of scope (status page, *(referenced)* markers); tests `overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp`, `overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp`, `overloading/conversion-sequences/floating-before-rvalue-reference.cpp`, `overloading/conversion-sequences/floating-equal-rank.cpp` |
 | G43 | `report-5.md` | commit | 901c863, 987850f |
 | G44 | `report-5.md` | commit | 901c863 |
 | G45 | `report-5.md` | commit | 901c863 |
@@ -175,3 +178,6 @@ that has no row.
 | G155 | `report-23.md` | open | |
 | G156 | `report-23.md` | open | |
 | G157 | `report-23.md` | open | |
+| G158 | `report-23.md` | out of scope | decision 0061, item CT: `<cstdarg>` and `va_list` come from the library, which is out of scope; the matrix runs the tests; tests `expressions/postfix/ellipsis-argument-conversions.cpp`, `expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp` |
+| G159 | `report-23.md` | out of scope | decision 0061, item CT: a named escape needs the table of character names, which is data and not a rule; the matrix runs the tests; tests `expressions/primary/char-named-escape.cpp`, `expressions/primary/char-named-escape-unknown.cpp` |
+| G160 | `report-23.md` | out of scope | decision 0061, item CT: `#include <...>` names a library header, which the front end does not have; tests `foundations/odr/include-missing-file-angle.cpp` |
