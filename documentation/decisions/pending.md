@@ -6,7 +6,7 @@ last column lists the questions that the decision closes or changes.
 
 Rows 1, 4a, and 10 come first (decision 0059, item PK3). Each has an
 option under which no test's expectation changes, and together they
-hold 102 open questions and the 20 rule items of row 4a. The
+hold 97 open questions and the 20 rule items of row 4a. The
 [decision packet](#decision-packet) gives the questions and tests of
 each option.
 
@@ -16,7 +16,7 @@ each option.
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
-| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 204 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
+| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 209 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
 | 2 | The choices of decision 0051: settling when the newest version of each family agrees, and keeping the implementation-only operations referenced | Confirm or change each choice | Both choices | Q-0322 |
 | 3 | A report of EDG behavior to the EDG project ([groups below](#edg-report)) | Approve the report, or hold it | Tidal follows Clang 22 and GCC 16. Each test records EDG's result as an override | Q-0002, Q-0003, and the cluster 5 groups below |
 | 4 | A gap review reads the C++23 text against the matrix's answer, and at most one newest family follows the review ([items below](#matrix-against-review)) | Follow the review, against the compilers that differ from it, or follow the matrix | The matrix's answer in each, except Q-0307, where Tidal follows the review | Each question and rule in the section below |
@@ -48,6 +48,7 @@ each option.
 | 1 | phase 13 item RV6, the gap reviews of the text phase 13 wrote: Q-0428 | 7dd6d7c |
 | 1 | phase 14 item RV7, the gap reviews of the text phase 14 wrote: Q-0422 | 4dc57e8 |
 | 1 | phase 17 item RV10, the gap review of the phase 17 text: Q-0450 | 18efd5eb |
+| 5 | phase 18 item DQ, the narrow second review of the doubt-held questions: Q-0018, Q-0221, Q-0222, Q-0290, Q-0415 | d360b2f6 |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -69,7 +70,7 @@ whose last review finds the reference silent.
 
 | Row | Option | Open questions it settles | Tests that name them | Tests whose expectation changes |
 |---|---|---|---|---|
-| 1 | Widen decision 0054 to settle while two newest families differ; answers stay | 66: Q-0017, Q-0018, Q-0021, Q-0033, Q-0041, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0134, Q-0140, Q-0143, Q-0148, Q-0152, Q-0153, Q-0156, Q-0159, Q-0161, Q-0165, Q-0168, Q-0174, Q-0192, Q-0193, Q-0195, Q-0197, Q-0216, Q-0217, Q-0218, Q-0221, Q-0222, Q-0227, Q-0234, Q-0235, Q-0241, Q-0248, Q-0251, Q-0290, Q-0301, Q-0307, Q-0320, Q-0331, Q-0335, Q-0337, Q-0339, Q-0341, Q-0346, Q-0349, Q-0368, Q-0374, Q-0403, Q-0415, Q-0420, Q-0421, Q-0425, Q-0438, Q-0441, Q-0446, Q-0447, Q-0449, Q-0452 | 164 | 0 |
+| 1 | Widen decision 0054 to settle while two newest families differ; answers stay | 61: Q-0017, Q-0021, Q-0033, Q-0041, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0134, Q-0140, Q-0143, Q-0148, Q-0152, Q-0153, Q-0156, Q-0159, Q-0161, Q-0165, Q-0168, Q-0174, Q-0192, Q-0193, Q-0195, Q-0197, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0235, Q-0241, Q-0248, Q-0251, Q-0301, Q-0307, Q-0320, Q-0331, Q-0335, Q-0337, Q-0339, Q-0341, Q-0346, Q-0349, Q-0368, Q-0374, Q-0403, Q-0420, Q-0421, Q-0425, Q-0438, Q-0441, Q-0446, Q-0447, Q-0449, Q-0452 | 155 | 0 |
 | 2 | Decide the row; answers may change | 1: Q-0322 | 0 | 0 |
 | 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 | at most 23 |
 | 4a | Follow the compilers; answers stay | 21: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0274, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416, Q-0430, Q-0442 | 39 | 0 |
@@ -85,7 +86,7 @@ whose last review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 18: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0200, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423, Q-0431 | 34 | 0 |
 
-Rows 1 to 9 hold 133 of the 205 open questions (65%). With row 10, the rows hold 149 (73%).
+Rows 1 to 9 hold 128 of the 200 open questions (64%). With row 10, the rows hold 144 (72%).
 
 68 open questions wait for a review that supports the answer with no doubt. By what the last review found: 41 doubt, 18 silent, 8 against, 1 part.
 

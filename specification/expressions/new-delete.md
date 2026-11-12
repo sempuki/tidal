@@ -866,11 +866,11 @@ of 157 tests.
   deallocation function is called, as Clang does with a warning. GCC
   calls the function, and EDG chooses it and rejects the program when
   the function is deleted.
-- {question}`Q-0222` (NEW-24; open): whether a `new` expression is
+- {question}`Q-0222` (NEW-24; settled on NEW-P3): whether a `new` expression is
   valid when two placement deallocation templates match and partial
   ordering prefers neither. It is, and no deallocation function is
   called, as Clang and GCC do. EDG rejects the expression as ambiguous.
-- {question}`Q-0221` (NEW-25; open): whether a `new` expression is
+- {question}`Q-0221` (NEW-25; settled on NEW-P3): whether a `new` expression is
   valid when its matching deallocation function is deleted. It is not,
   as Clang and EDG say. GCC accepts it.
 - {question}`Q-0300` (NEW-29, NEW-30; open): whether a `new` expression

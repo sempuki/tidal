@@ -1,8 +1,7 @@
 # Q-0018: What happens when no standard integer type holds all of an unscoped enumeration's values?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ENUM-5, `tests/declarations/enumerations/unscoped-value-too-large.cpp`, `tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -25,7 +24,7 @@ that the choice of type is the implementation's.
    own, or reject the enumeration.
 2. `reject`: only standard integer types may be used.
 
-## Provisional answer
+## Answer
 
 Impl-defined (option 1). Both behaviors exist, and the choice of underlying type is
 already the implementation's (ENUM-5).
@@ -39,6 +38,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ENUM-P3, without the rule text, to the programs of `unscoped-value-too-large.cpp` and `unscoped-value-too-large-ilp32.cpp`. Each answer names ENUM-P3 and gives an outcome that the tests allow. On x86-64 the outcome depends on the compiler, and with `-m32` every compiler rejects the enumeration. The use supports the answer.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
+Settled on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review of the doubt-held questions (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) supports the answer with no doubt. The rules of the tests are implementation-defined, so no newest family's result breaks them, and GCC 16 is the one newest family that accepts the enumeration on x86-64. ENUM-P3 gives the answer. The implementation chooses a type wide enough, can provide wider integer types of its own, and rejects the enumeration when none of its types is wide enough. The model rules out option 2, which allows only the standard integer types. ENUM-P3 did not change in phase 18, so decision 0055 does not hold it back. The test keeps its override for GCC.
 
 ## Opinions
 

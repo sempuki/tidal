@@ -931,7 +931,7 @@ of 253 tests.
 - {question}`Q-0377` (NAM-21; settled on NAM-P5): whether the body of a
   class defined with a qualified name sees the members of the qualifier
   without qualification. It does. No family differs.
-- {question}`Q-0415` (NAM-21; open): whether a name after the declarator
+- {question}`Q-0415` (NAM-21; settled on NAM-P5): whether a name after the declarator
   of a friend declaration with a qualified name is searched first in the
   scope that the qualifier names. It is, as GCC and EDG say. Clang uses
   ordinary lookup only.

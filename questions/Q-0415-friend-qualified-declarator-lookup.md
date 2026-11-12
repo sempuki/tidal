@@ -1,9 +1,8 @@
 # Q-0415: In a friend declaration with a qualified name, is a name after the declarator searched in the scope that the qualifier names?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NAM-21, `tests/foundations/names/friend-qualified-declarator-lookup.cpp`
 **Source:** the gap review `reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`, section NAM-21, from the probe that a clean-room writer ran for it.
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -24,13 +23,15 @@ The test in **Affects**.
 1. The name is searched first in `N`, then by ordinary lookup (GCC, EDG, the gap review of 2026-11-05).
 2. The name gets only ordinary lookup (Clang).
 
-## Provisional answer
+## Answer
 
 Searched first in `N` (option 1). Two of three families agree, and the gap review of the text phase 10 wrote reads it so.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt on NAM-21's wording (item RV5).
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review again reads NAM-21 with a doubt and says that the split stays.
+
+Settled on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review of the doubt-held questions (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) supports the answer with no doubt, and Clang 22 alone differs. NAM-P5 gives the answer. A declaration that names a member with a qualified name enters the scope of the qualifier at that name, and the parts after the name see the members of that scope. The friend declaration names `N::f`, so its parameter type `T` finds `N::T`, and the model rules out option 2. NAM-P5 did not change in phase 18, so decision 0055 does not hold it back. Tidal records Clang 22's rejection as a deviation, and the test keeps its override for Clang.
 
 ## Opinions
 

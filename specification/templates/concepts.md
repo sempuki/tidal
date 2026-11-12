@@ -735,7 +735,7 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
   inside a member function can use a private member of the class. It
   can. GCC 14 gives `false`, so the `static_assert` of
   `requirement-access-member.cpp` fails.
-- {question}`Q-0290` (CPT-28; open): whether `(void)` gives a requires
+- {question}`Q-0290` (CPT-28; settled on CPT-P3): whether `(void)` gives a requires
   expression no parameters inside a template. It does, as GCC and EDG
   say. Clang finds the expression `false`.
 - {question}`Q-0259` (CPT-29; settled on CPT-P3): whether a parameter

@@ -54,7 +54,7 @@ status, and the first sentence of its answer section.
 | [Q-0015](Q-0015-clang18-braced-structured-binding.md) | Is `auto [a, b]{arr};` valid when `arr` is an array? | settled | Yes; Clang 18's rejection is fixed in later versions |
 | [Q-0016](Q-0016-constrained-structured-binding.md) | May a structured binding use a constrained `auto`? | compiler defect | No; likely EDG defect |
 | [Q-0017](Q-0017-enum-value-out-of-range.md) | Is converting a value outside an enumeration's range undefined? | provisional | Undefined |
-| [Q-0018](Q-0018-enum-no-standard-underlying-type.md) | What happens when no standard integer type holds all of an unscoped enumeration's values? | provisional | Impl-defined |
+| [Q-0018](Q-0018-enum-no-standard-underlying-type.md) | What happens when no standard integer type holds all of an unscoped enumeration's values? | settled | Impl-defined |
 | [Q-0019](Q-0019-repeated-using-declaration-in-block.md) | May a using declaration be repeated in a block? | settled | Yes, as the newest Clang and GCC allow |
 | [Q-0020](Q-0020-unimplemented-features.md) | How should tests record a compiler that doesn't implement a feature yet? | provisional | Per-compiler expectation naming this question |
 | [Q-0021](Q-0021-misplaced-standard-attribute.md) | Is a standard attribute applied to the wrong kind of entity rejected or ignored? | provisional | Rejected |
@@ -257,8 +257,8 @@ status, and the first sentence of its answer section.
 | [Q-0218](Q-0218-object-parameter-before-reversal.md) | Is the object parameter of a swapped member candidate added before its parameters are reversed? | provisional | Yes; Clang differs from GCC and EDG |
 | [Q-0219](Q-0219-placement-deallocation-templates-ordered.md) | Does partial ordering choose among placement deallocation function templates? | settled | Yes; GCC and EDG agree, Clang calls none |
 | [Q-0220](Q-0220-placement-deallocation-function-before-template.md) | Does a placement deallocation function win over a template that also matches? | provisional | No; a function and a matching template are two matches, and no deallocation function is called |
-| [Q-0221](Q-0221-deleted-deallocation-function-in-new.md) | Is a `new` expression valid when its matching deallocation function is deleted? | provisional | No; Clang and EDG reject, GCC accepts |
-| [Q-0222](Q-0222-placement-deallocation-templates-unordered.md) | Is a `new` expression valid when two placement deallocation templates match and neither is preferred? | provisional | Yes, and no deallocation function is called; Clang and GCC agree, EDG rejects |
+| [Q-0221](Q-0221-deleted-deallocation-function-in-new.md) | Is a `new` expression valid when its matching deallocation function is deleted? | settled | No; Clang and EDG reject, GCC accepts |
+| [Q-0222](Q-0222-placement-deallocation-templates-unordered.md) | Is a `new` expression valid when two placement deallocation templates match and neither is preferred? | settled | Yes, and no deallocation function is called; Clang and GCC agree, EDG rejects |
 | [Q-0223](Q-0223-independent-errors-in-unused-templates.md) | Does an implementation diagnose an independent error in a template that is never instantiated? | settled | No diagnostic required; Clang and EDG diagnose, GCC does not |
 | [Q-0224](Q-0224-dependent-name-read-as-value-yields-type.md) | Is a dependent qualified name without typename that becomes a type at instantiation an error? | settled | Yes; Clang and GCC agree, EDG differs |
 | [Q-0225](Q-0225-template-keyword-after-typename-qualifier.md) | Does a name after typename T:: need the template keyword before an argument list? | provisional | Yes; Clang and EDG agree, GCC differs |
@@ -326,7 +326,7 @@ status, and the first sentence of its answer section.
 | [Q-0287](Q-0287-compound-requirement-step-order.md) | In a compound requirement, are the arguments of the type constraint substituted only after the expression and the `noexcept` test hold? | provisional | Yes, and unused extra arguments are substituted; EDG agrees, Clang and GCC each differ in one case |
 | [Q-0288](Q-0288-requirement-access-inside-member.md) | Can a requires expression inside a member function use a private member of the class? | settled | Yes; every current compiler agrees, GCC 14 differs |
 | [Q-0289](Q-0289-nested-requirement-evaluates-parameter.md) | Is a nested requirement that evaluates a parameter of the requires expression an error? | settled | Yes; every current compiler agrees, Clang 18 differs |
-| [Q-0290](Q-0290-requires-expression-void-parameter-list.md) | Does `(void)` give a requires expression no parameters inside a template? | provisional | Yes; GCC and EDG agree, Clang differs |
+| [Q-0290](Q-0290-requires-expression-void-parameter-list.md) | Does `(void)` give a requires expression no parameters inside a template? | settled | Yes; GCC and EDG agree, Clang differs |
 | [Q-0291](Q-0291-explicit-instantiation-unsatisfied-member.md) | Can a program explicitly instantiate a member function whose constraints fail for the class's arguments? | settled | No; every current compiler agrees, Clang 18 differs |
 | [Q-0292](Q-0292-partial-specialization-repeats-primary-not-more-constrained.md) | Can a partial specialization repeat the primary template's parameters when it is not more constrained? | settled | No; Clang and GCC agree, EDG differs |
 | [Q-0293](Q-0293-constraints-templates-differing-in-ellipsis.md) | Do constraints decide between two templates that differ only in an ellipsis? | provisional | Yes, the ellipsis does not count for templates (ORD-13); Clang and EDG agree, GCC differs |
@@ -451,7 +451,7 @@ status, and the first sentence of its answer section.
 | [Q-0412](Q-0412-standard-attribute-effects.md) | Which effects can a standard attribute have, and can a new one add a required rejection? | provisional | Placement rules, warnings, promises, and layout changes only |
 | [Q-0413](Q-0413-consteval-conversion-for-parameter.md) | Is a call rejected when the implicit conversion of an argument to a parameter calls a consteval constructor that is not a constant expression? | settled | Rejected |
 | [Q-0414](Q-0414-nested-class-friend-access.md) | Does a friend function that a nested class declares have access to the private members of the enclosing class? | provisional | The friend has the nested class's access |
-| [Q-0415](Q-0415-friend-qualified-declarator-lookup.md) | In a friend declaration with a qualified name, is a name after the declarator searched in the scope that the qualifier names? | provisional | Searched first in `N` |
+| [Q-0415](Q-0415-friend-qualified-declarator-lookup.md) | In a friend declaration with a qualified name, is a name after the declarator searched in the scope that the qualifier names? | settled | Searched first in `N` |
 | [Q-0416](Q-0416-thread-local-constant-use.md) | Does a use of a constant-initialized thread_local variable start the deferred construction of the other thread_local variables of its unit? | provisional | It does not start it |
 | [Q-0417](Q-0417-aligned-form-deleted-or-private.md) | Does a new expression for an over-aligned class fall back to the unaligned form when the class's aligned form is deleted or private? | provisional | Not valid |
 | [Q-0418](Q-0418-cond-derived-xvalue-step-one.md) | In step 1 of COND-16, can an xvalue operand bind the lvalue reference to the other operand's type? | provisional | Step 1 needs an lvalue |

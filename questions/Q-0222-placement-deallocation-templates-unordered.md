@@ -1,8 +1,7 @@
 # Q-0222: Is a `new` expression valid when two placement deallocation templates match and neither is preferred?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NEW-24, `tests/expressions/new-delete/throw-placement-templates-unordered.cpp`
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -30,12 +29,14 @@ with an override for EDG.
    (Clang, GCC). The storage is not freed, as with no match.
 2. The program is not valid (EDG).
 
-## Provisional answer
+## Answer
 
 Yes, and no deallocation function is called; Clang and GCC agree, EDG rejects (option 1). Clang and GCC agree. The answer treats two matches as no
 single match, the same as for a placement form with no match.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
+
+Settled on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review of the doubt-held questions (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) supports the answer with no doubt, and EDG 7.0 alone differs. NEW-P3 gives the answer. When no single deallocation function matches, the expression calls none, and the storage is not freed. Two templates that partial ordering leaves unordered are not a single match. The model gives that case a result and no error, so the model rules out option 2. NEW-P3 did not change in phase 18, so decision 0055 does not hold it back. Tidal records EDG 7.0's rejection as a deviation, and the test keeps its override for EDG.
 
 ## Opinions
 

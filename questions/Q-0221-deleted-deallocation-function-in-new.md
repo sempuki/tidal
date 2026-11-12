@@ -1,8 +1,7 @@
 # Q-0221: Is a `new` expression valid when its matching deallocation function is deleted?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NEW-25, `tests/expressions/new-delete/deallocation-deleted.cpp`, `tests/expressions/new-delete/deallocation-deleted-no-throw.cpp`, `tests/expressions/new-delete/deallocation-placement-deleted.cpp`
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -31,7 +30,7 @@ The three tests above, each with an override for GCC.
    checked as the access check already does.
 2. The program is valid (GCC).
 
-## Provisional answer
+## Answer
 
 No; Clang and EDG reject, GCC accepts (option 1). Clang and EDG agree, and the access check, on which all
 three agree, treats the deallocation function as used.
@@ -43,6 +42,8 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied NEW-P3 to the question's program, a `new` expression whose deallocation function is deleted (`deallocation-deleted.cpp`, `deallocation-deleted-no-throw.cpp`, `deallocation-placement-deleted.cpp`), without the rule text: the expression uses the deallocation function in every case, so a deleted one makes it not valid, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0054, because the review finds the reference unclear. The reference checks access and ambiguity of the deallocation function for every allocation of class type, and it does not say outright that the selection is a use for the rule on deleted functions. The review leans to option 1. GCC 16 is the one newest family that differs.
+
+Settled on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review of the doubt-held questions (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) supports the answer with no doubt, and GCC 16 alone differs. NEW-P3 gives the answer. The `new` expression uses the paired deallocation function also when the initialization cannot throw, so that function must be accessible and must not be deleted. The model rules out option 2. NEW-P3 did not change in phase 18, so decision 0055 does not hold it back. Tidal records GCC 16's acceptance as a deviation, and the tests keep their overrides for GCC.
 
 ## Opinions
 

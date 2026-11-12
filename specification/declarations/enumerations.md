@@ -426,7 +426,7 @@ All eight compilers agree on 80 of 84 tests. The results are in
   outside an enumeration's range is undefined. It is. Clang rejects
   `static_cast<E>(8)` during constant evaluation, and GCC and EDG accept
   the cast.
-- {question}`Q-0018` (ENUM-5; open): what happens when no standard
+- {question}`Q-0018` (ENUM-5; settled on ENUM-P3): what happens when no standard
   integer type holds every value of an unscoped enumeration. The
   implementation can use a wider type of its own or reject the
   enumeration. GCC uses a 128-bit type on x86-64, and Clang and EDG

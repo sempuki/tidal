@@ -1,8 +1,7 @@
 # Q-0290: Does `(void)` give a requires expression no parameters inside a template?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CPT-28, `tests/templates/concepts/requires-parameters-void-template.cpp`
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -28,7 +27,7 @@ for a function's parameter list.
 1. `(void)` means no parameters, as in a function (GCC, EDG).
 2. The requires expression is `false` inside a template (Clang).
 
-## Provisional answer
+## Answer
 
 Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and every compiler
 accepts the form outside a template.
@@ -42,6 +41,8 @@ Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on 
 Kept open on 2026-11-04 under decision 0054, because the review agrees with a small doubt. Two newest families also differ from the answer: GCC 16 and EDG 7.0 give `true`.
 
 Corrected on 2026-11-05: the note above names the wrong families. GCC 16 and EDG 7.0 give `true` and follow the answer. Clang is the one newest family that differs: it finds the requires expression false inside a template, and `requires-parameters-void-template.cpp` has an override for Clang only. The question waits only on a review that reads the answer with no doubt.
+
+Settled on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review of the doubt-held questions (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) supports the answer with no doubt, and Clang 22 alone differs. CPT-P3 gives the answer. The parameter list of a requires expression has the form of a function's parameter list, inside a template as well as outside one, so `(void)` means no parameters. The model rules out option 2. CPT-P3 did not change in phase 18, so decision 0055 does not hold it back, and the gap review of 2026-11-04 used CPT-P3 on the question's program. Tidal records Clang 22's result as a deviation, and the test keeps its override for Clang.
 
 ## Opinions
 
