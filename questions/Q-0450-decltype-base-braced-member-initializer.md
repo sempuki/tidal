@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DTY-3, `tests/expressions/decltype/member-initializer-base-braces.cpp`
 **Source:** phase 17, item GR (decision 0065), a probe of the `mem_init_id` production.
-**Waits for:** a first review
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -51,4 +51,9 @@ grammar gives no separate form for a `decltype` base name. GCC's
 rejection resembles its rejection of `decltype` after `~` in
 {question}`Q-0089`.
 
+
 ## Opinions
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) gives the first reading of the question: supports with no doubt (option 1, RV10-1). The name of a base in a member initializer has one shared form in the reference, and the `decltype` form of an expression is one of its arms. Any arm of that form can be followed by parentheses or by a braced list. So DTY-3's item and `member-initializer-base-braces.cpp` agree, and GCC's rejection of the braced form reads against.

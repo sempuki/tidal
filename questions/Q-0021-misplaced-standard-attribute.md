@@ -53,6 +53,8 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 
 Rule text on 2026-11-11 (decision 0065, item F7): ATTR-2 lists `maybe_unused` on a type, as in `int [[maybe_unused]] c;`, where the attribute applies to the type `int` (ATTR-19). The round 14 writer probe found the form (`reports/clean-room/roadmap-14/writer-probes/grammar-forms.json`). Clang and EDG reject it, and GCC accepts it with a warning, as in the rows above. `maybe-unused-on-type.cpp` expects the rejection with GCC as an override. The answer and the **Waits for:** line do not change.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap review of the phase 17 text supports the rejection of `maybe_unused` on a type (RV10-18). Two newest families still differ from the answer for `nodiscard` on a variable, so the **Waits for:** line does not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -62,3 +64,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 ### Inventory, 2026-11-03
 
 The source-reader inventory of class properties (`reports/review/2026-11-03-inventory-class-properties.md`) lists the overlap attribute on a bit-field as ill-formed and notes that this question records a compiler split. The listing fits the provisional answer for that case.
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads ATTR-2's item for `maybe_unused` on a type: supports (option 1, RV10-18). The reference lists the entities that `maybe_unused` can apply to: a class, an alias, a variable, a structured binding, a data member, a function, an enumeration, and an enumerator. An attribute after the type specifiers of a declaration applies to the type, and a type is not on the list. A standard attribute that applies to an entity outside its list makes the program not valid. So the item and `maybe-unused-on-type.cpp` agree. GCC's acceptance with a warning conforms only because the warning is a diagnostic.

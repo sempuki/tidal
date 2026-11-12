@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** OBJ-3, LOOP-3, `tests/foundations/objects/statement-scope-ends-after-return-constant.cpp`
 **Source:** X24-1 (`reports/clean-room/X24/report.md`), with the item F7 writer's probe grid `ce-order` under `tools/probe_grid.py`. Each row records the order of destructor calls in a `constexpr` function and shows it in the first error.
-**Waits for:** a first review; newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -70,3 +70,11 @@ GCC 16 and EDG 7.0 differ, so two newest families stand against the
 answer.
 
 Opened on 2026-11-11 (decision 0065, item F7). OBJ-P2 says that objects end in the reverse of the order in which they began, by any route, and it does not set constant evaluation apart. A reader of OBJ-P2 alone reaches option 1, so OBJ-P2 passes step 3 of the principle test. No reader or reviewer has used OBJ-P2 on this program.
+
+Kept open on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap review of the phase 17 text supports the answer with no doubt (RV10-13). GCC 16 and EDG 7.0 still differ, so two newest families stand against the answer. OBJ-P2 still passes step 3 of the principle test, and the review does not name it.
+
+## Opinions
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) gives the first reading of the question: supports with no doubt (option 1, RV10-13). Constant evaluation has the same semantics as a run. A transfer of control destroys the variables that are active at the source and not at the target, in the reverse of their construction, and the variables of a statement's initializer and condition have a scope that holds the body. So a `return` ends the body's objects, then the condition variable, then the initializer variable, during constant evaluation as at run time. A skipped destructor or another order gives a different log and a different result. GCC 16 and EDG 7.0 read against.

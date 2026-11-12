@@ -26,8 +26,8 @@ commit leaves an ID such as `RV5-A-3`, and the point gets a row here.
 The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
 commit (7cf4574b) left for the next review. The RV5 reviews gave their
 own IDs (RV5-A-n and RV5-B-n), and so do the RV6, RV7, and RV8 reviews
-(RV6-A-n, RV7-B-n, and so on). The RV9 review gives IDs of the form
-RV9-n. The read of a repair diff gives IDs of
+(RV6-A-n, RV7-B-n, and so on). The RV9 and RV10 reviews give IDs of
+the forms RV9-n and RV10-n. The read of a repair diff gives IDs of
 the form RV8-R-n (the read of RV7's repair diff), RV9-R-n (the read of
 RV8's), or RV10-R-n (the read of RV9's). The rows RM12-1 to RM12-3
 give IDs to three findings that only a commit message or a probe README held until the round 12
@@ -1114,6 +1114,25 @@ drift").
 | RV10-R-6 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | commit | b511838d, decision 0065, item F7: the LSUP-10 and UNI-14 Notes say an object whose lifetime began in the same evaluation; the pending.md row 4 item LSUP-10, UNI-14 needs the same words from the integrator |
 | RV10-R-7 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | commit | b511838d, decision 0065, item F7: OBJ-1's array row names an element type that is a class whose default constructor is not trivial |
 | RV10-R-8 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | commit | b511838d, decision 0065, item F7: the OPR Note names the suffix _ld in both places |
+| RV10-1 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: base_type, mem_init_id, and the destructor arms: the template keyword before the last template-id, and decltype(auto) |
+| RV10-2 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: exception_spec and function_suffix derive throw() (Q-0077) and read against |
+| RV10-3 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: using_directive takes no leading attributes, and using_enum_decl takes no template-id |
+| RV10-4 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: cast_type: the template keyword before the last template-id, decltype(auto), and a class template name with no arguments |
+| RV10-5 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: new_type takes no attribute after * and no member pointer |
+| RV10-6 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: the braced_init arm of template_arg and TARG-16 read against, and every compiler accepts |
+| RV10-7 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: member_decl's using_enum_decl, enum_opaque, and template_head arms agree; a second template head in a class |
+| RV10-8 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: init_stmt with sb_decl agrees; sb_decl takes no leading attributes |
+| RV10-9 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: static_assert_decl agrees; conversion_type inherits the ptr_part order of Q-0123 |
+| RV10-10 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: typename_specifier's template keyword before a plain identifier reads against; the deprecated keyword in a template template default |
+| RV10-11 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: lambda_expr, lambda_template, and ATTR-19's lambda row agree |
+| RV10-12 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: OBJ-1's array row agrees; OBJ-2's union member clause and the array element |
+| RV10-13 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: OBJ-3, JMP-6, JMP-9, LOOP-3, and RFOR-4 agree; Q-0452 supported |
+| RV10-14 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: JMP-14's and JMP-7's check at the definition and Q-0451 read against for a template that no specialization uses; the DEP-30 Note |
+| RV10-15 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: FN-7's warning has no counterpart, and its break and goto clause agrees |
+| RV10-16 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: FN-12, INST-1, and INST-30's noexcept item agree, with the doubts of RV9-2 and Q-0406 |
+| RV10-17 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: CE-3's mutable sentence and the nested parts of a mutable member; CE-22 agrees |
+| RV10-18 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: ATTR-2's maybe_unused on a type agrees (Q-0021) |
+| RV10-19 | `../review/2026-11-11-gap-review-phase-17.md` | planned | decision 0065, item RV10: JMP-P1, JMP-P2, ATTR-P1's label row, and the glossary entry for label agree |
 | W20-1 | `W20/report.md` | commit | 0ae4cdb5, decision 0061, item F3: STG-P2 and the FixedVec example say that a pointer to the object in one row does not reach the object in the next row (ADD-10); test foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp |
 | W20-2 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in UNI-14 that a construction inside a member that is not active does not make it active, and that pointers to the elements of such an array member can be formed, stepped, and compared (STG-10); UNI-6 makes the construction undefined (Q-0425); front end: a subscript of an array member with no active member is unsupported; tests classes/unions/array-member-element-address-no-active-member.cpp, array-member-element-steps-no-active-member-constant.cpp, construct-at-array-member-element-constant.cpp, chain-assign-array-element-nontrivial-constant.cpp |
 | W20-3 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in CNS-11 that the constraints of the template candidates are not checked when a candidate that is not a template takes every argument with no conversion, and in CPY-15 that a by-value constructor template is checked before it is dropped otherwise (Q-0426); front end: CNS-35 false reject; tests templates/constraints/by-value-constructor-template-constraint-copies-class.cpp, exact-non-template-skips-constraint-check.cpp, added-const-non-template-checks-constraint.cpp, classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp, by-value-constructor-template-constraint-checked.cpp |

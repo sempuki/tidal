@@ -32,8 +32,14 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 
 Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads against the answer again, now also for the type of a conversion function, since `conversion_type` takes `ptr_part` (RV10-9).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2. In a pointer declarator, the optional attributes come right after the `*` and before the optional cv-qualifiers, and the same order holds for a pointer to member. An attribute after the cv-qualifiers fits no position in the grammar there, so GCC's and EDG's acceptance looks like an extension. Clang follows this reading.
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads the question at `conversion_type`: reads against (option 2, RV10-9). The target type of a conversion function takes pointer, reference, and member pointer parts, each with its own attributes, and `ptr_part` now gives the same parts. In the reference, the attribute of a pointer part comes after `*` and before the cv-qualifiers, and `ptr_part` puts it after the cv-qualifiers. So `conversion_type` inherits the known split of this question.

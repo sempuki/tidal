@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** JMP-14, `tests/statements/jumps/goto-missing-label-template-never-used.cpp`, `tests/statements/jumps/goto-missing-label-class-template-member.cpp`, `tests/statements/jumps/goto-missing-label-generic-lambda.cpp`, `tests/statements/jumps/goto-missing-label-discarded-branch.cpp`
 **Source:** X24-3 (`reports/clean-room/X24/report.md`, probe `t1.cpp`), rerun on the matrix in `reports/clean-room/roadmap-14/writer-probes/x24-compile.json`.
-**Waits for:** a first review
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
@@ -53,3 +53,11 @@ and JMP-14 at the definition. A label of a function does not depend on
 a template parameter, so DEP-30's list does not take the case.
 
 Opened on 2026-11-11 (decision 0065, item F7). No principle gives the answer. JMP-P1 says that the place a jump names must exist in the same function, and it does not say when an implementation checks the place in a template.
+
+Kept open on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads against the answer for the three forms with no specialization (RV10-14). A broken label condition does not depend on the parameters, so the program is not valid and needs no diagnostic there, and GCC's acceptance conforms. The review gives no clear answer for the discarded statement of a used template. Clang 22 and EDG 7.0 keep the matrix's answer, and GCC 16 gives the review's reading. So the question joins `pending.md` row 4 with the item "JMP-14, Q-0451".
+
+## Opinions
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) gives the first reading of the question: reads against for three forms (RV10-14). The reference lets an implementation check a template before any instantiation. A program is not valid, with no diagnostic required, when a construct that does not depend on the parameters would make a specialization right after the definition fail, or when a template that is never instantiated has no valid specialization. A `goto` to a missing label does not depend on the parameters. So in a function template that no specialization uses, in a member function of a class template that is never used, and in a generic lambda that is never called, the program is not valid, and the implementation need not diagnose it. Option 1's rejection is allowed, and GCC's acceptance also conforms. DEP-30 is Tidal's form of that rule. For a discarded statement in a template that is used, the review finds no clear answer. The template is instantiated, the discarded statement is not, and the reference does not say whether the label rule binds such a statement. Outside a template, every compiler rejects the discarded form.

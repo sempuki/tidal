@@ -62,6 +62,8 @@ Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The read 
 
 Rule text on 2026-11-11 (decision 0065, item F7): tests hold the three forms of the table that no test held. CE-3 says that a `mutable` member of a usable variable is not usable, as the read of the RV9 repair diff gives. `mutable-member-read-outside.cpp` and `struct-copy-mutable-member-outside.cpp` expect the rejection, with EDG as an override. CE-22 says that a `mutable` member that is not active sets no limit, and `union-copy-inactive-mutable-member-outside.cpp` expects acceptance, with Clang and GCC as overrides. Two newest families stand against that form, as against the assignment form. The answer and the **Waits for:** line do not change.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap review of the phase 17 text supports CE-3's sentence and CE-22's sentence on a `mutable` member that is not active (RV10-17), with a small doubt on CE-3. The review does not read the doubt of RV10-R-4 on the copy assignment. GCC 16 and EDG 7.0 still differ in the assignment form, and CE-P3 still fails step 3 of the principle test, so the **Waits for:** line does not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 16 text)
@@ -75,3 +77,7 @@ The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-o
 - A copy from a `constexpr` union whose active member is not `mutable` is valid, because constant evaluation can read the active member. Clang and GCC read against, and EDG agrees.
 - The implicit copy of a struct reads each member, and a `mutable` part of a constant variable cannot be used in a constant expression. So the copy of a struct with a `mutable` member from a `constexpr` variable is not constant. Clang and GCC agree, and EDG reads against.
 - A read of the `mutable` member of `shared` follows the same rule. Clang and GCC agree, and EDG reads against.
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads CE-3's and CE-22's new sentences and the three new tests: supports with a doubt (option 1, RV10-17). A usable variable can be read in a constant expression, and so can each of its parts that is not `mutable`. So a read of a `mutable` member of `shared` is not constant, and the copy of a struct with a `mutable` scalar member reads that member and is not constant either. CE-3's sentence and the two reject tests agree. The limit on the implicit copy or move of a union applies only when the active member is `mutable`, so CE-22's sentence and `union-copy-inactive-mutable-member-outside.cpp` agree, and Clang and GCC read against. The doubt is small: a member nested inside a `mutable` member is not usable either, even when the nested member is not `mutable` itself, and CE-3 names only the `mutable` member.
