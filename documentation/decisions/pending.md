@@ -76,8 +76,8 @@ whose last review finds the reference silent.
 | 4a | Follow the review; answers change | 20: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416, Q-0430, Q-0442 | 36 | at most 36 |
 | 4b | Follow the compilers; answers stay | 24: Q-0063, Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426, Q-0439 | 53 | 0 |
 | 4b | Follow the review; answers change | 24: Q-0063, Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426, Q-0439 | 53 | at most 53 |
-| 4a | Follow the compilers, rule items; answers stay | 19: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; CTAD-16; LSUP-10, UNI-14; TARG-16; CMP-8 | 232 | 0 |
-| 4a | Follow the review, rule items; answers change | 19: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; CTAD-16; LSUP-10, UNI-14; TARG-16; CMP-8 | 232 | at most 232 |
+| 4a | Follow the compilers, rule items; answers stay | 19: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; CTAD-16; LSUP-10, UNI-14; TARG-16; CMP-8 | 234 | 0 |
+| 4a | Follow the review, rule items; answers change | 19: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; CTAD-16; LSUP-10, UNI-14; TARG-16; CMP-8 | 234 | at most 234 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
 | 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 | at most 5 |
 | 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 | at most 5 |
@@ -85,7 +85,7 @@ whose last review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 17: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423, Q-0431 | 33 | 0 |
 
-Rows 1 to 9 hold 123 of the 202 open questions (61%). With row 10, the rows hold 138 (68%).
+Rows 1 to 9 hold 123 of the 203 open questions (61%). With row 10, the rows hold 138 (68%).
 
 86 open questions wait for a review that supports the answer with no doubt. By what the last review found: 60 doubt, 17 silent, 8 against, 1 part.
 

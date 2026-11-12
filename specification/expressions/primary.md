@@ -468,7 +468,7 @@ pointer-to-member type, and to `bool` by direct initialization.
 
 :::{rule} PRIM-11
 :kind: required
-:tests: expressions/primary/this-const-member-modify.cpp expressions/primary/this-default-member-init.cpp expressions/primary/this-prvalue.cpp expressions/primary/this-type.cpp expressions/primary/this-trailing-return.cpp
+:tests: expressions/primary/this-const-member-modify.cpp expressions/primary/this-default-member-init.cpp expressions/primary/this-prvalue.cpp expressions/primary/this-type.cpp expressions/primary/this-trailing-return.cpp templates/deduction/array-member-const-member-function-two-parameters.cpp
 
 In a member function of class `C`, `this` is a prvalue that points to
 the object. The type of `this` is pointer to `C` with the {term}`cv-qualifiers <cv-qualifier>`
@@ -489,7 +489,7 @@ A program must not use `this` in these places:
 
 :::{rule} PRIM-12
 :kind: required
-:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp expressions/primary/member-mutable-in-const.cpp expressions/primary/member-const-in-const-function.cpp
+:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp expressions/primary/member-mutable-in-const.cpp expressions/primary/member-const-in-const-function.cpp templates/deduction/array-member-const-member-function-one-parameter.cpp templates/deduction/array-member-const-member-function-two-parameters.cpp
 
 A name refers to the entity that lookup finds ({rule}`NAM-8`). The
 value category of the name is:
@@ -778,8 +778,8 @@ bool same_text(const char* a, const char* b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 148 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 136
+of 150 tests.
 
 ### Divergences
 

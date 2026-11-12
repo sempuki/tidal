@@ -189,7 +189,7 @@ number i of the outer pack. PACK-6 applies to the two lengths.
 
 :::{rule} PACK-5
 :kind: required
-:tests: templates/packs/expansion-elements.cpp templates/packs/lambda-in-pattern.cpp
+:tests: templates/packs/expansion-elements.cpp templates/packs/lambda-in-pattern.cpp templates/packs/template-template-pack-base-and-forward.cpp
 
 A {term}`pack expansion` is a pattern followed by `...`. The expansion
 stands for a list with one copy of the pattern for each element, in the
@@ -310,7 +310,7 @@ elements are evaluated from left to right ({rule}`LIST-7`).
 
 :::{rule} PACK-14
 :kind: required
-:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/base-pack-template-id-initializers.cpp templates/packs/base-pack-paren-init-complete-object.cpp templates/packs/base-pack-paren-init-under-derived.cpp
+:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/base-pack-template-id-initializers.cpp templates/packs/base-pack-paren-init-complete-object.cpp templates/packs/base-pack-paren-init-under-derived.cpp templates/packs/template-template-pack-base-and-forward.cpp
 
 An expansion in a base list gives one base for each element, in order.
 In a member initializer list, an expansion of a `mem_init` that names a
@@ -583,8 +583,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 78
-of 82 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 79
+of 83 tests.
 
 ### Divergences
 

@@ -269,7 +269,7 @@ parameter's argument. An empty list `<>` takes every default.
 
 :::{rule} TARG-10
 :kind: reject
-:tests: templates/arguments/name-without-arguments.cpp templates/arguments/variable-template-without-arguments.cpp templates/arguments/empty-list-needs-angles.cpp templates/arguments/qualified-name-in-class.cpp
+:tests: templates/arguments/name-without-arguments.cpp templates/arguments/variable-template-without-arguments.cpp templates/arguments/empty-list-needs-angles.cpp templates/arguments/qualified-name-in-class.cpp templates/arguments/member-template-of-specialization-template-argument.cpp
 
 Outside its own class, a template name must be followed by an argument
 list where the program needs a type or a value. The rule holds also
@@ -419,7 +419,7 @@ to `const char`.
 
 :::{rule} TARG-17
 :kind: required
-:tests: templates/arguments/template-template-arguments.cpp templates/arguments/template-template-defaults.cpp templates/arguments/template-template-pack.cpp templates/arguments/template-template-partial.cpp templates/arguments/template-template-auto.cpp templates/arguments/template-template-constant-type.cpp templates/arguments/concept-wrapped-for-template.cpp
+:tests: templates/arguments/template-template-arguments.cpp templates/arguments/template-template-defaults.cpp templates/arguments/template-template-pack.cpp templates/arguments/template-template-partial.cpp templates/arguments/template-template-auto.cpp templates/arguments/template-template-constant-type.cpp templates/arguments/concept-wrapped-for-template.cpp templates/arguments/member-template-of-specialization-template-argument.cpp templates/packs/template-template-pack-base-and-forward.cpp
 
 A template template parameter takes, as its argument, a class template
 or an alias template, named without arguments. The argument is valid
@@ -586,8 +586,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 94
-of 100 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 96
+of 102 tests.
 
 ### Divergences
 

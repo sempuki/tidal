@@ -347,7 +347,7 @@ program is not valid, even if another candidate would be chosen.
 
 :::{rule} CNS-35
 :kind: reject
-:tests: templates/constraints/recursive-satisfaction.cpp templates/constraints/recursive-satisfaction-operator.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp
+:tests: templates/constraints/recursive-satisfaction.cpp templates/constraints/recursive-satisfaction-operator.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp templates/constraints/recursive-satisfaction-hidden-friend-reversed.cpp
 
 The check of an atomic constraint must not need the result of the same
 atomic constraint with the same arguments. Such a check can arise
@@ -362,7 +362,7 @@ resolution needs the check that is in progress.
 
 :::{rule} CNS-11
 :kind: required
-:tests: templates/constraints/before-function-type.cpp templates/constraints/before-parameters.cpp templates/constraints/default-argument-before-constraints.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp templates/constraints/exact-non-template-skips-constraint-check.cpp templates/constraints/added-const-non-template-checks-constraint.cpp classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp classes/copy-move/by-value-constructor-template-constraint-checked.cpp
+:tests: templates/constraints/before-function-type.cpp templates/constraints/before-parameters.cpp templates/constraints/default-argument-before-constraints.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp templates/constraints/exact-non-template-skips-constraint-check.cpp templates/constraints/added-const-non-template-checks-constraint.cpp classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp classes/copy-move/by-value-constructor-template-constraint-checked.cpp templates/constraints/recursive-satisfaction-hidden-friend-reversed.cpp
 
 For a function template, the constraints are checked when deduction
 and the {term}`default template arguments <default template argument>` have given every template argument
@@ -819,7 +819,7 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 153 tests.
+of 154 tests.
 
 ### Divergences
 
@@ -910,6 +910,12 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   and GCC skips it. The gap reviews of the text phase 13 wrote read the
   C++23 text as EDG and Clang 18 do, and `pending.md` row 4 holds the
   case.
+- {question}`Q-0453`
+  (CNS-35, CNS-11; open): whether the constraint of a hidden friend
+  operator template is checked, and needs its own result, when the
+  candidate's other parameter cannot take the argument. It is, and
+  CNS-35 rejects the program, as Clang 22 and GCC say. EDG accepts.
+  Clang 18 accepts when that parameter cannot take the argument.
 
 ### Split tests
 
@@ -942,6 +948,7 @@ family column gives the outcome that the test expects on that family.
 | `order-constant-placeholder-after-type.cpp` | CNS-1, CNS-33 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0282` |
 | `order-placeholder.cpp` | CNS-1 | accept | reject | accept | accept | {question}`Q-0262` |
 | `partial-specialization-not-more-constrained.cpp` | CNS-36 | reject | reject | reject | accept | {question}`Q-0292` |
+| `recursive-satisfaction-hidden-friend-reversed.cpp` | CNS-35, CNS-11 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0453` |
 | `redeclare-placeholder-unconstrained.cpp` | CNS-40, CNS-27 | reject | accept | reject | reject | {question}`Q-0269` |
 | `redeclare-placeholder.cpp` | CNS-40, CNS-27 | reject | accept | reject | reject | {question}`Q-0269` |
 | `satisfaction-changes.cpp` | CNS-10 | accept | accept | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0264` |

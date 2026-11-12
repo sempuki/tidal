@@ -613,7 +613,7 @@ target of an alias declaration ({question}`Q-0225`).
 
 :::{rule} DEP-25
 :kind: required
-:tests: templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-template-template-default.cpp templates/dependent-names/template-keyword-base-last-name.cpp templates/dependent-names/template-keyword-cast-last-name.cpp
+:tests: templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-template-template-default.cpp templates/dependent-names/template-keyword-base-last-name.cpp templates/dependent-names/template-keyword-cast-last-name.cpp templates/arguments/member-template-of-specialization-template-argument.cpp
 
 The keyword `template` can come before a template name that lookup
 already finds, also outside a template. Before a template template
@@ -889,8 +889,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 125
-of 155 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 126
+of 156 tests.
 
 ### Divergences
 

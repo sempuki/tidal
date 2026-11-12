@@ -378,7 +378,7 @@ member, and NAM-8 states the general rule.
 
 :::{rule} NAM-38
 :kind: required
-:tests: foundations/names/operator-lookup-skips-class.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-block-declaration-keeps-adl.cpp
+:tests: foundations/names/operator-lookup-skips-class.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-block-declaration-keeps-adl.cpp foundations/names/adl-operator-scoped-enum-outside-namespace.cpp
 
 The lookup of non-member {term}`operator functions <operator function>` for an operator expression
 ({rule}`OVL-7`) searches outward from the use, as NAM-2 gives, and
@@ -442,7 +442,7 @@ be a type alias or a `decltype` specifier.
 
 :::{rule} NAM-16
 :kind: reject
-:tests: foundations/names/qualifier-variable-only.cpp foundations/names/qualifier-fundamental-alias.cpp foundations/names/qualifier-incomplete-class.cpp foundations/names/qualifier-opaque-enum.cpp foundations/names/qualifier-class-being-defined.cpp foundations/names/qualifier-fundamental-alias-destructor.cpp
+:tests: foundations/names/qualifier-variable-only.cpp foundations/names/qualifier-fundamental-alias.cpp foundations/names/qualifier-incomplete-class.cpp foundations/names/qualifier-opaque-enum.cpp foundations/names/qualifier-class-being-defined.cpp foundations/names/qualifier-fundamental-alias-destructor.cpp foundations/names/qualifier-class-alias.cpp
 
 The qualifier before `::` must denote one of these:
 
@@ -635,7 +635,7 @@ this way join the functions that ordinary lookup finds.
 
 :::{rule} NAM-27
 :kind: required
-:tests: foundations/names/adl-member-template-template-argument.cpp foundations/names/adl-address-of-overload-set.cpp foundations/names/adl-class.cpp foundations/names/adl-union.cpp foundations/names/adl-nested-class-namespace.cpp foundations/names/adl-nested-class-friend.cpp foundations/names/adl-base.cpp foundations/names/adl-indirect-base.cpp foundations/names/adl-base-friend.cpp foundations/names/adl-enum.cpp foundations/names/adl-enum-in-class-friend.cpp foundations/names/adl-enum-in-class-namespace.cpp foundations/names/adl-pointer.cpp foundations/names/adl-reference.cpp foundations/names/adl-array.cpp foundations/names/adl-function-pointer-parameter.cpp foundations/names/adl-function-pointer-return.cpp foundations/names/adl-function-name.cpp foundations/names/adl-member-pointer-class.cpp foundations/names/adl-member-pointer-type.cpp foundations/names/adl-member-function-pointer-parameter.cpp foundations/names/adl-template-argument.cpp foundations/names/adl-template-namespace.cpp foundations/names/adl-template-template-argument.cpp foundations/names/adl-lambda-namespace.cpp foundations/names/adl-lambda-function.cpp foundations/names/adl-lambda-class-member.cpp foundations/names/adl-local-class.cpp foundations/names/adl-local-enum.cpp foundations/names/adl-incomplete-class.cpp foundations/names/adl-second-argument.cpp foundations/names/adl-function-template-in-set.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp foundations/names/adl-template-id-argument.cpp overloading/overload-resolution/operator-base-class-namespace.cpp
+:tests: foundations/names/adl-member-template-template-argument.cpp foundations/names/adl-address-of-overload-set.cpp foundations/names/adl-class.cpp foundations/names/adl-union.cpp foundations/names/adl-nested-class-namespace.cpp foundations/names/adl-nested-class-friend.cpp foundations/names/adl-base.cpp foundations/names/adl-indirect-base.cpp foundations/names/adl-base-friend.cpp foundations/names/adl-enum.cpp foundations/names/adl-enum-in-class-friend.cpp foundations/names/adl-enum-in-class-namespace.cpp foundations/names/adl-pointer.cpp foundations/names/adl-reference.cpp foundations/names/adl-array.cpp foundations/names/adl-function-pointer-parameter.cpp foundations/names/adl-function-pointer-return.cpp foundations/names/adl-function-name.cpp foundations/names/adl-member-pointer-class.cpp foundations/names/adl-member-pointer-type.cpp foundations/names/adl-member-function-pointer-parameter.cpp foundations/names/adl-template-argument.cpp foundations/names/adl-template-namespace.cpp foundations/names/adl-template-template-argument.cpp foundations/names/adl-lambda-namespace.cpp foundations/names/adl-lambda-function.cpp foundations/names/adl-lambda-class-member.cpp foundations/names/adl-local-class.cpp foundations/names/adl-local-enum.cpp foundations/names/adl-incomplete-class.cpp foundations/names/adl-second-argument.cpp foundations/names/adl-function-template-in-set.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp foundations/names/adl-template-id-argument.cpp overloading/overload-resolution/operator-base-class-namespace.cpp foundations/names/adl-operator-scoped-enum-outside-namespace.cpp foundations/names/adl-operator-scoped-enum-using-declaration.cpp templates/concepts/requirement-operator-scoped-enum-adl.cpp
 
 Each argument of an unqualified call adds
 {term}`associated namespaces <associated namespace>` and
@@ -680,7 +680,7 @@ these add nothing:
 
 :::{rule} NAM-29
 :kind: required
-:tests: foundations/names/adl-ignores-non-function.cpp foundations/names/adl-using-declaration-in-namespace.cpp foundations/names/adl-inline-namespace-function.cpp foundations/names/adl-class-in-inline-namespace.cpp foundations/names/adl-friend-declared-later.cpp foundations/names/adl-friend-in-namespace.cpp
+:tests: foundations/names/adl-ignores-non-function.cpp foundations/names/adl-using-declaration-in-namespace.cpp foundations/names/adl-inline-namespace-function.cpp foundations/names/adl-class-in-inline-namespace.cpp foundations/names/adl-friend-declared-later.cpp foundations/names/adl-friend-in-namespace.cpp foundations/names/adl-operator-scoped-enum-using-declaration.cpp templates/concepts/requirement-operator-scoped-enum-adl.cpp
 
 Argument-dependent lookup finds these functions:
 
@@ -695,7 +695,7 @@ namespace has the enclosing namespace as an associated namespace too.
 
 :::{rule} NAM-30
 :kind: reject
-:tests: foundations/names/adl-not-static-member.cpp foundations/names/adl-not-through-directive.cpp foundations/names/adl-friend-of-other-class.cpp foundations/names/adl-friend-not-through-conversion.cpp foundations/names/adl-not-later-declaration.cpp foundations/names/adl-not-block-declaration.cpp foundations/names/adl-ignores-base-access.cpp
+:tests: foundations/names/adl-not-static-member.cpp foundations/names/adl-not-through-directive.cpp foundations/names/adl-friend-of-other-class.cpp foundations/names/adl-friend-not-through-conversion.cpp foundations/names/adl-not-later-declaration.cpp foundations/names/adl-not-block-declaration.cpp foundations/names/adl-ignores-base-access.cpp templates/concepts/requirement-operator-scoped-enum-adl.cpp
 
 Argument-dependent lookup does not find these functions:
 
@@ -906,8 +906,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 244
-of 249 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 248
+of 253 tests.
 
 ### Divergences
 

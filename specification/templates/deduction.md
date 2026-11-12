@@ -250,7 +250,7 @@ constant argument that narrows ({rule}`TARG-13`) does not fit either.
 
 :::{rule} DED-6
 :kind: required
-:tests: templates/deduction/adjust-value-parameter.cpp templates/deduction/adjust-value-parameter-more.cpp
+:tests: templates/deduction/adjust-value-parameter.cpp templates/deduction/adjust-value-parameter-more.cpp templates/deduction/array-member-const-member-function-one-parameter.cpp templates/deduction/array-member-const-member-function-two-parameters.cpp
 
 If a function parameter's type is not a reference, the argument type is
 adjusted before the match:
@@ -424,7 +424,7 @@ give no value (DED-19).
 
 :::{rule} DED-17
 :kind: required
-:tests: templates/deduction/braced-array-reference.cpp templates/deduction/braced-array-reference-conflict.cpp
+:tests: templates/deduction/braced-array-reference.cpp templates/deduction/braced-array-reference-conflict.cpp templates/deduction/braced-array-reference-constructor-template.cpp
 
 For a parameter of type reference to an array of `P`, each element of
 a braced list is an argument for `P`. A constant parameter in the bound
@@ -876,8 +876,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 155
-of 168 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 158
+of 171 tests.
 
 ### Divergences
 

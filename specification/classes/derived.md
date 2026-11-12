@@ -119,7 +119,7 @@ derived class* of an object is the class that the object was created as.
 
 :::{rule} DER-1
 :kind: reject
-:tests: classes/derived/base-alias.cpp classes/derived/base-duplicate.cpp classes/derived/base-enum.cpp classes/derived/base-final.cpp classes/derived/base-incomplete.cpp classes/derived/base-not-class.cpp classes/derived/base-qualified.cpp classes/derived/base-self.cpp classes/derived/base-union.cpp classes/derived/final-not-keyword.cpp classes/derived/union-as-derived.cpp foundations/keywords/final-after-complete-class-redefines.cpp classes/unions/union-final-not-base.cpp
+:tests: classes/derived/base-alias.cpp classes/derived/base-duplicate.cpp classes/derived/base-enum.cpp classes/derived/base-final.cpp classes/derived/base-incomplete.cpp classes/derived/base-not-class.cpp classes/derived/base-qualified.cpp classes/derived/base-self.cpp classes/derived/base-union.cpp classes/derived/final-not-keyword.cpp classes/derived/union-as-derived.cpp foundations/keywords/final-after-complete-class-redefines.cpp classes/unions/union-final-not-base.cpp classes/derived/base-names-own-class-template.cpp
 
 Each class in a base list must be:
 
@@ -509,8 +509,8 @@ static_assert(make(true) == 3);  // rejected: Left() is not constexpr
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 91
-of 92 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 92
+of 93 tests.
 
 ### Divergences
 
