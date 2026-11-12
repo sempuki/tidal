@@ -354,7 +354,7 @@ can change it. Each question is provisional.
 | Q-0434 | DEP-2, DEP-18 | that a member access through `this` or an object of `CurrentInst` with an independent member type is not type-dependent (section 1); waits for a review |
 | Q-0433 | INST-5, INST-33, INST-P2 | whether the initializer in the class of a `static const` member is made with the class (section 3; `class-point-static-const-member.cpp`); waits for a review |
 | Q-0441 | INST-5 | whether making a class needs the type of a static data member complete, which decides the point of `static-inline-member-incomplete-argument.cpp` (section 3); waits for a review and newest families that agree |
-| RV9, RV10 | FN-12, INST-1, INST-2, INST-5, DEP-P1, DEP-40 | INST-1, INST-2, INST-5, DEP-P1, and DEP-40 changed after RV8 read the tree, and sections 1 and 3 cite them; RV9 read FN-12, INST-1's new clause (4431852f), and the hunks of bdc27d44 (b310bf11), and the read of its repair diff (b24e224f) leaves RV10-R-1 (the places INST-30 names) and RV10-R-3 (OBJ-2) open |
+| RV9, RV10 | FN-12, INST-1, INST-2, INST-5, DEP-P1, DEP-40 | INST-1, INST-2, INST-5, DEP-P1, and DEP-40 changed after RV8 read the tree, and sections 1 and 3 cite them; RV9 read FN-12, INST-1's new clause (4431852f), and the hunks of bdc27d44 (b310bf11), and the read of its repair diff (b24e224f) left RV10-R-1 (the places INST-30 names) and RV10-R-3 (OBJ-2), which item F7 (b511838d) answered; RV10's review read F7's text |
 
 Findings I6-4, I6-5, I6-6, and I6-9 are closed. DEP-P5 and DEP-40
 give the text of I6-4 and I6-9, and Q-0434 and Q-0432 hold I6-5 and

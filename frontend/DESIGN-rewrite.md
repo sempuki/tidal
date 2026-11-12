@@ -592,9 +592,11 @@ machine passes a `Break` or `Continue` to the statement it names, ends
 the objects of each block that the jump leaves (JMP-9), and goes on with
 a loop as after a normal pass (LOOP-9). This holds for the variables of
 a statement's own scope (a `for` initializer, a condition, a range
-`for`'s hidden variables) only once X24-1 is answered (item F7 of
-decision 0065): today the machine ends them with the block of their
-statement, and no rule fixes their order after a jump.
+`for`'s hidden variables) too: item F7 (b511838d) answered X24-1, and
+OBJ-3, LOOP-3, and RFOR-4 now end them after the body's objects on any
+exit. Today the machine ends them with the block of their statement,
+and no owned test checks the order yet (their tests print from
+destructors, which need build step 4).
 
 | Rule (X24 section 2) | Kind of change | Where the prototype acts |
 |---|---|---|
@@ -604,8 +606,8 @@ statement, and no rule fixes their order after a jump.
 | JMP-14 (amended) | a labeled jump names a label of its own function; a lambda body is a separate function | the check, through X24:new-1 |
 | X24:new-3 (new, `required`), JMP-1, JMP-2 (amended) | `break L` ends the statement `L` marks; `continue L` ends the pass of its loop | the check's target; the machine unchanged |
 | JMP-9, LOOP-9, LOOP-1, LOOP-2, SW-1, CE-17 (unchanged, state effect) | none | the machine and constant evaluation, unchanged |
-| OBJ-3, LOOP-3 (amended), RFOR-4 | the end of a statement's own variables after any jump | waits for X24-1 |
-| DEP-30 (unchanged, state effect) | X24:new-1 and X24:new-2 checked at a template's definition | the definition-check point, step 5 |
+| OBJ-3, LOOP-3 (amended), RFOR-4 | the end of a statement's own variables after any jump | answered by F7 (b511838d) |
+| DEP-30 (X24's row says unchanged; RV10's repairs, 88d14ea2, added the jump conditions to DEP-30's list, Q-0451) | X24:new-1 and X24:new-2 in a template that no specialization uses fall under DEP-30, as X24 section 1.8's alternative says | the definition-check point, step 5 |
 
 The files that change are `src/proposals/p22.rs` and one line of
 `src/proposals/mod.rs`. `statements::jumps` does not change, because
@@ -637,7 +639,7 @@ check to the definition checks, as the designer view of roadmap round
 ## 8. What carries over from `frontend/src`
 
 The old front end's files, by what the rewrite does with them.
-"Moved" means the code moves with small changes. "Rewritten" means the
+"Moved" means the code moves with small changes; build step 3 wrote `sem` and `machine` new (report-rw3), so the rows that name them give the plan, and the new code carries over no file of `interp/`. "Rewritten" means the
 algorithm stays and the code is new, because it is a method of `P`
 now. "Dropped" means no part carries over.
 
@@ -732,7 +734,7 @@ A front-end round that works on the rewrite keeps the form of report
   (report 25). A target at or above that rate for owned tests fits the
   implementer view of roadmap round 12 (process change 5).
 - `TEMPLATE-MODEL.md` section 8 lists Q-0427, Q-0432, Q-0433, Q-0434,
-  Q-0441, and the open rows RV10-R-1 and RV10-R-3. An answer that changes a rule there changes the
+  Q-0441, and RV10-R-1 and RV10-R-3, which item F7 (b511838d) answered. An answer that changes a rule there changes the
   module that section 4 of this document names for it.
 - The kind of each rule comes from `specification/` at run time, as in
   the old harness. A table built into the crate would make the binary

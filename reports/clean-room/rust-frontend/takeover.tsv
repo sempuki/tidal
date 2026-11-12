@@ -7,7 +7,7 @@
 # The rows of build step 3 (item RW2) are the tests that cite only step 3
 # pages, use no keyword of a later step, pass on both front ends, and, for
 # a reject test, whose first error on the new front end names a cited or
-# linked rule. The commit cell RW2 stands for the commit of item RW2.
+# linked rule. Their commit cell names 5f100f69, the commit of item RW2.
 declarations/alignment/alignof-variable-type.cpp	3	5f100f69
 declarations/alignment/definition-without-earlier-with.cpp	3	5f100f69
 declarations/alignment/max-fundamental.cpp	3	5f100f69
