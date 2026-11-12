@@ -88,11 +88,12 @@ cast is undefined.
    enum_head: "enum" {`attribute_spec`} [[`nested_name`] `identifier`]
             : | "enum" ("class" | "struct") {`attribute_spec`} [`nested_name`] `identifier`
    enumerator: `identifier` {`attribute_spec`} ["=" `constant_expr`]
-   using_enum_decl: "using" "enum" [`nested_name`] `identifier` ";"
+   using_enum_decl: "using" "enum" [`nested_name`] (`identifier` | `template_id`) ";"
 ```
 
 A `using_enum_decl` is the `using enum` declaration of ENUM-9. It can
-appear at namespace scope, in a block, and in a class.
+appear at namespace scope, in a block, and in a class. A `template_id`
+in it names an alias template whose type is an enumeration.
 
 ## Constraints
 
@@ -239,7 +240,7 @@ integer is not valid.
 
 :::{rule} ENUM-9
 :kind: required
-:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-alias.cpp declarations/enumerations/using-enum-qualified.cpp
+:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-alias.cpp declarations/enumerations/using-enum-qualified.cpp declarations/enumerations/using-enum-alias-template.cpp
 
 `using enum E;` declares the enumerators of `E` in the current scope.
 `E` can be a type alias of an enumeration. A using declaration can also
@@ -249,10 +250,11 @@ ENUM-20 lists what is not valid.
 
 :::{rule} ENUM-20
 :kind: reject
-:tests: declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-enum-opaque.cpp
+:tests: declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-enum-opaque.cpp declarations/enumerations/using-enum-dependent.cpp
 
-In `using enum E;` (ENUM-9), `E` must be an enumeration. No enumerator
-name of `E` can be declared already in that scope.
+In `using enum E;` (ENUM-9), `E` must be an enumeration, and the name
+`E` must not be dependent. No enumerator name of `E` can be declared
+already in that scope.
 
 The enumerators of `E` must be declared at the `using enum`
 declaration, so the definition of `E` must come before it. An opaque
@@ -415,7 +417,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 79 of 82 tests. The results are in
+All eight compilers agree on 80 of 84 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -442,6 +444,10 @@ All eight compilers agree on 79 of 82 tests. The results are in
   report. The source-reader review reads the read as defined, and the
   choice waits on the maintainer (`documentation/decisions/pending.md`,
   row 4).
+- {question}`Q-0020` (ENUM-9; open): how a test records a compiler that
+  does not implement a feature. The test of a `using enum` declaration
+  with an alias template-id records Clang 18 as an override. Clang 22,
+  GCC, and EDG accept the declaration.
 
 ### Split tests
 
@@ -449,10 +455,16 @@ All eight compilers agree on 79 of 82 tests. The results are in
 |---|---|---|---|---|---|---|
 | `cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | {question}`Q-0017` |
 | `unscoped-value-too-large.cpp` | ENUM-5 | reject | reject | accept | reject | {question}`Q-0018` |
+| `using-enum-alias-template.cpp` | ENUM-9 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
 | `using-enum-opaque.cpp` | ENUM-20 | reject | reject | reject | accept | {question}`Q-0047` |
 
 ### Notes
 
+- ENUM-9, ENUM-20: Clang 22, GCC, and EDG accept a `using enum`
+  declaration that names an enumeration through an alias template, and
+  Clang 18 rejects the template-id (`using-enum-alias-template.cpp`,
+  RV10-3). Every compiler rejects a `using enum` declaration that names
+  a dependent type (`using-enum-dependent.cpp`).
 - ENUM-5: with `-fshort-enums`, Clang and GCC give `enum { S = 1 }` an
   underlying type of 1 byte. By default its size is the size of `int`.
 - ENUM-5, the matrix types: a test with no standard header observes the

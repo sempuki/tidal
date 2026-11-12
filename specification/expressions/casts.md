@@ -75,15 +75,19 @@ is undefined:
    functional_cast: `cast_type` "(" [`expression_list`] ")"
                   : | `cast_type` `braced_init`
    cast_type: [`nested_name`] (`identifier` | `template_id`)
-            : | `decltype_spec` | `typename_specifier` | "auto"
+            : | `nested_name` "template" `template_id`
+            : | `decltype_expr` | `typename_specifier` | "auto"
             : | "bool" | "void" | "int" | "short" | "long" | "signed" | "unsigned"
             : | "float" | "double" | "char" | "wchar_t" | "char8_t" | "char16_t" | "char32_t"
 ```
 
 If lookup finds that the name or the {term}`template-id` in a
-`cast_type` denotes a type, the `functional_cast` is a cast. Otherwise
-the same tokens are a call ({doc}`postfix`). A dependent qualified name
-needs `typename` to denote a type ({rule}`DEP-19`).
+`cast_type` denotes a type, the `functional_cast` is a cast. A name that
+lookup finds to be a class template, with no argument list, also makes
+a cast, and the arguments of the class template are deduced
+({rule}`CTAD-1`). Otherwise the same tokens are a call
+({doc}`postfix`). A dependent qualified name needs `typename` to denote
+a type ({rule}`DEP-19`).
 
 ## Constraints
 
@@ -363,6 +367,10 @@ All eight compilers agree on 63 of 64 tests. The results are in
 
 ### Notes
 
+- The `cast_type` arm with `template`: every compiler accepts
+  `Parts::template Part<int>{4}` and `Parts::template Part<int>()` as
+  casts (`template-keyword-cast-last-name.cpp`, RV10-4). Every compiler
+  rejects `decltype(auto)` as the type of a functional cast (AUTO-11).
 - CAST-5, CAST-8: all compilers reject these operations during constant
   evaluation.
 - CAST-5: at run time, `-fsanitize=address` in Clang and GCC stops a

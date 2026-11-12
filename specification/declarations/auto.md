@@ -268,7 +268,7 @@ the result:
 
 :::{rule} AUTO-11
 :kind: reject
-:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-overload-set.cpp declarations/auto/decltype-auto-address-of-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp
+:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-overload-set.cpp declarations/auto/decltype-auto-address-of-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp declarations/auto/decltype-auto-as-base.cpp declarations/auto/decltype-auto-member-initializer.cpp declarations/auto/decltype-auto-destructor-call.cpp declarations/auto/decltype-auto-functional-cast.cpp
 
 `decltype(auto)` must not:
 
@@ -278,7 +278,10 @@ the result:
   deduced type would be a function type,
 - have as its initializer the name of an overload set that
   {rule}`OVL-20` does not reduce to one function ({rule}`DTY-4`),
-- have braces with more than one expression.
+- have braces with more than one expression,
+- name a base, follow `~`, come before `::`, or be the type of a
+  functional cast. Only `decltype` of an expression can stand there
+  ({rule}`DTY-3`).
 
 Braces without `=` that contain one expression are permitted
 ({question}`Q-0010`).
@@ -399,7 +402,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 65 tests. The results are in `tests/RESULTS.md`.
+agree on all 69 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list` with the shape that {rule}`LSUP-1` gives,

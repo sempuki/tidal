@@ -110,9 +110,10 @@ storage belongs to the caller.
 
 `break` must be inside a loop or a `switch`. `continue` must be inside a
 loop. A lambda body and a member function of a local class are separate
-functions, so the loop or `switch` must be inside that body too. The
-implementation checks these conditions at the definition, also in a
-template that no specialization uses.
+functions, so the loop or `switch` must be inside that body too. In a
+template that no specialization uses, {rule}`DEP-30` applies to these
+conditions, and the implementation need not diagnose a template that
+does not obey them.
 :::
 
 :::{rule} JMP-3
@@ -154,10 +155,11 @@ These conditions apply to labels (JMP-5):
 - A `goto` must name a label of its own function. A lambda body and a
   member function of a local class are separate functions.
 
-The implementation checks these conditions at the definition of the
-function. The check also applies in a template that no specialization
-uses, and in a {term}`discarded statement` ({rule}`IF-22`,
-{question}`Q-0451`).
+The implementation rejects a function that does not obey these
+conditions, also in a {term}`discarded statement` ({rule}`IF-22`,
+{question}`Q-0451`). In a template that no specialization uses,
+{rule}`DEP-30` applies instead, because the conditions do not depend on
+the parameters. The implementation need not diagnose such a template.
 :::
 
 :::{rule} JMP-6
@@ -396,12 +398,14 @@ All eight compilers agree on 73 of 81 tests. The results are in
   write a variable whose declaration a jump skipped. It can, and a read
   after the write gives the value, as Clang says. GCC and EDG reject
   the write.
-- {question}`Q-0451` (JMP-14; open):
+- {question}`Q-0451` (JMP-14, DEP-30; open):
   whether a `goto` to a missing label is rejected in a function
   template that no specialization uses, in a member function of a
   class template, in a generic lambda never called, and in a discarded
-  statement of a template. It is, as Clang and EDG say. GCC accepts
-  each form.
+  statement of a used template. In the first three forms, DEP-30 lets
+  an implementation accept the program with no diagnostic, as the gap
+  review of the phase 17 text reads (RV10-14). The discarded statement
+  is rejected, as Clang and EDG say. GCC accepts each form.
 - {question}`Q-0422` (JMP-10; settled on JMP-P3): whether a structured binding named
   in a `return` statement is an xvalue. It is not, and the name stays an
   lvalue, as Clang and GCC give. EDG gives another type.
@@ -410,10 +414,10 @@ All eight compilers agree on 73 of 81 tests. The results are in
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `goto-missing-label-class-template-member.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
+| `goto-missing-label-class-template-member.cpp` | JMP-14, DEP-30 | reject | reject | accept | reject | {question}`Q-0451` |
 | `goto-missing-label-discarded-branch.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
-| `goto-missing-label-generic-lambda.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
-| `goto-missing-label-template-never-used.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
+| `goto-missing-label-generic-lambda.cpp` | JMP-14, DEP-30 | reject | reject | accept | reject | {question}`Q-0451` |
+| `goto-missing-label-template-never-used.cpp` | JMP-14, DEP-30 | reject | reject | accept | reject | {question}`Q-0451` |
 | `goto-past-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
 | `goto-skips-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
 | `return-structured-binding-lvalue.cpp` | JMP-10 | accept | accept | accept | reject | {question}`Q-0422` |
@@ -436,7 +440,9 @@ All eight compilers agree on 73 of 81 tests. The results are in
   specialization uses, a label name that occurs twice and a `continue`
   outside a loop. Every compiler rejects a `break` outside a loop in a
   discarded branch of a used function template. Only the `goto` to a
-  missing label splits (X24-3).
+  missing label splits (X24-3). In a template that no specialization
+  uses, DEP-30 allows each result, so the tests of those forms also
+  cite DEP-30 (RV10-14).
 - JMP-17: GCC rejects `break outer;` as a missing `;`. Clang names the
   form "named break" and accepts it only in a later C mode.
 - JMP-16: every compiler rejects a read before the write during

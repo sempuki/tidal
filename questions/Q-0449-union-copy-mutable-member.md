@@ -1,7 +1,7 @@
 # Q-0449: Can constant evaluation copy a union whose active member is `mutable` from a union that the evaluation did not create?
 
 **Status:** provisional
-**Affects:** CE-22, CE-3, `tests/foundations/constant-evaluation/union-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-inside.cpp`, `tests/foundations/constant-evaluation/union-copy-inactive-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/mutable-member-read-outside.cpp`
+**Affects:** CE-22, CE-3, `tests/foundations/constant-evaluation/union-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-inside.cpp`, `tests/foundations/constant-evaluation/union-copy-inactive-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/mutable-member-read-outside.cpp`, `tests/foundations/constant-evaluation/mutable-member-part-read-outside.cpp`, `tests/foundations/constant-evaluation/mutable-member-part-read-inside.cpp`
 **Source:** point RV9-10 of the gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`), with the writer probe `reports/clean-room/roadmap-13/writer-probes/rv9-points.json`.
 **Waits for:** a review (doubt); newest families that agree; a principle (CE-P3)
 
@@ -63,6 +63,8 @@ Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The read 
 Rule text on 2026-11-11 (decision 0065, item F7): tests hold the three forms of the table that no test held. CE-3 says that a `mutable` member of a usable variable is not usable, as the read of the RV9 repair diff gives. `mutable-member-read-outside.cpp` and `struct-copy-mutable-member-outside.cpp` expect the rejection, with EDG as an override. CE-22 says that a `mutable` member that is not active sets no limit, and `union-copy-inactive-mutable-member-outside.cpp` expects acceptance, with Clang and GCC as overrides. Two newest families stand against that form, as against the assignment form. The answer and the **Waits for:** line do not change.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap review of the phase 17 text supports CE-3's sentence and CE-22's sentence on a `mutable` member that is not active (RV10-17), with a small doubt on CE-3. The review does not read the doubt of RV10-R-4 on the copy assignment. GCC 16 and EDG 7.0 still differ in the assignment form, and CE-P3 still fails step 3 of the principle test, so the **Waits for:** line does not change.
+
+Rule text on 2026-11-11 (decision 0065, item RV10): CE-3 says that no part of a `mutable` member of a usable variable is usable, as RV10-17 reads. `mutable-member-part-read-outside.cpp` expects the rejection of a read of a member of a `mutable` member of `shared`, and every compiler rejects it. EDG's note names an uninitialized object there, although EDG accepts a read of the `mutable` member itself. `mutable-member-part-read-inside.cpp` reads the same part of a local variable, and every compiler accepts it. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

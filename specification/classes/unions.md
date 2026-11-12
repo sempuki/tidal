@@ -435,7 +435,7 @@ UNI-10 describes.
 
 :::{rule} UNI-5
 :kind: required
-:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp foundations/storage/implicit-union-member-assignment.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp
+:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp foundations/storage/implicit-union-member-assignment.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp foundations/objects/write-after-destructor-union-class-member-constant.cpp foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp
 
 An assignment to a member makes that member active if the assignment
 uses the built-in operator or a trivial assignment operator
@@ -445,7 +445,7 @@ evaluation follows these rules.
 
 :::{rule} UNI-13
 :kind: required
-:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp
+:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp foundations/objects/write-after-destructor-union-class-member-constant.cpp foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp
 
 The left operand of an assignment can name its object through a chain
 of member accesses and built-in subscripts, such as `s.u.a.tag` or
@@ -767,8 +767,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 160
-of 180 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 162
+of 182 tests.
 
 ### Divergences
 

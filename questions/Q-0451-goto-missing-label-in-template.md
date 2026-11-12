@@ -1,9 +1,9 @@
 # Q-0451: Is a `goto` to a missing label rejected in a templated function that no specialization uses or in a discarded statement?
 
 **Status:** provisional
-**Affects:** JMP-14, `tests/statements/jumps/goto-missing-label-template-never-used.cpp`, `tests/statements/jumps/goto-missing-label-class-template-member.cpp`, `tests/statements/jumps/goto-missing-label-generic-lambda.cpp`, `tests/statements/jumps/goto-missing-label-discarded-branch.cpp`
+**Affects:** JMP-14, JMP-7, DEP-30, `tests/statements/jumps/goto-missing-label-template-never-used.cpp`, `tests/statements/jumps/goto-missing-label-class-template-member.cpp`, `tests/statements/jumps/goto-missing-label-generic-lambda.cpp`, `tests/statements/jumps/goto-missing-label-discarded-branch.cpp`
 **Source:** X24-3 (`reports/clean-room/X24/report.md`, probe `t1.cpp`), rerun on the matrix in `reports/clean-room/roadmap-14/writer-probes/x24-compile.json`.
-**Waits for:** the maintainer (pending.md row 4)
+**Waits for:** a review (doubt); a principle (JMP-P1)
 
 ## Context
 
@@ -45,16 +45,19 @@ every compiler rejects.
 
 ## Provisional answer
 
-The implementation rejects each form (option 1). JMP-14 says that its
-conditions are checked at the definition, also in a template that no
-specialization uses and in a discarded statement. Clang and EDG agree.
-GCC alone accepts, and GCC checks the other jump conditions of JMP-7
-and JMP-14 at the definition. A label of a function does not depend on
-a template parameter, so DEP-30's list does not take the case.
+A template that no specialization uses needs no diagnostic, and a
+discarded statement of a used template is rejected. A label of a
+function does not depend on a template parameter, so JMP-14 leaves the
+first three forms to DEP-30, and Clang's and EDG's rejection and GCC's
+acceptance each conform there (option 2). For the discarded statement,
+JMP-14 rejects the program, as Clang and EDG do (option 1). GCC alone
+accepts that form.
 
 Opened on 2026-11-11 (decision 0065, item F7). No principle gives the answer. JMP-P1 says that the place a jump names must exist in the same function, and it does not say when an implementation checks the place in a template.
 
 Kept open on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads against the answer for the three forms with no specialization (RV10-14). A broken label condition does not depend on the parameters, so the program is not valid and needs no diagnostic there, and GCC's acceptance conforms. The review gives no clear answer for the discarded statement of a used template. Clang 22 and EDG 7.0 keep the matrix's answer, and GCC 16 gives the review's reading. So the question joins `pending.md` row 4 with the item "JMP-14, Q-0451".
+
+Answer changed on 2026-11-11 (decision 0065, item RV10). Before this note, the answer was option 1 for every form, and JMP-14 and JMP-7 said that the implementation checks their conditions at the definition, also in a template that no specialization uses. DEP-30 already takes any construct that does not depend on the parameters, and Q-0223 settled that such a construct in an unused template needs no diagnostic. So JMP-14 and JMP-7 now leave a template that no specialization uses to DEP-30, and DEP-30 lists the jump conditions. The tests of the three forms keep the expectation `reject` and cite DEP-30, and the GCC override records the other result that DEP-30 allows. The duplicate label and the `continue` outside a loop, which every compiler rejects, also cite DEP-30. The review supports the new answer for those forms. It gives no clear answer for the discarded statement, so the question waits for a review (doubt), and `pending.md` row 4 no longer holds it. GCC 16 alone differs in the discarded form. No principle gives the answer for the discarded statement. JMP-P1 does not say when an implementation checks the place that a jump names in a template, so JMP-P1 fails step 3 of the principle test.
 
 ## Opinions
 

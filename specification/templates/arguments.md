@@ -635,6 +635,15 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   floating-point promotion or conversion. Clang 22, GCC 16, and EDG 7.0
   reject `1.5f` for a `double` parameter and `1.5` for a `float`
   parameter.
+- TARG-16, TARG-19: the gap review of the phase 17 text reads the
+  C++23 text as giving a template argument no braced form (RV10-6).
+  There a class value needs a written type, as in `Point{1, 2}`. Every
+  compiler accepts `At<{3, 4}>` and `At<{}>`, and also `twice<{4}>` for
+  an `int` parameter
+  (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). So
+  TARG-16, the `braced_init` arm of `template_arg`,
+  `class-arguments.cpp`, and `same-specialization-class.cpp` keep the
+  compilers' answer, and `pending.md` row 4 holds the item "TARG-16".
 - TARG-22: every compiler treats an alias template that changes its
   argument as a template of its own (`alias-template-changes-argument.cpp`).
 - TARG-17: all compilers accept a placeholder parameter on either side

@@ -1,0 +1,135 @@
+| | program |
+|---|---|
+| RV10-1 base named T::template B<int> in a class template, used | accept |
+| RV10-1 base named Outer::template B<int> outside a template | accept |
+| RV10-1 control: base named T::B<int> with no keyword, used | accept: gcc-16, gcc-14, gcc-host; reject: edg-7.0, edg-7.0-ilp32, clang-18, clang-host, clang-22 |
+| RV10-1 decltype(auto) as a base | reject |
+| RV10-1 decltype(auto) in a member initializer | reject |
+| RV10-1 decltype(auto) after ~ in a destructor call | reject |
+| RV10-4 decltype(auto) as the type of a functional cast | reject |
+| RV10-4 functional cast to Outer::template B<int> | accept |
+| RV10-4 functional cast to Outer::template B<int> with parentheses | accept |
+| RV10-4 functional cast to a class template name, arguments deduced | accept |
+| RV10-3 empty attribute before a using-directive | accept |
+| RV10-3 maybe_unused before a using-directive | accept: gcc-14, clang-host, gcc-host, gcc-16, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| RV10-3 empty attribute before a using-directive in a block | accept |
+| RV10-3 using enum with an alias template-id | accept: edg-7.0, edg-7.0-ilp32, gcc-16, gcc-host, gcc-14, clang-host, clang-22; reject: clang-18 |
+| RV10-3 using enum with an alias template-id in a block | accept: edg-7.0, edg-7.0-ilp32, gcc-16, gcc-14, gcc-host, clang-host, clang-22; reject: clang-18 |
+| RV10-3 using enum with a dependent name, used | reject |
+| RV10-5 new type with an attribute after * | accept |
+| RV10-5 new type with a member pointer | accept |
+| RV10-5 new type with a member pointer and const | accept |
+| RV10-5 new type with an attribute after * and before const | accept: clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0, gcc-16, gcc-host, gcc-14 |
+| RV10-8 attribute before a structured binding in an if initializer | accept |
+| RV10-8 attribute before a structured binding in a for initializer | accept |
+| RV10-8 attribute before a structured binding in a switch initializer | accept |
+| RV10-8 attribute before a structured binding in a block | accept |
+| RV10-8 empty attribute before a structured binding at namespace scope | accept |
+| RV10-7 two template heads before a member in a class | reject |
+| RV10-7 two template heads before a member class in a class | reject |
+| RV10-10 typename T::template B with no argument list, arguments deduced | accept: edg-7.0, edg-7.0-ilp32, gcc-14, gcc-16, gcc-host; reject: clang-host, clang-18, clang-22 |
+| RV10-10 template template default with the keyword | accept |
+| RV10-12 union class member ended by its destructor, its scalar assigned, read, constant | accept |
+| RV10-12 union class member not active, its scalar assigned, read, constant | accept |
+| RV10-12 union scalar member ended, reached through an outer member, assigned, read, constant | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-16, gcc-14 |
+| RV10-12 union scalar member ended by a pseudo-destructor call through an alias, assigned, read, constant | accept |
+| RV10-17 read of a member nested in a mutable member of a constexpr variable | reject |
+| RV10-17 read of a member nested in a mutable member, in the evaluation that created it | accept |
+| RV10-17 control: read of a member nested in a member that is not mutable | accept |
+| RV10-17 copy of a member nested in a mutable member of a constexpr variable | reject |
+| RV10-6 braced list as an argument for a constant parameter of class type | accept |
+| RV10-6 control: functional cast with braces as the argument | accept |
+| RV10-6 empty braced list as an argument for a constant parameter of class type | accept |
+| RV10-6 braced list as an argument for an int parameter | accept |
+RV10-1 control: base named T::B<int> with no keyword, used / program / clang-18: /tidal/build/probes/rv10-review/0002-rv10-1-control-base-named-t-b-int-with-no-keyword-used--program.cpp:2:34: error: use 'template' keyword to treat 'B' as a dependent template name
+RV10-1 control: base named T::B<int> with no keyword, used / program / clang-22: /tidal/build/probes/rv10-review/0002-rv10-1-control-base-named-t-b-int-with-no-keyword-used--program.cpp:2:34: error: use 'template' keyword to treat 'B' as a dependent template name
+RV10-1 control: base named T::B<int> with no keyword, used / program / clang-host: build/clang-host/probes/rv10-review/0002-rv10-1-control-base-named-t-b-int-with-no-keyword-used--program.cpp:2:34: error: use 'template' keyword to treat 'B' as a dependent template name
+RV10-1 control: base named T::B<int> with no keyword, used / program / edg-7.0: -keyword-used--program.cpp", line 2: error: nontype "T::B" is not a
+RV10-1 control: base named T::B<int> with no keyword, used / program / edg-7.0-ilp32: -keyword-used--program.cpp", line 2: error: nontype "T::B" is not a
+RV10-1 decltype(auto) as a base / program / clang-18: /tidal/build/probes/rv10-review/0003-rv10-1-decltype-auto-as-a-base--program.cpp:2:12: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) as a base / program / clang-22: /tidal/build/probes/rv10-review/0003-rv10-1-decltype-auto-as-a-base--program.cpp:2:12: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) as a base / program / clang-host: build/clang-host/probes/rv10-review/0003-rv10-1-decltype-auto-as-a-base--program.cpp:2:12: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) as a base / program / edg-7.0: pp", line 2: error: expected an identifier
+RV10-1 decltype(auto) as a base / program / edg-7.0-ilp32: pp", line 2: error: expected an identifier
+RV10-1 decltype(auto) as a base / program / gcc-14: /tidal/build/probes/rv10-review/0003-rv10-1-decltype-auto-as-a-base--program.cpp:2:12: error: invalid use of 'decltype(auto)'
+RV10-1 decltype(auto) as a base / program / gcc-16: /tidal/build/probes/rv10-review/0003-rv10-1-decltype-auto-as-a-base--program.cpp:2:12: error: invalid use of 'decltype(auto)'
+RV10-1 decltype(auto) as a base / program / gcc-host: build/gcc-host/probes/rv10-review/0003-rv10-1-decltype-auto-as-a-base--program.cpp:2:12: error: invalid use of ‘decltype(auto)’
+RV10-1 decltype(auto) in a member initializer / program / clang-18: /tidal/build/probes/rv10-review/0004-rv10-1-decltype-auto-in-a-member-initializer--program.cpp:2:25: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) in a member initializer / program / clang-22: /tidal/build/probes/rv10-review/0004-rv10-1-decltype-auto-in-a-member-initializer--program.cpp:2:25: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) in a member initializer / program / clang-host: build/clang-host/probes/rv10-review/0004-rv10-1-decltype-auto-in-a-member-initializer--program.cpp:2:25: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) in a member initializer / program / edg-7.0: zer--program.cpp", line 2: error: expected an identifier
+RV10-1 decltype(auto) in a member initializer / program / edg-7.0-ilp32: zer--program.cpp", line 2: error: expected an identifier
+RV10-1 decltype(auto) in a member initializer / program / gcc-14: /tidal/build/probes/rv10-review/0004-rv10-1-decltype-auto-in-a-member-initializer--program.cpp:2:25: error: type 'decltype(auto)' is not a direct base of 'D'
+RV10-1 decltype(auto) in a member initializer / program / gcc-16: /tidal/build/probes/rv10-review/0004-rv10-1-decltype-auto-in-a-member-initializer--program.cpp:2:25: error: type 'decltype(auto)' is not a direct base of 'D'
+RV10-1 decltype(auto) in a member initializer / program / gcc-host: build/gcc-host/probes/rv10-review/0004-rv10-1-decltype-auto-in-a-member-initializer--program.cpp:2:25: error: type ‘decltype(auto)’ is not a direct base of ‘D’
+RV10-1 decltype(auto) after ~ in a destructor call / program / clang-18: /tidal/build/probes/rv10-review/0005-rv10-1-decltype-auto-after-in-a-destructor-call--program.cpp:2:22: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) after ~ in a destructor call / program / clang-22: /tidal/build/probes/rv10-review/0005-rv10-1-decltype-auto-after-in-a-destructor-call--program.cpp:2:22: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) after ~ in a destructor call / program / clang-host: build/clang-host/probes/rv10-review/0005-rv10-1-decltype-auto-after-in-a-destructor-call--program.cpp:2:22: error: 'decltype(auto)' not allowed here
+RV10-1 decltype(auto) after ~ in a destructor call / program / edg-7.0: r-call--program.cpp", line 2: error: expected an identifier
+RV10-1 decltype(auto) after ~ in a destructor call / program / edg-7.0-ilp32: r-call--program.cpp", line 2: error: expected an identifier
+RV10-1 decltype(auto) after ~ in a destructor call / program / gcc-14: /tidal/build/probes/rv10-review/0005-rv10-1-decltype-auto-after-in-a-destructor-call--program.cpp:2:22: error: expected class-name before 'decltype'
+RV10-1 decltype(auto) after ~ in a destructor call / program / gcc-16: /tidal/build/probes/rv10-review/0005-rv10-1-decltype-auto-after-in-a-destructor-call--program.cpp:2:22: error: expected class-name before 'decltype'
+RV10-1 decltype(auto) after ~ in a destructor call / program / gcc-host: build/gcc-host/probes/rv10-review/0005-rv10-1-decltype-auto-after-in-a-destructor-call--program.cpp:2:22: error: expected class-name before ‘decltype’
+RV10-4 decltype(auto) as the type of a functional cast / program / clang-18: /tidal/build/probes/rv10-review/0006-rv10-4-decltype-auto-as-the-type-of-a-functional-cast--program.cpp:1:9: error: 'decltype(auto)' not allowed here
+RV10-4 decltype(auto) as the type of a functional cast / program / clang-22: /tidal/build/probes/rv10-review/0006-rv10-4-decltype-auto-as-the-type-of-a-functional-cast--program.cpp:1:9: error: 'decltype(auto)' not allowed here
+RV10-4 decltype(auto) as the type of a functional cast / program / clang-host: build/clang-host/probes/rv10-review/0006-rv10-4-decltype-auto-as-the-type-of-a-functional-cast--program.cpp:1:9: error: 'decltype(auto)' not allowed here
+RV10-4 decltype(auto) as the type of a functional cast / program / edg-7.0: ctional-cast--program.cpp", line 1: error: type name is not allowed
+RV10-4 decltype(auto) as the type of a functional cast / program / edg-7.0-ilp32: ctional-cast--program.cpp", line 1: error: type name is not allowed
+RV10-4 decltype(auto) as the type of a functional cast / program / gcc-14: /tidal/build/probes/rv10-review/0006-rv10-4-decltype-auto-as-the-type-of-a-functional-cast--program.cpp:1:9: error: invalid use of 'decltype(auto)'
+RV10-4 decltype(auto) as the type of a functional cast / program / gcc-16: /tidal/build/probes/rv10-review/0006-rv10-4-decltype-auto-as-the-type-of-a-functional-cast--program.cpp:1:9: error: invalid use of 'decltype(auto)'
+RV10-4 decltype(auto) as the type of a functional cast / program / gcc-host: build/gcc-host/probes/rv10-review/0006-rv10-4-decltype-auto-as-the-type-of-a-functional-cast--program.cpp:1:9: error: invalid use of ‘decltype(auto)’
+RV10-3 maybe_unused before a using-directive / program / edg-7.0: ive--program.cpp", line 2: error: attribute "maybe_unused" does not
+RV10-3 maybe_unused before a using-directive / program / edg-7.0-ilp32: ive--program.cpp", line 2: error: attribute "maybe_unused" does not
+RV10-3 using enum with an alias template-id / program / clang-18: /tidal/build/probes/rv10-review/0013-rv10-3-using-enum-with-an-alias-template-id--program.cpp:3:12: error: using enum requires an enum or typedef name
+RV10-3 using enum with an alias template-id in a block / program / clang-18: /tidal/build/probes/rv10-review/0014-rv10-3-using-enum-with-an-alias-template-id-in-a-block--program.cpp:3:27: error: using enum requires an enum or typedef name
+RV10-3 using enum with a dependent name, used / program / clang-18: /tidal/build/probes/rv10-review/0015-rv10-3-using-enum-with-a-dependent-name-used--program.cpp:2:44: error: using-enum cannot name a dependent type
+RV10-3 using enum with a dependent name, used / program / clang-22: /tidal/build/probes/rv10-review/0015-rv10-3-using-enum-with-a-dependent-name-used--program.cpp:2:44: error: using-enum cannot name a dependent type
+RV10-3 using enum with a dependent name, used / program / clang-host: build/clang-host/probes/rv10-review/0015-rv10-3-using-enum-with-a-dependent-name-used--program.cpp:2:44: error: using-enum cannot name a dependent type
+RV10-3 using enum with a dependent name, used / program / edg-7.0: sed--program.cpp", line 2: error: template parameter "T::E" is not an
+RV10-3 using enum with a dependent name, used / program / edg-7.0-ilp32: sed--program.cpp", line 2: error: template parameter "T::E" is not an
+RV10-3 using enum with a dependent name, used / program / gcc-14: /tidal/build/probes/rv10-review/0015-rv10-3-using-enum-with-a-dependent-name-used--program.cpp:2:41: error: 'using enum' of dependent type 'typename T::E'
+RV10-3 using enum with a dependent name, used / program / gcc-16: /tidal/build/probes/rv10-review/0015-rv10-3-using-enum-with-a-dependent-name-used--program.cpp:2:41: error: 'using enum' of dependent type 'typename T::E' [-Wtemplate-body]
+RV10-3 using enum with a dependent name, used / program / gcc-host: build/gcc-host/probes/rv10-review/0015-rv10-3-using-enum-with-a-dependent-name-used--program.cpp:2:41: error: ‘using enum’ of dependent type ‘typename T::E’ [-Wtemplate-body]
+RV10-5 new type with an attribute after * and before const / program / edg-7.0: nd-before-const--program.cpp", line 1: error: expected a ";"
+RV10-5 new type with an attribute after * and before const / program / edg-7.0-ilp32: nd-before-const--program.cpp", line 1: error: expected a ";"
+RV10-5 new type with an attribute after * and before const / program / gcc-14: /tidal/build/probes/rv10-review/0019-rv10-5-new-type-with-an-attribute-after-and-before-const--program.cpp:1:42: error: expected ';' before 'const'
+RV10-5 new type with an attribute after * and before const / program / gcc-16: /tidal/build/probes/rv10-review/0019-rv10-5-new-type-with-an-attribute-after-and-before-const--program.cpp:1:42: error: expected ';' before 'const'
+RV10-5 new type with an attribute after * and before const / program / gcc-host: build/gcc-host/probes/rv10-review/0019-rv10-5-new-type-with-an-attribute-after-and-before-const--program.cpp:1:42: error: expected ‘;’ before ‘const’
+RV10-7 two template heads before a member in a class / program / clang-18: /tidal/build/probes/rv10-review/0025-rv10-7-two-template-heads-before-a-member-in-a-class--program.cpp:1:12: error: extraneous template parameter list in template specialization or out-of-line template definition
+RV10-7 two template heads before a member in a class / program / clang-22: /tidal/build/probes/rv10-review/0025-rv10-7-two-template-heads-before-a-member-in-a-class--program.cpp:1:12: error: extraneous template parameter list in template specialization or out-of-line template definition
+RV10-7 two template heads before a member in a class / program / clang-host: build/clang-host/probes/rv10-review/0025-rv10-7-two-template-heads-before-a-member-in-a-class--program.cpp:1:12: error: extraneous template parameter list in template specialization or out-of-line template definition
+RV10-7 two template heads before a member in a class / program / edg-7.0: -in-a-class--program.cpp", line 1: error: this declaration cannot
+RV10-7 two template heads before a member in a class / program / edg-7.0-ilp32: -in-a-class--program.cpp", line 1: error: this declaration cannot
+RV10-7 two template heads before a member in a class / program / gcc-14: /tidal/build/probes/rv10-review/0025-rv10-7-two-template-heads-before-a-member-in-a-class--program.cpp:1:55: error: too many template-parameter-lists
+RV10-7 two template heads before a member in a class / program / gcc-16: /tidal/build/probes/rv10-review/0025-rv10-7-two-template-heads-before-a-member-in-a-class--program.cpp:1:55: error: too many template-parameter-lists
+RV10-7 two template heads before a member in a class / program / gcc-host: build/gcc-host/probes/rv10-review/0025-rv10-7-two-template-heads-before-a-member-in-a-class--program.cpp:1:55: error: too many template-parameter-lists
+RV10-7 two template heads before a member class in a class / program / clang-18: /tidal/build/probes/rv10-review/0026-rv10-7-two-template-heads-before-a-member-class-in-a-class--program.cpp:1:12: error: extraneous template parameter list in template specialization or out-of-line template definition
+RV10-7 two template heads before a member class in a class / program / clang-22: /tidal/build/probes/rv10-review/0026-rv10-7-two-template-heads-before-a-member-class-in-a-class--program.cpp:1:12: error: extraneous template parameter list in template specialization or out-of-line template definition
+RV10-7 two template heads before a member class in a class / program / clang-host: build/clang-host/probes/rv10-review/0026-rv10-7-two-template-heads-before-a-member-class-in-a-class--program.cpp:1:12: error: extraneous template parameter list in template specialization or out-of-line template definition
+RV10-7 two template heads before a member class in a class / program / edg-7.0: -class-in-a-class--program.cpp", line 1: error: this declaration
+RV10-7 two template heads before a member class in a class / program / edg-7.0-ilp32: -class-in-a-class--program.cpp", line 1: error: this declaration
+RV10-7 two template heads before a member class in a class / program / gcc-14: /tidal/build/probes/rv10-review/0026-rv10-7-two-template-heads-before-a-member-class-in-a-class--program.cpp:1:57: error: too many template-parameter-lists
+RV10-7 two template heads before a member class in a class / program / gcc-16: /tidal/build/probes/rv10-review/0026-rv10-7-two-template-heads-before-a-member-class-in-a-class--program.cpp:1:57: error: too many template-parameter-lists
+RV10-7 two template heads before a member class in a class / program / gcc-host: build/gcc-host/probes/rv10-review/0026-rv10-7-two-template-heads-before-a-member-class-in-a-class--program.cpp:1:57: error: too many template-parameter-lists
+RV10-10 typename T::template B with no argument list, arguments deduced / program / clang-18: /tidal/build/probes/rv10-review/0027-rv10-10-typename-t-template-b-with-no-argument-list-arguments-deduced--program.cpp:2:46: error: expected an identifier or template-id after '::'
+RV10-10 typename T::template B with no argument list, arguments deduced / program / clang-22: /tidal/build/probes/rv10-review/0027-rv10-10-typename-t-template-b-with-no-argument-list-arguments-deduced--program.cpp:2:55: error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw]
+RV10-10 typename T::template B with no argument list, arguments deduced / program / clang-host: build/clang-host/probes/rv10-review/0027-rv10-10-typename-t-template-b-with-no-argument-list-arguments-deduced--program.cpp:2:55: error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw]
+RV10-12 union scalar member ended, reached through an outer member, assigned, read, constant / program / gcc-14: /tidal/build/probes/rv10-review/0031-rv10-12-union-scalar-member-ended-reached-through-an-outer-member-assigned-read-constant--program.cpp:3:48: error: expected identifier before 'decltype'
+RV10-12 union scalar member ended, reached through an outer member, assigned, read, constant / program / gcc-16: /tidal/build/probes/rv10-review/0031-rv10-12-union-scalar-member-ended-reached-through-an-outer-member-assigned-read-constant--program.cpp:3:48: error: expected identifier before 'decltype'
+RV10-12 union scalar member ended, reached through an outer member, assigned, read, constant / program / gcc-host: build/gcc-host/probes/rv10-review/0031-rv10-12-union-scalar-member-ended-reached-through-an-outer-member-assigned-read-constant--program.cpp:3:48: error: expected identifier before ‘decltype’
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / clang-18: /tidal/build/probes/rv10-review/0033-rv10-17-read-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:15: error: constexpr variable 'r' must be initialized by a constant expression
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / clang-22: /tidal/build/probes/rv10-review/0033-rv10-17-read-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:15: error: constexpr variable 'r' must be initialized by a constant expression
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / clang-host: build/clang-host/probes/rv10-review/0033-rv10-17-read-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:15: error: constexpr variable 'r' must be initialized by a constant expression
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / edg-7.0: ble-member-of-a-constexpr-variable--program.cpp", line 4: error:
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / edg-7.0-ilp32: ble-member-of-a-constexpr-variable--program.cpp", line 4: error:
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / gcc-14: /tidal/build/probes/rv10-review/0033-rv10-17-read-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:21: error: mutable 'Outer::in' is not usable in a constant expression
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / gcc-16: /tidal/build/probes/rv10-review/0033-rv10-17-read-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:21: error: mutable 'Outer::in' is not usable in a constant expression
+RV10-17 read of a member nested in a mutable member of a constexpr variable / program / gcc-host: build/gcc-host/probes/rv10-review/0033-rv10-17-read-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:21: error: mutable ‘Outer::in’ is not usable in a constant expression
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / clang-18: /tidal/build/probes/rv10-review/0036-rv10-17-copy-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:17: error: constexpr variable 'c' must be initialized by a constant expression
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / clang-22: /tidal/build/probes/rv10-review/0036-rv10-17-copy-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:17: error: constexpr variable 'c' must be initialized by a constant expression
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / clang-host: build/clang-host/probes/rv10-review/0036-rv10-17-copy-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:17: error: constexpr variable 'c' must be initialized by a constant expression
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / edg-7.0: ble-member-of-a-constexpr-variable--program.cpp", line 4: error:
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / edg-7.0-ilp32: ble-member-of-a-constexpr-variable--program.cpp", line 4: error:
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / gcc-14: /tidal/build/probes/rv10-review/0036-rv10-17-copy-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:23: error: mutable 'Outer::in' is not usable in a constant expression
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / gcc-16: /tidal/build/probes/rv10-review/0036-rv10-17-copy-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:23: error: mutable 'Outer::in' is not usable in a constant expression
+RV10-17 copy of a member nested in a mutable member of a constexpr variable / program / gcc-host: build/gcc-host/probes/rv10-review/0036-rv10-17-copy-of-a-member-nested-in-a-mutable-member-of-a-constexpr-variable--program.cpp:4:23: error: mutable ‘Outer::in’ is not usable in a constant expression

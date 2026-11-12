@@ -164,7 +164,7 @@ must also obey this rule.
 
 :::{rule} CE-3
 :kind: reject
-:tests: foundations/constant-evaluation/read-non-const-variable.cpp foundations/constant-evaluation/read-const-runtime-init.cpp foundations/constant-evaluation/read-const-constant-init.cpp foundations/constant-evaluation/read-parameter-outside.cpp foundations/constant-evaluation/const-enum-usable.cpp foundations/constant-evaluation/const-volatile-not-usable.cpp foundations/constant-evaluation/read-extended-temporary-not-const.cpp foundations/constant-evaluation/read-extended-temporary-class.cpp foundations/constant-evaluation/read-extended-temporary-nested.cpp foundations/constant-evaluation/reference-reads-constant-object.cpp foundations/constant-evaluation/parameter-if-constexpr-consteval.cpp foundations/constant-evaluation/parameter-nested-call.cpp foundations/constant-evaluation/parameter-static-assert.cpp foundations/constant-evaluation/parameter-template-argument-consteval.cpp foundations/constant-evaluation/reference-runtime-initializer.cpp foundations/constant-evaluation/reference-constant-initializer.cpp foundations/constant-evaluation/reference-to-local-not-usable.cpp foundations/constant-evaluation/mutable-member-read-outside.cpp foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp
+:tests: foundations/constant-evaluation/read-non-const-variable.cpp foundations/constant-evaluation/read-const-runtime-init.cpp foundations/constant-evaluation/read-const-constant-init.cpp foundations/constant-evaluation/read-parameter-outside.cpp foundations/constant-evaluation/const-enum-usable.cpp foundations/constant-evaluation/const-volatile-not-usable.cpp foundations/constant-evaluation/read-extended-temporary-not-const.cpp foundations/constant-evaluation/read-extended-temporary-class.cpp foundations/constant-evaluation/read-extended-temporary-nested.cpp foundations/constant-evaluation/reference-reads-constant-object.cpp foundations/constant-evaluation/parameter-if-constexpr-consteval.cpp foundations/constant-evaluation/parameter-nested-call.cpp foundations/constant-evaluation/parameter-static-assert.cpp foundations/constant-evaluation/parameter-template-argument-consteval.cpp foundations/constant-evaluation/reference-runtime-initializer.cpp foundations/constant-evaluation/reference-constant-initializer.cpp foundations/constant-evaluation/reference-to-local-not-usable.cpp foundations/constant-evaluation/mutable-member-read-outside.cpp foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp foundations/constant-evaluation/mutable-member-part-read-outside.cpp foundations/constant-evaluation/mutable-member-part-read-inside.cpp
 
 Constant evaluation must not do either of these with a variable that
 the evaluation did not create, unless the variable is
@@ -187,8 +187,9 @@ These variables are usable:
 - a `const` temporary that the initializer of a `constexpr` reference
   extends (CE-14, {question}`Q-0193`).
 
-A `mutable` member of a usable variable is not usable, so constant
-evaluation must not read the member ({question}`Q-0449`).
+A `mutable` member of a usable variable is not usable, and no part of
+such a member is usable. So constant evaluation must not read the member
+or a part of it ({question}`Q-0449`).
 
 A function parameter is usable only during an evaluation that called
 the function, and {rule}`CE-30` gives the places where a new
@@ -671,8 +672,8 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 136
-of 174 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 138
+of 176 tests.
 
 ### Divergences
 
@@ -804,6 +805,11 @@ family column gives the outcome that the test expects on that family.
 
 ### Notes
 
+- CE-3: every compiler rejects a read of a member of a `mutable` member
+  of a `constexpr` variable, and accepts the read when the evaluation
+  created the variable (RV10-17). EDG rejects the nested read with a
+  note on an uninitialized object, and accepts a read of the `mutable`
+  member itself ({question}`Q-0449`).
 - CE-9: the gap review of the text phase 8 wrote on expressions, foundations,
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) read the sentence on a read
   after a lifetime ends as possibly naming an operation that need not be

@@ -124,7 +124,7 @@ the program names the type.
    dtor_decl: {`dtor_specifier`} "~" `class_name` "(" ["void"] ")" [`noexcept_specifier`]
    dtor_specifier: "constexpr" | "inline" | "virtual"
    dtor_call: `postfix_expr` ("." | "->") [`nested_name`] "~"
-            :    (`identifier` | `template_id` | `decltype_spec`) "(" ")"
+            :    (`identifier` | `template_id` | `decltype_expr`) "(" ")"
 ```
 
 A `mem_init` with `...` expands a pack of bases ({rule}`PACK-14`).

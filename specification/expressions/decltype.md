@@ -86,12 +86,15 @@ should warn.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   decltype_spec: "decltype" "(" `expression` ")"
+   decltype_spec: `decltype_expr`
                 : | "decltype" "(" "auto" ")"
+   decltype_expr: "decltype" "(" `expression` ")"
 ```
 
 `decltype(auto)` is a {term}`placeholder type`. The rules for `decltype(auto)`
-are with placeholder types. A discarded-value expression is one of
+are with placeholder types. Only a `decltype_expr` can name a base,
+start a `nested_name`, follow `~`, or be the type of a functional cast
+({rule}`AUTO-11`). A discarded-value expression is one of
 these:
 
 - the expression of an expression statement,
@@ -346,6 +349,11 @@ skips them.
 
 ### Notes
 
+- DTY-3, AUTO-11: every compiler rejects `decltype(auto)` as a base,
+  as the name of a base in a member initializer list, after `~` in a
+  destructor call, and as the type of a functional cast. The gap review
+  of the phase 17 text reads the placeholder as no valid form there
+  (RV10-1, RV10-4), so these places take a `decltype_expr`.
 - UNEV-4: Clang warns by default. GCC gives no warning. UNEV-4 is a
   `recommended` rule. Every test of UNEV-4 has an override, and each
   override records a result that the class allows.

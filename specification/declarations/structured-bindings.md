@@ -81,7 +81,7 @@ be distinct and must not repeat a name of that scope
 
 ```{eval-rst}
 .. productionlist:: tidal
-   sb_decl: ["static" | "thread_local"] {`cv`} "auto" ["&" | "&&"]
+   sb_decl: {`attribute_spec`} ["static" | "thread_local"] {`cv`} "auto" ["&" | "&&"]
           :    "[" `identifier` {"," `identifier`} "]" `sb_init` ";"
    sb_init: "=" `assignment_expr` | "(" `assignment_expr` ")" | "{" `assignment_expr` "}"
 ```
@@ -365,6 +365,10 @@ All eight compilers agree on 64 of 71 tests. The results are in
 
 ### Notes
 
+- The `sb_decl` production: every compiler accepts an attribute
+  specifier before a structured binding declaration, in a block, in the
+  initializer of an `if`, a `for`, or a `switch`, and at namespace scope
+  (`attribute-before-binding.cpp`, RV10-8).
 - SB-15: Clang and GCC accept `constexpr` structured bindings and two
   `_` names as extensions from a later language version. The two
   compilers reject these forms only under `-pedantic-errors`. Clang

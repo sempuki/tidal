@@ -167,18 +167,23 @@ extra storage, and the array starts at that address.
    new_expr: ["::"] "new" [`placement`] (`new_type` | "(" `type_id` ")") [`new_init`]
    placement: "(" `expression_list` ")"
    new_type: `type_specifier` {`type_specifier`} {`attribute_spec`}
-           :    {"*" {`cv`}} [`new_bounds`]
+           :    {`new_ptr`} [`new_bounds`]
+   new_ptr: [`nested_name`] "*" {`cv`} {`attribute_spec`}
    new_bounds: "[" [`expression`] "]" {`attribute_spec`}
              :    {"[" `constant_expr` "]" {`attribute_spec`}}
    new_init: "(" [`expression_list`] ")" | `braced_init`
    delete_expr: ["::"] "delete" ["[" "]"] `cast_expr`
 ```
 
+A `new_ptr` is a pointer or a member pointer in the type of a `new`
+expression. Its attributes come after its cv-qualifiers, as in a
+`ptr_part` ({doc}`../declarations/declarators`).
+
 ## Constraints
 
 :::{rule} NEW-1
 :kind: required
-:tests: expressions/new-delete/forms.cpp expressions/new-delete/const-scalar-with-init.cpp
+:tests: expressions/new-delete/forms.cpp expressions/new-delete/const-scalar-with-init.cpp expressions/new-delete/new-type-pointer-forms.cpp
 
 `new T`, `new T(args)`, and `new T{args}` create one object of type `T`.
 With `new auto`, the type comes from the initializer.
@@ -830,8 +835,8 @@ int balance() { return second->balance; }      // 0
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 130
-of 156 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 131
+of 157 tests.
 
 ### Divergences
 
@@ -926,6 +931,11 @@ the compile.
 
 ### Notes
 
+- The `new_ptr` production: every compiler accepts `new int* [[]]` and
+  `new int Spot::*` (`new-type-pointer-forms.cpp`, RV10-5). With a
+  `const` after the `*`, Clang alone accepts the attribute before the
+  `const`, and GCC and EDG accept it after, as for a declarator
+  (ATTR-18).
 - NEW-42: on x86-64, the global allocation functions of Clang and GCC
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
   and 2^48 bytes. The limit is the size of the user address space on

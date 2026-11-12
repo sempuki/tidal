@@ -60,6 +60,8 @@ Evidence on 2026-11-11 (decision 0062, item RV7): the DEP-P5 row for the deduced
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text still reads against the deduced form, and only Clang 22 follows the review. The row 4 item names the review.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads the `["template"] identifier` arm of `typename_specifier` against the C++23 text (RV10-10), which is the deduced form of this question. The writer's probe gives the same split: GCC 16 and EDG 7.0 accept `typename T::template B b(1);`, and Clang 22 rejects it (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). The production and DEP-26 keep the deduced form, as before.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -83,3 +85,7 @@ The source-reader gap review of the phase 15 text on expressions, overloading, a
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question with RV8-B-2, which the repair left as it was. The record states the review's reading correctly, and the doubt on DEP-25 stays. The read gives no new reading of the question's answer.
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads `typename_specifier` and the sentence after it against the deduced form (RV10-10). The typename form of the reference ends in an identifier, or in an optional `template` keyword and a template-id. It has no keyword before a plain identifier. The keyword before a qualified name of a class template or alias template with no argument list is allowed and deprecated, but only where a production lets the keyword come before a plain name, such as a template template argument. The review names one doubt: the reference's rule on the keyword names class templates in general and does not exclude the typename form in words.

@@ -97,7 +97,8 @@ constructor builds the base subobject and leaves the rest to {term}`default init
    base_spec: {`attribute_spec`} [`access_specifier`] ["virtual"] `base_type`
             : | {`attribute_spec`} "virtual" `access_specifier` `base_type`
    base_type: [`nested_name`] (`class_name` | `template_id`)
-            : | `decltype_spec`
+            : | `nested_name` "template" `template_id`
+            : | `decltype_expr`
    class_head: ("class" | "struct") {`attribute_spec` | `alignment_specifier`}
              :    [[`nested_name`] (`class_name` | `template_id`) ["final"]] [`base_clause`]
    inheriting_decl: "using" [`nested_name`] `class_name` "::" `class_name` ["..."] ";"
@@ -105,6 +106,10 @@ constructor builds the base subobject and leaves the rest to {term}`default init
 
 A `base_spec` or an `inheriting_decl` with `...` expands a pack of bases
 ({rule}`PACK-14`, {rule}`PACK-21`).
+
+The keyword `template` can come before the last `template_id` of a
+qualified base name, as in `T::template Part<int>` ({rule}`DEP-25`). A
+member initializer names the base in the same way ({doc}`constructors`).
 
 A *direct base* is a class in the base list. An *indirect base* is a base
 of a base. A *virtual base* is a base named with `virtual`. The *most

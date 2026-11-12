@@ -58,6 +58,8 @@ Principle text on 2026-11-11 (decision 0062, item RV7): the DEP-P5 sentence on t
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text still reads against the answer, and every newest family keeps the matrix's answer. The row 4 item names the review.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text says, at `base_type`, that a qualified base name needs no `template` keyword before its last template-id, because only a type can stand there (RV10-1). That remark fits the earlier reviews' reading of the base form. The writer's probe gives the same split as `template-keyword-needed-base.cpp`: GCC accepts `T::B<int>` as a base without the keyword, and Clang and EDG reject it. Every compiler accepts the form with the keyword, and `base_type` now derives it.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -85,3 +87,7 @@ The source-reader gap review of the phase 15 text on expressions, overloading, a
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question with RV8-B-2, which the repair left as it was. The record states the review's reading correctly, and the question still holds its row. The read gives no new reading of the question's answer.
+
+### Gap review, 2026-11-11 (phase 17 text)
+
+The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) does not name the question. At `base_type` it says that the reference lets the `template` keyword come before the last template-id of a qualified base name, and that the keyword is not needed there, because the name can only be a type (RV10-1). For the base form, that reading supports option 2, as the review of question cluster 6 did.

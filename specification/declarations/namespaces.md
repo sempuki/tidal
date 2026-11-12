@@ -75,7 +75,7 @@ Neither form belongs in a class.
    namespace_alias: "namespace" `identifier` "=" [`nested_name`] `identifier` ";"
    using_decl: "using" ["typename"] `qualified_name` ["..."]
              : {"," ["typename"] `qualified_name` ["..."]} ";"
-   using_directive: "using" "namespace" [`nested_name`] `identifier` ";"
+   using_directive: {`attribute_spec`} "using" "namespace" [`nested_name`] `identifier` ";"
 ```
 
 An attribute specifier after `namespace` is valid only in a definition
@@ -353,6 +353,10 @@ of 57 tests.
 
 ### Notes
 
+- The `using_directive` production: every compiler accepts an empty
+  attribute specifier before a using-directive, at namespace scope and
+  in a block (`using-directive-attribute.cpp`, RV10-3). EDG rejects
+  `maybe_unused` there, and Clang and GCC accept it (ATTR-2).
 - NS-15: every compiler accepts `N::f` for a member of an inline
   namespace of `N` in the global namespace, and rejects it inside the
   inline namespace. The gap review of the rules that phase 7 rewrote

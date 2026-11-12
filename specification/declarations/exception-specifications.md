@@ -269,7 +269,9 @@ row 4).
 - {question}`Q-0077` (EXS-5; open): whether `throw()` is valid. Where
   an implementation accepts it, it means `noexcept`, and the choice is
   implementation-defined. Clang and GCC accept the form, and EDG
-  rejects it.
+  rejects it. The `exception_spec` production follows EXS-5,
+  and the gap review of the phase 17 text reads it against the C++23
+  text, as the earlier review read EXS-5 (RV10-2).
 - {question}`Q-0079` (EXS-6; open): whether an implementation must
   diagnose a `noexcept` operand that depends on the function itself. It
   need not, so the test expects acceptance, as GCC and EDG give. Clang

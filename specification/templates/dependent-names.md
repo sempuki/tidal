@@ -613,7 +613,7 @@ target of an alias declaration ({question}`Q-0225`).
 
 :::{rule} DEP-25
 :kind: required
-:tests: templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-template-template-default.cpp
+:tests: templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-template-template-default.cpp templates/dependent-names/template-keyword-base-last-name.cpp templates/dependent-names/template-keyword-cast-last-name.cpp
 
 The keyword `template` can come before a template name that lookup
 already finds, also outside a template. Before a template template
@@ -685,7 +685,7 @@ parameters of each operator function, and DEP-33 gives the general case.
 
 :::{rule} DEP-30
 :kind: no-diagnostic
-:tests: templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp templates/constraints/independent-template-id.cpp templates/constraints/independent-alias-template-id.cpp
+:tests: templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp templates/constraints/independent-template-id.cpp templates/constraints/independent-alias-template-id.cpp statements/jumps/goto-missing-label-template-never-used.cpp statements/jumps/goto-missing-label-class-template-member.cpp statements/jumps/goto-missing-label-generic-lambda.cpp statements/jumps/duplicate-label-template-never-used.cpp statements/jumps/continue-outside-loop-template-never-used.cpp
 
 A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
@@ -703,7 +703,9 @@ is made ({question}`Q-0223`). These are such constructs:
   the parameters ({rule}`DEFARG-10`), although {rule}`INST-9`
   instantiates a default argument only for a call that uses it,
 - `override` on a member that overrides nothing, in a class template
-  whose bases do not depend on the parameters ({rule}`VIRT-3`).
+  whose bases do not depend on the parameters ({rule}`VIRT-3`),
+- a jump that does not obey {rule}`JMP-7` or {rule}`JMP-14`, such as a
+  `goto` to a label that the function does not have.
 :::
 
 :::{rule} DEP-31
@@ -887,8 +889,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 121
-of 148 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 125
+of 155 tests.
 
 ### Divergences
 
@@ -935,7 +937,9 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   The DEP-P5 row for the deduced form follows GCC and EDG. The gap
   review of the text phase 14 wrote on templates reads that row against
   the C++23 text (RV7-B-1), and `pending.md` row 4 holds the deduced
-  form.
+  form. The gap review of the phase 17 text reads the keyword before a
+  plain identifier in `typename_specifier` against the C++23 text too
+  (RV10-10).
 - {question}`Q-0227` (DEP-27; open): whether `template` can follow the
   qualifier of a name that a declaration declares. It cannot. GCC and
   EDG accept it for a member function, and EDG for a member class
@@ -944,6 +948,11 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   implementation diagnoses an independent error in an unused template.
   No diagnostic is required. No family differs from the answer, and GCC
   accepts the template.
+- {question}`Q-0451` (JMP-14, DEP-30; open): whether a `goto` to a
+  missing label is rejected in a template that no specialization uses.
+  No diagnostic is required there, as DEP-30 says for any independent
+  construct. Clang and EDG reject, and GCC accepts. In a discarded
+  statement of a used template, JMP-14 rejects the program.
 - {question}`Q-0249` (DEP-31; settled on DEP-P1 and DEP-P6): whether a
   qualified call uses a default argument that a later declaration adds.
   No diagnostic is required. No family differs from the answer, and GCC
@@ -991,6 +1000,9 @@ compile.
 | `qualified-member-found-again.cpp` | DEP-13 | reject | reject | accept | reject | {question}`Q-0230` |
 | `sizeof-value-dependent-operand-call-bound-early.cpp` | DEP-4, DEP-5 | accept | accept | accept | reject | {question}`Q-0432` |
 | `sizeof-value-dependent-operand-no-typename.cpp` | DEP-4 | run | run | run | reject | {question}`Q-0432` |
+| `statements/jumps/goto-missing-label-class-template-member.cpp` | JMP-14, DEP-30 | reject | reject | accept | reject | {question}`Q-0451` |
+| `statements/jumps/goto-missing-label-generic-lambda.cpp` | JMP-14, DEP-30 | reject | reject | accept | reject | {question}`Q-0451` |
+| `statements/jumps/goto-missing-label-template-never-used.cpp` | JMP-14, DEP-30 | reject | reject | accept | reject | {question}`Q-0451` |
 | `template-keyword-destructor-dot.cpp` | DEP-34 | reject | reject | reject | accept | {question}`Q-0245` |
 | `template-keyword-destructor.cpp` | DEP-34 | reject | reject | reject | accept | {question}`Q-0245` |
 | `template-keyword-in-declarator-class.cpp` | DEP-27 | reject | reject | reject | accept | {question}`Q-0227` |
@@ -1042,11 +1054,11 @@ and the questions say so.
   also when an explicit specialization declares the member. DEP-30
   allows each result.
 - DEP-30: a jump condition of {rule}`JMP-7` or {rule}`JMP-14` does not
-  depend on the parameters and is not on DEP-30's list. JMP-14 checks
-  the labels at the definition, also in a template that no
-  specialization uses. Every compiler rejects a label name that occurs
-  twice and a `break` or `continue` outside a loop in such a template.
-  GCC alone accepts a `goto` to a missing label there (X24-3).
+  depend on the parameters, so DEP-30's list takes it, as the gap review
+  of the phase 17 text reads (RV10-14). Every compiler rejects a label
+  name that occurs twice and a `break` or `continue` outside a loop in
+  a template that no specialization uses. GCC alone accepts a `goto` to
+  a missing label there (X24-3, {question}`Q-0451`).
 - DEP-29: every compiler rejects `template <class T> int take(T::type)`
   with a body at the definition, with no specialization. Clang reports
   a missing `typename`, GCC expects `;` before the body, and EDG reports

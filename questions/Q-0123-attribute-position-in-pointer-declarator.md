@@ -1,7 +1,7 @@
 # Q-0123: Does an attribute in a pointer declarator come before or after the cv-qualifiers?
 
 **Status:** provisional
-**Affects:** ATTR-18, the `ptr_part` production, `tests/declarations/attributes/pointer-attribute-after-cv.cpp`, `tests/declarations/attributes/pointer-attribute-before-cv.cpp`
+**Affects:** ATTR-18, the `ptr_part`, `conversion_type`, and `new_ptr` productions, `tests/declarations/attributes/pointer-attribute-after-cv.cpp`, `tests/declarations/attributes/pointer-attribute-before-cv.cpp`
 **Waits for:** the maintainer (pending.md row 4)
 
 ## Context
@@ -33,6 +33,8 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads against the answer again, now also for the type of a conversion function, since `conversion_type` takes `ptr_part` (RV10-9).
+
+Rule text on 2026-11-11 (decision 0065, item RV10): the new production `new_ptr` gives the pointer parts of the type of a `new` expression, with the attribute after the cv-qualifiers, as `ptr_part` does (RV10-5). The writer's probe gives the same split there: Clang alone accepts `new int* [[]] const(nullptr)` (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

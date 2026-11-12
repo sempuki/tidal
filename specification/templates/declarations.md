@@ -210,7 +210,7 @@ must not have C language linkage ({rule}`LSP-1`).
 
 :::{rule} TPL-4
 :kind: reject
-:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp
+:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp templates/declarations/two-template-heads-in-class.cpp
 
 The declaration after a template head must declare exactly one named
 entity. These declarations are not valid after a template head:
@@ -220,6 +220,9 @@ entity. These declarations are not valid after a template head:
 - a class without a name,
 - a class definition followed by a declarator, such as a variable
   name. A declaration of a class template declares no other entity.
+
+In a class, a template head must not come right after another template
+head.
 :::
 
 :::{rule} TPL-22
@@ -836,8 +839,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 130
-of 142 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 131
+of 143 tests.
 
 ### Divergences
 
@@ -896,6 +899,8 @@ Q-0198 to the EDG project waits on the maintainer too.
 
 ### Notes
 
+- TPL-4: every compiler rejects two template heads before a member of
+  a class (`two-template-heads-in-class.cpp`, RV10-7).
 - TPL-2: Clang 18 gives a parse error for a template in a block, and the
   other compilers say that a template is not allowed there.
 - TPL-4: Clang names the single-entity condition. GCC and EDG reject a

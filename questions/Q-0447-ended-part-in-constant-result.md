@@ -50,6 +50,8 @@ Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The read 
 
 Rule text on 2026-11-11 (decision 0065, item F7): OBJ-2's item gains the condition of RV10-R-3. An assignment through the name of a scalar union member that a destructor call ended makes the member active and is valid (UNI-5, UNI-14), and every compiler accepts the form (`write-after-pseudo-destructor-union-member-constant.cpp`). An element of a union's array member does not count, so OBJ-2's item holds for it. `write-after-pseudo-destructor-union-array-element-constant.cpp` expects the rejection, with GCC and EDG as overrides (`reports/clean-room/roadmap-14/writer-probes/rv10-points.json`). The table gains the three union rows. No test holds the row for a struct member of a union. The answer and the **Waits for:** line do not change.
 
+Kept open on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads OBJ-2's sentence on the element of a union's array member with a doubt (RV10-12). A plain reading creates no object, so the write reaches an ended element, as Clang says. The C++23 text does not say whether such a write counts as a change to the array outside its lifetime. If it does, the assignment creates a new array with no element values, and the write is valid, which fits GCC 16 and EDG 7.0. OBJ-2 now also names a union member of class type that a destructor call ended, and every compiler accepts that form. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 16 text)
