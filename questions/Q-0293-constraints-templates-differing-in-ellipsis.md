@@ -54,6 +54,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-13), and GCC 16 alone differs. The doubt is one passage that a reader could take to count the ellipsis in the length of a parameter list.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -67,3 +69,7 @@ The source-reader gap review of the text phase 9 wrote on expressions and templa
 ### Gap review, 2026-11-05 (phase 10 text, expressions and templates)
 
 The source-reader gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) reads the question: supports with a doubt. After both deductions succeed, the reference compares the lengths of the template parameter lists and the function parameter lists, and an ellipsis is not a parameter. So the constraint decides. The doubt is that the reference does not define the function parameter list as a term.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-13). The step that compares constraints gives up when the template parameter lists or the function parameter lists differ in length. The reference does not define a function parameter list. One passage speaks of a function with an ellipsis in its parameter list, and a reader could take that passage to count the ellipsis in the length. The rules on the number of parameters count only declared parameters. The doubt is now that one passage against the plain sense of a length of parameters.

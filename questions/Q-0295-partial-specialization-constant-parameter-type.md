@@ -42,6 +42,8 @@ Kept open on 2026-11-03 under decision 0054, because the review reads the answer
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-14), and Clang 22 alone differs. The doubt is only what the type of a placeholder parameter of the primary template means in the deduction rule.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -53,3 +55,7 @@ The source-reader gap review of the open questions on templates (`reports/review
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with a doubt. Deduction fails when a constant's type differs from the type of the matching parameter of the named template. The reference does not say plainly what that type is when the primary parameter is a placeholder.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-14). Deduction fails when the type of a constant differs from the type of the matching parameter of the named template. When that parameter has a placeholder type, the reference does not say whether the type is the placeholder as written or the type deduced for the given argument. The natural reading takes the deduced type, which gives option 1 for `partial-constant-type-exact.cpp`. For the `const auto*` form, the placeholder deduced from the argument is a pointer to const, which differs from the argument's own pointer type. The doubt is now only the meaning of the type of a placeholder parameter in that rule.

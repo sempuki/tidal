@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CPT-28, `tests/templates/concepts/requires-parameters-void-template.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -54,3 +54,7 @@ The source-reader gap review of the open questions on templates (`reports/review
 The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1, with a small doubt. The parameters of a requires expression use the clause of a function's parameters, and the reference sends them to the function rules, where a single unnamed parameter of non-dependent `void` type means an empty list. The doubt is that the reference does not repeat that rule for requires expressions.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the small doubt of the 2026-11-04 review is resolved. The parameter list of a requires expression is a function parameter clause, and the reference sends the reader to the function rules for it. Those rules give a lone unnamed parameter of a `void` type that does not depend on the parameters the meaning of an empty list.

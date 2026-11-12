@@ -46,6 +46,8 @@ Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap r
 
 Rule text on 2026-11-11 (decision 0064, item RV9): CE-22 adds the limit that RV9-10 reads, for a union whose active member is `mutable`. Q-0449 holds that case and its splits. The answer of this question is unchanged.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-29), and EDG 7.0 alone differs. The doubt touches only `union-copy-part-with-no-value.cpp`, and the read test stands under either reading.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 16 text)
@@ -55,3 +57,7 @@ The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-ga
 ### Read of the RV9 repair diff, 2026-11-11
 
 The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-of-rv9-repair-diff.md`) reads the gap review's entry on the question: agrees as a record. The entry states RV9-10 correctly, with the limit on a `mutable` active member, and the doubt of RV9-10 on the form of the copy stays. The read's doubt on the new CE-22 sentence (RV10-R-4) concerns the case of Q-0449. The read gives no new reading of this question's answer.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-29). For constant evaluation, a trivial copy or move of a union copies its active member, and that copy is trivial. The reference does not say whether a trivial copy of the active member copies its representation or each part. The doubt now touches only the acceptance test `union-copy-part-with-no-value.cpp`. A copy part by part would read the element or member with no value, and the copy itself would not be constant, which every compiler reads against. The read test `union-copy-part-with-no-value-read.cpp` is rejected under either reading, at the copy or at the read, so it stands as written.

@@ -37,6 +37,8 @@ Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). LSUP-P2 de
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-15). Clang 22 alone accepts, and the no-diagnostic rule lets either result stand. The doubt is only the declaration of the right shape, which the reference also leaves undefined and which LSUP-5 accepts under decision 0041.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -54,3 +56,7 @@ The source-reader gap review of the text phase 9 wrote on declarations, statemen
 ### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
 
 The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) used LSUP-P2 on `alignment-enumeration-unscoped.cpp`, without the rule text. The model's answer: The type is declared unscoped, which is another kind. The program is not valid and needs no diagnostic. An implementation can reject the declaration where it stands, so the GCC and EDG rejection and the Clang acceptance both conform. Matches the provisional answer: yes. Reference verdict: supports with a doubt. The review also used LSUP-P2 on `alignment-enumeration-wrong-underlying-type.cpp`, without the rule text. The model's answer: The type is scoped but has a one-byte underlying type, which is another underlying type. The program is not valid and needs no diagnostic, and rejection at the declaration is allowed. Matches the provisional answer: yes. Reference verdict: supports with a doubt. The review also used LSUP-P2 on `alignment-enumeration-class.cpp`, without the rule text. The model's answer: The type is declared as a class, which is another kind. The program is not valid and needs no diagnostic, and rejection at the declaration is allowed. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-15). A declaration that a program adds to namespace `std` is undefined unless a rule allows it, and no rule allows this one. The implicit declarations of the allocation functions do not declare the type. So no shape needs a diagnostic, and the answer holds. The doubt is now only the class of the right shape, which the reference makes undefined too. LSUP-5 and LSUP-P2 treat that declaration as valid, which is Tidal's choice under decision 0041.

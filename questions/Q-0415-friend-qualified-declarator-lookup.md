@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** NAM-21, `tests/foundations/names/friend-qualified-declarator-lookup.cpp`
 **Source:** the gap review `reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`, section NAM-21, from the probe that a clean-room writer ran for it.
-**Waits for:** a review (doubt)
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -45,3 +45,7 @@ The source-reader gap review of the text phase 12 wrote on classes, declarations
 ### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) names the question in its reading of NAM-21 (RV7-A-6). The trailing requires clause that NAM-21 now lists is part of the redeclaration after the qualified name, and the reference searches it in the named scope. The review keeps its doubt on NAM-21 and says that the split of this question stays. The Evidence note on a friend parameter type in an inline namespace states the RV6 reading correctly.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt on NAM-21's wording is resolved. The reference has a rule for exactly this case. In a friend declaration whose name is qualified, a plain name after the qualified name is searched first in the named scope and then by ordinary lookup. NAM-21 now states the parts after the qualified name in that way.

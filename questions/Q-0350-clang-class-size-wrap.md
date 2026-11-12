@@ -44,6 +44,8 @@ reads STG-1 this way for x86-64.
 
 Kept open on 2026-11-03 under decision 0054, because the two reviews read the reference with doubt, and they differ on whether the reference rejects a class that `std::size_t` cannot count.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-20). The 32-bit case is settled for option 1, and Clang 22 alone differs there. The doubt is only the 64-bit case of Clang 18, which is not a newest family.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
@@ -55,3 +57,7 @@ The source-reader gap review of the object model (`reports/review/2026-11-03-gap
 ### Gap review, 2026-11-03 (program structure)
 
 The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as silent. The review finds no rule that rejects a class whose size `std::size_t` cannot hold. The reference asks an implementation to run every valid program correctly within its resource limits, and to document those limits where they are known. A wrong result from `sizeof` is not a correct execution, so Clang conforms only if the class is past one of its limits, and Clang documents no such limit. Option 1 relies on STG-1, which goes beyond the reference by this reading.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-20). The 32-bit case is settled. A type whose object representation needs more bytes than `std::size_t` can count is not valid, and the program needs a diagnostic, so Clang's acceptance there is a defect. The doubt is now only the 64-bit case of Clang 18, where the class fits `std::size_t`. An implementation must run a valid program correctly only within its resource limits, must document those limits where they are known, and can say that they are unknown. The implementation quantities do not decide conformance. So Clang 18 conforms if the class lies past one of its limits, and no diagnostic is required there.

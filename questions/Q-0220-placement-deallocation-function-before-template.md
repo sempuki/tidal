@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-23, NEW-24, DED-39, `tests/expressions/new-delete/throw-placement-function-and-template.cpp`, `tests/expressions/new-delete/throw-placement-function-before-template-instantiation.cpp`, `tests/expressions/new-delete/throw-placement-deleted-function-and-template.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a principle (NEW-P3)
 
 ## Context
 
@@ -53,6 +53,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 calls the funct
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with no doubt. GCC 16 alone differs in `throw-placement-function-and-template.cpp`, and EDG 7.0 alone differs in `throw-placement-deleted-function-and-template.cpp`. No principle gives the answer. NEW-P3 calls no deallocation function when no single function matches, and it does not say whether a plain function wins over a matching specialization. Each option fits the model, so NEW-P3 fails step 3 of the principle test.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -60,3 +62,7 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 2, with doubt. The match compares declarations, and for templates it deduces and then uses partial ordering to narrow the templates to one. A deallocation function is called only when exactly one function matches. The match is not overload resolution, and it gives no preference to a function that is not a template over a matching specialization. A plain function and one specialization are two matches, so no deallocation function is called, as Clang does. The doubt is whether the narrowing among templates was meant to extend to plain functions. The reference gives no sign of it.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the 2026-11-03 review is resolved. The narrowing by partial ordering covers only the set of templates. Nothing gives a plain function a preference over a matching specialization, so the function and the specialization are two matches, and no deallocation function is called.

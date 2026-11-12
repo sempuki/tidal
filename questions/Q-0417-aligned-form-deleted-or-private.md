@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** NEW-29, NEW-25, `tests/expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp`, `tests/expressions/new-delete/aligned-private-form-beside-unaligned.cpp`
 **Source:** finding X23-2 of `reports/clean-room/X23/report.md`, from the probes `d2.cpp` and `d3.cpp` beside it.
-**Waits for:** a review (doubt)
+**Waits for:** a principle (NEW-P5)
 
 ## Context
 
@@ -36,8 +36,14 @@ Not valid (option 1). Two of three families agree.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (item RV5).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with no doubt, and GCC 16 alone differs. No principle gives the answer. NEW-P5 drops the alignment when no function accepts the first call, and it does not say whether a deleted or private function accepts the call. Each option fits the model, so NEW-P5 fails step 3 of the principle test.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV5-B-13). The second search happens only when overload resolution finds no function. A deleted or inaccessible aligned form takes part in overload resolution and is selected, and the checks for deletion and access come after the selection, so the search ends and the program is not valid. The doubt is that the reference does not define what passes the test for the second search.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the phase 12 review is resolved. A deleted or private aligned form takes part in overload resolution and is chosen, and the checks for deletion and access come after the choice. So a function is found, the second search without the alignment does not happen, and the program is not valid. The undefined wording for a failed first search matters only when overload resolution finds nothing.

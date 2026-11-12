@@ -62,6 +62,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-1), and Clang 22 alone differs. The doubt is whether the range of a floating type that has an infinity reaches the infinity. Q-0028 rests on the opposite reading of the same point (DQ-2), so the two answers cannot both follow from one reading.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -71,3 +73,7 @@ The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-g
 ### Gap review, 2026-10-31
 
 The source-reader gap review of the operator pages (`reports/review/2026-10-31-gap-review-3-operators.md`) reads a floating addition whose exact result is finite and too large for the type as undefined, as for multiplication. The reading supports the provisional answer. The review notes the same split as in this question: Clang accepts the constant and gives infinity, and GCC rejects it as not constant.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-1). An evaluation whose result the type cannot represent is undefined, and an undefined operation keeps an expression from being constant. The reference leaves the representation of each floating type to the implementation. The doubt is now only whether the range of a type with an infinity reaches the infinity. If the range reaches the infinity, an overflow lies inside the range and rounds, which is Clang's result. If the range does not, the overflow is undefined, which is option 1. Q-0028 answers the same point the other way (DQ-2).

@@ -59,6 +59,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-8). The probe's class, which has a constructor that is not trivial, is settled for option 1. The doubt is only for a class whose default constructor is trivial and that gets a dynamic initializer.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (declarations, statements, and foundations)
@@ -70,3 +72,7 @@ The source-reader gap review of the text phase 9 wrote on declarations, statemen
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear. The rule on lifetimes supports option 1. A class object with a dynamic initializer has not begun its lifetime before the initializer completes, and a note to that rule names this case. A read of a member then is outside the lifetime. A note on static initialization says that an earlier initializer can see the zero of a later object, and that note fits option 2. Read strictly, the rule on lifetimes also makes the scalar read of SINIT-2 undefined, so the review finds the reference inconsistent. The review knows of an open core issue on the point after C++23.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-8). For a class with a constructor that is not trivial, a reference to a member before the constructor starts is undefined. The reference's example names a class with a trivial constructor as the case where such a reference is fine. That settles the case of the probe for option 1. The doubt is now only for a class whose default constructor is trivial and that gets a dynamic initializer. For that case the note on static initialization lets an earlier initializer see the zero, and the lifetime rule points the other way.

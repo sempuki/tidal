@@ -46,8 +46,14 @@ the INST-P2 table gives it a row.
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with a doubt, and only GCC differs.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-27), and GCC 16 alone differs. The doubt is one sentence on the made member, which GCC can read as delaying the initializer.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV7-B-14). The instantiation of the class makes the declarations of its static data members and not their definitions. For a `static const` member of integer or enumeration type that is neither `inline` nor `constexpr`, the declaration in the class is not a definition and carries the initializer. So the initializer comes with the declaration, and the class makes it (option 1). The doubt is a general sentence that delays the initialization of a static data member, with its side effects, until a use needs the definition. GCC can read that sentence as delaying the initializer itself. The review reads it as a statement about run-time effects.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-27). The instantiation of a class makes the declarations of its static data members and not their definitions. For a `static const` member of integral type that is neither `inline` nor `constexpr`, the declaration in the class holds the initializer and is not a definition. So the class makes the initializer, which is option 1. The doubt is now one sentence. A member is made when a use needs its definition, and the initialization of a static data member, with its side effects, waits for such a use. That sentence is tied to the definition, and for this member the initializer sits in the declaration. GCC can still read the sentence as delaying the initializer, and the reference does not rule that reading out.

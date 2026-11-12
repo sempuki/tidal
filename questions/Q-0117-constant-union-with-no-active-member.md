@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-21, TARG-19, `tests/foundations/constant-evaluation/result-union-no-active-member.cpp`, `tests/templates/arguments/same-specialization-union-empty.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a principle (CE-P2)
 
 ## Context
 
@@ -60,8 +60,14 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with no doubt, and GCC 16 alone differs. No principle gives the answer. CE-P2 says that a result has a value in every part, and it does not say that an inactive union member is not a part. Option 2 also fits the model, so CE-P2 fails step 3 of the principle test, and only CE-21 states the detail. TARG-P4 treats two unions with no active member as the same argument, and it covers only the template argument form.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1, with doubt. A union with no active member has no member whose lifetime has begun, so the checks on the value of a constant find no fault. The reference also counts two unions that both have no active member as equivalent template arguments, which only makes sense if such a union can be a constant. The doubt is that the check on subobjects does not say plainly that an inactive member is skipped. A reader who counts the inactive member as a subobject with no value would reach GCC's result.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the 2026-11-03 review is resolved. An object comes into being for a union member only when that member becomes active. So a union with no active member has no member object for the check on parts to visit. The rule on equal template arguments also names two unions that both have no active member.

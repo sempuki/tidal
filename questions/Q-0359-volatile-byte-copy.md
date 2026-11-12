@@ -46,6 +46,8 @@ Kept open on 2026-11-03 under decision 0054, because the review reads the refere
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-21). The doubt is only whether a member declared volatile, in a class whose objects are not volatile, counts as an object defined with a volatile type. The byte steps of the tests rest on Q-0304.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (declarations, statements, and foundations)
@@ -57,3 +59,7 @@ The source-reader gap review of the text phase 9 wrote on declarations, statemen
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, leaning to option 1. The reference makes undefined an access to an object defined with a volatile type through a glvalue that is not volatile, and it has no exception for byte types. The reference does not say whether a member counts as defined with a volatile type, or whether the bytes of the object representation count as volatile.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-21). An access to an object defined with a volatile type through a glvalue that is not volatile is undefined, and byte types get no exception. By the letter of DQ-16, a byte glvalue made by a cast still refers to the object, so the read is an access to the object itself. The doubt is now only whether a member declared volatile, inside a class whose objects are not volatile, counts as an object defined with a volatile type. The byte steps in the test also rest on the answer of Q-0304.

@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-26, ICS-33, ICS-36, `tests/overloading/conversion-sequences/array-pointer-tie-breaker.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a principle (ICS-P5)
 
 ## Context
 
@@ -39,6 +39,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 finds both call
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with no doubt, and GCC 16 alone differs. No principle gives the answer. ICS-P5 sends the reader to ICS-32 to ICS-36 for the tie-breakers of step 4c, and neither ICS-P5 nor ICS-P2 says that the comparison leaves out an array-to-pointer step. So ICS-P5 fails step 3 of the principle test.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -46,3 +48,7 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. An array-to-pointer step is an lvalue transformation, and the comparison of two sequences leaves lvalue transformations out. The rest of each sequence is a pointer conversion from a pointer to the derived class, so the tie-breakers for a base over `void` and for the nearer base apply. The review's one doubt is that the reference states these tie-breakers for pointer sources and says nothing of array arguments.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the 2026-11-03 review is resolved. The comparison of two standard sequences leaves out the lvalue transformation. What remains of each sequence is a conversion from a pointer to the derived class, which is the source that the pointer tie-breakers describe.

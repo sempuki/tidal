@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-25, `tests/templates/instantiation/explicit-storage-class.cpp`, `tests/templates/instantiation/explicit-attribute-after.cpp`, `tests/templates/instantiation/explicit-thread-local.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a principle (INST-P3)
 
 ## Context
 
@@ -45,6 +45,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with no doubt. GCC 16 differs on `static` and on the attribute, and EDG 7.0 differs on `thread_local`, so one newest family differs in each form. No principle gives the answer. INST-P3 says nothing about a storage class or an attribute in an explicit instantiation, so the answer turns on INST-25 alone, and INST-P3 fails step 3 of the principle test.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -52,3 +54,7 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 1. No storage class except `thread_local` can appear on an explicit instantiation, and no attribute applies to one. An attribute before `template` has no place in the grammar, and an attribute after the class key is not allowed either. As a side note, a variable declared `thread_local` must have the keyword on every declaration, so the reference may require the explicit instantiation to repeat it. That depends on whether the template's declaration counts as a declaration of the specialization, the doubt of Q-0203.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt is resolved. No storage class other than `thread_local`, and no attribute, can belong to an explicit instantiation. The side question of the 2026-11-03 review, whether an explicit instantiation of a `thread_local` variable template must repeat the keyword, does not touch the tests, which all repeat it.

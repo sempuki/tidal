@@ -43,6 +43,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 gives the call 
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-9), and GCC 16 alone differs. The doubt is that the support rests on a footnote whose stated reason does not cover ref-qualifiers or explicit object parameters.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -50,3 +52,7 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. A call with no usable object gets a made-up object of the class. The reference states in a note that this object never makes a function viable or not viable, and that the call is not valid when a non-static member wins. The normative text gives the made-up object no value category, so most of the support comes from the note.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-9). The normative text gives the invented object a class type and no value category, and it makes the call not valid when a non-static member wins. The statement that the invented object never makes a candidate viable or not viable is in a footnote. The footnote's reason is that all the members share one object parameter, and with ref-qualifiers and explicit object parameters that reason no longer holds. An example in the reference has a static member function call a member with an explicit object parameter, and the example treats that member as chosen and the call as not valid, which fits option 1. The doubt is that the support rests on a footnote whose reason is out of date.

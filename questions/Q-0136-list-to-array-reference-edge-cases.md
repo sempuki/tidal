@@ -47,6 +47,8 @@ answer for both cases.
 
 Kept open on 2026-11-03 under decision 0054, because the review finds the empty braces unclear and leans to option 2 there.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-5). The designated list is settled for option 1. The doubt is only on empty braces for an array of unknown bound.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -58,3 +60,7 @@ The source-reader gap review of the open questions on overloading, references, a
 ### Gap review, 2026-10-31
 
 The source-reader gap review of conversion sequences (`reports/review/2026-10-31-gap-review-conversion-sequences.md`) reads a designated list as allowed only for a parameter of aggregate type. A reference to an aggregate is not an aggregate type, so the plain reading gives no sequence. The review puts any compiler split on this case in this question. The reading fits the provisional answer for the designated list, and the review says nothing on empty braces.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-5). The designated list is settled. A designated list converts only to an aggregate that aggregate initialization accepts, and a designator cannot name an array element. For empty braces and an array of unknown bound, the list rule takes the worst of the element sequences, and there are no elements. The reference does not say what the worst of no sequences is. The reference also does not let empty braces initialize an array of unknown bound, so the temporary could never be made, which fits option 1. A sequence can still exist for a call whose initialization fails later, so the doubt now rests only on the empty set of element sequences.

@@ -65,6 +65,8 @@ Kept open on 2026-11-05 under decision 0054, because the review reads the answer
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer for both tests in Affects, and Clang 22 alone differs. The narrower doubt is only on `address-reference-kinds.cpp`, which names the question and is not in Affects (DQ-24).
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (expressions and templates)
@@ -74,3 +76,7 @@ The source-reader gap review of the text phase 9 wrote on expressions and templa
 ### Gap review, 2026-11-05 (phase 10 text, expressions and templates)
 
 The source-reader gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) reads the question: supports with a doubt. Outside a call, the function type is the one type that takes part, and only a top-level reference would be stripped. The function type is not a reference, so the references inside it stay. The doubt concerns the forwarding parameter case, where an adjustment exists for deduction when an address is taken and it is unclear whether ordering in that context shares it.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-24). For the address of an overload set, the whole function type is the one type that takes part. Partial ordering removes references and qualifiers only at the top level of that type, and a function type is not a reference. That supports option 1 for both tests in Affects. In `address-reference-against-value.cpp` the template with the reference parameter does not deduce from the invented function type with a value parameter, and the other direction succeeds. `address-value-against-forwarding.cpp` follows the same reasoning. The doubt is now only `address-reference-kinds.cpp`, which is not in Affects. Option 1 gives that test's result only if a forwarding parameter inside a function type deduces from an invented lvalue reference. The reference gives that adjustment for call deduction and for top-level ordering, and not for a part of a function type.

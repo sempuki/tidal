@@ -44,6 +44,8 @@ stays open.
 
 Kept open on 2026-11-03 under decision 0054, because the review does not decide the open part. Whether an implementation can merge volatile accesses, as in the VOL-12 initializer, stays open, and VOL-P1 says only that each access is performed as written.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-18). The size of an access is supported for option 1. The doubt is only the open part of the answer, the merging of accesses.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -51,3 +53,7 @@ Kept open on 2026-11-03 under decision 0054, because the review does not decide 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The meaning of a volatile access is implementation-defined, and a conforming implementation must still perform volatile accesses as the abstract machine does. Nothing says directly whether two accesses may merge into one. For the open part about an initializer, the review notes that volatile semantics do not apply to an object while its constructor runs.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-18). The meaning of an access through a volatile glvalue is implementation-defined, and an implementation still carries out volatile accesses as the abstract machine does. That supports option 1 for the size. The doubt is now only the open part of the answer, the merging of accesses. Two accesses of the abstract machine must both happen, and the implementation defines what counts as one access. For the initializer of VOL-12, volatile semantics do not apply to an object while the object is under construction.

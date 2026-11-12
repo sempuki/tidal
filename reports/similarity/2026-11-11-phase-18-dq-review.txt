@@ -1,0 +1,36 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:Second review: the open questions held o longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:Result longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:Questions longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-1 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-2 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-3 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-4 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-5 longest=0   overlap=0.02
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-6 longest=0   overlap=0.03
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-7 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-8 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-9 longest=0   overlap=0.02
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-10 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-11 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-12 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-13 longest=0   overlap=0.05
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-14 longest=0   overlap=0.04
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-15 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-16 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-17 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-18 longest=0   overlap=0.04
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-19 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-20 longest=0   overlap=0.00
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-21 longest=0   overlap=0.04
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-22 longest=0   overlap=0.03
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-23 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-24 longest=0   overlap=0.04
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-25 longest=0   overlap=0.02
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-26 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-27 longest=0   overlap=0.02
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-28 longest=0   overlap=0.01
+ok   dqsim2/2026-11-11-second-review-doubt-held-questions.md:DQ-29 longest=0   overlap=0.00
+
+0 flagged

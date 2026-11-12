@@ -45,6 +45,8 @@ applies ICS-36 to the same list for an aggregate.
 
 Kept open on 2026-11-03 under decision 0054, because the review finds the question unclear.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-6), and EDG 7.0 alone differs. The doubt is whether a list sequence that has only a rank counts as the derived-to-base conversion of ICS-36.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -52,3 +54,7 @@ Kept open on 2026-11-03 under decision 0054, because the review finds the questi
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) finds the question unclear. For a class that is not an aggregate and one element of a derived class, the sequence has conversion rank, and nothing calls it a derived-to-base conversion. The nearest-base tie-breaker is stated for standard sequences, and nothing says whether a list sequence described only by its rank counts. For an aggregate, the element's own sequence applies, and the tie-breaker applies there. The uniform answer is a reasonable reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-6). For a class that is not an aggregate, the list rule gives the sequence of one derived element only a rank, conversion rank. The sequence is neither user-defined nor an ellipsis, so the sequence is a standard sequence, and the comparison of standard sequences applies to it. The doubt is now only whether a sequence that the reference gives by its rank alone counts as the conversion from the derived class to a base that the tie-breaker names.

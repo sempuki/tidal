@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-25, `tests/expressions/new-delete/deallocation-deleted.cpp`, `tests/expressions/new-delete/deallocation-deleted-no-throw.cpp`, `tests/expressions/new-delete/deallocation-placement-deleted.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -55,3 +55,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) finds the reference unclear and leaning to option 1. The reference checks access and ambiguity on the deallocation function of an allocation of class type whether or not the initialization can throw, and every compiler agrees on the access case. The rule on deleted functions forbids any reference to one. The reference does not say that the selection of the deallocation function is such a reference, and its rules of use do not name that function.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the 2026-11-04 entry is resolved. A `new` expression names the single matching deallocation function of the class whether or not the initialization can throw. A named function is used, and a use of a deleted function makes the program not valid.

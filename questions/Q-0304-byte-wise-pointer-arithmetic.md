@@ -44,6 +44,8 @@ Kept open on 2026-11-03 under decision 0054, because the review reads the refere
 
 Kept open on 2026-11-11 (decision 0063, item RV8). The read of the RV7 repair diff and the gap review of the phase 15 text name the question at STG-28 and give no new reading of its answer, so the last reading stays one with doubt.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-16). The doubt is the gap between the letter of pointer arithmetic, which gives the byte step no defined result, and the stated intent of byte copies. Q-0327 and Q-0359 rest on the same step (DQ-19, DQ-21).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
@@ -63,3 +65,7 @@ The source-reader gap review of the phase 15 text on classes, declarations, foun
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The note of 2026-11-11 states correctly where RV8-A-1 differs from RV8-R-10. The read gives no new reading of the question's answer.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-16). The letter of the reference is as the earlier reviews found. A cast to a pointer to `unsigned char` still points to the object, because no byte object is pointer-interconvertible with the object. Arithmetic needs a pointer into an array whose element type is similar to the pointer's type, so by the letter the step is undefined. Option 1 rests on the description of the object representation as a sequence of `unsigned char` objects and on the promise of byte copies. The doubt is the gap between that letter and that intent, and C++23 does not close the gap. Q-0327 and Q-0359 rest on the same step (DQ-19, DQ-21).

@@ -31,6 +31,8 @@ IEEE targets, and two of three implementations during constant evaluation.
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-2). EDG 7.0 alone rejects, and the rules of the tests let either result stand. The doubt is whether an infinity counts as a neighboring value of the target. Q-0001 rests on the opposite reading of the same point (DQ-1), so the two answers cannot both follow from one reading.
+
 ## Opinions
 
 ### Gap review summary, 2026-10-30
@@ -44,3 +46,7 @@ implementation's choice only between two neighboring values. The reviewer
 notes that counting infinity as a neighbor is a reading the reference
 doesn't clearly support. The writer keeps option 1 provisional until a
 contributor settles which reading applies.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-2). A conversion between floating types has three cases: an exact value, a value between two neighboring values of the target, and every other value, which is undefined. The answer holds only if an infinity counts as a neighboring value. The doubt is the doubt of DQ-1, and the reference is silent on it in both places. The review asks that one reading serve both Q-0001 and this question.

@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-27, CNS-40, `tests/templates/constraints/redeclare-placeholder.cpp`, `tests/templates/constraints/redeclare-placeholder-unconstrained.cpp`, the spellings grid
-**Waits for:** a review (doubt)
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
@@ -39,6 +39,8 @@ Kept open on 2026-11-03 under decision 0054, because CNS-27 changed and CNS-40 i
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-11 (decision 0066, item DQ). The second review reads both forms against the answer (DQ-11). By the normative rules on corresponding declarations, the placeholder form and the written-out template are one template, as Clang 22 finds, and only an example says otherwise. GCC 16 and EDG 7.0 keep the answer. The question waits with `pending.md` row 4, and the tests keep their expectations.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -58,3 +60,7 @@ The source-reader gap review of the text phase 9 wrote on expressions and templa
 ### Gap review, 2026-10-31
 
 The source-reader gap review of concepts and constraints (`reports/review/2026-10-31-gap-review-concepts-and-constraints.md`) raises the case as an open point. Two constant template parameters compare equal when their types match apart from a type constraint on the placeholder, and the comparison of template heads does not settle whether a constrained and an unconstrained placeholder parameter declare the same template. The review expects compilers to reject, perhaps for different reasons, and gives no answer to the question.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: against the answer (DQ-11). Each placeholder parameter becomes an invented type parameter, and in the constrained form the invented parameter carries the same type constraint as the written one. Two function template declarations correspond when their template parameter lists match in length and kind, and their type constraints, parameter types, and template heads are equivalent. By those rules each pair in the tests corresponds. In `redeclare-placeholder-unconstrained.cpp` each template has one unconstrained type parameter, and in `redeclare-placeholder.cpp` each has one type parameter with the same constraint. So the placeholder definition defines the earlier template, and the call is valid with one candidate, which is Clang's result. Only the example on abbreviated templates says that the two forms are not equivalent, and an example does not bind. CNS-27 and CNS-40 rest on that example. The rule that makes two such templates not valid with no diagnostic required applies only when they are two templates.

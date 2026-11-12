@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ENUM-5, `tests/declarations/enumerations/unscoped-value-too-large.cpp`, `tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -53,3 +53,7 @@ The source-reader gap review of the text phase 8 wrote on the declarations and s
 ### Gap review, 2026-11-05 (declarations, statements, and foundations)
 
 The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with a doubt. The reference makes the enumeration ill-formed when no integral type of the implementation fits, and the implementation chooses among the types that fit. A wider type is fine only if it counts as an extended integer type, and GCC documents none.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the earlier reviews is resolved. The enumeration is not valid when no integral type of the implementation can hold every value, and the implementation chooses among the types that can. Whether GCC's 128-bit type is an extended integer type is a fact about GCC, and the answer holds either way.

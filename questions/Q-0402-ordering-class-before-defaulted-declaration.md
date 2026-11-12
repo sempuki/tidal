@@ -40,6 +40,8 @@ Kept open on 2026-11-05 under decision 0054, because the review reads the answer
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-25), and GCC 16 alone differs. The doubt on the place of the use exists only in Tidal's model, in which a program can supply a library declaration (LSUP-P2, decision 0041).
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (declarations, statements, and foundations)
@@ -49,3 +51,7 @@ The source-reader gap review of the text phase 9 wrote on declarations, statemen
 ### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
 
 The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with a doubt. The reference counts the deduced return type of a defaulted three-way comparison as an implicit use that the declaration must precede. It does not say where that use takes place: at the defaulted declaration, at the end of the class, or at the first use of the operator.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-25). The deduction of an `auto` return type in a defaulted three-way comparison counts as a use of the comparison category type, and the library declaration must come before that use. The reference does not say where the use takes place. In the reference, the program of `ordering-declared-after-class.cpp` is not valid wherever the use is. A declaration that the program writes in namespace `std` is undefined and is not the library declaration, so no library declaration ever comes before the use. The doubt about the place exists only in Tidal's model, in which a program can supply a library declaration (LSUP-P2, decision 0041). Within that model the reference gives no more guidance.

@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** PACK-30, `tests/templates/packs/using-declaration-empty-pack-outer-name.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
@@ -46,6 +46,8 @@ Kept open on 2026-11-04 under decision 0054, because the review finds the refere
 
 Noted on 2026-11-05 under decision 0059, item QR. The answer needs no diagnostic, so both results conform, and only Clang overrides `using-declaration-empty-pack-outer-name.cpp`. The question no longer waits for newest families that agree. It waits for a review that reads the answer with no doubt.
 
+Kept open on 2026-11-11 (decision 0066, item DQ). The second review reads the answer against (DQ-12) and reads option 2, the reading toward which the review of 2026-11-04 leaned. GCC 16 and EDG 7.0 call the namespace `f`, which both the answer and the review allow. Clang 22 rejects, which only the answer allows. The question waits with `pending.md` row 4, and the tests keep their expectations.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -57,3 +59,7 @@ The source-reader gap review of the open questions on templates (`reports/review
 The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) finds the reference unclear, leaning to option 2. A name that finds a using-declarator with a dependent final name refers to a member of the class being defined whose meaning waits for the arguments, so the call is dependent, and the rule on hypothetical instantiations does not reach it. A note says that a using-declarator is replaced during the lookup for a specialization. With an empty pack the replacement is nothing, and the lookup goes on to the namespace function, as GCC and EDG do. The reference does not say how that interacts with the rewrite of a member name into a member access.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: against the answer (DQ-12). The using-declarator in the test has a final name that depends on the pack. A name that lookup finds through such a using-declarator counts as a dependent member of the class being defined. A member access whose name is dependent is type-dependent, so the call in `g` depends on the parameters. The rule on a hypothetical instantiation right after the definition covers only constructs that do not depend on the parameters, so the rule does not reach this call. A note says that a using-declarator is replaced during the lookup for a specialization. With an empty pack nothing replaces it, the search of the class finds nothing, and the lookup goes on to the namespace function. That is option 2, the result of GCC and EDG. The doubt is the rewrite of a class member name into a member access, which the definition's lookup triggers, when the specialization's lookup finds no member. The rule that makes a changed result of a second lookup an ambiguity names only qualified names.

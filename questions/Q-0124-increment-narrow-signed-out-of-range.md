@@ -48,8 +48,14 @@ sanitizer of both agrees that the step is defined.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-4), and EDG 7.0 alone differs. The prefix form is supported, and the doubt is only on the postfix form.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1, with doubt. The prefix form is defined as a compound assignment that adds one, so the addition runs in the promoted type and the assignment converts the sum back, which wraps for every value. EDG's rejection in a constant expression is a defect. For the postfix form the text says only that the operand changes by adding one, and does not state that the postfix form uses the same promotion and conversion. The doubt is only in the wording of the postfix form.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-4). The prefix form is defined through the compound assignment, which supports the answer. The postfix form says only that the operand gains one, and it points the reader to the rules of addition and assignment. The postfix text also gives an implementation-defined value to an increment of a bit-field whose new value does not fit. The doubt is now only whether those pointers bring the promotion and the conversion back into the postfix form.

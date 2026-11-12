@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-24, `tests/expressions/new-delete/throw-placement-templates-unordered.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -44,3 +44,7 @@ Kept open on 2026-11-03 under decision 0054, because the review reads with doubt
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1, with doubt. A placement deallocation function is called only when lookup finds a single match. Otherwise none is called, and the storage stays allocated after an exception. Nothing makes several matches an error. With no single match nothing is named, so no access or deletion check applies. The doubt is how templates take part. A match compares parameter types, and no deduction or ordering of templates is described for this purpose. EDG's reading, which orders the templates as overload resolution does and finds the tie ambiguous, is possible under that silence.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt of the 2026-11-03 review is resolved. The reference does describe deduction and partial ordering for this match. When more than one template is left, deduction fails, and only the declaration contexts make that failure an error. The `new` expression then has no single match, so no deallocation function is called and no error results. EDG's rejection reads against.

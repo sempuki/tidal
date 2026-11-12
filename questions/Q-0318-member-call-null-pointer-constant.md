@@ -44,6 +44,8 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-17), and EDG 7.0 alone differs. The doubt is only that C++23 has no rule that names indirection through a null pointer as undefined.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -59,3 +61,7 @@ The source-reader gap review of the text phase 9 wrote on declarations, statemen
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with a doubt. No rule names a member call through a null pointer as undefined. The answer rests on the lack of any object, and constant evaluation rejects only undefined operations that the text specifies.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-17). C++23 has no rule that names indirection through a null pointer, or a member call through one, as undefined. The arrow form is defined as indirection followed by the dot form. Indirection gives the object that the pointer points to, and a null pointer points to no object. The rule that makes a member access on an object of an unrelated type undefined assumes that an object exists. The doubt is now only that missing rule, and the answer rests on the lack of any object for the access and the call.

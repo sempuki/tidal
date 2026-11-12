@@ -66,6 +66,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review settles form 1 for option 1, where Clang 22 alone differs. In form 2 EDG 7.0 alone differs, and the narrower doubt is only which step rejects the program (DQ-23). Both readings reject the program, so the tests stand.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
@@ -77,3 +79,7 @@ The source-reader gap review of the text phase 8 wrote on expressions, foundatio
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used COND-P2 on ``class-deleted-conversion-counts.cpp``, without the rule text. The model's answer: The deleted conversion counts, both operands convert, and the expression is rejected. Matches the provisional answer: yes. Reference verdict: supports with no doubt. used COND-P2 on ``class-const-and-volatile-lvalues.cpp``, without the rule text. The model's answer: Neither set of qualifiers includes the other, so two class lvalues are rejected. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-23). Form 1 is settled. Deleted functions are set aside when the reference asks whether a conversion sequence can be formed, so both operands convert, and the expression is not valid. For form 2, neither reference binding works between a const and a volatile lvalue of one class, because the target must carry every cv-qualifier of the source, and the binding fails both ways. The text then falls through to the last case, a conversion to the other operand's type after the lvalue-to-rvalue step. There a class keeps its cv-qualifiers, and a difference in top-level qualifiers does not stop a sequence from being formed. Under that reading both sequences form, and the expression is not valid for that reason. Under the answer's reading neither sequence forms, and the later step finds no candidate. Both readings reject the program, so the tests stand, and the doubt is only which step rejects it.

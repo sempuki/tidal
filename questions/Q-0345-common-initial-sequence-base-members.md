@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** UNI-15, UNI-16, `tests/classes/unions/common-initial-sequence-inherited.cpp`, `tests/classes/members/grids/layout-compatible.json`
-**Waits for:** a review (doubt)
+**Waits for:** a principle (UNI-P6)
 
 ## Context
 
@@ -47,6 +47,8 @@ layout of that base, so the reading changes no address.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with no doubt, and no newest family differs. No principle gives the answer. UNI-P6 pairs the non-static data members of the two structs in declaration order, and it does not say whether the members of a base count. Each option fits the model, so UNI-P6 fails step 3 of the principle test.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -54,3 +56,7 @@ Kept open on 2026-11-03 under decision 0054, because the review reads with doubt
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1, with doubt. A derived class has the members of its bases among its own, so the common initial sequence takes the base's members. The doubt is that the sequence is defined in declaration order, and the C++23 text does not say how that order runs across a base and a derived class. When all the members are in one base, the order does not matter.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports, and the doubt is resolved. A standard-layout class has all its data members first declared in one class, either the class itself or one base. So the order across a base and a derived class never arises for the classes that have a common initial sequence, and the members of a base count as members of the derived class.

@@ -63,6 +63,8 @@ unchanged, and the question waits for a review of GCC's acceptance.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap review of the phase 16 text supports the answer with a doubt on the qualified form (RV9-4), and GCC 16 alone differs. Every compiler accepts the qualified forms that the tests hold.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0066, item DQ). The second review supports the answer with a narrower doubt (DQ-28), and GCC 16 alone differs. The doubt is only the qualified template-id form of an explicit specialization, which every compiler accepts.
+
 ## Opinions
 
 ### Read of the RV8 repair diff, 2026-11-11
@@ -76,3 +78,7 @@ The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-ga
 ### Read of the RV9 repair diff, 2026-11-11
 
 The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-of-rv9-repair-diff.md`) reads the dated note and the gap review's entry of decision 0064, item RV9: agrees as a record. Both state RV9-4 correctly, with its doubt on the qualified template-id form, and the doubt stays. The read gives no new reading of the question's answer.
+
+### Second review of the doubt-held questions, 2026-11-11
+
+The source-reader second review of the questions held only by a doubt (`reports/review/2026-11-11-second-review-doubt-held-questions.md`) reads the question: supports with a doubt that remains (DQ-28). An attribute after the class key is allowed only when the elaborated type is the whole declaration. The elaborated type must then be a class key with an identifier, or a class key with a template-id inside an explicit specialization or a partial specialization. No other elaborated type can carry an attribute. So the variable declaration of `elaborated-attribute-not-forward-declaration.cpp` and the explicit instantiation are not valid, and GCC reads against. The doubt is now only the qualified template-id form, such as the last declaration of `explicit-specialization-attributes.cpp`. The allowed forms have no qualifier. The grammar of an elaborated type gives an attribute no place before any template-id, qualified or not, so the reference is not consistent on that form. Every compiler accepts the form.
