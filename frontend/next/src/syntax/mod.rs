@@ -184,6 +184,11 @@ pub struct Parser<'a> {
     /// A failure inside a deferred body, which no outer alternative can
     /// repair.
     pub stop: Option<Stop>,
+    /// The mode of `tidal-next parse --all`: a statement, a member, or a
+    /// declaration that fails is recorded in `stops` and skipped, so that
+    /// one parse lists every place the grammar does not derive.
+    pub recover: bool,
+    pub stops: Vec<Stop>,
 }
 
 impl<'a> Parser<'a> {
@@ -206,6 +211,8 @@ impl<'a> Parser<'a> {
             far: 0,
             far_want: "a declaration",
             stop: None,
+            recover: false,
+            stops: Vec::new(),
         }
     }
 
@@ -352,6 +359,81 @@ impl<'a> Parser<'a> {
     pub fn bracketed<T>(&mut self, f: impl FnOnce(&mut Self) -> T) -> T {
         let t = self.type_only;
         self.with(true, t, f)
+    }
+
+    // -----------------------------------------------------------------
+    // Recovery, for the list of every stop
+
+    /// One statement, member, or declaration. Outside the recovery mode,
+    /// `f` itself. In the mode, a failure of `f` is recorded with the
+    /// furthest token it reached, the tokens of the form are skipped, and
+    /// the result is `None`.
+    pub fn item<T>(&mut self, f: impl FnOnce(&mut Self) -> PResult<T>) -> PResult<Option<T>> {
+        if !self.recover {
+            return f(self).map(Some);
+        }
+        let start = self.pos;
+        let (far, want) = (self.far, self.far_want);
+        self.far = start;
+        self.far_want = "";
+        let r = self.attempt(f);
+        let reached = (self.far, self.far_want);
+        if far > self.far {
+            self.far = far;
+            self.far_want = want;
+        }
+        match r {
+            Ok(v) => Ok(Some(v)),
+            Err(_) => {
+                let s = self.stop.take().unwrap_or(Stop { tok: reached.0, want: if reached.1.is_empty() { "a declaration" } else { reached.1 } });
+                self.stops.push(s.clone());
+                self.skip_form(s.tok);
+                if self.pos == start {
+                    return Err(Fail);
+                }
+                Ok(None)
+            }
+        }
+    }
+
+    /// Skip from the start of a form that failed at token `failed` to its
+    /// end: after a `;` outside brackets, or after a `}` that closes a
+    /// bracket opened in the form when a new form can follow; never past
+    /// the `}` that closes the enclosing block.
+    fn skip_form(&mut self, failed: usize) {
+        let mut depth = 0i32;
+        self.sub = 0;
+        while !self.at_eof() {
+            let t = self.peek();
+            let past = self.pos >= failed;
+            match t {
+                "(" | "[" | "{" => depth += 1,
+                ")" | "]" => depth -= 1,
+                "}" if depth <= 0 => return,
+                "}" => {
+                    depth -= 1;
+                    if depth == 0 && past {
+                        self.bump();
+                        let next = self.peek();
+                        let more = matches!(next, "else" | "while" | "catch" | "," | ";" | ")" | "." | "->" | "=" | "[" | "(");
+                        if !more {
+                            return;
+                        }
+                        if next == ";" {
+                            self.bump();
+                            return;
+                        }
+                        continue;
+                    }
+                }
+                ";" if depth <= 0 && past => {
+                    self.bump();
+                    return;
+                }
+                _ => {}
+            }
+            self.bump();
+        }
     }
 
     // -----------------------------------------------------------------
@@ -534,6 +616,23 @@ pub fn parse_unit(toks: &[Token], names: &mut dyn Names, alts: &[Alt]) -> Result
         }
     }
     Ok(out)
+}
+
+/// Every place where the grammar derives no form, in the recovery mode:
+/// each statement, member, or declaration that fails is recorded and
+/// skipped. The first entry can differ from `parse_unit`'s stop, because
+/// the outer alternatives are not tried again.
+pub fn parse_unit_all(toks: &[Token], names: &mut dyn Names, alts: &[Alt]) -> Vec<Stop> {
+    let mut p = Parser::new(toks, names, alts);
+    p.recover = true;
+    while !p.at_eof() {
+        match p.item(crate::declarations::declaration) {
+            Ok(Some(mut n)) => p.fill(&mut n),
+            Ok(None) => {}
+            Err(_) => break,
+        }
+    }
+    p.stops
 }
 
 /// The TR-12 message for a stop.

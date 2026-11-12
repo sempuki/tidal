@@ -79,7 +79,7 @@ const CAST_KEYWORDS: &[&str] = &[
     "char16_t", "char32_t", "auto",
 ];
 
-/// `cast_type: [nested_name] (identifier | template_id) | decltype_spec
+/// `cast_type: [nested_name] (identifier | template_id) | decltype_expr
 /// | typename_specifier | "auto" | "bool" | ...`. The name or the
 /// template-id must name a type, as the oracle answers; otherwise the
 /// same tokens are a call.
@@ -90,7 +90,7 @@ pub fn cast_type(p: &mut Parser) -> PResult<Node> {
         return Ok(p.node("cast_type", sp, vec![k]));
     }
     if p.at("decltype") {
-        let d = decltype::syntax::decltype_spec(p)?;
+        let d = decltype::syntax::decltype_expr(p)?;
         return Ok(p.node("cast_type", sp, vec![Kid::Node(d)]));
     }
     if p.at("typename") {
@@ -104,6 +104,12 @@ pub fn cast_type(p: &mut Parser) -> PResult<Node> {
             kids.push(Kid::Node(nn));
             q = qq;
         }
+    }
+    if !kids.is_empty() && p.at("template") {
+        kids.push(p.bump());
+        let (t, _) = template_id(p, q, true)?;
+        kids.push(Kid::Node(t));
+        return Ok(p.node("cast_type", sp, kids));
     }
     let name = p.peek();
     if p.kind() == TK::Ident && p.ahead(1) == "<" {

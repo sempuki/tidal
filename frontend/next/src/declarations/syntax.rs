@@ -160,10 +160,31 @@ fn block_decl_keyword(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("block_decl", sp, vec![Kid::Node(k)]))
 }
 
+/// The number of tokens of the attribute specifiers that start here.
+pub fn after_attrs(p: &Parser) -> usize {
+    let mut k = 0;
+    while p.ahead(k) == "[" && p.ahead(k + 1) == "[" {
+        let mut depth = 0i32;
+        loop {
+            match p.ahead(k) {
+                "[" => depth += 1,
+                "]" => depth -= 1,
+                "" if p.ahead_kind(k) == TK::Eof => return k,
+                _ => {}
+            }
+            k += 1;
+            if depth == 0 {
+                break;
+            }
+        }
+    }
+    k
+}
+
 /// The start of a structured binding: `auto`, an optional `&` or `&&`,
 /// and `[`.
 pub fn looks_like_sb(p: &Parser) -> bool {
-    let mut k = 0;
+    let mut k = after_attrs(p);
     while matches!(p.ahead(k), "static" | "thread_local" | "const" | "volatile") {
         k += 1;
     }
@@ -185,7 +206,10 @@ pub fn block_decl(p: &mut Parser) -> PResult<Node> {
         return Ok(n);
     }
     let sp = p.span();
-    let k = if p.at("using") {
+    let a = after_attrs(p);
+    let k = if a > 0 && p.ahead(a) == "using" && p.ahead(a + 1) == "namespace" {
+        using_directive(p)?
+    } else if p.at("using") {
         if p.ahead(1) == "namespace" {
             using_directive(p)?
         } else if p.ahead(1) == "enum" {

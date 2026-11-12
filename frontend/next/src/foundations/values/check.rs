@@ -1,0 +1,62 @@
+//! The check part of `foundations/values`: value categories and the
+//! conversions that turn a glvalue into the prvalue an operator needs.
+
+use crate::foundations::conversions::check as conv;
+use crate::sem::check::Check;
+use crate::sem::tree::{Cat, Conv, Expr};
+use crate::sem::types::QType;
+
+/// The prvalue of an operand (VC-1, VC-2): an array or a function decays
+/// to a pointer (CONV-13), and a glvalue of another type is read, which
+/// drops its top-level cv-qualifiers.
+pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
+    if e.ty.is_error() {
+        return e;
+    }
+    let e = deref_ref(e);
+    if e.ty.is_array() || e.ty.is_func() {
+        return conv::decay(cx, e);
+    }
+    if e.cat == Cat::PR {
+        if e.ty.c || e.ty.v {
+            let t = e.ty.unqual();
+            let mut e = e;
+            e.ty = t;
+            return e;
+        }
+        return e;
+    }
+    let t = e.ty.unqual();
+    e.conv(Conv::LToR, t, Cat::PR)
+}
+
+/// An expression of reference type names the object it refers to, as an
+/// lvalue (or an xvalue for an rvalue reference to an object returned
+/// by a call).
+pub fn deref_ref(e: Expr) -> Expr {
+    match &e.ty.t {
+        crate::sem::types::Type::Ref(inner, rv) => {
+            let cat = if *rv && e.cat == Cat::PR { Cat::X } else { Cat::L };
+            let t = (**inner).clone();
+            let mut e = e;
+            e.ty = t;
+            e.cat = cat;
+            e
+        }
+        _ => e,
+    }
+}
+
+/// VC-12, VC-13: the address of a prvalue or an xvalue.
+pub fn address_of_non_lvalue(cx: &mut Check, e: &Expr) -> QType {
+    if e.cat == Cat::X {
+        cx.error(e.span, "VC-13", "the address of an xvalue")
+    } else {
+        cx.error(e.span, "VC-12", "the address of a prvalue")
+    }
+}
+
+/// VC-12: a prvalue of a type that is not a class cannot be assigned to.
+pub fn assign_to_prvalue(cx: &mut Check, e: &Expr) -> QType {
+    cx.error(e.span, "VC-12", "an assignment to a prvalue")
+}

@@ -1,0 +1,519 @@
+//! The check part of `declarations/initialization/forms`: the
+//! declaration of a variable with its initializer, and the
+//! initialization of a parameter by an argument.
+
+use crate::declarations::check::Specs;
+use crate::declarations::declarators::check::Declared;
+use crate::declarations::initialization::{list, references};
+use crate::declarations::{alignment, attributes, auto, constexpr, storage_linkage};
+use crate::expressions::check::{expr, first_node, nodes};
+use crate::foundations::constant_evaluation::check as ce;
+use crate::foundations::conversions::check as conv;
+use crate::foundations::names::check as names;
+use crate::sem::check::Check;
+use crate::sem::tree::{Arg, Cat, Expr, Init, EK};
+use crate::sem::types::{QType, Type};
+use crate::sem::{EntKind, EntityId, Linkage, Storage, Var};
+use crate::source::Span;
+use crate::syntax::{Kid, Node};
+
+/// Copy-initialization of an object of type `to` from an expression
+/// (INIT-4): an implicit conversion. `rule` names the failure.
+pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Option<Expr> {
+    let e = select_overload(cx, e, to)?;
+    if e.ty.is_error() || to.is_error() {
+        return None;
+    }
+    if to.is_array() {
+        if let (EK::Str(_), Type::Array(..)) = (&e.k, &to.t) {
+            return Some(e);
+        }
+        cx.error(e.span, "INIT-8", "an array initialized from another array");
+        return None;
+    }
+    let span = e.span;
+    match conv::implicit(cx, e, to, false) {
+        Ok(x) => Some(x),
+        Err(m) => {
+            cx.error(span, conv::rule_of(&m).unwrap_or(rule), m);
+            None
+        }
+    }
+}
+
+/// An overload set converted to a pointer to function selects the
+/// function of the target's type (OVL-18, ICS-47); None after an error.
+pub fn select_overload(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
+    let EK::Func(_) = e.k else { return Some(e) };
+    if !e.ty.is_error() {
+        return Some(e);
+    }
+    let set = crate::expressions::primary::check::overload_set(cx, &e);
+    let want = match &to.t {
+        Type::Ptr(p) => p.func().cloned(),
+        Type::Ref(p, _) => p.func().cloned(),
+        _ => None,
+    };
+    let Some(want) = want else {
+        cx.unsupported(e.span, "an overload set without a target function type");
+        return None;
+    };
+    let pick: Vec<EntityId> = set.into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).collect();
+    if pick.len() != 1 {
+        cx.error(e.span, "OVL-20", "no single function of the overload set matches the target type");
+        return None;
+    }
+    let f = pick[0];
+    let ty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
+    Some(Expr::new(EK::Func(f), ty, Cat::L, e.span))
+}
+
+/// The argument for a parameter of type `to` (PFX-6: as in a
+/// copy-initialization).
+pub fn init_parameter(cx: &mut Check, a: Expr, to: &QType) -> Option<Arg> {
+    if to.is_ref() {
+        let e = references::check::bind(cx, a, to, "INIT-7")?;
+        return Some(Arg { e, by_ref: true });
+    }
+    let e = copy_init(cx, a, to, "INIT-7")?;
+    Some(Arg { e, by_ref: false })
+}
+
+/// Record a use of a variable (ATTR-6 counts reads).
+pub fn note_use(cx: &mut Check, id: EntityId, _span: Span) {
+    if cx.unevaluated == 0 {
+        if let Some(v) = cx.u.var_mut(id) {
+            v.used = true;
+        }
+    }
+}
+
+/// The initializer of a variable from its `init` node (INIT-2 to INIT-8;
+/// lists in `list`, references in `references`).
+fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<Init> {
+    let words = cx.words(init);
+    let ns = nodes(init);
+    if ty.is_ref() {
+        return references::check::initializer(cx, ty, init);
+    }
+    if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
+        return list::check::list_init(cx, b, ty, name);
+    }
+    if words.first() == Some(&"(") {
+        let args: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
+        if let Type::Array(el, n) = &ty.t {
+            // INIT-5: an array from a parenthesized list of values, with
+            // no check for narrowing.
+            let mut items = Vec::new();
+            for a in &args {
+                let Some(c) = first_node(a) else { return None };
+                if c.prod == "braced_init" {
+                    cx.unsupported(c.span, "a braced list in a parenthesized array initializer");
+                    return None;
+                }
+                let e = expr(cx, c);
+                items.push(Init::Expr(copy_init(cx, e, el, "INIT-7")?));
+            }
+            if n.is_some_and(|n| items.len() as u64 > n) {
+                cx.error(init.span, "DCL-19", "the initializer has more elements than the array");
+                return None;
+            }
+            return Some(Init::List(items));
+        }
+        if args.len() != 1 {
+            cx.error(init.span, "INIT-7", "a parenthesized initializer for a scalar must hold exactly one expression");
+            return None;
+        }
+        if first_node(args[0]).is_some_and(|c| c.prod == "braced_init") {
+            cx.error(init.span, "INIT-7", "a braced list in parentheses for a scalar");
+            return None;
+        }
+        let e = expr(cx, args[0]);
+        if ty.is_array() {
+            cx.error(init.span, "INIT-7", "an array initialized from a parenthesized expression");
+            return None;
+        }
+        let span = e.span;
+        return match conv::implicit(cx, e, ty, true) {
+            Ok(x) => Some(Init::Expr(x)),
+            Err(m) => {
+                if !m.is_empty() {
+                    cx.error(span, conv::rule_of(&m).unwrap_or("INIT-7"), m);
+                }
+                None
+            }
+        };
+    }
+    let e = expr(cx, ns.first()?);
+    if ty.is_array() {
+        if let EK::Str(_) = e.k {
+            return list::check::string_init(cx, e, ty);
+        }
+        cx.error(init.span, "INIT-8", "an array initialized from another array or a value");
+        return None;
+    }
+    copy_init(cx, e, ty, "INIT-7").map(Init::Expr)
+}
+
+/// The value of an initializer that is a single expression, for a
+/// placeholder to deduce from.
+fn init_expr(cx: &mut Check, init: &Node, p: &auto::check::Placeholder) -> Option<Expr> {
+    let ns = nodes(init);
+    let words = cx.words(init);
+    let one = if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
+        let items: Vec<&Node> = b.children("init_clause").collect();
+        if words.first() == Some(&"=") {
+            cx.unsupported(init.span, "auto with '= { ... }' (std::initializer_list, build step 4)");
+            return None;
+        }
+        if items.len() != 1 {
+            auto::check::one_expression(cx, init.span);
+            return None;
+        }
+        first_node(items[0])?
+    } else if words.first() == Some(&"(") {
+        let args: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
+        if args.len() != 1 || first_node(args[0]).is_some_and(|c| c.prod == "braced_init") {
+            auto::check::one_expression(cx, init.span);
+            return None;
+        }
+        args[0]
+    } else {
+        ns.first()?
+    };
+    let _ = p;
+    Some(expr(cx, one))
+}
+
+/// Declare a variable of a simple declaration, with its initializer.
+/// After a qualified declarator-id, the initializer sees the members of
+/// the named scope (NAM-21).
+pub fn declare_variable(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&Node>, aligns: &[Node], first_auto: &mut Option<QType>) -> Option<(EntityId, Init)> {
+    let names::Qual::Scope(q) = d.qual else { return declare_variable_in(cx, s, d, init, aligns, first_auto) };
+    let saved = cx.scope;
+    // A member of an inline namespace of the named one (NS-15).
+    let mut d2 = d.clone();
+    if let Some((name, _)) = &d.name {
+        if let Some(&e) = names::lookup_in(cx, q, name).iter().find(|&&e| matches!(cx.u.entities[e].kind, EntKind::Var(_))) {
+            d2.qual = names::Qual::Scope(cx.u.entities[e].scope);
+        }
+    }
+    if let (names::Qual::Scope(sc), Some((name, span))) = (d2.qual, &d.name) {
+        crate::declarations::namespaces::check::qualified_place(cx, sc, *span, name);
+        cx.scope = sc;
+    }
+    let r = declare_variable_in(cx, s, &d2, init, aligns, first_auto);
+    cx.scope = saved;
+    r
+}
+
+fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&Node>, aligns: &[Node], first_auto: &mut Option<QType>) -> Option<(EntityId, Init)> {
+    let Some((name, span)) = d.name.clone() else {
+        cx.unsupported(d.span, "a declaration with no declarator-id");
+        return None;
+    };
+    let local = cx.in_function();
+    attributes::check::on_variable(cx, &s.attrs);
+    if s.inline && local {
+        crate::declarations::inline::check::misplaced(cx, d.span, "on a variable in a block");
+    }
+    if name.as_ref() == "main" && cx.lang_c {
+        cx.error(span, "TR-3", "a variable named main with C language linkage");
+    }
+    storage_linkage::check::variable_specifiers(cx, s);
+    if s.consteval {
+        constexpr::check::consteval_variable(cx, d.span);
+    }
+    let storage = storage_linkage::check::storage(cx, s);
+    if s.constinit && storage == Storage::Automatic {
+        constexpr::check::constinit_place(cx, d.span, "on a variable with automatic storage");
+    }
+    if s.is_extern && local && init.is_some() {
+        storage_linkage::check::block_extern_init(cx, d.span);
+    }
+    // The declared type, after a placeholder is deduced.
+    let mut ty = d.ty.clone();
+    let mut init_e: Option<Expr> = None;
+    if let Some(p) = &d.placeholder {
+        let Some(i) = init else {
+            auto::check::needs_initializer(cx, span, &name);
+            return None;
+        };
+        // AUTO-8: the variable is not visible in its own initializer.
+        let e = init_expr(cx, i, p)?;
+        let dn = d_node_hint(cx, d);
+        let base = auto::check::deduce(cx, p, &dn, &e)?;
+        ty = crate::declarations::declarators::check::with_base(cx, base.clone(), &dn);
+        if let Some(prev) = first_auto {
+            if *prev != base {
+                auto::check::differs(cx, d.span);
+            }
+        } else {
+            *first_auto = Some(base);
+        }
+        init_e = Some(e);
+    }
+    if ty.is_error() {
+        names::declare_unsupported(cx, &name, span);
+        return None;
+    }
+    if ty.is_void() {
+        cx.error(span, "DCL-20", format!("the variable '{}' has type void", name));
+        return None;
+    }
+    if crate::declarations::declarators::check::is_qualified_function_type(&ty) {
+        return None;
+    }
+    let mut constexpr = s.constexpr;
+    if constexpr && !ty.is_ref() {
+        ty = ty.with_cv(true, false);
+    }
+    // A qualified name defines a variable that its scope declared.
+    let scope = match d.qual {
+        names::Qual::Scope(sc) => sc,
+        names::Qual::None => cx.scope,
+        _ => return None,
+    };
+    let linkage = storage_linkage::check::linkage(cx, s, true, ty.is_const(), ty.v);
+    // LNK-9: a block-scope extern declaration names the variable of the
+    // enclosing namespace, declared there if not yet.
+    let scope = if local && s.is_extern && d.qual == names::Qual::None {
+        let ns = cx.u.enclosing_namespace(cx.scope);
+        if let Some(&e) = names::declared_here(cx, ns, &name).iter().find(|&&e| matches!(cx.u.entities[e].kind, EntKind::Var(_))) {
+            if !names::declared_here(cx, cx.scope, &name).contains(&e) {
+                let here = cx.scope;
+                cx.u.scopes[here].names.entry(name.clone()).or_default().push(e);
+            }
+            return Some((e, Init::Default));
+        }
+        scope
+    } else {
+        scope
+    };
+    let earlier = redeclaration(cx, scope, &name, &ty, s, storage, init.is_some(), span, d.qual != names::Qual::None);
+    let align = if aligns.is_empty() { None } else { alignment::check::alignas(cx, aligns, &ty) };
+    let id = match earlier {
+        Some(e) => {
+            if let Some(v) = cx.u.var(e).cloned() {
+                if v.align != align && (align.is_some() || !s.is_extern) && (v.align.is_some()) {
+                    crate::declarations::alignment::check::redeclared(cx, span);
+                }
+                constexpr |= v.constexpr;
+            }
+            e
+        }
+        None => {
+            if d.qual != names::Qual::None && d.qual != names::Qual::Scope(scope) {
+                crate::declarations::namespaces::check::member_not_declared(cx, span, &name);
+                return None;
+            }
+            let v = Var {
+                ty: ty.clone(),
+                storage,
+                constexpr,
+                constinit: s.constinit,
+                inline: s.inline,
+                is_extern: s.is_extern && init.is_none(),
+                is_static: s.is_static,
+                param: false,
+                defined: !(s.is_extern && init.is_none()),
+                init: None,
+                const_init: false,
+                used: false,
+                maybe_unused: s.attrs.maybe_unused,
+                align,
+            };
+            let id = names::declare_in(cx, scope, &name, EntKind::Var(v), span, linkage);
+            cx.u.entities[id].deprecated = s.attrs.deprecated.clone();
+            id
+        }
+    };
+    // The point of declaration is before the initializer (NAM-1), so the
+    // initializer can name the variable.
+    let init_value: Init = match (init, init_e) {
+        (Some(_), Some(e)) => {
+            if e.ty.is_error() {
+                return None;
+            }
+            if ty.is_ref() {
+                Init::Ref(references::check::bind(cx, e, &ty, "INIT-7")?)
+            } else if ty.is_array() {
+                cx.error(span, "AUTO-15", "an array type deduced from an array");
+                return None;
+            } else {
+                Init::Expr(copy_init(cx, e, &ty, "INIT-7")?)
+            }
+        }
+        (Some(i), None) => {
+            if ty.is_incomplete() && !ty.is_array() {
+                cx.error(span, "INIT-7", format!("the variable '{}' has an incomplete type", name));
+                return None;
+            }
+            let r = initializer(cx, &ty, i, &name);
+            match r {
+                Some(x) => {
+                    // An array of unknown bound takes its bound from the
+                    // initializer (DCL-5).
+                    if let (Type::Array(el, None), Init::List(items)) = (&ty.t, &x) {
+                        ty = QType::new(Type::Array(el.clone(), Some(items.len() as u64))).with_cv(ty.c, ty.v);
+                    }
+                    if let (Type::Array(el, None), Init::Expr(Expr { k: EK::Str(u), .. })) = (&ty.t, &x) {
+                        ty = QType::new(Type::Array(el.clone(), Some(u.len() as u64)));
+                    }
+                    x
+                }
+                None => {
+                    if let Some(v) = cx.u.var_mut(id) {
+                        v.ty = QType::error();
+                    }
+                    return None;
+                }
+            }
+        }
+        (None, _) => {
+            let defined = !(s.is_extern) || local && !s.is_extern;
+            if ty.is_ref() && !s.is_extern {
+                crate::declarations::declarators::check::reference_needs_init(cx, span, &name);
+                return None;
+            }
+            if constexpr {
+                constexpr::check::needs_initializer(cx, span, &name);
+                return None;
+            }
+            if ty.is_const() && !s.is_extern && ty.base_elem().is_scalar() {
+                crate::declarations::declarators::check::const_needs_init(cx, span, &name);
+                return None;
+            }
+            if defined && ty.is_incomplete() {
+                if ty.is_array() {
+                    cx.error(span, "DCL-19", format!("the array '{}' has no bound and no initializer", name));
+                } else {
+                    cx.error(span, "INIT-7", format!("the variable '{}' has an incomplete type", name));
+                }
+                return None;
+            }
+            Init::Default
+        }
+    };
+    // CE-24: a constant initializer makes the variable usable in
+    // constant expressions when it is const (CE-3).
+    let const_init = match &init_value {
+        Init::Expr(e) => ce::is_constant(cx, e),
+        Init::Ref(e) => ce::evaluate_ref(cx, e, storage != Storage::Automatic).is_ok(),
+        Init::Zero => true,
+        Init::List(items) => items.iter().all(|i| match i {
+            Init::Expr(e) => ce::is_constant(cx, e),
+            Init::Zero | Init::Default => true,
+            _ => false,
+        }),
+        Init::Default => storage != Storage::Automatic,
+    };
+    if let Some(v) = cx.u.var_mut(id) {
+        v.ty = ty.clone();
+        v.init = Some(init_value.clone());
+        v.const_init = const_init;
+        v.defined = v.defined || init.is_some() || !s.is_extern;
+        v.constexpr = constexpr;
+    }
+    if !local && ((cx.lang_c && !s.is_static) || (scope == 0 && !cx.lang_c)) {
+        crate::declarations::linkage_specifications::check::c_name(cx, id, cx.lang_c, span);
+    }
+    if constexpr || s.constinit {
+        let rule = if constexpr { constexpr::check::VARIABLE } else { constexpr::check::CONSTINIT };
+        check_constant_initializer(cx, &init_value, span, rule, storage != Storage::Automatic);
+    }
+    if storage != Storage::Automatic && !local || (storage != Storage::Automatic && local && false) {
+        if !cx.u.statics.contains(&id) && init.is_some() || (!cx.u.statics.contains(&id) && !s.is_extern) {
+            cx.u.statics.push(id);
+        }
+    }
+    let _ = Linkage::None;
+    Some((id, init_value))
+}
+
+/// CX-1, CINIT-1: the initializer must be a constant expression.
+fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'static str, static_storage: bool) {
+    if let Init::Ref(e) = init {
+        if let Err(why) = ce::evaluate_ref(cx, e, static_storage) {
+            ce::report(cx, span, rule, why);
+        }
+        return;
+    }
+    let exprs: Vec<&Expr> = match init {
+        Init::Expr(e) => vec![e],
+        Init::List(items) => items.iter().filter_map(|i| match i {
+            Init::Expr(e) => Some(e),
+            _ => None,
+        }).collect(),
+        _ => vec![],
+    };
+    for e in exprs {
+        if let Err(why) = ce::evaluate(cx, e) {
+            ce::report(cx, span, rule, why);
+            return;
+        }
+    }
+}
+
+/// The declarator node, whose shape a placeholder's deduction reads.
+fn d_node_hint(_cx: &mut Check, d: &Declared) -> Node {
+    d.node.clone()
+}
+
+/// An earlier declaration of the same variable in the scope, after the
+/// checks of NAM-3, ODR-1, LNK-10, and STO-12.
+#[allow(clippy::too_many_arguments)]
+fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs, storage: Storage, has_init: bool, span: Span, qualified: bool) -> Option<EntityId> {
+    let local = cx.u.is_local(scope);
+    for e in names::declared_here(cx, scope, name) {
+        match cx.u.entities[e].kind.clone() {
+            EntKind::Var(v) => {
+                let same_type = v.ty.t == ty.t || v.ty.is_error() || matches!((&v.ty.t, &ty.t), (Type::Array(a, _), Type::Array(b, _)) if a == b);
+                if v.param && local {
+                    cx.error(span, "NAM-3", format!("'{}' redeclares a parameter", name));
+                    return None;
+                }
+                if local && !(v.is_extern && s.is_extern) {
+                    cx.error(span, "NAM-3", format!("'{}' is declared twice in one scope", name));
+                    return None;
+                }
+                if !same_type {
+                    cx.error(span, "NAM-3", format!("'{}' is redeclared with a different type", name));
+                    return None;
+                }
+                let old_def = v.defined && (!v.is_extern);
+                let new_def = has_init || !s.is_extern;
+                if old_def && new_def && !qualified {
+                    if v.inline && s.inline {
+                        cx.error(span, "ODR-1", format!("'{}' is defined twice", name));
+                    } else {
+                        cx.error(span, "ODR-1", format!("'{}' is defined twice", name));
+                    }
+                    return None;
+                }
+                let old_link = cx.u.entities[e].linkage;
+                storage_linkage::check::redeclared_linkage(cx, span, old_link, s, name);
+                storage_linkage::check::thread_local_agrees(cx, span, v.storage, storage, name);
+                return Some(e);
+            }
+            EntKind::Enum(_) => continue,
+            EntKind::Unsupported(_) => continue,
+            _ => {
+                cx.error(span, "NAM-3", format!("'{}' is already declared as a different kind of entity", name));
+                return None;
+            }
+        }
+    }
+    None
+}
+
+/// The variable's name for a node, used by the parse of a list's
+/// elements.
+pub fn kid_text<'a>(cx: &Check<'a>, k: &Kid) -> &'a str {
+    cx.text(k)
+}
+
+/// The category of an initializer expression after reference collapse.
+pub fn cat_of(e: &Expr) -> Cat {
+    e.cat
+}

@@ -6,11 +6,14 @@ use crate::expressions::primary::syntax::identifier;
 use crate::syntax::names::DeclCtx;
 use crate::syntax::{Kid, Node, PResult, Parser};
 
-/// `sb_decl: ["static" | "thread_local"] {cv} "auto" ["&" | "&&"]
+/// `sb_decl: {attribute_spec} ["static" | "thread_local"] {cv} "auto" ["&" | "&&"]
 /// "[" identifier {"," identifier} "]" sb_init ";"`.
 pub fn sb_decl(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = Vec::new();
+    while p.at_attr() {
+        kids.push(Kid::Node(crate::declarations::attributes::syntax::attribute_spec(p)?));
+    }
     if p.at("static") || p.at("thread_local") {
         kids.push(p.bump());
     }

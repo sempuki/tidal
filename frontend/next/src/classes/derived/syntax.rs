@@ -4,7 +4,7 @@ use crate::classes::access::syntax::access_specifier;
 use crate::classes::members::syntax::class_name;
 use crate::declarations::alignment::syntax::alignment_specifier;
 use crate::declarations::attributes::syntax::attribute_spec;
-use crate::expressions::decltype::syntax::decltype_spec;
+use crate::expressions::decltype::syntax::decltype_expr;
 use crate::expressions::primary::syntax::nested_name;
 use crate::lex::{Token, TK};
 use crate::syntax::names::Qual;
@@ -55,14 +55,15 @@ pub fn base_spec(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("base_spec", sp, kids))
 }
 
-/// `base_type: [nested_name] (class_name | template_id) | decltype_spec`.
+/// `base_type: [nested_name] (class_name | template_id)
+/// | nested_name "template" template_id | decltype_expr`.
 /// A name followed by `<` here is a template-id: a base and a member
 /// initializer name a class.
 pub fn base_type(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     if p.at("decltype") {
         if let Ok(d) = p.attempt(|p| {
-            let d = decltype_spec(p)?;
+            let d = decltype_expr(p)?;
             if p.at("::") {
                 Err(p.fail("a base"))
             } else {
@@ -80,7 +81,10 @@ pub fn base_type(p: &mut Parser) -> PResult<Node> {
             q = qq;
         }
     }
-    if p.kind() == TK::Ident && p.ahead(1) == "<" {
+    if !kids.is_empty() && p.at("template") {
+        kids.push(p.bump());
+        kids.push(Kid::Node(template_id(p, q, true)?.0));
+    } else if p.kind() == TK::Ident && p.ahead(1) == "<" {
         kids.push(Kid::Node(template_id(p, q, false)?.0));
     } else {
         kids.push(Kid::Node(class_name(p)?));

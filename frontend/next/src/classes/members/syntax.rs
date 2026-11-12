@@ -52,7 +52,9 @@ pub fn class_body(p: &mut Parser, scope: Option<u32>) -> PResult<Vec<Kid>> {
             if p.at_eof() {
                 return Err(p.fail("'}'"));
             }
-            kids.push(Kid::Node(member_decl(p)?));
+            if let Some(m) = p.item(member_decl)? {
+                kids.push(Kid::Node(m));
+            }
         }
         kids.push(p.bump());
         Ok(())

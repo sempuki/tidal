@@ -38,6 +38,12 @@ pub fn compound_stmt(p: &mut Parser) -> PResult<Node> {
             if p.at_eof() {
                 return Err(p.fail("'}'"));
             }
+            if p.recover {
+                if let Some(s) = p.item(|p| p.attempt(statement).or_else(|_| label(p)))? {
+                    kids.push(Kid::Node(s));
+                }
+                continue;
+            }
             if !labels_only {
                 if let Ok(s) = p.attempt(statement) {
                     kids.push(Kid::Node(s));

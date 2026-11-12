@@ -106,9 +106,15 @@ pub fn using_enum_decl(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = vec![p.expect("using")?, p.expect("enum")?];
     if p.at("::") || p.ahead(1) == "::" || p.ahead(1) == "<" {
-        kids.push(Kid::Node(nested_name(p)?.0));
+        if let Some((nn, _, _)) = p.opt(nested_name) {
+            kids.push(Kid::Node(nn));
+        }
     }
-    kids.push(identifier(p)?);
+    if p.kind() == TK::Ident && p.ahead(1) == "<" {
+        kids.push(Kid::Node(crate::templates::arguments::syntax::template_id(p, crate::syntax::names::Qual::None, false)?.0));
+    } else {
+        kids.push(identifier(p)?);
+    }
     kids.push(p.expect(";")?);
     Ok(p.node("using_enum_decl", sp, kids))
 }

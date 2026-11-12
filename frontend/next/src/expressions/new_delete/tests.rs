@@ -23,3 +23,9 @@ fn attributes_after_type_and_bound() {
     assert!(ok("[3] [[deprecated]]", new_bounds));
     assert!(ok("[n] [[a]] [4] [[b]]", new_bounds));
 }
+
+#[test]
+fn new_ptr_takes_attributes_after_cv() {
+    assert!(ok("* const [[a]]", new_ptr));
+    assert!(ok("int * [[a]] * const", new_type));
+}

@@ -56,8 +56,27 @@ pub fn placement(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("placement", sp, vec![open, Kid::Node(l), close]))
 }
 
+/// `new_ptr: [nested_name] "*" {cv} {attribute_spec}`: a pointer or a
+/// member pointer in the type of a `new` expression.
+pub fn new_ptr(p: &mut Parser) -> PResult<Node> {
+    let sp = p.span();
+    let mut kids = Vec::new();
+    if !p.at("*") {
+        let (nn, _, _) = crate::expressions::primary::syntax::nested_name(p)?;
+        kids.push(Kid::Node(nn));
+    }
+    kids.push(p.expect("*")?);
+    while let Some(c) = p.opt(cv) {
+        kids.push(Kid::Node(c));
+    }
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
+    }
+    Ok(p.node("new_ptr", sp, kids))
+}
+
 /// `new_type: type_specifier {type_specifier} {attribute_spec}
-/// {"*" {cv}} [new_bounds]`.
+/// {new_ptr} [new_bounds]`.
 pub fn new_type(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = Vec::new();
@@ -71,11 +90,8 @@ pub fn new_type(p: &mut Parser) -> PResult<Node> {
     while p.at_attr() {
         kids.push(Kid::Node(attribute_spec(p)?));
     }
-    while p.at("*") {
-        kids.push(p.bump());
-        while let Some(c) = p.opt(cv) {
-            kids.push(Kid::Node(c));
-        }
+    while let Some(np) = p.opt(new_ptr) {
+        kids.push(Kid::Node(np));
     }
     if p.at("[") && !p.at_attr() {
         kids.push(Kid::Node(new_bounds(p)?));

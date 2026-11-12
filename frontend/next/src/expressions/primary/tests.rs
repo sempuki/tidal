@@ -107,7 +107,7 @@ fn unqualified_ids_of_item_gr() {
     // G171: a destructor named by a template-id or `decltype`, and an
     // operator function's template-id.
     assert!(sx("~V<T>", u).unwrap().starts_with("(unqualified_id ~ (template_id"));
-    assert!(sx("~decltype(x)", u).unwrap().starts_with("(unqualified_id ~ (decltype_spec"));
+    assert!(sx("~decltype(x)", u).unwrap().starts_with("(unqualified_id ~ (decltype_expr"));
     assert!(sx("operator()<int>", u).unwrap().starts_with("(unqualified_id (template_id (operator_function_id"));
     assert!(sx("operator<", u).unwrap().starts_with("(unqualified_id (operator_function_id"));
 }

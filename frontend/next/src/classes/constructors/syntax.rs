@@ -126,7 +126,7 @@ pub fn dtor_decl(n: &Node, toks: &[Token], class: &str) -> bool {
 }
 
 /// `dtor_call: postfix_expr ("." | "->") [nested_name] "~"
-/// (identifier | template_id | decltype_spec) "(" ")"`: a call with no
+/// (identifier | template_id | decltype_expr) "(" ")"`: a call with no
 /// arguments of a member access whose name is `~` and an identifier, a
 /// template-id, or a `decltype` specifier.
 pub fn dtor_call(n: &Node, toks: &[Token]) -> bool {
@@ -147,7 +147,7 @@ pub fn dtor_call(n: &Node, toks: &[Token]) -> bool {
     };
     let starts_with_tilde = matches!(u.kids.first(), Some(Kid::Tok(t)) if toks[*t].text == "~");
     let named = match u.kids.get(1) {
-        Some(Kid::Node(x)) => matches!(x.prod, "class_name" | "template_id" | "decltype_spec"),
+        Some(Kid::Node(x)) => matches!(x.prod, "class_name" | "template_id" | "decltype_expr"),
         _ => false,
     };
     let w = words(callee, toks);

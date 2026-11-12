@@ -349,23 +349,38 @@ the run status second (`run-pass`, the run statuses above, and
 `next/` holds the rewrite (decision 0060, `DESIGN-rewrite.md`), a crate
 of its own with its own `Cargo.lock` and `target/`. Build steps 1 and 2
 are in place: the source map, the diagnostics, the lexer, the parser
-with the `Names` oracle, and the driver. The old front end in `src/`
-stays the front end of record and judges every test.
+with the `Names` oracle, and the driver. Build step 3 is in place in
+part: `sem` (the type table, the typed tree, entities and scopes, the
+`Check` context), `target`, `machine`, the harness `conform`, and the
+`check.rs` and `run.rs` parts of the foundations, expressions,
+statements, and declarations pages for constructs outside classes and
+templates, with the non-class parts of the two overloading pages. The
+prototype of P22 (`src/proposals/p22.rs`) follows X24 under
+`--proposal P22`.
+
+The new front end owns the tests of
+`reports/clean-room/rust-frontend/takeover.tsv`. The old front end in
+`src/` stays the front end of record for every other test.
 
 ```sh
 cd next
 cargo build --release
 cargo test --release
-target/release/tidal-next parse FILE...   # tree, or stop LINE: why
+target/release/tidal-next check FILE      # exit 0 accept, 1 reject, 2 unsupported
+target/release/tidal-next run FILE        # the status of main, or the stop
+target/release/tidal-next conform ../../tests -v [--proposal P22]
+target/release/tidal-next parse FILE... [--all]   # tree, or stop LINE: why
 target/release/tidal-next dump FILE       # the syn trees
 target/release/tidal-next lex FILE...     # one token a line
 ```
 
-`tidal-next check` gives `reject` with a TR-12 error when the parser
-stops and `unsupported` when the unit parses, since analysis comes at
-build step 3. `tidal-fe lex` prints the same form as `tidal-next lex`,
-and `tools/frontend_check.py --next` compares the two, runs the unit
-tests, and counts the tests that parse as their outcome needs.
+`tidal-fe lex` prints the same form as `tidal-next lex`, and
+`tools/frontend_check.py --next` compares the two, runs the unit tests,
+counts the tests that parse as their outcome needs (with every stop of
+each disagreement), prints the shadow lines of build step 3, and checks
+the takeover list. A construct that the new front end does not model
+gives `unsupported`, and a run of a program of several translation units
+is unsupported until linking moves.
 
 ## The conditional operator
 

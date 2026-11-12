@@ -78,6 +78,11 @@ fn direct_idents<'t>(n: &Node, toks: &'t [Token]) -> Vec<&'t str> {
 }
 
 impl Declare {
+    /// Every name the declare pass recorded, in any scope.
+    pub fn all_names(&self) -> std::collections::HashSet<String> {
+        self.scopes.iter().flat_map(|s| s.names.keys().cloned()).collect()
+    }
+
     fn lookup_in(&self, s: u32, name: &str, depth: u32) -> Option<Found> {
         if depth > 24 {
             return None;
@@ -150,7 +155,7 @@ impl Declare {
         for k in &nn.kids {
             match k {
                 Kid::Node(n) if n.prod == "nested_name" => q = self.resolve_nested(n, toks),
-                Kid::Node(n) if n.prod == "decltype_spec" => q = Qual::Dependent,
+                Kid::Node(n) if (n.prod == "decltype_spec" || n.prod == "decltype_expr") => q = Qual::Dependent,
                 Kid::Node(n) if n.prod == "template_id" => {
                     let name = n.find("template_name").map(|t| direct_idents(t, toks)).and_then(|v| v.first().copied()).unwrap_or("");
                     let dep = self.args_dependent(n, toks);
@@ -275,7 +280,7 @@ impl Declare {
                     let name = t.find("template_name").map(|x| direct_idents(x, toks)).and_then(|v| v.first().copied()).unwrap_or("");
                     (name, self.args_dependent(t, toks))
                 } else {
-                    (b.child("class_name").map(|c| direct_idents(c, toks)).and_then(|v| v.first().copied()).unwrap_or(""), b.child("decltype_spec").is_some())
+                    (b.child("class_name").map(|c| direct_idents(c, toks)).and_then(|v| v.first().copied()).unwrap_or(""), b.child("decltype_expr").is_some())
                 };
                 let f = if q == Qual::Dependent || dep { Found::UNKNOWN } else { self.find(q, bname) };
                 match f.scope {

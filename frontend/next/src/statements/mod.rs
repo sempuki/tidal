@@ -2,6 +2,7 @@
 //! `plain_stmt`, which sit in `syntax.rs` beside this file.
 
 pub mod blocks;
+pub mod check;
 pub mod if_stmt;
 pub mod jumps;
 pub mod loops;

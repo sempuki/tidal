@@ -1,0 +1,122 @@
+//! The check part of `expressions/comparison`: the relational and
+//! equality operators. `<=>` needs the library's ordering types, which
+//! come with build step 4.
+
+use crate::expressions::check::{bad, operands, operator};
+use crate::expressions::multiplicative::check::arithmetic_operand;
+use crate::foundations::conversions::check as conv;
+use crate::foundations::values::check::rvalue;
+use crate::sem::check::Check;
+use crate::sem::tree::{BOp, Cat, Conv, Expr, EK};
+use crate::sem::types::{QType, Type};
+use crate::source::Span;
+use crate::syntax::Node;
+
+/// The composite pointer type of two pointer operands, if one exists
+/// (CMP-3, CMP-9).
+fn composite(a: &QType, b: &QType) -> Option<QType> {
+    let (pa, pb) = (a.pointee()?, b.pointee()?);
+    if pa.unqual().t == pb.unqual().t {
+        return Some(QType::ptr_to(pa.with_cv(pb.c, pb.v)));
+    }
+    if pa.is_void() || pb.is_void() {
+        if pa.is_func() || pb.is_func() {
+            return None;
+        }
+        return Some(QType::ptr_to(QType::void().with_cv(pa.c || pb.c, pa.v || pb.v)));
+    }
+    fn strip(t: &QType) -> QType {
+        match &t.t {
+            Type::Ptr(p) => QType::ptr_to(strip(p)),
+            _ => t.unqual(),
+        }
+    }
+    if strip(a).t == strip(b).t {
+        return Some(a.clone());
+    }
+    if conv::pointer_convertible(pa, pb) {
+        return Some(b.clone());
+    }
+    if conv::pointer_convertible(pb, pa) {
+        return Some(a.clone());
+    }
+    None
+}
+
+/// A relational or equality operator on two operands.
+pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
+    let (ln, rn) = (conv::is_null_constant(&l), conv::is_null_constant(&r));
+    let (l, r) = (rvalue(cx, l), rvalue(cx, r));
+    if l.ty.is_error() || r.ty.is_error() {
+        return bad(span);
+    }
+    let eq = matches!(op, BOp::Eq | BOp::Ne);
+    let mk = |l: Expr, r: Expr| Expr::new(EK::Binary(op, Box::new(l), Box::new(r)), QType::bool(), Cat::PR, span);
+    // CMP-23: a scoped enumeration compares only with its own type.
+    if let (Type::Enum(a), Type::Enum(b)) = (&l.ty.t, &r.ty.t) {
+        if a == b {
+            return mk(l, r);
+        }
+    }
+    for t in [&l.ty, &r.ty] {
+        if let Type::Enum(en) = t.t {
+            if cx.u.enums[en].scoped {
+                cx.error(span, "CMP-23", format!("a scoped enumeration compared with {}", if t == &l.ty { r.ty.show() } else { l.ty.show() }));
+                return bad(span);
+            }
+        }
+    }
+    if arithmetic_operand(cx, &l.ty) && arithmetic_operand(cx, &r.ty) {
+        let (l, r, _) = conv::arithmetic(cx, l, r);
+        return mk(l, r);
+    }
+    let lp = l.ty.is_ptr() || l.ty.is_nullptr();
+    let rp = r.ty.is_ptr() || r.ty.is_nullptr();
+    if l.ty.is_nullptr() && r.ty.is_nullptr() {
+        if !eq {
+            cx.error(span, "CMP-9", "a relational comparison of two values of the type of nullptr");
+            return bad(span);
+        }
+        return mk(l, r);
+    }
+    if lp && rp {
+        if l.ty.is_nullptr() || r.ty.is_nullptr() {
+            if !eq {
+                cx.error(span, "CMP-9", "a relational comparison of a pointer with nullptr");
+                return bad(span);
+            }
+            let t = if l.ty.is_ptr() { l.ty.clone() } else { r.ty.clone() };
+            let l = if l.ty.is_nullptr() { l.conv(Conv::NullPtr, t.clone(), Cat::PR) } else { l };
+            let r = if r.ty.is_nullptr() { r.conv(Conv::NullPtr, t, Cat::PR) } else { r };
+            return mk(l, r);
+        }
+        if composite(&l.ty, &r.ty).is_none() {
+            cx.error(span, "CMP-9", format!("a comparison of unrelated pointers {} and {}", l.ty.show(), r.ty.show()));
+            return bad(span);
+        }
+        return mk(l, r);
+    }
+    if lp && rn || rp && ln {
+        if !eq {
+            cx.error(span, "CMP-9", "a relational comparison of a pointer with a null pointer constant");
+            return bad(span);
+        }
+        let t = if lp { l.ty.clone() } else { r.ty.clone() };
+        let (l, r) = if lp { (l, r.conv(Conv::NullPtr, t, Cat::PR)) } else { (l.conv(Conv::NullPtr, t, Cat::PR), r) };
+        return mk(l, r);
+    }
+    cx.error(span, "CMP-9", format!("invalid operands of types {} and {}", l.ty.show(), r.ty.show()));
+    bad(span)
+}
+
+/// `relational_expr`, `equality_expr`, `three_way_expr`.
+pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
+    let op = BOp::from_str(operator(cx, n)).unwrap_or(BOp::Eq);
+    if op == BOp::Spaceship {
+        let t = cx.unsupported(n.span, "the three-way comparison (its result types come from the library)");
+        return Expr::new(EK::Int(0), t, Cat::PR, n.span);
+    }
+    let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+    crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
+    operate(cx, op, l, r, n.span)
+}

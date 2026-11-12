@@ -83,6 +83,9 @@ nothing else differently:
     next: lex: T/N files give the old front end's tokens
     next: parse: N/M tests parse as their outcome needs
     next: parse: R of the D disagreements are reject tests that stop on the line of the old front end's first error
+    next: shadow: step 3 plain: P/N pass their check, Q of the old front end's O
+    next: shadow: step 3: P/N pass their check, Q of the old front end's O; R pass on the new front end only
+    next: shadow: all: P/N pass their check; U unsupported
     next: owned: O tests (takeover list)
 
 The unit line runs `cargo test` in frontend/next/; a failing unit test
@@ -94,13 +97,30 @@ tree for each unit of an `accept`, `run`, `run-fail`, or `link-fail`
 test, a tree for a `reject` test whose first error on the old front end
 names a rule other than TR-12, and a stop for a `reject` test whose first
 error names TR-12. A `reject` test with no error that names a rule is not
-judged. The tool lists each disagreement, and a further line counts
-the disagreements that are reject tests whose stop is on the line of
-the old front end's first error. The takeover list,
-reports/clean-room/rust-frontend/takeover.tsv, names the tests that the
-new front end owns: a test path, the build step, and the commit, separated
-by tabs. The tool reports a row whose test does not exist and a test
-listed twice. While the list has no row, no status changes.
+judged. The tool lists each disagreement with every place where the
+grammar derives no form (`tidal-next parse --all`, which skips each
+failed statement, member, or declaration and goes on), and a further
+line counts the disagreements that are reject tests whose first stop is
+on the line of the old front end's first error.
+
+The shadow lines (build step 3) run `tidal-next conform tests -v` and
+count the tests whose check the new front end passes, beside the old
+front end's count on the same tests. "step 3" is the tests whose
+`tidal-rules` lines name only rules of the pages of the foundations,
+expressions, statements, and declarations chapters (the prefixes of the
+page table in frontend/DESIGN-rewrite.md section 3). "step 3 plain" is
+those of them whose source, comments and literals removed, uses no
+keyword of a later step's pages. The tool lists each step 3 plain test
+whose check the old front end passes and the new one does not. The
+shadow run changes no status and no baseline.
+
+The takeover list, reports/clean-room/rust-frontend/takeover.tsv, names
+the tests that the new front end owns: a test path, the build step, and
+the commit, separated by tabs. The tool reports a row whose test does
+not exist, a row of the wrong form, a test listed twice, and an owned
+test whose status on the new front end is not a passing status. Each of
+these problems fails the check. Without --next the tool does not read
+the list, and its lines are the old front end's alone.
 
 Usage:
     tools/frontend_check.py [--update] [--next]
@@ -326,7 +346,7 @@ def main() -> int:
         print(f"frontend: {int(cells[2]) + int(cells[3])}/{cells[1]} passing rejects name a "
               f"cited rule ({cells[2]}) or a linked rule ({cells[3]}) in their first error; "
               f"`tidal-fe conform` gives the table per page")
-    next_failed = check_next(cargo_bin) if args.next else False
+    next_failed = check_next(cargo_bin, now) if args.next else False
     return 1 if worse or next_failed else 0
 
 
@@ -398,9 +418,10 @@ def read_takeover() -> tuple[list[str], list[str]]:
     return owned, problems
 
 
-def check_next(cargo_bin: str) -> bool:
+def check_next(cargo_bin: str, now: dict[str, str]) -> bool:
     """The `next:` lines (decision 0064, item RW). Returns True when a unit
-    test fails or the crate does not build."""
+    test fails, the crate does not build, or the takeover list has a
+    problem. `now` is the old front end's status for each test."""
     build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=NEXT, capture_output=True, text=True)
     if build.returncode:
         print(f"next: build failed\n{build.stderr}")
@@ -443,12 +464,15 @@ def check_next(cargo_bin: str) -> bool:
                 want[f] = "stop" if "TR-12" in found[0] else "tree"
                 first_line[f] = found[1]
     parsed: dict[str, str] = {}
+    more: dict[str, list[str]] = {}
     for chunk in batches(sorted({u for f in want for u in units[f]})):
-        text = subprocess.run([str(new), "parse", *chunk], cwd=ROOT, capture_output=True, text=True,
+        text = subprocess.run([str(new), "parse", "--all", *chunk], cwd=ROOT, capture_output=True, text=True,
                               errors="replace").stdout
         for line in text.splitlines():
-            status, _, name = line.partition("\t")
+            status, _, rest = line.partition("\t")
+            name, *others = rest.split("\t")
             parsed[name] = status
+            more[name] = others
     agree = 0
     disagree = []
     same_line = 0
@@ -461,7 +485,8 @@ def check_next(cargo_bin: str) -> bool:
                 m = re.match(r"stop (\d+):", bad[0][1])
                 if f in first_line and bad[0][0] == f and m and int(m.group(1)) == first_line[f]:
                     same_line += 1
-                disagree.append(f"{f}: wants a tree, {bad[0][0].removeprefix('tests/') if bad[0][0] != f else 'the unit'} gives {bad[0][1]}")
+                also = "".join(f"; also stops at {o}" for o in more.get(bad[0][0], []))
+                disagree.append(f"{f}: wants a tree, {bad[0][0].removeprefix('tests/') if bad[0][0] != f else 'the unit'} gives {bad[0][1]}{also}")
         else:
             got = parsed.get(f, "missing")
             if got.startswith("stop"):
@@ -473,11 +498,85 @@ def check_next(cargo_bin: str) -> bool:
     print(f"next: parse: {agree}/{len(want)} tests parse as their outcome needs")
     print(f"next: parse: {same_line} of the {len(disagree)} disagreements are reject tests that stop on the line "
           f"of the old front end's first error")
+    shadow = shadow_lines(new, files, now)
     owned, problems = read_takeover()
+    for t in owned:
+        if t in shadow and shadow[t] not in PASSING:
+            problems.append(f"{t} is owned by the new front end, which gives {shadow[t]}")
     for p in problems:
         print(f"next: takeover list: {p}")
     print(f"next: owned: {len(owned)} tests (takeover list)")
-    return bool(unit.returncode or failed)
+    return bool(unit.returncode or failed or problems)
+
+
+STEP_CHAPTERS = {"3": {"foundations", "expressions", "statements", "declarations"},
+                 "4": {"classes", "overloading", "exceptions"}}
+LATER = re.compile(r"\b(class|struct|union|template|typename|concept|requires|throw|try|catch|operator|"
+                   r"virtual|friend|this|new|delete|std)\b|#\s*include")
+
+
+def page_prefixes() -> dict[str, str]:
+    """{rule prefix: chapter}, from the page table of DESIGN-rewrite.md
+    section 3."""
+    out: dict[str, str] = {}
+    design = FRONTEND / "DESIGN-rewrite.md"
+    for line in design.read_text().splitlines():
+        m = re.match(r"^\| `([a-z-]+)/[^`]+` \| `[^`]+` \| ([A-Z, ]+) \|", line)
+        if m:
+            for prefix in m.group(2).split(","):
+                out[prefix.strip()] = m.group(1)
+    return out
+
+
+def code_text(path: Path) -> str:
+    """A source file with its comments and literals removed."""
+    t = path.read_text(errors="replace")
+    t = re.sub(r"//[^\n]*|/\*.*?\*/", " ", t, flags=re.S)
+    return re.sub(r'"(\\.|[^"\\\n])*"|\'(\\.|[^\'\\\n])*\'', " ", t)
+
+
+def shadow_lines(new: Path, files: list[str], base: dict[str, str]) -> dict[str, str]:
+    """The shadow run of build step 3: the new front end's status for
+    every test, and the lines that count them by scope."""
+    out = subprocess.run([str(new), "conform", str(ROOT / "tests"), "-v"], cwd=NEXT, capture_output=True,
+                         text=True, errors="replace").stdout
+    status: dict[str, str] = {}
+    for line in out.splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 2 and parts[1].endswith(".cpp"):
+            status[parts[1]] = parts[0]
+    tests = ROOT / "tests"
+    for f in files:
+        name = f.removeprefix("tests/")
+        if not name.endswith(".tu.cpp"):
+            status.setdefault(name, "pass")
+    prefixes = page_prefixes()
+    step3, plain = [], []
+    for name in sorted(status):
+        path = tests / name
+        rules = cited_rules(path)
+        chapters = {prefixes.get(r.split("-")[0]) for r in rules}
+        if not rules or not chapters <= STEP_CHAPTERS["3"]:
+            continue
+        step3.append(name)
+        sources = [path] + [path.parent / s for s in header_expect(path)[1]]
+        if not any(LATER.search(code_text(s)) for s in sources if s.exists()):
+            plain.append(name)
+    ok_new = lambda n: rank(status.get(n)) >= 1
+    ok_old = lambda n: rank(base.get(n)) >= 1
+    for n in plain:
+        if ok_old(n) and not ok_new(n):
+            print(f"next: shadow: {n}: {status[n]}, the old front end {base.get(n)}")
+    for label, scope in (("step 3 plain", plain), ("step 3", step3)):
+        old = [n for n in scope if ok_old(n)]
+        line = (f"next: shadow: {label}: {sum(ok_new(n) for n in scope)}/{len(scope)} pass their check, "
+                f"{sum(ok_new(n) for n in old)} of the old front end's {len(old)}")
+        if label == "step 3":
+            line += f"; {sum(ok_new(n) and not ok_old(n) for n in scope)} pass on the new front end only"
+        print(line)
+    print(f"next: shadow: all: {sum(ok_new(n) for n in status)}/{len(status)} pass their check; "
+          f"{sum(s == 'unsupported' for s in status.values())} unsupported")
+    return status
 
 
 if __name__ == "__main__":

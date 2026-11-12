@@ -123,7 +123,7 @@ pub fn id_expression(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("id_expression", sp, vec![Kid::Node(u)]))
 }
 
-/// `unqualified_id: identifier | "~" (class_name | template_id | decltype_spec)
+/// `unqualified_id: identifier | "~" (class_name | template_id | decltype_expr)
 /// | operator_function_id | literal_operator_id | conversion_function_id
 /// | template_id`. An operator function's or a literal operator's name
 /// followed by `<` and a whole argument list is a template-id.
@@ -134,7 +134,7 @@ pub fn unqualified_id(p: &mut Parser, q: Qual, tkw: bool) -> PResult<Node> {
     if p.at("~") {
         let t = p.bump();
         let n = if p.at("decltype") {
-            decltype::syntax::decltype_spec(p)?
+            decltype::syntax::decltype_expr(p)?
         } else if p.kind() == TK::Ident && p.ahead(1) == "<" {
             match p.attempt(|p| arguments::syntax::template_id(p, q, tkw)) {
                 Ok((t, _)) => t,
@@ -219,7 +219,7 @@ pub fn current_instantiation(p: &mut Parser, q: Qual, name: &str, tid: &Node) ->
 }
 
 /// `nested_name: "::" | [nested_name] identifier "::"
-/// | [nested_name] ["template"] template_id "::" | decltype_spec "::"`.
+/// | [nested_name] ["template"] template_id "::" | decltype_expr "::"`.
 /// Gives the node, the scope it names, and the name of its last
 /// component (for a constructor's declarator, `X::X`).
 pub fn nested_name<'t>(p: &mut Parser<'t>) -> PResult<(Node, Qual, Option<&'t str>)> {
@@ -231,7 +231,7 @@ pub fn nested_name<'t>(p: &mut Parser<'t>) -> PResult<(Node, Qual, Option<&'t st
         kids.push(p.bump());
         q = Qual::Global;
     } else if p.at("decltype") {
-        let d = decltype::syntax::decltype_spec(p)?;
+        let d = decltype::syntax::decltype_expr(p)?;
         kids.push(Kid::Node(d));
         kids.push(p.expect("::")?);
         q = Qual::Dependent;

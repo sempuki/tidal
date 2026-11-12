@@ -11,9 +11,13 @@ front end".
 Decision 0064 starts the rewrite as item RW. Build steps 1 and 2 are in
 `frontend/next/`: the crate, `source`, `diag`, `lex`, the driver, the
 `syntax` core, the `syntax.rs` part of each page with a Syntax segment,
-and the declare pass that answers the parser's questions. The
-structures of the later steps below are sketches, and their Rust types
-are fixed when their code is written.
+and the declare pass that answers the parser's questions. Decision 0065
+(item RW2) brings build step 3 in part: `sem`, `target`, `machine`,
+`conform`, the `check.rs` and `run.rs` parts of the step 3 pages for
+constructs outside classes and templates, the node-check and `Ext` node
+points, and the P22 prototype. Section 5 gives what step 3 still lacks.
+The structures of the later steps below are sketches, and their Rust
+types are fixed when their code is written.
 
 ## 1. Where the rewrite lives
 
@@ -34,13 +38,14 @@ frontend/
 
 `tidal-next` takes the subcommands and exit statuses of `tidal-fe`
 (`check`, `run`, `conform`, `dump`), so the harness and
-`tools/frontend_check.py` read both binaries the same way. Until
-analysis exists (step 3), `check` gives `reject` with a TR-12 error when
-the parser stops and `unsupported` when the unit parses, `run` gives
-`unsupported`, and `conform` refuses. Both binaries have `lex FILE...`,
+`tools/frontend_check.py` read both binaries the same way. Both
+binaries have `lex FILE...`,
 which prints one token a line (kind, text, line in the unit's main
 file, literal) and the lexer's diagnostics, and `tidal-next` has
-`parse FILE...`, which prints `tree` or the stop for each file. The
+`parse FILE... [--all]`, which prints `tree` or the stop for each file,
+and with `--all` every other place where the grammar derives no form.
+Since build step 3, `check` gives the outcome of analysis, `run` runs a
+program of one translation unit, and `conform` runs the harness. The
 crate uses no crate that encodes knowledge of C++ (decision 0035), and
 so far no crate at all.
 
@@ -105,13 +110,34 @@ fourth question is "a member template of this name is declared in some
 class": the object's type, which DEP-24 needs, comes with analysis
 (section 10).
 
+### What analysis reads
+
+The parser makes one node type, `syntax::Node { prod, ext, span, kids }`,
+and analysis reads that node. There is no second, typed form of the syn
+tree. Each page's `check.rs` part reads the nodes of its own page's
+productions by their production names (`n.child("type_id")`), and makes
+the typed tree of `sem` (`sem::tree`), which is the only typed tree.
+The reasons:
+
+- The node names its production, so a page reads only what its own
+  Syntax segment gives, and a grammar change touches the page's
+  `syntax.rs` and `check.rs` and no shared type.
+- The nonterminal point and the `Ext` node point stay uniform: a
+  proposal's node is a `Node` with `ext` set, and its check gets the
+  same node.
+
+In build step 3, analysis runs after the parser has read the whole unit
+with the step 2 oracle, and it reads the trees in order. For the pages
+of step 3 the result is the same as the alternation that this section
+describes. The alternation comes with the class and template pages,
+where the oracle needs analysis (section 10).
+
 ### The data
 
 ```text
 Token     { kind, text, span: Span, lit: Option<Lit> }        as now, plus Span
 Span      { file: FileId, line, col }
-syn::*    Decl | Stmt | Expr | TypeId | Declarator | ... | Ext(ProposalId, node)
-          each node names its production and carries a Span
+syntax::Node  { prod, ext: Option<ProposalId>, span, kids }  one type for every production
 Unit      { entities: [Entity], scopes: [Scope], types: TypeTable,
             templates: [Template], specializations: [Specialization],
             bodies: EntityId -> Stmt, diags: [Diag] }
@@ -200,10 +226,10 @@ where the table says so.
 | `diag` | `Diag`, severities, the kind of each rule (read from `specification/`, as `conform.rs` does now), the overrides of a proposal (section 7) | `diag.rs` |
 | `lex` | the token stream and the preprocessing slice; it calls `foundations::odr` (INC), `foundations::keywords` (KW), and `expressions::primary` (literals) | `lexer.rs` |
 | `syntax` | the cursor, the table of nonterminals, error recovery (it reports TR-12 through `foundations::translation`), the `Names` oracle trait, the syn node types | none |
-| `sem` | the arenas, entities, scopes, the type table with `DepType`, the typed tree with its marks, `Subst`, the `Check` context, `Unit` | `types.rs`, `ast.rs`, the records of `parser.rs` |
-| `target` | the LP64 and ILP32 tables: sizes, alignments, class layout | `layout.rs`, the size functions of `types.rs` |
-| `machine` | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Stop`, `Choice`, the byte view's tables, the x87 format | `interp/mod.rs`, `interp/f80.rs`, parts of `interp/bytes.rs` |
-| `conform` | the conformance harness | `conform.rs` |
+| `sem` | the arenas, entities, scopes, the type table with `DepType`, the typed tree with its marks, `Subst`, the `Check` context, `Unit` | written new in step 3 (`sem::types`, `sem::tree`, `sem::check`); `DepType`, the marks, and `Subst` come with step 5 |
+| `target` | the LP64 and ILP32 tables: sizes, alignments, class layout | written new in step 3 from TYP-1 and TYP-2; class layout comes with step 4 |
+| `machine` | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Stop`, `Choice`, the byte view's tables, the x87 format | written new in step 3 for the step 3 constructs; it names no rule, and calls the `run.rs` part of a page for each operation whose rule can stop a run. The byte view, the x87 format, and the exploration of choice points are not in it yet |
+| `conform` | the conformance harness | `conform.rs`, with the same statuses and output, without the exploration of choice points |
 | `driver` (`main.rs`) | the command line, the outcome, the run of a program, the `--proposal` flag | `main.rs`, parts of `interp/run.rs` |
 
 ### The page table
@@ -338,7 +364,7 @@ calls `instantiation::substitute`.
 | 3. A specialization by substitution | `templates::instantiation` holds the `Specialization` record, its points (INST-30, INST-31, INST-33), its states, the order of INST-P2, `busy`, and the nesting limit (INST-15, with TR-13 from `foundations::translation`). The substitution walks the definition's tree. It copies a node with no dependence, and it calls the page's check again for a dependent node with the arguments in place (DEP-28). `templates::specialization` chooses the source (TSP-13 to TSP-16) and links a partial specialization to its primary when it is declared (TSP-31). | `sem::Specialization` |
 | 4. Substitution failure and the immediate context | `templates::deduction` decides where an error falls (DED-24 to DED-29). `templates::dependent_names` holds the kind table of `Member(T, name, reading)` (DEP-19, DEP-22, DEP-26). | `sem::Subst<T>`; an error outside the immediate context goes to `diag` |
 | 5. Checks at the definition | each row of the model's table sits in the page of its rule: DEP-6, DEP-17, DEP-24, DEP-29, DEP-30, and DEP-37 in `templates::dependent_names`; IF-22 in `statements::if_stmt`; PACK-8 in `templates::packs`; CNS-29 in `templates::constraints`; SA-5 in `declarations::static_assert`. An independent node is checked when it is made, by the same code as a node outside a template. | the list of definition checks, which a proposal can extend (section 7) |
-| 6. The 36 tests | section 5 of this document | the marks file |
+| 6. The 38 tests | section 5 of this document | the marks file |
 | 7. What the model keeps | `templates::deduction` (DED-P3), `templates::ordering` (ORD-P2), `templates::specialization` (TSP-P2), `templates::constraints` (CNS-P1) | `DepType` with its new forms |
 | 8. Rules that can change | section 10 of this document | none |
 
@@ -351,16 +377,17 @@ member check of `expressions::postfix`.
 
 ## 5. The tests the rewrite takes over first
 
-The rewrite takes over the 36 tests of the marks file
-(`reports/clean-room/rust-frontend/rewrite-marks.tsv`) first, by model
-section (decision 0064). The marks file is the list; the table gives
-the tests after front-end round 27. Paths are under `tests/`.
+The rewrite takes over the tests of the marks file
+(`reports/clean-room/rust-frontend/rewrite-marks.tsv`) by model section
+(decision 0064). The marks file is the list. After front-end round 28 it
+holds 38 tests: 17 for step 5, 15 for step 6, and 6 for step 7. The
+table gives the tests. Paths are under `tests/`.
 
 | Model section | Count | Tests |
 |---|---|---|
 | 1 | 4 | `templates/dependent-names/`: `other-specialization-constant-argument-member-missing`, `other-specialization-constant-argument-no-typename`, `sizeof-value-dependent-operand-call-bound-early`, `sizeof-value-dependent-operand-no-typename` |
 | 2 | 6 | `templates/dependent-names/`: `current-instantiation-enclosing-base`, `member-template-current-instantiation-pointer`, `member-template-current-instantiation-qualifier-dependent-base`, `member-template-non-dependent-base`, `member-template-through-current-instantiation-object`; `classes/copy-move/class-template-ctor-by-value` |
-| 3 | 13 | `templates/instantiation/`: `class-point-not-later-member-type`, `class-point-not-later-type`, `class-point-not-later`, `class-point-static-const-member`, `class-point-static-constexpr-made-at-use`, `class-static-constexpr-member-initializer-waits`, `static-inline-member-incomplete-argument`, `class-point-after-enclosing-class-not-later`, `local-class-default-argument`, `local-class-exception-specification`, `recursion-endless-function`; `templates/specialization/partial-no-primary-variable` |; `templates/packs/member-template-pack-length`
+| 3 | 15 | `templates/instantiation/`: `class-point-not-later-member-type`, `class-point-not-later-type`, `class-point-not-later`, `class-point-static-const-member`, `class-point-static-constexpr-made-at-use`, `class-static-constexpr-member-initializer-waits`, `class-static-constexpr-member-calls-own-member`, `static-inline-member-incomplete-argument`, `class-point-after-enclosing-class-not-later`, `local-class-default-argument`, `local-class-exception-specification`, `recursion-endless-function`; `templates/specialization/partial-no-primary-variable`; `templates/packs/member-template-pack-length`; `programs/roadmap/r14-fsm-second-try` |
 | 4 | 6 | `templates/deduction/`: `substitution-explicit-specifier`, `substitution-lambda-body`, `substitution-lambda-default`, `substitution-member-wrong-kind` |; `templates/arguments/argument-makes-parameter-invalid`; `templates/dependent-names/type-only-positions-more`
 | 5 | 7 | `statements/if/constexpr-template-nondependent-call-checked`; `templates/constraints/`: `out-of-class-other-clause`, `out-of-class-without-clause`; `templates/dependent-names/`: `binary-operator-pack-never-fits`, `operator-pack-never-fits`; `templates/packs/`: `fold-in-outer-pattern`, `size-operator-in-outer-pattern` |
 
@@ -378,6 +405,9 @@ next: unit: K tests pass
 next: lex: T/N files give the old front end's tokens
 next: parse: N/M tests parse as their outcome needs
 next: parse: R of the D disagreements are reject tests that stop on the line of the old front end's first error
+next: shadow: step 3 plain: P/N pass their check, Q of the old front end's O
+next: shadow: step 3: P/N pass their check, Q of the old front end's O; R pass on the new front end only
+next: shadow: all: P/N pass their check; U unsupported
 next: owned: O tests (takeover list)
 ```
 
@@ -390,21 +420,27 @@ next: owned: O tests (takeover list)
   or when it expects `reject` and the old front end's first error names
   a rule other than TR-12. It needs a stop when its first error names
   TR-12. A `reject` test with no error that names a rule is not judged.
-  The tool lists each disagreement, and counts the reject tests that
-  stop on the line of the old front end's first error (section 10).
+  The tool lists each disagreement with every place where the grammar
+  derives no form (`tidal-next parse --all`, which skips each failed
+  statement, member, or declaration and goes on), and counts the reject
+  tests whose first stop is on the line of the old front end's first
+  error (section 10).
 - **The takeover list** (read from step 1). `takeover.tsv` beside
   `conformance.tsv` names the tests that the new front end owns: a test
   path, the build step, and the commit. The tool reports a row whose
-  test does not exist and a test listed twice. For an owned test the
-  tool will take the new front end's status, and a test that either
-  front end makes worse fails the check, so "0 worse" holds for both
-  (decision 0060). The list has no row while the old front end judges
-  every test.
-- **A shadow run** (step 3). The tool also runs `tidal-next conform`
-  on every test and prints its counts beside the old ones, as
-  `next: shadow: P/T pass, Q of the old front end's passes; R tests
-  pass on the new front end only`. The shadow run changes no status
-  and no baseline.
+  test does not exist, a row of the wrong form, a test listed twice, and
+  an owned test whose status on the new front end is not a passing
+  status, and each of these fails the check (decision 0065: ownership
+  moves test by test, and a listed test that the new front end then
+  fails is a worse status). The lines without `--next` stay the old
+  front end's.
+- **A shadow run** (step 3). The tool also runs `tidal-next conform` on
+  every test and prints the shadow lines above. "step 3" is the tests
+  whose rules sit on the pages of the step 3 chapters (the prefixes of
+  section 3's page table), and "step 3 plain" is those that use no
+  keyword of a later step's pages. The tool lists each step 3 plain test
+  that the old front end passes and the new one does not. The shadow run
+  changes no status and no baseline.
 
 ### The order of the build
 
@@ -418,10 +454,10 @@ pages it reaches are written.
 | 0 | This design, kept to the marks file | none | the completion line, with the marked tests apart |
 | 1 | The crate, `source`, `diag`, `lex`, and the driver with `--proposal` and an empty registry; `--next` in the tool | none | `next: lex` reaches N/N; `next: unit` |
 | 2 | `syntax` and the `syntax.rs` part of each page; the oracle over a declare pass that only records names and their kinds; the nonterminal point, with P22's syntax part as its unit test | none | `next: parse`; each nonterminal has one function |
-| 3 | The node-check point of section 7 first; then `sem`, `target`, `machine`; the foundations, declarations, expressions, and statements pages outside templates; constant evaluation; the `Ext` node point | none | `next: shadow` by chapter, against the old front end's passes on those chapters |
+| 3 | The node-check point of section 7 first; then `sem`, `target`, `machine`, `conform`; the foundations, declarations, expressions, and statements pages outside classes and templates, with the non-class parts of the two overloading pages; constant evaluation; the `Ext` node point with a proposal's own rule IDs; at its end the first takeover and the P22 prototype (X24) | the tests of the step 3 plain scope that both front ends pass (decision 0065) | `next: shadow` on the step 3 plain scope and the step 3 scope, against the old front end's passes; the P22 impact diff |
 | 4 | The classes, overloading, and exceptions pages; the rule override point | none | `next: shadow` |
-| 5 | The templates pages with the parts the model keeps (model section 7); model sections 1, 2, and 5, with the definition-check point | the 17 tests of sections 1, 2, and 5 | `next: owned` 17; the marked count on the completion line goes from 36 to 19 |
-| 6 | Model section 3 | the 13 tests of section 3 | the marked count goes from 19 to 6 |
+| 5 | The templates pages with the parts the model keeps (model section 7); model sections 1, 2, and 5, with the definition-check point | the 17 tests of sections 1, 2, and 5 | `next: owned` grows by 17; the marked count on the completion line goes from 38 to 21 |
+| 6 | Model section 3 | the 15 tests of section 3 | the marked count goes from 21 to 6 |
 | 7 | Model section 4 | the 6 tests of section 4 | the marked count goes from 6 to 0 |
 | 8 | Page by page, the new front end takes over each page whose tests it passes wherever the old one passes | the tests of each page | `next: owned` grows by the page's tests, 0 worse |
 | 9 | The old front end is removed when the new one owns every test that the old one passed (decision 0060) | all | the completion line counts the new front end only |
@@ -429,6 +465,17 @@ pages it reaches are written.
 Steps 1 and 2 are in place. Every nonterminal of the Syntax segments
 has its function, and the parse count's disagreements are listed by
 cause in the front end's round report.
+
+Step 3 is in place in part (item RW2, `reports/clean-room/rust-frontend/report-rw3.md`).
+The new front end passes the check of 1602 of the 1897 step 3 plain
+tests (1600 of them tests that the old front end passes too), and it
+owns 1327 of them. These parts are not in it yet: lambdas (their closure
+is a class), structured bindings, `if consteval`, the `noexcept`
+operator and a `noexcept` specifier with an operand, assumptions,
+`long double` arithmetic at the machine's precision, the linking of
+several translation units, the exploration of choice points, the byte
+view of objects, and the checks of 122 reject tests of the plain
+scope.
 
 Model sections 1, 2, and 5 come first because section 2 needs the marks
 of section 1, and section 5 needs both. Section 3 needs the marks for
@@ -472,16 +519,28 @@ there:
 | Point | Owner | What a prototype can do |
 |---|---|---|
 | Nonterminals | `syntax` | add an alternative to any nonterminal; the parser tries it at the start of that nonterminal and makes a `syn::Ext` node |
-| `Ext` nodes | `sem`, `machine` | check its own syn node into ordinary typed nodes, or into a `sem::Ext` node with a `run` function of its own |
-| Rule overrides | `diag` | change the kind of a rule by its ID (as from `recommended` to `reject`), or turn a check off; add rules with the exercise's IDs, which the diagnostics name |
+| `Ext` nodes | `sem`, `machine` | check its own syn node into ordinary typed nodes, or into a `sem::Ext` node with a `run` function of its own; name the design's own rules (`X24:new-1`) in its diagnostics |
+| Rule overrides | `diag` | change the kind of a rule by its ID (as from `recommended` to `reject`), or turn a check off |
 | Node checks | `sem` | run a check of its own on each typed node of a named kind, after the page's own check; for a dependent node, again at substitution (DEP-28) |
 | Definition checks | `templates::dependent_names` | add a check to the list that runs on a template's definition (model section 5) |
 
 Each point lands with a build step: the `--proposal` flag and the
 registry in step 1, the nonterminal point in step 2, the node-check
 point before step 3 writes the expression pages, the `Ext` node point
-in step 3, rule overrides in step 4, and definition checks in step 5
-(section 5). The node-check point serves a design that adds a
+with the design's own rule IDs in step 3, rule overrides of existing
+rules in step 4, and definition checks in step 5 (section 5). In the
+crate, the node-check point is `sem::check::NodeCheck`, which
+`expressions::check::expr` runs on each typed node after the page's own
+check, and the `Ext` node point is `sem::check::Hooks::ext_stmt`, which
+`statements::check` calls for a statement node that a proposal's
+alternative made. A prototype's registry line gives its alternatives
+and a function that returns its hooks.
+
+The kind of each of a design's own rules comes from the design's change
+table, the table that `tools/propose_check.py --strict` reads. The
+prototype lists its rules with their kinds, and a unit test reads the
+Propose report's change table and checks each kind, so the prototype
+cannot drift from the design. The node-check point serves a design that adds a
 rejection to an existing construct, such as P26 on the comma and P29 on
 equality, which no rule override can express. It must exist before
 step 3, because a point added later would need edits to the pages it
@@ -494,9 +553,9 @@ and a prototype uses those queries. No page module imports
 ```text
 proposals::p22  ──alternative at jump_stmt──►  syntax (nonterminal table)
       │                                         └ statements::jumps::syntax (unchanged)
-      ├──check of its Ext node──►  sem; reads statements::blocks::enclosing()
-      │                                 and statements::jumps::labels() (public queries)
-      └──gives Break { target } / Continue { target }
+      ├──check of its Ext node──►  sem; reads statements::jumps::check::enclosing()
+      │                                 (the loops and switches with their labels)
+      └──gives Break(target) / Continue(target)
                                        └► machine and statements::jumps::run (unchanged)
 ```
 
@@ -504,59 +563,72 @@ proposals::p22  ──alternative at jump_stmt──►  syntax (nonterminal tab
 
 P22 (`reports/clean-room/roadmap-7/portfolio.md`) lets `break name;`
 and `continue name;` act on the loop or `switch` that carries the label
-`name`. Today JMP-17 rejects both forms through the grammar, because
-`jump_stmt` has no place for a label after `break` or `continue`
-(TR-12).
+`name`. X24 (`reports/clean-room/X24/report.md`) gives its design and
+its change table. Today JMP-17 rejects both forms through the grammar,
+because `jump_stmt` has no place for a label after `break` or
+`continue` (TR-12).
 
-The prototype `src/proposals/p22.rs` has three parts:
+The prototype `src/proposals/p22.rs` has two parts:
 
 1. **Syntax.** It adds the alternatives `"break" identifier ";"` and
-   `"continue" identifier ";"` to `jump_stmt`. The parser tries them at
-   the start of `jump_stmt` and makes `syn::Ext(P22, LabeledJump { kind,
-   label })`.
-2. **Check.** It looks up the label in the function's labels
-   (`statements::jumps::labels()`, the table that `goto` uses, NAM-P4).
-   It walks the enclosing statements (`statements::blocks::enclosing()`,
-   the stack that JMP-1 and JMP-2 use) to the statement that carries the
-   label. It reports the design's new rules: a label that names no
-   enclosing loop or `switch`, a `continue` whose label names a
-   `switch`, and a label outside the lambda body that holds the jump
-   (JMP-5, JMP-7). It gives an ordinary `Break { target }` or
-   `Continue { target }`.
-3. **Run.** None. The machine already ends the objects of each block
-   that a jump leaves (JMP-9), and a `continue` goes on as after a
-   normal pass of the body (LOOP-9) for any target.
+   `"continue" identifier ";"` to `jump_stmt` (X24's amended
+   `jump_stmt`, with JMP-17 withdrawn). The parser tries them at the
+   start of `jump_stmt` and makes a `jump_stmt` node with `ext` set to
+   P22.
+2. **Check.** A label marks the statement after it, also through
+   further labels, so the loops and switches carry the labels that mark
+   them (`statements::jumps::check::enclosing()`, the stack that JMP-1
+   and JMP-2 use). The check finds the innermost enclosing loop or
+   `switch` that the label marks. It reports X24:new-1 when no such
+   statement exists in the jump's own function: a label on a block, on a
+   sibling loop, at the end of a block, or in the enclosing function of
+   a lambda body (X24's JMP-14 amendment gives the same-function
+   condition). It reports X24:new-2 when the label of a `continue` marks
+   a `switch`. Otherwise it gives an ordinary `Break(target)` or
+   `Continue(target)`.
 
-| Rule | Change | Where the prototype acts |
+**Run.** X24:new-3 is the run-time rule, and it needs no code: the
+machine passes a `Break` or `Continue` to the statement it names, ends
+the objects of each block that the jump leaves (JMP-9), and goes on with
+a loop as after a normal pass (LOOP-9). This holds for the variables of
+a statement's own scope (a `for` initializer, a condition, a range
+`for`'s hidden variables) only once X24-1 is answered (item F7 of
+decision 0065): today the machine ends them with the block of their
+statement, and no rule fixes their order after a jump.
+
+| Rule (X24 section 2) | Kind of change | Where the prototype acts |
 |---|---|---|
-| JMP-17 | the grammar admits a label after `break` and `continue` | the alternative at `jump_stmt` |
-| JMP-1, JMP-2 | the target is the labeled statement when a label is given | the check's `target` |
-| JMP-9, LOOP-9 | none | the machine, unchanged |
-| `Xn:new-1` to `Xn:new-3` | the label's target must be an enclosing loop or `switch`, a `continue` must target a loop, and the label must be in the same function | the check |
+| `jump_stmt` (Syntax), JMP-17 (withdrawn) | the grammar admits a label after `break` and `continue` | the alternative at `jump_stmt` |
+| X24:new-1 (new, `reject`) | the label marks a loop or `switch` that encloses the jump in its own function | the check |
+| X24:new-2 (new, `reject`) | the label of a `continue` marks a loop | the check |
+| JMP-14 (amended) | a labeled jump names a label of its own function; a lambda body is a separate function | the check, through X24:new-1 |
+| X24:new-3 (new, `required`), JMP-1, JMP-2 (amended) | `break L` ends the statement `L` marks; `continue L` ends the pass of its loop | the check's target; the machine unchanged |
+| JMP-9, LOOP-9, LOOP-1, LOOP-2, SW-1, CE-17 (unchanged, state effect) | none | the machine and constant evaluation, unchanged |
+| OBJ-3, LOOP-3 (amended), RFOR-4 | the end of a statement's own variables after any jump | waits for X24-1 |
+| DEP-30 (unchanged, state effect) | X24:new-1 and X24:new-2 checked at a template's definition | the definition-check point, step 5 |
 
-`Xn` stands for the exercise that takes P22. The files that change are
-`src/proposals/p22.rs` and one line of `src/proposals/mod.rs`.
-`statements::jumps` does not change, because its `Break` and `Continue`
-already name their target (section 2).
+The files that change are `src/proposals/p22.rs` and one line of
+`src/proposals/mod.rs`. `statements::jumps` does not change, because
+its `Break` and `Continue` already name their target (section 2).
 
 The impact count comes from the harness. `tidal-next conform ../tests`
 runs with and without `--proposal P22`, and the tests whose status
-differs are the "Tests affected" column of the change table. For P22,
-the two tests that JMP-17 cites (`statements/jumps/break-with-label.cpp`
-and `continue-with-label.cpp`) are the ones the portfolio expects to
-change. The same diff over `tests/programs/` gives the counts of
-sections 4.3 and 4.4 of a Propose report.
+differs are the "Tests affected" column of the change table. At the end
+of item RW2 the base, the tests that `tidal-next` passes without the
+flag, is 1819 of 7148 tests and 1 of the 178 program tests. Exactly the
+two tests that JMP-17 cites change, `statements/jumps/break-with-label.cpp`
+and `continue-with-label.cpp`, from a pass to an accept that their
+`reject` expectation counts as a missed reject, and `f()` gives 5 and 6
+in them as X24 says. No program changes in the base. Until step 8 the
+base is smaller than the suite, so the count is a lower bound.
 
-The prototype follows a Propose design's change table, so that the
-diff tests a reader's design: decision 0064's item E gives P22 its
-design (X24) before the prototype is written. The impact diff prints
-its base, which is the tests that `tidal-next` passes without the
-flag, the tests whose status changes by direction, and the programs
-that become invalid or change their result. Until step 8 the base is
-smaller than the suite, so the count is a lower bound. Prototype tests
-with IDs such as `X24:new-1` live beside their Propose report, since
-`tests/` cites only Tidal's rule IDs, and the harness takes that
-directory under the flag.
+X24 section 2 names 17 new tests and 2 changed ones for the prototype.
+No directory beside the Propose report holds them yet
+(`reports/clean-room/X24/tests/`, with `X24:new-n` IDs, which the harness
+would take under the flag). The prototype's unit tests hold X24's
+examples meanwhile: `find` of section 1.1 as a constant, `sum_rows` as a
+run, the chain of section 1.3, and the rejected forms of X24:new-1 and
+X24:new-2.
 
 A prototype of X22's checked marker uses the fifth point. It adds one
 check to the definition checks, as the designer view of roadmap round
@@ -633,6 +705,15 @@ A front-end round that works on the rewrite keeps the form of report
   current instantiation, and it reads a template-id whose arguments are
   value-dependent only through `sizeof` as dependent (model section 1).
   The parse count lists the tests these touch.
+- Analysis runs after the whole unit is parsed with the step 2 oracle
+  (section 2). The alternation of parser and analysis, and analysis as
+  the oracle, come with the class and template pages.
+- A page's `check.rs` part names, as the rule of a failed conversion or
+  initialization, the rule of the context, which can be another page's
+  (such as INIT-7 or LIST-2 in a return statement). At the end of item
+  RW2, 64 rule IDs in the `check.rs` and `run.rs` parts belong to
+  another page by the prefixes of section 3. Passing the rule from the
+  caller, as `copy_init` takes its rule, would bring the count to none.
 - The parser keeps member function bodies as token ranges until the
   outermost class is complete (NAM-6). Default arguments and default
   member initializers are parsed in place.

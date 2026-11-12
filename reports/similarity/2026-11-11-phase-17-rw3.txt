@@ -1,0 +1,51 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   rw3sim/DESIGN-rewrite.md:Design of the rewrite longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:1. Where the rewrite lives longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:2. Stages and their data longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:What analysis reads longest=0   overlap=0.02
+ok   rw3sim/DESIGN-rewrite.md:The data longest=0   overlap=0.01
+ok   rw3sim/DESIGN-rewrite.md:How each stage differs from the old fron longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:The parts of a page module longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:The core longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:The page table longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:Cycles between pages longest=0   overlap=0.01
+ok   rw3sim/DESIGN-rewrite.md:4. Where the template model lives longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:5. The tests the rewrite takes over firs longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:What `tools/frontend_check.py` measures longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:The order of the build longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:6. Unit tests longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:7. The prototype hook for Propose longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:The extension points longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:A worked example: P22, labeled `break` a longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:8. What carries over from `frontend/src` longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:9. What a round of the rewrite reports longest=0   overlap=0.00
+ok   rw3sim/DESIGN-rewrite.md:10. Open points longest=0   overlap=0.00
+ok   rw3sim/README.md:tidal-fe        longest=0   overlap=0.00
+ok   rw3sim/README.md:Build           longest=0   overlap=0.00
+ok   rw3sim/README.md:Check one file  longest=0   overlap=0.01
+ok   rw3sim/README.md:Run one program longest=0   overlap=0.01
+ok   rw3sim/README.md:C library functions longest=0   overlap=0.00
+ok   rw3sim/README.md:Choices of the run that follow the matri longest=0   overlap=0.03
+ok   rw3sim/README.md:Run the conformance tests longest=0   overlap=0.00
+ok   rw3sim/README.md:Layout          longest=0   overlap=0.01
+ok   rw3sim/README.md:The rewrite     longest=0   overlap=0.00
+ok   rw3sim/README.md:The conditional operator longest=0   overlap=0.00
+ok   rw3sim/README.md:Templates       longest=0   overlap=0.03
+ok   rw3sim/README.md:Bytes           longest=0   overlap=0.01
+ok   rw3sim/README.md:Allocated storage in constant evaluation longest=0   overlap=0.03
+ok   rw3sim/README.md:Exception specifications longest=0   overlap=0.02
+ok   rw3sim/report-rw3.md:Front end, rewrite: build step 3 in part longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:Method      longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:Counts      longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:Item R11, records longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:Item RW2, build step 3 longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:What step 3 does not do yet longest=0   overlap=0.01
+ok   rw3sim/report-rw3.md:3. Takeover longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:4. The P22 prototype longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:5. Faults with no test longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:6. Findings longest=0   overlap=0.01
+ok   rw3sim/report-rw3.md:7. Ledger rows longest=0   overlap=0.00
+ok   rw3sim/report-rw3.md:8. Tests added during the round longest=0   overlap=0.00
+
+0 flagged

@@ -46,9 +46,10 @@ pub fn namespace_def(p: &mut Parser) -> PResult<Node> {
             if p.at_eof() {
                 return Err(p.fail("'}'"));
             }
-            let mut d = declaration(p)?;
-            p.fill(&mut d);
-            kids.push(Kid::Node(d));
+            if let Some(mut d) = p.item(declaration)? {
+                p.fill(&mut d);
+                kids.push(Kid::Node(d));
+            }
         }
         kids.push(p.bump());
         Ok(())
@@ -122,10 +123,15 @@ pub fn using_decl(p: &mut Parser) -> PResult<Node> {
     Ok(n)
 }
 
-/// `using_directive: "using" "namespace" [nested_name] identifier ";"`.
+/// `using_directive: {attribute_spec} "using" "namespace" [nested_name] identifier ";"`.
 pub fn using_directive(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
-    let mut kids = vec![p.expect("using")?, p.expect("namespace")?];
+    let mut kids = Vec::new();
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
+    }
+    kids.push(p.expect("using")?);
+    kids.push(p.expect("namespace")?);
     namespace_name(p, &mut kids)?;
     kids.push(p.expect(";")?);
     let n = p.node("using_directive", sp, kids);

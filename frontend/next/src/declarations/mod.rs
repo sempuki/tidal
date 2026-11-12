@@ -17,6 +17,10 @@ pub mod storage_linkage;
 pub mod structured_bindings;
 pub mod syntax;
 pub mod type_names;
+pub mod check;
+pub mod constexpr;
+pub mod volatile;
+pub mod inline;
 
 pub use syntax::*;
 
