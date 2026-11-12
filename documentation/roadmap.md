@@ -312,18 +312,22 @@ fail their check, 36 of them marked.
 ## Phase 17: write the grammar gaps, start the rewrite's analysis, and answer the open rows
 
 Decision 0065 (provisional) adopts this phase from the fourteenth round
-of clean-room roadmaps (`reports/clean-room/roadmap-14/`).
+of clean-room roadmaps (`reports/clean-room/roadmap-14/`). Every item is
+done, except that build step 3 is done in part. Open questions went from
+200 to 202: the phase opened 3 (Q-0450 to Q-0452) and settled 1
+(Q-0450). The new front end owns 1327 tests, and the old front end ends
+round 28 with 64 tests that fail their check, 38 of them marked.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| T6 | Tests for the round 14 reductions and probes, and the round 14 programs and clean tries as program tests | none |
-| GR | The grammar gaps G166 to G179 and four more forms into the Syntax segments, then their parser functions | none |
-| F7 | Answer the 15 `open` rows and Q-0449's three forms, with a question for X24-3's split | none |
-| RW2 | The rewrite, build step 3, with the first takeover and the P22 prototype at its end | GR for the parse count; R11's section 7 for the prototype |
-| FE | Front-end round 28 on the current code: the T6 and F7 tests, and the machine and constant-evaluation groups before step 3 copies them | T6; F7 for its tests |
-| RV10 | A gap review of GR's and F7's text; repairs and a recorded read of their diff | GR and F7 |
-| R11 | Records: DESIGN-rewrite.md section 7 to X24; a failing check for takeover-list problems; every gap in the parse count; stale ledger Records | none |
-| E | Propose X26 on P26; the portfolio step with P30 | none |
+| T6 | Done: tests for the round 14 reductions and probes, and the round 14 programs and clean tries as program tests | none |
+| GR | Done: the grammar gaps G166 to G179 and four more forms into the Syntax segments, then their parser functions | none |
+| F7 | Done: answer the 15 `open` rows and Q-0449's three forms, with a question for X24-3's split | none |
+| RW2 | Done in part: the rewrite, build step 3 (the core, the machine, the harness, and most step 3 pages; 1602 of 1897 plain tests), with the first takeover and the P22 prototype at its end | GR for the parse count; R11's section 7 for the prototype |
+| FE | Done: front-end round 28 on the current code: the T6 and F7 tests, and the machine and constant-evaluation groups before step 3 copies them | T6; F7 for its tests |
+| RV10 | Done: a gap review of GR's and F7's text; repairs and a recorded read of their diff | GR and F7 |
+| R11 | Done: records: DESIGN-rewrite.md section 7 to X24; a failing check for takeover-list problems; every gap in the parse count; stale ledger Records | none |
+| E | Done: propose X26 on P26; the portfolio step with P30 | none |
 
 ## Parallel lanes
 
