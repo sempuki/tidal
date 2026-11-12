@@ -41,6 +41,10 @@ pub struct TParam {
     /// The declared type of a constant parameter whose placeholder has
     /// declarator operators, as in `auto*` (DED-12).
     pub pattern: Option<QTy>,
+    /// A constant parameter whose type is the name of a class template
+    /// alone (TPL-11): the template whose arguments the argument
+    /// deduces (CTAD-1).
+    pub ctad: Option<usize>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -874,7 +878,19 @@ impl P {
                 if e.ty.is_unknown() {
                     return Err(false);
                 }
-                let t = if p.dauto { self.decltype_of(&e, e.paren) } else { auto_param_type(&e) };
+                let t = if let Some(tid) = p.ctad {
+                    // CTAD-1: the type is the one that a variable of the
+                    // class template's name, copy-initialized from the
+                    // argument, gets.
+                    match self.ctad(tid, Some(&e), &crate::decl2::InitForm::Copy, line) {
+                        Some(q) if !q.is_unknown() => {
+                            self.require_ty(&q, line);
+                            q
+                        }
+                        Some(_) => return Err(true),
+                        None => return Err(false),
+                    }
+                } else if p.dauto { self.decltype_of(&e, e.paren) } else { auto_param_type(&e) };
                 if !self.structural(&t) {
                     self.error(line, "TPL-7", "the type that the placeholder gets is not a structural type");
                     return Err(true);
@@ -3910,6 +3926,9 @@ impl P {
             }
             if crate::expr::is_assign_op(op) {
                 return p.build_assign(op, l, r, line);
+            }
+            if op == ".*" || op == "->*" {
+                return p.build_member_ptr(op, l, r, line);
             }
             match BOp::from_str(op) {
                 Some(b) => p.build_binary(b, l, r, line),

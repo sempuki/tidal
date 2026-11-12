@@ -470,6 +470,15 @@ failure of an alias template is remembered, and a muted use of the same
 specialization fails again, so a requires expression whose parameter
 type is not valid is false (CPT-28).
 
+A capture default captures each variable that an id-expression in the
+lambda's body names in an evaluated operand. The parser records these
+names as it resolves them, because the tree of a generic lambda's body
+keeps a dependent call as an unknown expression (LAM-5). A constant
+template parameter whose type is a class template name alone is a
+placeholder: the argument deduces the class template's arguments as for
+a variable copy-initialized from it (TPL-11, CTAD-1). A literal
+operator template with such a parameter takes a string literal.
+
 ## Bytes
 
 The value of each object stays the interpreter's record. The bytes of an

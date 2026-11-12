@@ -1541,7 +1541,7 @@ impl P {
         let ab = self.abbrev.as_ref().unwrap();
         let depth = ab.depth;
         let idx = ab.base + ab.params.len();
-        let param = TParam { name: name.clone(), kind: TPK::Type, pack, default: None, line, dauto: false, pattern: None };
+        let param = TParam { name: name.clone(), kind: TPK::Type, pack, default: None, line, dauto: false, pattern: None, ctad: None };
         self.abbrev.as_mut().unwrap().params.push(param.clone());
         if let Some(pt) = self.pending_template.as_mut() {
             pt.tparams.push(param.clone());

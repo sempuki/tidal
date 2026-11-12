@@ -663,8 +663,22 @@ impl P {
             let mut fns = Vec::new();
             self.conv_fns(ac, 0, &mut fns);
             for fid in fns {
+                let fid = if self.is_func_templ(fid) {
+                    // DED-31: a conversion function template gives the
+                    // specialization for the class.
+                    match self.conv_spec(fid, &QTy::new(Ty::Class(pc)), None) {
+                        crate::templ::SpecRes::Ok(s) => s,
+                        crate::templ::SpecRes::Fail => continue,
+                        crate::templ::SpecRes::Unknown => return Err(()),
+                    }
+                } else {
+                    fid
+                };
                 let f = self.func(fid).unwrap().clone();
-                if f.explicit {
+                // OVL-40, ICS-45: a direct-initialization also takes an
+                // explicit conversion function, whose result the copy or
+                // move constructor's parameter binds.
+                if f.explicit && !self.direct_conv {
                     continue;
                 }
                 let rt = nonref(&f.fty.ret);

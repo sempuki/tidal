@@ -584,6 +584,13 @@ pub struct P {
     /// The generic lambdas, by the call operator of their closure type
     /// (LAM-15), and the specializations made for calls.
     pub generic_lambdas: HashMap<DeclId, Rc<GenLambda>>,
+    /// LAM-5: the variables that id-expressions inside a lambda name in
+    /// evaluated operands, in order, and the start of the current
+    /// lambda's part. A generic lambda's body keeps a dependent call as
+    /// an unknown expression, so its tree does not show each variable
+    /// that a capture default captures.
+    pub lambda_var_uses: Vec<DeclId>,
+    pub lambda_uses_mark: usize,
     pub generic_insts: Vec<(DeclId, Vec<crate::types::TArg>, Option<DeclId>, bool, bool)>,
     /// The types of the placeholder parameters of the generic lambda that
     /// is parsed again for a call.
@@ -610,6 +617,9 @@ pub struct P {
     pub generic_body_errs: HashMap<DeclId, Vec<crate::diag::Diag>>,
     /// LSUP-2: why a defaulted `<=>` lacks its ordering class.
     pub dcmp_lsup: Option<String>,
+    /// LSUP-13: a part of a defaulted `<=>` whose ordering class does not
+    /// convert to the return type.
+    pub dcmp_lsup13: Option<String>,
     /// The parameters or the result type of the generic lambda parsed
     /// again had an error: substitution failed (DED-29).
     pub lambda_inst_failed: bool,
@@ -997,6 +1007,8 @@ impl P {
             ctor_uses: HashMap::new(),
             anon_parent: HashMap::new(),
             generic_lambdas: HashMap::new(),
+            lambda_var_uses: Vec::new(),
+            lambda_uses_mark: 0,
             generic_insts: Vec::new(),
             lambda_inst: None,
             member_op_name: false,
@@ -1009,6 +1021,7 @@ impl P {
             fn_ref_kind: None,
             generic_body_errs: Default::default(),
             dcmp_lsup: None,
+            dcmp_lsup13: None,
             lambda_inst_failed: false,
             generic_conv: std::collections::HashSet::new(),
             var_align: HashMap::new(),

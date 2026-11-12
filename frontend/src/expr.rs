@@ -1924,7 +1924,31 @@ impl P {
 
     pub fn parse_declarator_name_pub(&mut self, d: &mut crate::decl::Declarator) -> PR<()> {
         // reuse the declarator-name parser for `operator...`
-        let r = self.parse_declarator(false, false)?;
+        let start = self.pos;
+        let mut r = self.parse_declarator(false, false)?;
+        // CVF-1: in an expression, the parentheses after a
+        // conversion-function-id are the call, and not part of the name.
+        if r.kind == crate::decl::NameKind::Conversion && matches!(r.ops.last(), Some(crate::decl::DOp::Func(_))) && self.pos > start + 1 && self.toks[self.pos - 1].text == ")" {
+            let mut depth = 0;
+            let mut k = self.pos - 1;
+            while k > start {
+                match self.toks[k].text.as_str() {
+                    ")" => depth += 1,
+                    "(" => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+                k -= 1;
+            }
+            if depth == 0 && self.toks[k].text == "(" {
+                self.pos = k;
+                r.ops.pop();
+            }
+        }
         *d = r;
         Ok(())
     }
@@ -2970,6 +2994,7 @@ impl P {
         let lstack = self.stack.clone();
         let lfns = self.fns.clone();
         let sig_mark = (self.d.list.len(), self.d.muted_errors);
+        let uses_mark = self.lambda_var_uses.len();
         self.expect("[")?;
         // captures (specification/expressions/lambdas.md grammar)
         let in_fn = !self.fns.is_empty();
@@ -3305,6 +3330,7 @@ impl P {
                 let ptys = fd.ptys.clone();
                 let noexcept = !lambda_noexcept_expr && lambda_noexcept;
                 self.lambda_clause = lambda_clause.clone();
+                self.lambda_uses_mark = uses_mark;
                 if let Some(x) = self.build_closure(line, mark, cap_default, &cap_items, fdecl.clone(), QTy::new(Ty::Void), body.clone(), is_mutable, is_static, is_consteval, refs, in_fn, noexcept) {
                     if let EK::Closure(c, _, _) = &x.k {
                         let c = *c;
@@ -3356,6 +3382,7 @@ impl P {
             if let Some(rt) = rt.filter(|t| !t.t.contains_unknown()) {
                 let noexcept = if lambda_noexcept_expr { None } else { Some(lambda_noexcept) };
                 self.lambda_clause = lambda_clause.clone();
+                self.lambda_uses_mark = uses_mark;
                 if let Some(x) = noexcept.and_then(|ne| self.build_closure(line, mark, cap_default, &cap_items, fdecl, rt, body, is_mutable, is_static, is_consteval, refs, in_fn, ne)) {
                     return Ok(x);
                 }
@@ -3373,6 +3400,17 @@ impl P {
         let mut used: Vec<DeclId> = Vec::new();
         let mut this_ty: Option<QTy> = None;
         self.stmt_uses(&body, &mut used, &mut this_ty);
+        // LAM-5: a variable named in a part of the body that the tree
+        // keeps as an unknown expression, such as a dependent call in a
+        // generic lambda.
+        if cap_default.is_some() {
+            let start = self.lambda_uses_mark.min(self.lambda_var_uses.len());
+            for &id in &self.lambda_var_uses[start..] {
+                if !used.contains(&id) {
+                    used.push(id);
+                }
+            }
+        }
         let capturable = |p: &P, id: DeclId| -> bool {
             id < mark && p.var(id).is_some_and(|v| (v.local || v.param) && v.storage == Storage::Auto && v.class.is_none())
         };
@@ -3448,7 +3486,9 @@ impl P {
         }
         if this_member.is_none() {
             if let Some(t) = &this_ty {
-                if cap_default.is_none() || !in_fn {
+                // LAM-6, PRIM-11: a lambda in a default member initializer
+                // captures the `this` of that initializer.
+                if cap_default.is_none() || !(in_fn || self.dmi_depth > 0) {
                     return None;
                 }
                 this_member = Some((members.len(), false));
@@ -4550,6 +4590,9 @@ impl P {
                     }
                 }
                 let cat = if let Ty::RRef(i) = &v.ty.t { if matches!(i.t, Ty::Func(_)) { Cat::L } else { Cat::L } } else { Cat::L };
+                if self.in_unevaluated == 0 && (v.local || v.param) && self.fns.iter().any(|f| f.is_lambda) {
+                    self.lambda_var_uses.push(id);
+                }
                 Expr::new(EK::Var(id), t, cat, line)
             }
             DK::Enumerator(e, val) => {
@@ -5185,10 +5228,19 @@ impl P {
                     _ => true,
                 };
                 let tc_complete = ci.complete;
+                let mut by_ctor = src_plain;
                 if !src_plain && tc_complete && !self.class_uncertain(tc) && !self.in_template() {
                     // OVL-14: a conversion function that gives the class or
                     // a class derived from it.
-                    if let Ok(Some(crate::ics::Ics { kind: crate::ics::IK::User, user: Some(crate::ics::UKey::Fn(fid)), .. })) = self.ics_user_to_class(&e, tc) {
+                    let dc = direct || self.direct_conv;
+                    let saved = std::mem::replace(&mut self.direct_conv, dc);
+                    let picked = self.ics_user_to_class(&e, tc);
+                    self.direct_conv = saved;
+                    if let Ok(Some(crate::ics::Ics { kind: crate::ics::IK::User, user: Some(crate::ics::UKey::Fn(fid)), .. })) = picked {
+                        // CTOR-10, ICS-9: a converting constructor won over
+                        // the source's conversion functions, such as a
+                        // closure's conversion to a pointer to function.
+                        by_ctor = self.func(fid).is_some_and(|f| f.kind == FnKind::Ctor);
                         if let Some(f) = self.func(fid).cloned().filter(|f| f.kind == FnKind::Conversion && !f.deleted) {
                             if self.in_unevaluated == 0 {
                                 self.use_fn(fid);
@@ -5207,7 +5259,7 @@ impl P {
                         }
                     }
                 }
-                if !direct && tc_complete && !self.class_uncertain(tc) && !self.in_template() && src_plain {
+                if !direct && tc_complete && !self.class_uncertain(tc) && !self.in_template() && by_ctor {
                     let x = self.ctor_call(tc, std::slice::from_ref(&e), to, line);
                     if let EK::Construct(cid, _) = &x.k {
                         if self.func(*cid).is_some_and(|f| f.explicit) {
@@ -7507,7 +7559,7 @@ impl P {
         Expr::unknown(line, "bad conditional")
     }
 
-    fn build_member_ptr(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
+    pub fn build_member_ptr(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
         // OPR-1: `->*` with a class operand calls an operator function.
         if op == "->*" && (matches!(nonref(&l.ty).t, Ty::Class(_)) || matches!(nonref(&r.ty).t, Ty::Class(_))) {
             match self.op_resolve("->*", &[l.clone(), r.clone()], false, line) {

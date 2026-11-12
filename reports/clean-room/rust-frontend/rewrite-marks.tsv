@@ -24,6 +24,8 @@ templates/instantiation/class-point-not-later.cpp	3	The same, for a static membe
 templates/instantiation/class-point-static-const-member.cpp	3	The same, and the initializer is made with the class (INST-33, INST-5).
 templates/instantiation/class-point-static-constexpr-made-at-use.cpp	3	A static constexpr member's initializer is made with the class and not at its first use (INST-33, INST-5, INST-8).
 templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	3	The same (INST-5).
+templates/instantiation/class-static-constexpr-member-calls-own-member.cpp	3	The same: the initializer of max, a call of the static member function compute, is made with Limits<short> while the body of compute waits for the end of the class (INST-5).
+programs/roadmap/r14-fsm-second-try.cpp	3	The same, in a program: the initializer of table calls make_table, whose body is not made yet (INST-5).
 templates/instantiation/static-inline-member-incomplete-argument.cpp	3	An inline static member's initializer is made with the class, so its type is completed while the class argument is incomplete (INST-5, Q-0231).
 templates/instantiation/class-point-after-enclosing-class-not-later.cpp	3	Lookup in Holder<Coin>, made at the end of Coin, sees extra, declared after the point of instantiation (INST-30, INST-33).
 templates/instantiation/local-class-default-argument.cpp	3	The members of a local class in a specialization are made with the function and not at their use (INST-12, INST-6).

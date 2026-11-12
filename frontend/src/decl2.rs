@@ -863,7 +863,7 @@ impl P {
                         self.error(pl, "TPL-34", "a template parameter pack has a default argument");
                     }
                 }
-                params.push(TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None });
+                params.push(TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None, ctad: None });
             } else if self.at("template") {
                 self.pos += 1;
                 let inner_scope = self.push_scope(SK::Template);
@@ -907,7 +907,7 @@ impl P {
                 if let Some(n) = inner_cons {
                     self.ttp_cons.insert(std::rc::Rc::as_ptr(&inner) as usize, n);
                 }
-                params.push(TParam { name, kind: TPK::Templ(inner), pack, default, line: pl, dauto: false, pattern: None });
+                params.push(TParam { name, kind: TPK::Templ(inner), pack, default, line: pl, dauto: false, pattern: None, ctad: None });
             } else if let Some((ctid, nlen)) = self.concept_at() {
                 // A type constraint (CPT-17 to CPT-21).
                 self.tparam_constrained = true;
@@ -945,7 +945,7 @@ impl P {
                     if d.pack {
                         self.pack_decls.insert(id);
                     }
-                    TParam { name, kind: TPK::Auto, pack: d.pack, default, line: pl, dauto, pattern: None }
+                    TParam { name, kind: TPK::Auto, pack: d.pack, default, line: pl, dauto, pattern: None, ctad: None }
                 } else {
                     let pack = self.eat("...");
                     let name = if self.is_ident() { self.ident()? } else { String::new() };
@@ -968,7 +968,7 @@ impl P {
                             self.error(pl, "TPL-34", "a template parameter pack has a default argument");
                         }
                     }
-                    TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None }
+                    TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None, ctad: None }
                 };
                 params.push(param.clone());
                 {
@@ -1035,8 +1035,12 @@ impl P {
                 // DED-12: a placeholder with declarator operators, as in `auto*`,
                 // is a pattern for the type of the argument.
                 let pattern = if auto && !d.ops.is_empty() && ds.auto == Some(false) { Some(ty.clone()) } else { None };
-                let kind = if auto || ty.is_unknown() && ds.auto.is_some() { TPK::Auto } else { TPK::Const(ty) };
-                params.push(TParam { name, kind, pack: d.pack, default, line: pl, dauto: ds.auto == Some(true), pattern });
+                // TPL-11, CTAD-1: a class template name alone is a
+                // placeholder, whose argument deduces the class
+                // template's arguments.
+                let ctad = ds.ctad.filter(|_| d.ops.is_empty() && !auto);
+                let kind = if auto || ctad.is_some() || ty.is_unknown() && ds.auto.is_some() { TPK::Auto } else { TPK::Const(ty) };
+                params.push(TParam { name, kind, pack: d.pack, default, line: pl, dauto: ds.auto == Some(true), pattern, ctad });
             }
             if self.eat(",") {
                 continue;
@@ -4037,7 +4041,9 @@ impl P {
     pub fn literal_class_template_form(&self, tparams: &[crate::templ::TParam], id: DeclId) -> bool {
         let head = matches!(tparams, [p] if !p.pack && match &p.kind {
             crate::templ::TPK::Const(q) => matches!(q.unqual().t, Ty::Class(_) | Ty::Unknown),
-            crate::templ::TPK::Auto => false,
+            // TPL-11: a class template name alone, whose arguments the
+            // string literal deduces.
+            crate::templ::TPK::Auto => p.ctad.is_some(),
             _ => false,
         });
         head && self.func(id).is_some_and(|f| f.params.is_empty())
@@ -6028,7 +6034,12 @@ impl P {
     fn skip_ctor_init(&mut self) {
         if self.eat(":") {
             loop {
-                // mem-initializer-id
+                // mem-initializer-id: a `decltype_spec` names a base
+                // (DTY-3).
+                if self.at("decltype") && self.at_k(1, "(") {
+                    self.pos += 1;
+                    self.skip_balanced();
+                }
                 while self.is_ident() || self.at("::") || self.at("template") {
                     self.pos += 1;
                     if self.at("<") {
@@ -6557,6 +6568,28 @@ impl P {
             // PACK-14: `Bs(args)...` initializes each base of the pack.
             let (items, expanded) = self.parse_expansion(|p| {
                 // mem-initializer-id
+                if p.at("decltype") && p.at_k(1, "(") {
+                    // DTY-3: a `decltype_spec` that gives a class names
+                    // that class, a base or the class itself.
+                    p.pos += 1;
+                    let q = p.parse_decltype()?;
+                    let target = match q.t {
+                        Ty::Class(b) => {
+                            let bname = p.classes[b].name.clone();
+                            p.lookup_in_scope(p.classes[b].scope, &bname, false)
+                        }
+                        _ => None,
+                    };
+                    let mut args = Vec::new();
+                    let braced = p.at("{");
+                    if braced {
+                        args.push(p.parse_braced_init()?);
+                    } else {
+                        p.expect("(")?;
+                        args = p.parse_call_args()?;
+                    }
+                    return Ok(("decltype".to_string(), target, args, braced));
+                }
                 let start = p.pos;
                 let scope = p.parse_nested_name()?;
                 let name = p.ident()?;
@@ -7228,6 +7261,40 @@ fn falls_off(p: &P, s: &Stmt) -> bool {
             _ => false,
         }
     }
+    // The labels and the targets of the goto statements in a statement.
+    fn jumps(s: &Stmt, gotos: &mut Vec<String>, labels: &mut Vec<String>) {
+        match s {
+            Stmt::Goto(n) => gotos.push(n.clone()),
+            Stmt::Label(n, x) => {
+                labels.push(n.clone());
+                jumps(x, gotos, labels);
+            }
+            Stmt::Block(v) => v.iter().for_each(|x| jumps(x, gotos, labels)),
+            Stmt::If { init, then, els, .. } => {
+                if let Some(i) = init {
+                    jumps(i, gotos, labels);
+                }
+                jumps(then, gotos, labels);
+                if let Some(e) = els {
+                    jumps(e, gotos, labels);
+                }
+            }
+            Stmt::While { body, .. } | Stmt::Do { body, .. } | Stmt::For { body, .. } | Stmt::Switch { body, .. } => jumps(body, gotos, labels),
+            Stmt::Case(_, x) | Stmt::Default(x) => jumps(x, gotos, labels),
+            Stmt::Try(b, hs) => {
+                jumps(b, gotos, labels);
+                hs.iter().for_each(|h| jumps(&h.body, gotos, labels));
+            }
+            _ => {}
+        }
+    }
+    // FN-7: a goto in a loop body to a label outside the body leaves the
+    // loop.
+    let goto_out = |body: &Stmt| {
+        let (mut g, mut l) = (Vec::new(), Vec::new());
+        jumps(body, &mut g, &mut l);
+        g.iter().any(|n| !l.contains(n))
+    };
     let always = |c: Option<&CondK>| match c {
         None => true,
         Some(CondK::Expr(e)) => p.const_int_quiet(e).is_ok_and(|v| v != 0),
@@ -7241,7 +7308,21 @@ fn falls_off(p: &P, s: &Stmt) -> bool {
             EK::Unknown(_) => false,
             _ => true,
         },
-        Stmt::Block(v) => !v.iter().any(has_label) && v.iter().all(|x| falls_off(p, x)),
+        Stmt::Block(v) if v.iter().any(|x| has_label(x) && !matches!(x, Stmt::Label(..))) => false,
+        Stmt::Block(v) => {
+            // FN-7: a label at the top of the block is reached by the
+            // statement before it or by a goto to it.
+            let (mut g, mut l) = (Vec::new(), Vec::new());
+            jumps(s, &mut g, &mut l);
+            let mut reach = true;
+            for x in v {
+                reach = match x {
+                    Stmt::Label(n, inner) => (reach || g.contains(n)) && falls_off(p, inner),
+                    _ => reach && falls_off(p, x),
+                };
+            }
+            reach
+        }
         Stmt::If { then, els, kind, cond, .. } => match kind {
             // FN-7: a constant condition selects one branch.
             IfKind::Normal if !has_label(then) && !els.as_deref().is_some_and(has_label) && matches!(cond, Some(CondK::Expr(e)) if p.const_int_quiet(e).is_ok()) => {
@@ -7255,10 +7336,10 @@ fn falls_off(p: &P, s: &Stmt) -> bool {
             IfKind::Normal => falls_off(p, then) || els.as_deref().is_none_or(|e| falls_off(p, e)),
             _ => falls_off(p, then) && els.as_deref().is_none_or(|e| falls_off(p, e)),
         },
-        Stmt::While { cond, body } => !always(Some(cond)) || breaks(body),
-        Stmt::For { cond, body, .. } => !always(cond.as_ref()) || breaks(body),
+        Stmt::While { cond, body } => !always(Some(cond)) || breaks(body) || goto_out(body),
+        Stmt::For { cond, body, .. } => !always(cond.as_ref()) || breaks(body) || goto_out(body),
         Stmt::Do { body, cond } => {
-            if breaks(body) {
+            if breaks(body) || goto_out(body) {
                 return true;
             }
             let c = CondK::Expr(cond.clone());

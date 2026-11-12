@@ -165,6 +165,21 @@ impl<'a> Machine<'a> {
                                 if !v.constexpr && !self.objs[pl.obj].is_static {
                                     return limit("CE-3", format!("reference '{}' is not usable in constant expressions", name));
                                 }
+                                if v.constexpr && !local && !nonref(&v.ty).c && super::stmt::binds_temporary_p(self.p, &init) {
+                                    // CE-3, CE-14: only a `const` temporary
+                                    // that a constexpr reference extends is
+                                    // usable, so the value of this one is not.
+                                    fn mark(v: Val, why: &str) -> Val {
+                                        match v {
+                                            Val::Agg(xs) => Val::Agg(xs.into_iter().map(|x| mark(x, why)).collect()),
+                                            Val::Inactive => Val::Inactive,
+                                            _ => Val::NotUsable(why.to_string()),
+                                        }
+                                    }
+                                    let why = format!("the temporary that '{}' extends is not const, so it is not usable in constant expressions", name);
+                                    let old = std::mem::replace(&mut self.objs[pl.obj].val, Val::Void);
+                                    self.objs[pl.obj].val = mark(old, &why);
+                                }
                                 self.global_refs.insert((self.tu, id), pl.clone());
                                 return Ok(pl);
                             }
@@ -407,6 +422,7 @@ impl<'a> Machine<'a> {
             },
             EK::DynamicCast(a) => {
                 let p = self.lvalue(a)?;
+                self.early_operand(&p)?;
                 match self.dynamic_target(&p, &e.ty.t)? {
                     Some(q) => Ok(q),
                     // VIRT-10: the failed cast of a reference throws an
@@ -991,6 +1007,7 @@ impl<'a> Machine<'a> {
                 match self.eval(a)? {
                     Val::Null => Ok(Val::Null),
                     Val::Ptr(p) => {
+                        self.early_operand(&p)?;
                         let to = match &e.ty.t {
                             Ty::Ptr(x) => x.t.clone(),
                             _ => return unsup("dynamic_cast target"),
@@ -2331,8 +2348,14 @@ impl<'a> Machine<'a> {
                 // STG-10, UNI-14: an array member of a union that is not
                 // active has no elements, and its pointers still step
                 // over the positions that its type gives.
-                _ => match self.type_at(&base) {
+                v => match self.type_at(&base) {
                     Some(QTy { t: Ty::Array(_, Some(n)), .. }) => n as i128,
+                    // CE-3: the object that a reference names, where the
+                    // reference is not usable in constant expressions.
+                    _ if matches!(v, Val::NotUsable(_)) => {
+                        let Val::NotUsable(m) = v else { unreachable!() };
+                        return limit("CE-3", m.clone());
+                    }
                     _ => return unsup("pointer arithmetic"),
                 },
             };
@@ -4329,6 +4352,12 @@ impl<'a> Machine<'a> {
                         this = Some(p);
                     }
                 }
+                if self.p.pure_fns.contains(&fid) && f.body.is_none() && !self.constant {
+                    // VIRT-12: a virtual call that reaches a pure virtual
+                    // function, as from a constructor or destructor of its
+                    // class.
+                    return ub("VIRT-12", "a virtual call reaches a pure virtual function");
+                }
             }
         }
         // VIRT-1: the default arguments come from the function that the
@@ -4400,6 +4429,29 @@ impl<'a> Machine<'a> {
         };
         let Some(body) = f.body.clone() else {
             if self.constant {
+                if f.defined && !f.template && f.class.is_some_and(|c| {
+                    // CLS-2, CE-16: a member function defined in a class
+                    // that is not a template, and not inside one, gets
+                    // its body at the end of the outermost enclosing
+                    // class. Before that end the class is incomplete,
+                    // and the call names a function that is only
+                    // declared.
+                    let mut k = Some(c);
+                    let mut incomplete = false;
+                    while let Some(x) = k {
+                        if cp.inst_of.contains_key(&x) || cp.classes[x].template {
+                            return false;
+                        }
+                        incomplete |= !cp.classes[x].complete;
+                        k = cp.scopes[cp.classes[x].scope].parent.and_then(|s| match cp.scopes[s].kind {
+                            SK::Class(y) => Some(y),
+                            _ => None,
+                        });
+                    }
+                    incomplete
+                }) {
+                    return limit("CE-16", format!("'{}' is defined in its class, which is not complete at this point (CLS-2)", name));
+                }
                 if f.defined {
                     return unsup(format!("body of '{}' is not available yet", name));
                 }
@@ -4729,6 +4781,27 @@ impl<'a> Machine<'a> {
         Ok(())
     }
 
+    /// CTOR-12: the object under construction, before all its bases are
+    /// initialized, as the operand of a `dynamic_cast`.
+    fn early_operand(&self, p: &Ptr) -> R<()> {
+        let tp = full_path(p);
+        if self.no_calls.iter().any(|(q, r)| *r == "CTOR-12" && q.obj == p.obj && !q.bytes && !p.bytes && full_path(q) == tp) {
+            return ub("CTOR-12", "the object under construction is the operand of a dynamic_cast before its bases are initialized");
+        }
+        Ok(())
+    }
+
+    /// CE-3 (Q-0449): in constant evaluation, the trivial copy of a
+    /// struct with a mutable member, from an object that the evaluation
+    /// did not create, reads that member, which is not usable in constant
+    /// expressions.
+    fn struct_copy_mutable(&self, src: &Ptr, c: usize) -> R<()> {
+        if self.constant && !self.objs[src.obj].own && self.p.classes[c].key != 2 && self.p.has_mutable_part(&Ty::Class(c), 0) {
+            return limit("CE-3", "copy of an object with a mutable member that the evaluation did not create");
+        }
+        Ok(())
+    }
+
     /// The implicit or defaulted copy or move: each base and member in
     /// order (CPY-8).
     pub fn copy_parts(&mut self, place: &Ptr, src: &Ptr, c: usize, mv: bool) -> R<()> {
@@ -4739,6 +4812,7 @@ impl<'a> Machine<'a> {
             if self.constant && has_unset(&v) && self.p.classes[c].key != 2 {
                 return limit("CE-22", "copy of an object that has a scalar part with no value");
             }
+            self.struct_copy_mutable(src, c)?;
             self.union_copy_mutable(src, c, &v)?;
             return self.write(place, v, true);
         }
@@ -4838,6 +4912,7 @@ impl<'a> Machine<'a> {
             if self.constant && has_unset(&v) && self.p.classes[c].key != 2 {
                 return limit("CE-22", "copy of an object that has a scalar part with no value");
             }
+            self.struct_copy_mutable(src, c)?;
             self.union_copy_mutable(src, c, &v)?;
             return self.write(dst, v, false);
         }

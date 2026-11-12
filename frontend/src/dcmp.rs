@@ -131,8 +131,13 @@ impl P {
         let (me, mu, mark) = (self.d.muted_errors, self.d.muted_unsup, self.d.list.len());
         self.d.muted += 1;
         self.dcmp_lsup = None;
+        self.dcmp_lsup13 = None;
         let r = self.cmp_body(&name, c, &f, x, y, line, fid);
         self.d.muted -= 1;
+        if let Some(m) = self.dcmp_lsup13.take() {
+            self.error(line, "LSUP-13", m);
+            return None;
+        }
         if let Some(m) = self.dcmp_lsup.take() {
             // LSUP-2: the ordering class that the defaulted `<=>` uses.
             self.error(line, "LSUP-2", m);
@@ -208,13 +213,21 @@ impl P {
                     let partial = self.std_class("partial_ordering");
                     let mut rank = 0; // 0 strong, 1 weak, 2 partial
                     for e in &cs {
-                        let Ty::Class(k) = nonref(&e.ty).t else { return None };
+                        let k = match nonref(&e.ty).t {
+                            Ty::Class(k) if [strong, weak, partial].contains(&Some(k)) => k,
+                            t if !t.contains_unknown() && !matches!(t, Ty::Class(_)) => {
+                                // DCMP-11: with `auto`, a part whose `<=>`
+                                // gives a type that is not a comparison
+                                // category deletes the defaulted `<=>`.
+                                self.dcmp_deleted.insert(fid, "DCMP-11");
+                                return None;
+                            }
+                            _ => return None,
+                        };
                         if Some(k) == partial {
                             rank = rank.max(2);
                         } else if Some(k) == weak {
                             rank = rank.max(1);
-                        } else if Some(k) != strong {
-                            return None;
                         }
                     }
                     let (k, n) = match rank {
@@ -247,7 +260,24 @@ impl P {
                 for ck in cs.into_iter().rev() {
                     let ne = self.build_binary(BOp::Ne, ck.clone(), int0.clone(), line);
                     let ne = self.contextual_bool(ne, "DCMP-4");
-                    let conv = if nonref(&ck.ty).t == ret.t { ck } else { self.convert_init(ck, &ret, crate::decl2::InitForm::Copy, line) };
+                    let conv = if nonref(&ck.ty).t == ret.t {
+                        ck
+                    } else {
+                        let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+                        let cname = |p: &P, t: &Ty| match t {
+                            Ty::Class(k) => format!("'std::{}'", p.classes[*k].name),
+                            _ => "the part's result".to_string(),
+                        };
+                        let from = cname(self, &nonref(&ck.ty).t);
+                        let x = self.convert_init(ck, &ret, crate::decl2::InitForm::Copy, line);
+                        if self.d.muted_errors != me && self.d.muted_unsup == mu {
+                            // LSUP-13: the program declares no conversion
+                            // from the part's ordering class to the return
+                            // type.
+                            self.dcmp_lsup13 = Some(format!("the defaulted '<=>' converts {} to {}, and no conversion is declared", from, cname(self, &ret.t)));
+                        }
+                        x
+                    };
                     e = Expr::new(EK::Cond(Box::new(ne), Box::new(conv), Box::new(e)), ret.clone(), Cat::PR, line);
                 }
                 Some((e, Some(ret)))

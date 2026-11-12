@@ -1090,6 +1090,19 @@ impl<'a> Machine<'a> {
         }
         self.check_in_bounds(p)?;
         let v = self.get_at(p)?.clone();
+        if self.constant && !self.objs[p.obj].own && !matches!(v, Val::Uninit | Val::Inactive) {
+            // CE-3 (Q-0449): a mutable member of an object that the
+            // evaluation did not create is not usable in constant
+            // expressions, also in a copy of a struct that holds one.
+            if self.mutable_on_path(p) {
+                return limit("CE-3", "read of a mutable member of an object that the evaluation did not create");
+            }
+            if let (Val::Agg(_), Some(Ty::Class(c))) = (&v, self.type_at(p).map(|t| t.t)) {
+                if self.p.classes[c].key != 2 && self.p.has_mutable_part(&Ty::Class(c), 0) {
+                    return limit("CE-3", "copy of an object with a mutable member that the evaluation did not create");
+                }
+            }
+        }
         match v {
             // OBJ-2 is the rule for a read of a scalar with no value.
             Val::Uninit if self.objs[p.obj].heap != Heap::No => ub("OBJ-2, NEW-3", "read of an object from new that has no value"),

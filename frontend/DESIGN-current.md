@@ -1,7 +1,7 @@
 # Design of the current front end
 
 This document describes the front end in `frontend/src/` as it is after
-front-end round 27 (phase 16, item FE) and the `lex` subcommand of
+front-end round 28 (phase 17, item FE) and the `lex` subcommand of
 decision 0064, item RW.
 It names the stages, the data that each stage passes on, and the files
 that hold each page's rules. Decision 0060 asks the rewrite for a
@@ -10,7 +10,7 @@ the rewrite replaces. `README.md` gives the use of the binary, the
 harness, and some procedures (the conditional operator, templates,
 bytes), and this document does not repeat them.
 
-The source is 52954 lines of Rust in 28 files. No file has unit tests.
+The source is 53293 lines of Rust in 28 files. No file has unit tests.
 The conformance harness (`src/conform.rs`, `tidal-fe conform`) is the
 only test.
 
@@ -111,19 +111,19 @@ substitution failed (see "The template record").
 
 | File | Lines | What it holds |
 |---|---|---|
-| `parser.rs` | 2421 | `P` and its records: `Decl`, `DK`, `VarInfo`, `FuncInfo`, `FieldInfo`, `ClassInfo`, `EnumInfo`, `ScopeInfo`, `FnCtx`; scopes; unqualified, qualified, and member lookup |
-| `decl.rs` | 3228 | decl-specifiers (`DeclSpec`), declarators (`Declarator`, `DOp`), type-ids, the current-instantiation test of DEP-15 |
-| `decl2.rs` | 7336 | declarations at namespace, class, and block scope; functions and their definitions; template heads; explicit specializations and instantiations; deferred bodies; `parse_translation_unit` |
+| `parser.rs` | 2434 | `P` and its records: `Decl`, `DK`, `VarInfo`, `FuncInfo`, `FieldInfo`, `ClassInfo`, `EnumInfo`, `ScopeInfo`, `FnCtx`; scopes; unqualified, qualified, and member lookup |
+| `decl.rs` | 3249 | decl-specifiers (`DeclSpec`), declarators (`Declarator`, `DOp`), type-ids, the current-instantiation test of DEP-15 |
+| `decl2.rs` | 7417 | declarations at namespace, class, and block scope; functions and their definitions; template heads; explicit specializations and instantiations; deferred bodies; `parse_translation_unit` |
 | `class.rs` | 1774 | class and enumeration specifiers, base lists, virtual functions |
 | `stmt.rs` | 1919 | statements, jumps, `switch`, range-`for`, statement attributes |
-| `expr.rs` | 8190 | expression parsing by precedence, the built-in operators, member access, lambdas, `new` and `delete`, the conditional operator |
-| `expr2.rs` | 2996 | calls, casts, initialization in each form, list initialization, `auto` deduction |
-| `ics.rs` | 1599 | implicit conversion sequences (`Ics`) and their ranking; `ics_select` for calls |
+| `expr.rs` | 8242 | expression parsing by precedence, the built-in operators, member access, lambdas, `new` and `delete`, the conditional operator |
+| `expr2.rs` | 3017 | calls, casts, initialization in each form, list initialization, `auto` deduction |
+| `ics.rs` | 1613 | implicit conversion sequences (`Ics`) and their ranking; `ics_select` for calls |
 | `ovl.rs` | 1489 | overload resolution for operators, constructors, calls on class objects, and the address of an overload set |
 | `special.rs` | 1097 | implicit special member functions: declared, deleted, trivial |
 | `layout.rs` | 434 | class layout on the matrix targets |
-| `dcmp.rs` | 313 | bodies of defaulted comparisons, made at the first use |
-| `templ.rs` | 4370 | the template record, argument lists, replay, selection of specializations, deduction, partial ordering, packs, lazy bodies |
+| `dcmp.rs` | 343 | bodies of defaulted comparisons, made at the first use |
+| `templ.rs` | 4389 | the template record, argument lists, replay, selection of specializations, deduction, partial ordering, packs, lazy bodies |
 | `cons.rs` | 1704 | concepts and constraints: normal forms, satisfaction, subsumption, requires expressions, abbreviated templates |
 | `ctad.rs` | 1217 | class template argument deduction through guides |
 | `types.rs` | 531 | `Ty`, `QTy`, `FnTy`, the dependent forms `Dep`, `TArg`, `TVal`, `CVal`, sizes and alignments |
@@ -169,8 +169,8 @@ final overrider of a virtual call from the dynamic type.
 
 | File | Lines | What it holds |
 |---|---|---|
-| `interp/mod.rs` | 1502 | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Cleanup`, `Stop`, `Choice`, the catch stack |
-| `interp/expr.rs` | 4892 | expressions: places, values, conversions, operators, calls, initialization, `new`, `delete`, `throw`, `dynamic_cast` |
+| `interp/mod.rs` | 1515 | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Cleanup`, `Stop`, `Choice`, the catch stack |
+| `interp/expr.rs` | 4967 | expressions: places, values, conversions, operators, calls, initialization, `new`, `delete`, `throw`, `dynamic_cast` |
 | `interp/stmt.rs` | 996 | statements, blocks and their cleanups, `goto`, `switch`, try blocks, static locals |
 | `interp/bytes.rs` | 1184 | the byte view of objects, addresses, `reinterpret_cast`, the access check of STG-14 |
 | `interp/run.rs` | 538 | linking, the run of a program, the exploration of choice points |
@@ -504,13 +504,13 @@ lines. Seven files are longer now:
 
 | File | Lines | Pages whose rules it names | Chapters with the most of those pages |
 |---|---|---|---|
-| `expr.rs` | 8190 | 65 | declarations 16, expressions 16, templates 10, classes 9 |
-| `decl2.rs` | 7336 | 52 | declarations 20, templates 10, classes 9, foundations 5 |
-| `interp/expr.rs` | 4892 | 48 | expressions 14, declarations 11, foundations 9, classes 9 |
-| `templ.rs` | 4370 | 22 | templates 10, expressions 4, foundations 3, classes 2 |
-| `decl.rs` | 3228 | 33 | declarations 10, templates 9, classes 6, foundations 4 |
-| `expr2.rs` | 2996 | 37 | declarations 10, classes 10, expressions 6, foundations 5 |
-| `parser.rs` | 2421 | 46 | declarations 14, templates 11, classes 10, foundations 4 |
+| `expr.rs` | 8242 | 65 | declarations 16, expressions 16, templates 10, classes 9 |
+| `decl2.rs` | 7417 | 52 | declarations 20, templates 10, classes 9, foundations 5 |
+| `interp/expr.rs` | 4967 | 48 | expressions 14, declarations 11, foundations 9, classes 9 |
+| `templ.rs` | 4389 | 22 | templates 10, expressions 4, foundations 3, classes 2 |
+| `decl.rs` | 3249 | 33 | declarations 10, templates 9, classes 6, foundations 4 |
+| `expr2.rs` | 3017 | 37 | declarations 10, classes 10, expressions 6, foundations 5 |
+| `parser.rs` | 2434 | 46 | declarations 14, templates 11, classes 10, foundations 4 |
 
 The splits `decl.rs` and `decl2.rs`, and `expr.rs` and `expr2.rs`, are
 by size. A page's rules do not follow the split.

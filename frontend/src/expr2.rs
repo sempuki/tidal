@@ -1460,7 +1460,21 @@ impl P {
                 }
                 let x = &v[k];
                 let whole = matches!(x.k, EK::InitList(_) | EK::Str(_)) || match (&t.t, &nonref(&x.ty).t) {
-                    (Ty::Class(tc), Ty::Class(xc)) => xc == tc || self.is_base_of(*tc, *xc),
+                    (Ty::Class(tc), Ty::Class(xc)) if xc == tc || self.is_base_of(*tc, *xc) => true,
+                    (Ty::Class(_), Ty::Class(xc)) if self.classes[*xc].has_conv || self.scopes[self.classes[*xc].scope].names.keys().any(|n| n.starts_with("operator ")) => {
+                        // LIST-4: braces are not omitted for a value that
+                        // initializes the member directly, such as an
+                        // object whose conversion function gives the
+                        // member's type.
+                        let mark = self.d.list.len();
+                        let r = self.ics_value_pub(x, t);
+                        self.d.list.truncate(mark);
+                        match r {
+                            Ok(Some(s)) => s.kind != crate::ics::IK::Ambig,
+                            Ok(None) => false,
+                            Err(_) => return None,
+                        }
+                    }
                     (Ty::Class(_) | Ty::Array(..), _) => false,
                     _ => true,
                 };
@@ -1484,7 +1498,12 @@ impl P {
                 }
             }
             if k < v.len() {
-                return None;
+                // LIST-12: every base and member has its values, and
+                // values are left. A value counted here for a member by
+                // brace elision takes at most as many values as the
+                // member has scalars, so the list has too many values.
+                self.error(v[k].line, "LIST-12", "too many initializers for the aggregate");
+                return Some(Expr::unknown(line, "bad aggregate init"));
             }
             elided = out;
             &elided
@@ -1507,7 +1526,9 @@ impl P {
                 // applies, and the element copy-initializes the member
                 // (CTOR-10).
                 let not_aggregate = !self.classes[tc].ctors.is_empty() && self.classes[tc].complete && !self.class_uncertain(tc);
-                if !(xt == Ty::Class(tc) || matches!(xt, Ty::Class(d) if self.is_base_of(tc, d)) || not_aggregate) {
+                // LIST-4: a value of another class reaches here only when
+                // its conversion initializes the member whole.
+                if !(xt == Ty::Class(tc) || matches!(xt, Ty::Class(_)) || not_aggregate) {
                     self.d.list.truncate(mark);
                     return None;
                 }

@@ -827,7 +827,17 @@ impl P {
         let itn = std::mem::take(&mut self.implicit_tn) && (self.in_template() || self.stack.iter().any(|&s| self.scopes[s].kind == SK::Template));
         let mut ds = DeclSpec { line: self.line(), ..Default::default() };
         loop {
+            // ATTR-19, ATTR-2: an attribute after a type specifier applies
+            // to the type, and `maybe_unused` does not apply to a type.
+            let typed = ds.ty.is_some() || ds.kw.iter().any(|k| simple_type_kw(k));
+            let attrs0 = self.pending_attrs.len();
             self.skip_attributes();
+            if typed && self.inst_depth == 0 {
+                let bad: Vec<u32> = self.pending_attrs.get(attrs0..).unwrap_or(&[]).iter().filter(|a| a.name == "maybe_unused" && !a.ns).map(|a| a.line).collect();
+                for l in bad {
+                    self.error(l, "ATTR-2", "'maybe_unused' after the type specifiers applies to the type, and it does not apply to a type");
+                }
+            }
             let t = self.tok().clone();
             if t.kind == TK::Punct && t.text == "::" && ds.ty.is_none() && ds.kw.is_empty() && ds.auto.is_none() && !self.is_ctor_start(in_class) && self.qualified_names_type(0) {
                 self.ctad_tid = None;
@@ -1521,7 +1531,8 @@ impl P {
             // variable declared with the name and an initializer deduces
             // the arguments, which the front end does not model.
             let ctad = self.peek(0).kind == TK::Ident && !is_keyword(&self.peek(0).text) && (self.at_k(1, "{") || self.at_k(1, "(") || self.at_k(1, "=") || self.at_k(1, ";") || self.at_k(1, ":") || self.at_k(1, ","));
-            let ctad = ctad || self.at("{") || self.at("(") || self.in_new_type;
+            // TPL-11: the type of a constant template parameter.
+            let ctad = ctad || self.at("{") || self.at("(") || self.in_new_type || self.in_tparam_decl;
             if !ctad && !self.in_tparam_decl && (!self.in_template() || scope.is_some()) && !self.tparam.contains_key(&id) && self.tid_of(id).is_some() {
                 self.error(line, "TARG-10", format!("the template '{}' is used without an argument list", name));
             }
@@ -2676,17 +2687,27 @@ impl P {
                 // complete-class context. When it needs later members, it
                 // is parsed again at the end of the class.
                 let open = self.pos;
-                self.pos += 1;
+                // A trial parse of an operand that names the class makes
+                // what it names, such as a specialization over the class,
+                // while the class is incomplete (INST-30). Such an operand
+                // waits for the end of the class without a trial.
+                let cname = match self.stack.last().map(|&s| &self.scopes[s].kind) {
+                    Some(SK::Class(c)) => self.classes[*c].name.clone(),
+                    _ => String::new(),
+                };
+                self.skip_balanced();
+                let names_class = !cname.is_empty() && (open + 1..self.pos).any(|k| self.toks[k].kind == TK::Ident && self.toks[k].text == cname);
+                self.pos = open + 1;
                 self.stack.push(scope);
                 let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
                 self.d.muted += 1;
-                let e = self.parse_expression();
+                let e = if names_class { Err(self.err("deferred")) } else { self.parse_expression() };
                 let v = match &e {
                     Ok(e) if self.at(")") => self.eval_bool_const(e, 0, "EXS-7"),
                     _ => None,
                 };
                 self.d.muted -= 1;
-                let failed = self.d.muted_errors != me || self.d.muted_unsup != mu || v.is_none();
+                let failed = names_class || self.d.muted_errors != me || self.d.muted_unsup != mu || v.is_none();
                 self.d.muted_errors = me;
                 self.d.muted_unsup = mu;
                 self.stack.pop();
