@@ -60,3 +60,7 @@ The source-reader gap review of the phase 15 text on expressions, overloading, a
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the Q-0020 line on the class template deduction page: agrees as a record. The line states RV8-B-5 correctly. The text keeps the compilers' answer for CTAD-17, and the CTAD-17 Note and `pending.md` row 4 record the review. The read gives no new reading of the question's answer.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the Q-0020 line and the split row of the enumerations page, which record Clang 18's rejection of `using-enum-alias-template.cpp`: no reference content. The read gives no new reading of the question's answer.

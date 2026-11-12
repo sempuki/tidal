@@ -37,3 +37,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads the question at `exception_spec`: reads against (option 2, RV10-2). The exception specification of the reference has only the two `noexcept` forms. The empty `throw()` form was removed in an earlier revision, and the reference lists the removal among its changes. So a program with `throw()` is not valid, and a compiler that accepts it must give a diagnostic. The production derives one form more than the reference. The production and its paragraph follow EXS-5, so the text is consistent with Tidal's own answer. The review gives the reading of the review of 2026-11-03.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the Q-0077 line of the exception specifications page and the dated note of decision 0065, item RV10: agrees as a record. Both state RV10-2 correctly, and the repair diff leaves RV10-2 as it was. The read gives no new reading of the question's answer.

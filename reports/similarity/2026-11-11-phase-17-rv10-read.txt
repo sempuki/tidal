@@ -1,0 +1,20 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:Read of the RV10 repair diff (88d14ea2) longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:Result longest=0   overlap=0.01
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:Hunks longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:Tests longest=0   overlap=0.01
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV10 points longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:Question records longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:Q-0451, the changed provisional answer longest=0   overlap=0.03
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:New questions longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-1 longest=0   overlap=0.02
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-2 longest=0   overlap=0.03
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-3 longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-4 longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-5 longest=0   overlap=0.02
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-6 longest=0   overlap=0.01
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-7 longest=0   overlap=0.00
+ok   rv10rsim/2026-11-11-read-of-rv10-repair-diff.md:RV11-R-8 longest=0   overlap=0.02
+
+0 flagged

@@ -57,3 +57,7 @@ Settled on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap re
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) gives the first reading of the question: supports with no doubt (option 1, RV10-1). The name of a base in a member initializer has one shared form in the reference, and the `decltype` form of an expression is one of its arms. Any arm of that form can be followed by parentheses or by a braced list. So DTY-3's item and `member-initializer-base-braces.cpp` agree, and GCC's rejection of the braced form reads against.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the settling paragraph: agrees as a record. The paragraph states RV10-1 correctly. In the reference, parentheses or a braced list can follow each name form of a member initializer, the `decltype` form included. `mem_init_id` takes `base_type`, which now takes `decltype_expr`, so a member initializer has the same forms as in the reference.

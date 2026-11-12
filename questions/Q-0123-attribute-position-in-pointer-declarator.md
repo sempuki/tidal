@@ -36,6 +36,8 @@ Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap rev
 
 Rule text on 2026-11-11 (decision 0065, item RV10): the new production `new_ptr` gives the pointer parts of the type of a `new` expression, with the attribute after the cv-qualifiers, as `ptr_part` does (RV10-5). The writer's probe gives the same split there: Clang alone accepts `new int* [[]] const(nullptr)` (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). The answer and the **Waits for:** line do not change.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The read of the RV10 repair diff reads `new_ptr` against the answer for the order of the attribute and the cv-qualifiers, as for `ptr_part` (RV11-R-4). The member pointer form and the attribute after `*` agree. With no cv-qualifier, both orders give the same form, so `new-type-pointer-forms.cpp` agrees. Clang's acceptance of `new int* [[]] const(nullptr)` matches the reference's order. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -45,3 +47,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads the question at `conversion_type`: reads against (option 2, RV10-9). The target type of a conversion function takes pointer, reference, and member pointer parts, each with its own attributes, and `ptr_part` now gives the same parts. In the reference, the attribute of a pointer part comes after `*` and before the cv-qualifiers, and `ptr_part` puts it after the cv-qualifiers. So `conversion_type` inherits the known split of this question.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads `new_ptr`, the paragraph after it, the NEW Note, and the Q-0123 note: reads against (option 2, RV11-R-4). In the type of a `new` expression, the reference puts the attribute of a pointer part right after the `*`, or after the `*` of a member pointer, and before the cv-qualifiers. `new_ptr` puts the attribute after the cv-qualifiers, as `ptr_part` does, so the new production carries the known split. The member pointer and the attribute after `*` agree. The reference also derives reference parts in that place, and a semantic rule rejects them, because a `new` expression allocates an object type. So `new_ptr` loses no valid form. The Q-0123 note and the NEW Note state the split correctly, and Clang's acceptance of the attribute before the cv-qualifier is the reference's order.

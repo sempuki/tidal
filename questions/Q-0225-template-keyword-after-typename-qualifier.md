@@ -91,3 +91,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) does not name the question. At `base_type` it says that the reference lets the `template` keyword come before the last template-id of a qualified base name, and that the keyword is not needed there, because the name can only be a type (RV10-1). For the base form, that reading supports option 2, as the review of question cluster 6 did.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the dated note and the gap review's entry of decision 0065, item RV10, and the `template` arm of `base_type`: agrees as a record. A base list is a place where only a type can stand, so a `<` after the last name there opens an argument list with no keyword. For the base form, that reading supports option 2, as the entry says. The reference allows the keyword after any qualifier, dependent or not, and `base_type` now derives the form with the keyword. The read gives no new reading of the question's answer.

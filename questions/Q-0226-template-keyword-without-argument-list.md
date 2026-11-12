@@ -89,3 +89,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) reads `typename_specifier` and the sentence after it against the deduced form (RV10-10). The typename form of the reference ends in an identifier, or in an optional `template` keyword and a template-id. It has no keyword before a plain identifier. The keyword before a qualified name of a class template or alias template with no argument list is allowed and deprecated, but only where a production lets the keyword come before a plain name, such as a template template argument. The review names one doubt: the reference's rule on the keyword names class templates in general and does not exclude the typename form in words.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the Q-0226 line of the dependent-names page, the dated note, and the gap review's entry of decision 0065, item RV10: agrees as a record. The records state RV10-10 correctly, with its doubt on the deprecated keyword in a template template default, and the doubt stays. `typename_specifier` keeps the deduced form, so RV10-10 is not closed. The read gives no new reading of the question's answer.

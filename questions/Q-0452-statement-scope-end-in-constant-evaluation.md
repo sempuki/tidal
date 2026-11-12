@@ -78,3 +78,7 @@ Kept open on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap 
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) gives the first reading of the question: supports with no doubt (option 1, RV10-13). Constant evaluation has the same semantics as a run. A transfer of control destroys the variables that are active at the source and not at the target, in the reverse of their construction, and the variables of a statement's initializer and condition have a scope that holds the body. So a `return` ends the body's objects, then the condition variable, then the initializer variable, during constant evaluation as at run time. A skipped destructor or another order gives a different log and a different result. GCC 16 and EDG 7.0 read against.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the dated note and the gap review's entry of decision 0065, item RV10: agrees as a record. Both state RV10-13 correctly. The read gives no new reading of the question's answer.

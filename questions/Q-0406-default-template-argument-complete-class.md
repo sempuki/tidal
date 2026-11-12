@@ -38,3 +38,7 @@ The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11
 ### Gap review, 2026-11-11 (phase 17 text)
 
 The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-gap-review-phase-17.md`) names the question in its reading of INST-30 (RV10-16). INST-30's item for the operand of a `noexcept` specifier agrees, since the class is complete there in the reference. The reference also counts a default template argument inside the member list among the places where the class is complete. The INST Note says that INST-30 does not name that place, and follows CLS-2 and every compiler. The review reads that choice against the reference, as the earlier reviews did.
+
+### Read of the RV10 repair diff, 2026-11-11
+
+The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the dated note and the gap review's entry of decision 0065, item RV10: agrees as a record. Both state RV10-16 correctly, and the repair diff leaves RV10-16 as it was. The read gives no new reading of the question's answer.
