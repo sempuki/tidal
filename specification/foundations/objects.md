@@ -231,7 +231,7 @@ element of an array.
 
 :::{rule} OBJ-2
 :kind: undefined
-:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp foundations/objects/write-after-pseudo-destructor-element-constant.cpp foundations/objects/write-after-pseudo-destructor-variable-constant.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp foundations/objects/write-after-pseudo-destructor-union-array-element-constant.cpp foundations/objects/write-after-destructor-union-class-member-constant.cpp foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp
+:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp foundations/objects/write-after-pseudo-destructor-element-constant.cpp foundations/objects/write-after-pseudo-destructor-variable-constant.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp foundations/objects/write-after-pseudo-destructor-union-array-element-constant.cpp foundations/objects/write-after-destructor-union-class-member-constant.cpp foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp foundations/objects/write-after-pseudo-destructor-union-struct-member-constant.cpp
 
 If a program reads or writes an object outside its lifetime, or reads
 a scalar object or member that has no value yet, the behavior is
@@ -249,7 +249,8 @@ included:
   ended, the assignment makes that member active and is valid
   ({rule}`UNI-5`). The rule holds for a member that is a scalar or a
   class whose default constructor is trivial. An element of a union's
-  array member does not count.
+  array member does not count, and neither does a member of a union
+  member of class type that stays alive.
 - an implicit copy or move function ({rule}`CPY-8`) of an object with a
   scalar part that has no value, because the function reads each scalar
   part. An unnamed bit-field is padding and no such part ({rule}`BF-12`).
@@ -354,7 +355,7 @@ int v = s.source.next;           // undefined: the object has ended
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 63
-of 72 tests. EDG runs no programs, so its results for the run tests say
+of 73 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences
@@ -376,7 +377,8 @@ only that the programs are valid.
   value. It does not. The write is outside the scalar's lifetime, so
   constant evaluation rejects it, as Clang does. GCC and EDG accept the
   write to an array element, also in an array member of a union, and
-  EDG accepts it for a variable.
+  to a member of a union's struct member, and EDG accepts it for a
+  variable.
 - {question}`Q-0044` (LOOP-3; compiler defect): whether a `for`
   condition variable ends before or after the iteration expression. It
   ends after, as Clang and GCC 16 give at run time. During constant
@@ -402,6 +404,7 @@ only that the programs are valid.
 | `statement-scope-ends-after-return-constant.cpp` | OBJ-3, LOOP-3 | run | run | GCC 16: reject; GCC 14: run | reject | {question}`Q-0044`, {question}`Q-0452` |
 | `write-after-pseudo-destructor-element-constant.cpp` | OBJ-2 | reject | reject | accept | accept | {question}`Q-0447` |
 | `write-after-pseudo-destructor-union-array-element-constant.cpp` | OBJ-2 | reject | reject | accept | accept | {question}`Q-0447` |
+| `write-after-pseudo-destructor-union-struct-member-constant.cpp` | OBJ-2 | reject | reject | accept | accept | {question}`Q-0447` |
 | `write-after-pseudo-destructor-variable-constant.cpp` | OBJ-2 | reject | reject | reject | accept | {question}`Q-0447` |
 
 ### Notes
@@ -414,7 +417,12 @@ only that the programs are valid.
   the plain case, as OBJ-2 does, with a doubt. The C++23 text does not
   say whether a write to an ended element counts as a change to the
   array outside its lifetime. GCC and EDG accept the element form
-  ({question}`Q-0447`).
+  ({question}`Q-0447`). The same doubt holds for an `int` member of a
+  union's struct member that a pseudo-destructor call ended, while the
+  struct member stays active. OBJ-2 gives the plain reading, as Clang
+  does, and GCC and EDG accept the write and the read after it
+  (`write-after-pseudo-destructor-union-struct-member-constant.cpp`,
+  F7-2, RV11-R-5).
 - OBJ-2: under `-fsanitize=address`, Clang and GCC stop a read through
   a pointer to a variable whose block has ended
   (`read-after-block-ends-sanitizer.cpp`), and a read through a pointer

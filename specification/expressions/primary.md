@@ -541,12 +541,13 @@ kind of fold. So `(x - ... - p)` is `(x - p1) - p2`, and
 
 :::{rule} PRIM-28
 :kind: required
-:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-order.cpp
+:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-order.cpp expressions/primary/fold-comma-overloaded-class.cpp
 
 A fold expression is evaluated as the expression that PRIM-27 gives, so
 the rules of its operator give the order of evaluation ({rule}`LOG-5`,
-{rule}`COMMA-1`, {rule}`SEQ-8`). If the pack is empty, the fold has
-these values:
+{rule}`COMMA-1`, {rule}`SEQ-8`). If an operand has class or enumeration
+type, each operator of the fold selects its function as {rule}`OPR-6`
+says. If the pack is empty, the fold has these values:
 
 - `true` for `&&`, and `false` for `||`,
 - a `void` expression for the comma,
@@ -758,6 +759,16 @@ all();                    // true
 total(1, 2, 3);           // ((0 + 1) + 2) + 3
 ```
 
+A comma fold over elements of class type calls an overloaded comma
+operator ({rule}`OPR-6`, {rule}`COMMA-7`):
+
+```cpp
+struct Digit { int value; };
+constexpr Digit operator,(Digit a, Digit b) { return {a.value * 10 + b.value}; }
+template <class... D> constexpr int joined(D... d) { return (..., d).value; }
+static_assert(joined(Digit{4}, Digit{5}, Digit{6}) == 456);  // (4, 5), 6
+```
+
 `==` on two `const char*` compares the addresses ({rule}`CMP-15`). Two
 equal literals can be one object or two (PRIM-9), so the result below is
 `true` or `false`. A comparison of the text compares the characters one
@@ -778,8 +789,8 @@ bool same_text(const char* a, const char* b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 136
-of 150 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 137
+of 151 tests.
 
 ### Divergences
 
@@ -863,7 +874,10 @@ EDG skips the tests that use `-Wall` or `-Werror`.
   `u`, `U`, or `L` prefix, such as `u'€'` and `L'é'`.
 - PRIM-28: every compiler evaluates a comma fold from the first element
   to the last, and stops a fold over `&&` or `||` at the first operand
-  that decides the result.
+  that decides the result. Every compiler calls an overloaded comma in
+  a right fold and in a left fold over elements of class type, in
+  constant evaluation and at run time
+  (`fold-comma-overloaded-class.cpp`, X26-5).
 - PRIM-30 to PRIM-33: GCC and Clang give every ASCII character its
   ASCII value in `char` and `wchar_t` literals, on both targets. A
   string literal with U+00E9 has two `char` code units and one

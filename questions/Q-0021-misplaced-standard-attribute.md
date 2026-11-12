@@ -1,7 +1,7 @@
 # Q-0021: Is a standard attribute applied to the wrong kind of entity rejected or ignored?
 
 **Status:** provisional
-**Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`, `nodiscard-on-type-alias.cpp`, `maybe-unused-on-type.cpp`, `maybe-unused-on-using-directive.cpp`
+**Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`, `nodiscard-on-type-alias.cpp`, `maybe-unused-on-type.cpp`, `maybe-unused-on-using-directive.cpp`, `deprecated-on-using-directive.cpp`, `nodiscard-on-using-directive.cpp`
 **Waits for:** newest families that agree
 
 ## Context
@@ -19,6 +19,8 @@ warning, even under `-pedantic-errors`.
 | `[[no_unique_address]]` on a bit-field | rejects | accepts, "cannot be applied to a bit-field" | rejects |
 | `[[maybe_unused]]` after the type specifiers, where it applies to the type | rejects, "cannot be applied to types" | accepts, "attribute ignored" | rejects |
 | `[[maybe_unused]]` before a using-directive | accepts | accepts | rejects |
+| `[[deprecated]]` before a using-directive | accepts | accepts, "attribute directive ignored" | rejects, "does not apply here" |
+| `[[nodiscard]]` before a using-directive | accepts, "only applies to ... functions" | accepts, "attribute directive ignored" | rejects, "does not apply here" |
 
 The host GCC 16.2 and Clang 22.1 give the same results. No newer
 version of any compiler settles a row.
@@ -57,6 +59,8 @@ Rule text on 2026-11-11 (decision 0065, item F7): ATTR-2 lists `maybe_unused` on
 Kept open on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap review of the phase 17 text supports the rejection of `maybe_unused` on a type (RV10-18). Two newest families still differ from the answer for `nodiscard` on a variable, so the **Waits for:** line does not change.
 
 Rule text on 2026-11-11 (decision 0065, item RV10): the `using_directive` production takes attributes before `using` (RV10-3). ATTR-2 lists `maybe_unused` before a using-directive, where the attribute applies to the directive. The writer's probe found the form (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). EDG rejects it, and Clang and GCC accept it. `maybe-unused-on-using-directive.cpp` expects the rejection, with Clang and GCC as overrides, as for `nodiscard` on a variable. The answer and the **Waits for:** line do not change.
+
+Rule text on 2026-11-11 (decision 0066, item F8): ATTR-2's item names `deprecated` and `nodiscard` beside `maybe_unused` before a using-directive, and ATTR-19's table gains a row for a using-directive, where the attribute applies to the directive (RV11-R-3). The round 15 writer grid (`reports/clean-room/roadmap-15/writer-probes/rv11-rows.json`) gives the table's two new rows: EDG rejects each attribute, and Clang and GCC accept it. Every compiler accepts `[[]]` before a using-directive and rejects any attribute before a using-declaration. `deprecated-on-using-directive.cpp` and `nodiscard-on-using-directive.cpp` expect the rejection, with Clang and GCC as overrides. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

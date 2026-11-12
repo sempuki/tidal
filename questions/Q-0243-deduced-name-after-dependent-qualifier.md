@@ -1,7 +1,7 @@
 # Q-0243: Can a deduced class template name follow a dependent qualifier?
 
 **Status:** provisional
-**Affects:** CTAD-1, `tests/templates/class-template-deduction/dependent-qualifier.cpp`, `dependent-qualifier-template-keyword.cpp`
+**Affects:** CTAD-1, `tests/templates/class-template-deduction/dependent-qualifier.cpp`, `dependent-qualifier-template-keyword.cpp`, `tests/expressions/casts/functional-cast-dependent-qualifier-deduced.cpp`
 **Waits for:** the maintainer (pending.md row 4)
 
 ## Context
@@ -55,6 +55,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 1 (`reports
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text names the question and gives no new reading.
+
+Evidence on 2026-11-11 (decision 0066, item F8): the read of the RV10 repair diff reads the casts paragraph as leaving out that a dependent qualifier before a deduced name is not valid (RV11-R-2). That reading is the reading of this question for a functional cast. Every compiler accepts `typename T::Box(3)` and deduces the arguments after substitution (`reports/clean-room/roadmap-15/writer-probes/rv11-rows.json`). The casts paragraph now says so, and `functional-cast-dependent-qualifier-deduced.cpp` holds the form with no override. `pending.md` row 4 records the read for the cast. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

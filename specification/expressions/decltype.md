@@ -72,7 +72,8 @@ implementation should say so.
 A discarded value is evaluated in full, unlike an unevaluated operand.
 The result of the expression is dropped, and only its effects matter.
 
-- A class prvalue becomes a temporary and is destroyed at once.
+- A class prvalue becomes a temporary, which ends when its full
+  expression ends, as every temporary does ({rule}`VC-6`).
 - A glvalue is not copied.
 - A volatile object named by the expression is read, because the read
   is an effect.
@@ -98,6 +99,7 @@ start a `nested_name`, follow `~`, or be the type of a functional cast
 these:
 
 - the expression of an expression statement,
+- the iteration expression of a `for` statement ({rule}`LOOP-3`),
 - the left operand of `,`,
 - the operand of a cast to `void`.
 
@@ -214,11 +216,12 @@ gives (CE-12).
 
 :::{rule} UNEV-2
 :kind: required
-:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp
+:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp expressions/decltype/void-cast-temporary-lives-to-full-expression-constant.cpp statements/loops/for-iteration-temporary-constant.cpp
 
-A discarded-value expression is evaluated, and its value is not used. A
-prvalue of class type creates a {term}`temporary object`, which is then
-destroyed. A glvalue is not copied. A cast to `void` makes any
+A {term}`discarded-value expression` is evaluated, and its value is not
+used. A prvalue of class type creates a {term}`temporary object`, which
+is destroyed when its {term}`full expression` ends. A glvalue is not
+copied. A cast to `void` makes any
 expression a discarded-value expression and stops warnings about an
 unused result. Constant evaluation follows these rules.
 
@@ -237,10 +240,18 @@ A volatile operand of an operator is read too.
 
 :::{rule} UNEV-3
 :kind: recommended
-:tests: expressions/decltype/discarded-warns.cpp expressions/decltype/discarded-sum-warns.cpp
+:tests: expressions/decltype/discarded-warns.cpp expressions/decltype/discarded-sum-warns.cpp statements/loops/for-iteration-name-warns.cpp expressions/comma/unused-left-literal-warns.cpp expressions/comma/unused-left-member-warns.cpp expressions/decltype/discarded-effects-no-warning.cpp
 
-An implementation should warn about a discarded-value expression that
-has no effect, such as `x == 1;`.
+If the step that gives the value of a discarded-value expression has no
+effect, an implementation should warn. A step has an effect if the step
+does one of these:
+
+- calls a function, a constructor or a literal operator included,
+- writes an object,
+- reads a volatile object,
+- allocates storage.
+
+A cast to `void` should prevent the warning.
 :::
 
 :::{rule} UNEV-4
@@ -317,10 +328,27 @@ struct Square { long operator()(int& v) const { return v * v; } };
 call_result<Square, int> r = 0;             // long
 ```
 
+Each line below is a discarded-value expression. The step that gives
+the value decides the warning of UNEV-3:
+
+```cpp
+int next();
+volatile int port = 0;
+int run(int a) {
+  a == 1;                          // warning: the comparison has no effect
+  a + next();                      // warning: the addition has no effect
+  next();                          // no warning: a call
+  port;                            // no warning: a volatile read
+  (void)a;                         // no warning: a cast to void
+  for (int k = 0; k < 2; a) ++k;   // warning: the iteration expression
+  return (a, next());              // warning: the left operand a
+}
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 50
-of 56 tests. The UNEV-4 tests turn the warning into an error, so EDG
+The results are in `tests/RESULTS.md`. All eight compilers agree on 56
+of 62 tests. The UNEV-4 tests turn the warning into an error, so EDG
 skips them.
 
 ### Divergences
@@ -354,6 +382,26 @@ skips them.
   destructor call, and as the type of a functional cast. The gap review
   of the phase 17 text reads the placeholder as no valid form there
   (RV10-1, RV10-4), so these places take a `decltype_expr`.
+- UNEV-2, COMMA-1, LOOP-3: in constant evaluation, every compiler ends
+  the temporary of a comma's left operand after the right operand runs,
+  also when the operand is cast to `void`
+  (`void-cast-temporary-lives-to-full-expression-constant.cpp`). Every
+  compiler ends a class prvalue of a `for` iteration expression before
+  the condition runs again (`for-iteration-temporary-constant.cpp`).
+- UNEV-3, COMMA-5, STMT-4: the round 15 writer grid
+  `reports/clean-room/roadmap-15/writer-probes/x26-warnings.json` tries
+  30 forms under `-Wunused-value -Werror`, each as an expression
+  statement, a left operand of `,`, and an iteration expression. The
+  three places give the same result for each form. EDG skips the grid.
+  UNEV-3 is a `recommended` rule, so GCC's silence in the second row is
+  a result that the class allows.
+
+  | Forms | Clang 18, 22 | GCC 14, 16 |
+  |---|---|---|
+  | a name, a literal, `a + 1`, `a + f()`, `a == 1`, `sizeof a`, `s.m`, `p[0]`, `*p`, `(long)a`, `c ? a : b`, `(a, f())` | warns | warns |
+  | a lambda expression that is not called, `(f(), a)` | warns | no warning |
+  | a volatile name, `P(1)`, `P{1}`, `new int`, `5_k`, `++a`, `a++`, `a = 1`, `a += 1`, `f()`, `pf()`, a called lambda, `(void)a`, `c ? f() : f()` | no warning | no warning |
+
 - UNEV-4: Clang warns by default. GCC gives no warning. UNEV-4 is a
   `recommended` rule. Every test of UNEV-4 has an override, and each
   override records a result that the class allows.

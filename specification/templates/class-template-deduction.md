@@ -150,7 +150,7 @@ or in a class a member template.
 
 :::{rule} CTAD-1
 :kind: required
-:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp templates/class-template-deduction/site-new-no-initializer.cpp templates/declarations/constant-parameter-class-template-string-literal.cpp
+:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp templates/class-template-deduction/site-new-no-initializer.cpp templates/declarations/constant-parameter-class-template-string-literal.cpp expressions/casts/functional-cast-alias-template-deduced.cpp expressions/casts/functional-cast-dependent-qualifier-deduced.cpp
 
 The name of a class template, or of an alias template (CTAD-14), can
 stand with no argument list in these places:
@@ -396,7 +396,7 @@ value from the guide's parameters ({question}`Q-0241`).
 
 :::{rule} CTAD-14
 :kind: required
-:tests: templates/class-template-deduction/alias-template.cpp templates/class-template-deduction/alias-template-fixed-argument.cpp templates/class-template-deduction/alias-template-guides.cpp templates/class-template-deduction/alias-template-unreachable.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/alias-template-fixed-argument-exact.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp
+:tests: templates/class-template-deduction/alias-template.cpp templates/class-template-deduction/alias-template-fixed-argument.cpp templates/class-template-deduction/alias-template-guides.cpp templates/class-template-deduction/alias-template-unreachable.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/alias-template-fixed-argument-exact.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp expressions/casts/functional-cast-alias-template-deduced.cpp
 
 An alias template can stand for a specialization of a class template,
 directly or through another alias. Each guide of that class template
@@ -761,8 +761,8 @@ Pair p(1, 2);                     // rejected: Pair<int>, then a tie
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 138 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 140 tests.
 
 ### Divergences
 
@@ -876,6 +876,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 | `conditional-explicit-dropped-before-choice.cpp` | CTAD-17, CTAD-5 | accept | accept | reject | accept | {question}`Q-0437` |
 | `copy-init-guide-user-conversion.cpp` | CTAD-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
 | `dependent-qualifier-template-keyword.cpp` | CTAD-1 | accept | reject | accept | accept | {question}`Q-0243` |
+| `expressions/casts/functional-cast-alias-template-deduced.cpp` | CTAD-1, CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
 | `guide-not-deducible-constant.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
 | `guide-not-deducible.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
 | `guide-result-qualified.cpp` | CTAD-12 | reject | reject | accept | reject | {question}`Q-0242` |

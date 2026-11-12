@@ -118,7 +118,7 @@ recognizes.
 
 :::{rule} ATTR-2
 :kind: reject
-:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp declarations/attributes/noreturn-repeated.cpp declarations/attributes/fallthrough-into-outer-switch.cpp declarations/attributes/fallthrough-same-switch-after-inner.cpp declarations/attributes/nodiscard-on-type-alias.cpp declarations/attributes/nodiscard-on-enumeration.cpp declarations/attributes/maybe-unused-on-type.cpp declarations/attributes/maybe-unused-on-using-directive.cpp
+:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp declarations/attributes/noreturn-repeated.cpp declarations/attributes/fallthrough-into-outer-switch.cpp declarations/attributes/fallthrough-same-switch-after-inner.cpp declarations/attributes/nodiscard-on-type-alias.cpp declarations/attributes/nodiscard-on-enumeration.cpp declarations/attributes/maybe-unused-on-type.cpp declarations/attributes/maybe-unused-on-using-directive.cpp declarations/attributes/deprecated-on-using-directive.cpp declarations/attributes/nodiscard-on-using-directive.cpp
 
 A standard attribute must have the correct arguments and must apply to a
 correct entity:
@@ -145,8 +145,9 @@ These uses are also not valid:
 - `nodiscard` on a variable or a type alias, `no_unique_address` on a
   bit-field, and `maybe_unused` on a type, such as after the type
   specifiers of a declaration ({rule}`ATTR-19`, {question}`Q-0021`),
-- `maybe_unused` before a using-directive, where the attribute applies
-  to the directive ({question}`Q-0021`),
+- `deprecated`, `nodiscard`, or `maybe_unused` before a
+  using-directive, where the attribute applies to the directive
+  ({question}`Q-0021`),
 - `carries_dependency` on a declaration of a function that was first
   declared without it ({question}`Q-0108`).
 :::
@@ -216,6 +217,7 @@ The specifier applies to the entity in the last column.
 | Position | Example | Applies to |
 |---|---|---|
 | Before a declaration | `[[a]] int x;` | Each entity that the declaration declares |
+| Before a using-directive | `[[a]] using namespace tools;` | The directive |
 | After the name in a declarator | `int x [[a]];` | The entity with that name |
 | After the type specifiers of a declaration | `int [[a]] x;` | The type |
 | After `*` and its cv-qualifiers, or after `&` | `int* [[a]] p;` | The pointer or reference type |
@@ -405,7 +407,7 @@ switch (k) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 76
-of 96 tests. EDG skips the tests that use `-Werror`.
+of 98 tests. EDG skips the tests that use `-Werror`.
 
 ### Divergences
 
@@ -413,9 +415,10 @@ of 96 tests. EDG skips the tests that use `-Werror`.
   the wrong kind of entity is rejected or ignored, for `noreturn` on a
   variable, `nodiscard` on a variable or a type alias,
   `no_unique_address` on a bit-field, `maybe_unused` on a type, and
-  `maybe_unused` before a using-directive. The program is rejected. GCC
-  accepts all six, five of them with a warning. Clang accepts the two
-  `nodiscard` forms and the using-directive.
+  `deprecated`, `nodiscard`, or `maybe_unused` before a
+  using-directive. The program is rejected. GCC accepts all eight, most
+  of them with a warning. Clang accepts the two `nodiscard` forms and
+  the three using-directive forms.
 - {question}`Q-0390` (ATTR-2; settled): whether a `fallthrough` statement
   can lead to a label of an enclosing `switch`. It cannot, as GCC and
   EDG say. Clang accepts the program.
@@ -453,6 +456,7 @@ EDG skips the tests that use `-fsanitize`.
 | `assume-on-declaration.cpp` | ATTR-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0020` |
 | `attribute-positions-base-and-new-bound.cpp` | ATTR-19 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0177` |
 | `carries-dependency-redeclared.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0108` |
+| `deprecated-on-using-directive.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
 | `fallthrough-into-outer-switch.cpp` | ATTR-2 | reject | accept | reject | reject | {question}`Q-0390` |
 | `likely-and-unlikely.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0046` |
 | `likely-identifier-label.cpp` | ATTR-8 | run | reject | run | accept | {question}`Q-0347` |
@@ -460,6 +464,7 @@ EDG skips the tests that use `-fsanitize`.
 | `maybe-unused-on-using-directive.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
 | `no-unique-address-bitfield.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0021` |
 | `nodiscard-on-type-alias.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
+| `nodiscard-on-using-directive.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
 | `nodiscard-on-variable.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
 | `noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0021` |
 | `pointer-attribute-after-cv.cpp` | ATTR-18 | accept | reject | accept | accept | {question}`Q-0123` |
@@ -470,9 +475,14 @@ EDG skips the tests that use `-fsanitize`.
 ### Notes
 
 - ATTR-2, ATTR-19: every compiler accepts an empty attribute specifier
-  before a using-directive. Clang and GCC also accept `maybe_unused`
-  there, and EDG rejects it (`maybe-unused-on-using-directive.cpp`,
-  RV10-3). Every compiler accepts an attribute after the `*` of the type
+  before a using-directive. Clang and GCC also accept `maybe_unused`,
+  `deprecated`, and `nodiscard` there, and EDG rejects each of them
+  (`maybe-unused-on-using-directive.cpp`, RV10-3;
+  `deprecated-on-using-directive.cpp` and
+  `nodiscard-on-using-directive.cpp`, RV11-R-3). Every compiler rejects
+  an attribute before a using-declaration. ATTR-19's row for a
+  using-directive gives the directive, which declares no entity. Every
+  compiler accepts an attribute after the `*` of the type
   in a `new` expression, and an attribute before a structured binding
   declaration, also in the initializer of an `if` or a `for` (RV10-5,
   RV10-8).

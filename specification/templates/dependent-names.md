@@ -531,7 +531,7 @@ bases.
 
 :::{rule} DEP-19
 :kind: reject
-:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-constant-member.cpp templates/dependent-names/parameter-position-variable-template.cpp templates/dependent-names/typename-functional-cast.cpp
+:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-constant-member.cpp templates/dependent-names/parameter-position-variable-template.cpp templates/dependent-names/typename-functional-cast.cpp expressions/casts/functional-cast-dependent-qualifier-deduced.cpp
 
 Let `T` be dependent and not the current instantiation. Outside the
 positions of DEP-20, the parser reads `T::name` as a value. A
@@ -889,8 +889,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 126
-of 156 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 127
+of 157 tests.
 
 ### Divergences
 

@@ -169,8 +169,8 @@ performs it.
 :tests: statements/blocks/unused-value-warns.cpp statements/blocks/void-cast-silences.cpp
 
 An implementation should warn about an expression statement that has no
-effect and whose value is unused. A cast to `void` should silence the
-warning.
+effect, as {rule}`UNEV-3` gives for each discarded-value expression. A
+cast to `void` should silence the warning.
 :::
 
 ## Examples

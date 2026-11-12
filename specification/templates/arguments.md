@@ -123,7 +123,8 @@ and it can name a class in a `simple_type`. A `template_name` is an
 operator template, as in `x.operator()<int>()`. A
 `constant_expr` in a `template_arg` does not contain a `>` outside
 parentheses, brackets, or braces (TARG-3). A `braced_init` is an
-argument for a constant parameter of class type (TARG-16).
+argument for a constant parameter of class type or of scalar type
+(TARG-16).
 
 ## Constraints
 
@@ -355,7 +356,7 @@ overloaded function name selects the overload of that type.
 
 :::{rule} TARG-13
 :kind: reject
-:tests: templates/arguments/constant-not-constant.cpp templates/arguments/constant-narrowing.cpp templates/arguments/constant-floating-to-integer.cpp templates/arguments/constant-integer-to-floating.cpp templates/arguments/constant-int-to-bool.cpp templates/arguments/constant-scoped-enum.cpp templates/arguments/constant-pointer-to-void.cpp templates/arguments/constant-pointer-to-base.cpp templates/arguments/constant-integer-to-scoped-enum.cpp templates/arguments/constant-other-enumeration.cpp templates/arguments/constant-float-to-double.cpp templates/arguments/constant-double-to-float-exact.cpp
+:tests: templates/arguments/constant-not-constant.cpp templates/arguments/constant-narrowing.cpp templates/arguments/constant-floating-to-integer.cpp templates/arguments/constant-integer-to-floating.cpp templates/arguments/constant-int-to-bool.cpp templates/arguments/constant-scoped-enum.cpp templates/arguments/constant-pointer-to-void.cpp templates/arguments/constant-pointer-to-base.cpp templates/arguments/constant-integer-to-scoped-enum.cpp templates/arguments/constant-other-enumeration.cpp templates/arguments/constant-float-to-double.cpp templates/arguments/constant-double-to-float-exact.cpp templates/arguments/braced-integer-for-floating.cpp
 
 The argument for a constant parameter must be a constant expression. Its
 conversion to the parameter's type must not:
@@ -405,14 +406,15 @@ of class type, at any depth.
 
 :::{rule} TARG-16
 :kind: required
-:tests: templates/arguments/floating-arguments.cpp templates/arguments/class-arguments.cpp templates/arguments/class-argument-string-literal.cpp
+:tests: templates/arguments/floating-arguments.cpp templates/arguments/class-arguments.cpp templates/arguments/class-argument-string-literal.cpp templates/arguments/braced-integer-for-floating.cpp templates/arguments/braced-scalar-arguments.cpp
 
 The argument for a floating-point parameter is a constant of the
 parameter's own floating-point type ({rule}`TARG-13`). The argument for a parameter of class type
 initializes the parameter's object by {term}`copy-initialization`,
 also from a braced list or a value of another type. So a string literal
 is a valid argument for a class with a constructor that takes a pointer
-to `const char`.
+to `const char`. A braced list for a parameter of scalar type holds one
+value, which converts as TARG-13 says, or no value, which gives zero.
 :::
 
 ### Template template arguments
@@ -586,8 +588,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 96
-of 102 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 104 tests.
 
 ### Divergences
 
@@ -598,6 +600,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   `int()` is a type or a value for a constant parameter. It is a type,
   so the argument is rejected, as Clang and GCC say. EDG reads the
   value `0`.
+- {question}`Q-0454` (TARG-13,
+  TARG-16; open): whether a braced integer constant is a valid argument
+  for a floating-point parameter. It is not, because the value converts
+  as without braces. Clang accepts `{1}` for a `double` parameter.
 - {question}`Q-0169` (TARG-17; settled): whether a template template
   argument can have more parameters than the parameter when the extra
   ones have defaults. It can. Clang 18 rejects it.
@@ -619,6 +625,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `braced-integer-for-floating.cpp` | TARG-13, TARG-16 | reject | accept | reject | reject | {question}`Q-0454` |
 | `same-specialization-alias-template-explicit.cpp` | TARG-22 | accept | accept | reject | reject | {question}`Q-0168` |
 | `same-specialization-alias-template.cpp` | TARG-22 | accept | accept | reject | reject | {question}`Q-0168` |
 | `same-specialization-union-empty.cpp` | TARG-19 | accept | accept | reject | accept | {question}`Q-0117` |
@@ -644,6 +651,15 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   TARG-16, the `braced_init` arm of `template_arg`,
   `class-arguments.cpp`, and `same-specialization-class.cpp` keep the
   compilers' answer, and `pending.md` row 4 holds the item "TARG-16".
+- TARG-13, TARG-16: every compiler accepts `{3}` and `{}` for an `int`
+  parameter, and `{nullptr}` and `{}` for a pointer parameter
+  (`braced-scalar-arguments.cpp`, RV11-R-7). Every compiler rejects
+  `{3.5}` and `{3, 4}` for `int` and `{300}` for `char`, as it rejects
+  `3.5` for `int`. Clang alone accepts `{1}` for a `double` parameter,
+  and every compiler rejects `1` there
+  (`braced-integer-for-floating.cpp`,
+  {question}`Q-0454`). The scalar case
+  joins the row 4 item "TARG-16".
 - TARG-22: every compiler treats an alias template that changes its
   argument as a template of its own (`alias-template-changes-argument.cpp`).
 - TARG-17: all compilers accept a placeholder parameter on either side

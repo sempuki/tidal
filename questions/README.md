@@ -490,6 +490,8 @@ status, and the first sentence of its answer section.
 | [Q-0451](Q-0451-goto-missing-label-in-template.md) | Is a `goto` to a missing label rejected in a templated function that no specialization uses or in a discarded statement? | provisional | A template that no specialization uses needs no diagnostic, and a discarded statement of a used template is rejected |
 | [Q-0452](Q-0452-statement-scope-end-in-constant-evaluation.md) | In constant evaluation, when does a `return` or a `break` end the condition and initializer variables of a statement? | provisional | Constant evaluation ends the objects as a run does |
 | [Q-0453](Q-0453-recursive-constraint-hidden-friend-reversed-operator.md) | Is a program rejected when the constraint check of a hidden friend operator template needs its own result through a candidate whose other parameter cannot take the argument? | provisional | Yes; the program is rejected |
+| [Q-0454](Q-0454-braced-integer-floating-argument.md) | Is a braced integer constant a valid template argument for a floating-point parameter? | provisional | No; the program is rejected |
+| [Q-0455](Q-0455-deleted-default-constructor-on-chain.md) | Does an assignment through a chain of member accesses make a union member active when the member's class has a deleted default constructor? | provisional | The member becomes active, and the evaluation is constant |
 
 ## Status values
 

@@ -210,7 +210,7 @@ must not have C language linkage ({rule}`LSP-1`).
 
 :::{rule} TPL-4
 :kind: reject
-:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp templates/declarations/two-template-heads-in-class.cpp
+:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp templates/declarations/two-template-heads-in-class.cpp templates/declarations/friend-two-heads-member-template.cpp templates/declarations/friend-two-heads-fixed-qualifier.cpp
 
 The declaration after a template head must declare exactly one named
 entity. These declarations are not valid after a template head:
@@ -221,8 +221,13 @@ entity. These declarations are not valid after a template head:
 - a class definition followed by a declarator, such as a variable
   name. A declaration of a class template declares no other entity.
 
-In a class, a template head must not come right after another template
-head.
+In a member declaration, a template head must not come right after
+another template head. A friend declaration in a class can have two
+template heads if both of these hold:
+
+- the friend is a member template of a class template,
+- the qualifier of the friend's name gives the parameters of the first
+  head as the arguments of that class template.
 :::
 
 :::{rule} TPL-22
@@ -839,8 +844,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 131
-of 143 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 133
+of 145 tests.
 
 ### Divergences
 
@@ -900,7 +905,13 @@ Q-0198 to the EDG project waits on the maintainer too.
 ### Notes
 
 - TPL-4: every compiler rejects two template heads before a member of
-  a class (`two-template-heads-in-class.cpp`, RV10-7).
+  a class (`two-template-heads-in-class.cpp`, RV10-7). Every compiler
+  accepts a friend declaration with two template heads that names a
+  member function template or a nested class template of the
+  specializations of a class template, as in `Shelf<T>::peek`
+  (`friend-two-heads-member-template.cpp`, RV11-R-1). Every compiler
+  rejects the friend when the qualifier is `Shelf<int>`, which does not
+  use the first head's parameter (`friend-two-heads-fixed-qualifier.cpp`).
 - TPL-2: Clang 18 gives a parse error for a template in a block, and the
   other compilers say that a template is not allowed there.
 - TPL-4: Clang names the single-entity condition. GCC and EDG reject a

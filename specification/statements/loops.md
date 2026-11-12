@@ -140,7 +140,7 @@ executes at least one time.
 
 :::{rule} LOOP-3
 :kind: required
-:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp foundations/objects/statement-scope-ends-after-goto.cpp foundations/objects/statement-scope-ends-after-return.cpp foundations/objects/statement-scope-ends-after-return-constant.cpp
+:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp foundations/objects/statement-scope-ends-after-goto.cpp foundations/objects/statement-scope-ends-after-return.cpp foundations/objects/statement-scope-ends-after-return-constant.cpp statements/loops/for-iteration-temporary-constant.cpp statements/loops/for-iteration-name-warns.cpp
 
 `for` executes its initializer one time. In each iteration, `for`:
 
@@ -148,10 +148,11 @@ executes at least one time.
 2. executes the body,
 3. evaluates the iteration expression.
 
-A variable that the condition declares is destroyed after the
-iteration expression. Each part can be absent, and an absent condition is
-`true`. A variable that the initializer declares is created one time and
-destroyed one time, when the statement ends. The statement also ends
+The iteration expression is a {term}`discarded-value expression`
+({rule}`UNEV-2`). A variable that the condition declares is destroyed
+after the iteration expression. Each part can be absent, and an absent
+condition is `true`. A variable that the initializer declares is
+created one time and destroyed one time, when the statement ends. The statement also ends
 after a `break`, a `goto`, a `return`, or an exception that leaves it
 ({rule}`OBJ-3`).
 :::
@@ -220,6 +221,12 @@ compile.
 
 ### Notes
 
+- LOOP-3, UNEV-2, UNEV-3: every compiler, in constant evaluation, ends
+  a class prvalue of the iteration expression before the condition
+  runs again (`for-iteration-temporary-constant.cpp`). Clang and GCC
+  warn for an iteration expression with no effect exactly as for the
+  same expression statement (`for-iteration-name-warns.cpp`). GCC's
+  message names the increment expression of the `for`.
 - LOOP-1: Clang and GCC destroy the objects of a `while` body, then
   the condition variable, in each iteration.
 - LOOP-9: every compiler, in constant evaluation, runs the rest of a

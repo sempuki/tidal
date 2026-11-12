@@ -16,11 +16,15 @@ initializer.
 `T::template field` names a static data member with the keyword and
 no argument list.
 
-| Compiler | data member after `.` | static data member after `T::` | class template, arguments deduced |
-|---|---|---|---|
-| GCC 14, 16, host | accepts | rejects: not a template | accepts |
-| Clang 18, 22, host | rejects: an argument list is expected after the keyword | rejects | rejects |
-| EDG 7.0 | rejects: an argument list for a template is expected | rejects | accepts |
+`typename T::template Box(3)` is a functional cast to a member class
+template with the keyword and no argument list, and deduces the
+arguments from the operand.
+
+| Compiler | data member after `.` | static data member after `T::` | class template, arguments deduced | functional cast, arguments deduced |
+|---|---|---|---|---|
+| GCC 14, 16, host | accepts | rejects: not a template | accepts | rejects: a template-id is expected before the name |
+| Clang 18, 22, host | rejects: an argument list is expected after the keyword | rejects | rejects | rejects |
+| EDG 7.0 | rejects: an argument list for a template is expected | rejects | accepts | accepts |
 
 ## Evidence
 
@@ -61,6 +65,8 @@ Evidence on 2026-11-11 (decision 0062, item RV7): the DEP-P5 row for the deduced
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text still reads against the deduced form, and only Clang 22 follows the review. The row 4 item names the review.
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap review of the phase 17 text reads the `["template"] identifier` arm of `typename_specifier` against the C++23 text (RV10-10), which is the deduced form of this question. The writer's probe gives the same split: GCC 16 and EDG 7.0 accept `typename T::template B b(1);`, and Clang 22 rejects it (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). The production and DEP-26 keep the deduced form, as before.
+
+Evidence on 2026-11-11 (decision 0066, item F8): the table gains the functional cast column (RV11-R-2). In the round 15 writer grid (`reports/clean-room/roadmap-15/writer-probes/rv11-rows.json`), EDG alone accepts `typename T::template Box(3)`. GCC 16 rejects the cast, although it accepts the declaration form. Every compiler accepts `typename T::Box(3)` and `typename T::template Box<int>(3)`. The casts page names the split in its Evidence. No test holds the cast column. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

@@ -265,6 +265,19 @@ discarded statement
     definition.
   - In a template, a discarded statement is not instantiated.
 
+discarded-value expression
+  An expression that is evaluated only for its effects, and whose value
+  is not used ({rule}`UNEV-2`). These expressions are discarded-value
+  expressions:
+
+  - the expression of an expression statement,
+  - the iteration expression of a `for` statement,
+  - the left operand of `,`,
+  - the operand of a cast to `void`.
+
+  A class prvalue there becomes a temporary, and a volatile object that
+  the expression names is read ({doc}`/expressions/decltype`).
+
 dynamic initialization
   The initialization at run time of a namespace-scope variable that is
   not {term}`constant-initialized`. Such a variable is *dynamically

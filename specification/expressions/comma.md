@@ -110,9 +110,10 @@ is not an operand.
 
 :::{rule} COMMA-1
 :kind: required
-:tests: expressions/comma/left-before-right.cpp expressions/comma/left-side-effects-complete.cpp expressions/comma/temporaries-end-with-full-expression.cpp expressions/comma/in-loop-and-condition.cpp
+:tests: expressions/comma/left-before-right.cpp expressions/comma/left-side-effects-complete.cpp expressions/comma/temporaries-end-with-full-expression.cpp expressions/comma/in-loop-and-condition.cpp expressions/decltype/void-cast-temporary-lives-to-full-expression-constant.cpp
 
-The left operand is evaluated first, and its value is discarded. All
+The left operand is evaluated first, as a
+{term}`discarded-value expression` ({rule}`UNEV-2`). All
 side effects of the left operand complete before the right operand is
 evaluated. A temporary that the left operand creates lives to the end
 of the {term}`full expression` ({rule}`VC-6`).
@@ -131,10 +132,11 @@ operand has type `void`, the built-in comma operator applies.
 
 :::{rule} COMMA-5
 :kind: recommended
-:tests: expressions/comma/unused-left-warns.cpp expressions/comma/unused-left-void-cast.cpp
+:tests: expressions/comma/unused-left-warns.cpp expressions/comma/unused-left-void-cast.cpp expressions/comma/unused-left-literal-warns.cpp expressions/comma/unused-left-member-warns.cpp
 
-An implementation should warn if the left operand has no effect. A cast
-of the left operand to `void` should prevent the warning.
+An implementation should warn if the left operand has no effect, as
+{rule}`UNEV-3` gives for each discarded-value expression. A cast of the
+left operand to `void` should prevent the warning.
 :::
 
 ## Examples
@@ -153,11 +155,12 @@ return (1, {2});           // rejected: a braced list is not an operand
 
 ## Evidence
 
-All eight compilers agree on all 25 tests. The results are in
+All eight compilers agree on all 28 tests. The results are in
 `tests/RESULTS.md`.
 
 - COMMA-5: Clang and GCC warn "left operand of comma operator has no
-  effect" under `-Wunused-value`. EDG skips these tests.
+  effect" under `-Wunused-value`. EDG skips these tests. The decltype
+  page gives the forms that each compiler warns about (UNEV-3).
 - COMMA-6: GCC says that a top-level comma in a subscript "changed
   meaning in C++23".
 

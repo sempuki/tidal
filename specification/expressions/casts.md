@@ -83,11 +83,13 @@ is undefined:
 
 If lookup finds that the name or the {term}`template-id` in a
 `cast_type` denotes a type, the `functional_cast` is a cast. A name that
-lookup finds to be a class template, with no argument list, also makes
-a cast, and the arguments of the class template are deduced
-({rule}`CTAD-1`). Otherwise the same tokens are a call
-({doc}`postfix`). A dependent qualified name needs `typename` to denote
-a type ({rule}`DEP-19`).
+lookup finds to be a class template or an alias template, with no
+argument list, also makes a cast, and the arguments of the class
+template are deduced ({rule}`CTAD-1`, {rule}`CTAD-14`). Otherwise the
+same tokens are a call ({doc}`postfix`). A dependent qualified name
+needs `typename` to denote a type ({rule}`DEP-19`). Such a name with no
+argument list, as in `typename T::Cell(3)`, makes a cast whose arguments
+are deduced after substitution.
 
 ## Constraints
 
@@ -358,6 +360,17 @@ All eight compilers agree on 63 of 64 tests. The results are in
   address that the program did not obtain from an object, such as a
   device register. The platform decides, and Tidal sets no requirement.
   No family differs.
+- {question}`Q-0240` (CTAD-14; settled on CTAD-P2): whether deduction
+  works through an alias template, here in a functional cast. It does.
+  Clang 18 rejects the cast.
+- {question}`Q-0243` (CTAD-1; open): whether a deduced class template
+  name can follow a dependent qualifier, here in a functional cast. It
+  can, as every compiler deduces `typename T::Cell(3)`. A review reads
+  the form as not valid, and the question waits on the maintainer.
+- {question}`Q-0226` (DEP-26; open): whether `template` can come before
+  a class template name with no argument list. It can, so
+  `typename T::template Cell(3)` is a cast, as EDG says. Clang and GCC
+  reject the cast.
 
 ### Split tests
 
@@ -371,6 +384,17 @@ All eight compilers agree on 63 of 64 tests. The results are in
   `Parts::template Part<int>{4}` and `Parts::template Part<int>()` as
   casts (`template-keyword-cast-last-name.cpp`, RV10-4). Every compiler
   rejects `decltype(auto)` as the type of a functional cast (AUTO-11).
+- Deduction in a functional cast (RV11-R-2): every compiler except
+  Clang 18 deduces through an alias template, with parentheses and
+  with braces (`functional-cast-alias-template-deduced.cpp`). Clang 18
+  has no deduction through an alias template ({question}`Q-0240`).
+  Every compiler accepts `typename T::Cell(3)` and deduces the arguments
+  after substitution (`functional-cast-dependent-qualifier-deduced.cpp`).
+  The read of the RV10 repair diff reads a dependent qualifier before
+  a deduced name as not valid. The paragraph keeps the compilers'
+  answer, and `pending.md` row 4 records the read, as for the
+  declaration form of {question}`Q-0243`. Only EDG accepts
+  `typename T::template Cell(3)`, the form of {question}`Q-0226`.
 - CAST-5, CAST-8: all compilers reject these operations during constant
   evaluation.
 - CAST-5: at run time, `-fsanitize=address` in Clang and GCC stops a

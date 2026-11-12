@@ -268,7 +268,7 @@ the result:
 
 :::{rule} AUTO-11
 :kind: reject
-:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-overload-set.cpp declarations/auto/decltype-auto-address-of-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp declarations/auto/decltype-auto-as-base.cpp declarations/auto/decltype-auto-member-initializer.cpp declarations/auto/decltype-auto-destructor-call.cpp declarations/auto/decltype-auto-functional-cast.cpp
+:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-overload-set.cpp declarations/auto/decltype-auto-address-of-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp declarations/auto/decltype-auto-as-base.cpp declarations/auto/decltype-auto-member-initializer.cpp declarations/auto/decltype-auto-destructor-call.cpp declarations/auto/decltype-auto-functional-cast.cpp declarations/auto/decltype-auto-before-scope.cpp
 
 `decltype(auto)` must not:
 
@@ -402,7 +402,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 69 tests. The results are in `tests/RESULTS.md`.
+agree on all 70 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list` with the shape that {rule}`LSUP-1` gives,
@@ -410,6 +410,14 @@ because tests include no headers. Without that declaration, each
 compiler rejects the `auto` declaration and names the missing header.
 Each compiler also rejects a declaration of the wrong shape, such as an
 empty class template.
+
+- AUTO-11: every compiler rejects `decltype(auto)` before `::`, in an
+  expression and in the operand of `sizeof` (RV11-R-8). GCC says that
+  the placeholder is not a class type. Clang and EDG give a syntax
+  error, so `decltype-auto-before-scope.cpp` has a `tidal-error`
+  pattern for GCC only. In a declaration, Clang and EDG read `::` after
+  the placeholder as the start of a qualified declarator, so the test
+  uses the expression form.
 
 Inputs: clang-sema-deduction, clang-sema-decl, edg-overload, edg-decls
 (see `inputs/MANIFEST.md`).

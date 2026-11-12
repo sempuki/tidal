@@ -460,7 +460,7 @@ evaluation follows these rules.
 
 :::{rule} UNI-13
 :kind: required
-:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp foundations/objects/write-after-destructor-union-class-member-constant.cpp foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp
+:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp foundations/objects/write-after-destructor-union-class-member-constant.cpp foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp classes/unions/chain-assign-deleted-default-constructor-constant.cpp
 
 The left operand of an assignment can name its object through a chain
 of member accesses and built-in subscripts, such as `s.u.a.tag` or
@@ -471,7 +471,9 @@ apply:
 
 - A member becomes active only if its default constructor is trivial
   ({rule}`CTOR-23`). A default member initializer in the member's class
-  makes the default constructor non-trivial.
+  makes the default constructor non-trivial. A default constructor
+  deleted at its first declaration is trivial
+  ({question}`Q-0455`).
 - The parts of a new active member that the assignment does not write
   have no value. A read of such a part is undefined ({rule}`OBJ-2`).
 
@@ -783,7 +785,7 @@ active member.
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 165
-of 185 tests.
+of 186 tests.
 
 ### Divergences
 
@@ -840,6 +842,12 @@ that still differs.
   that phase 7 rewrote
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
   reference as leaving the value of the byte open.
+- {question}`Q-0455` (UNI-13; open):
+  whether an assignment through a chain of member accesses makes a
+  union member active when the member's class has a deleted default
+  constructor. It does, because the deleted constructor is trivial, as
+  Clang and EDG say. GCC rejects the constant evaluation. A review reads
+  the form as not valid, and the question waits on the maintainer.
 - {question}`Q-0424` (UNI-9; open):
   whether a member whose type is an unnamed class defined in its own
   declaration counts as a nested type of an anonymous union. It does,
@@ -874,6 +882,7 @@ configuration.
 | `bitfield-width-class-two-conversions-same-type.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
 | `bitfield-width-scoped-enumeration.cpp` | BF-2 | reject | reject | reject | accept | {question}`Q-0313` |
 | `chain-assign-array-element-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
+| `chain-assign-deleted-default-constructor-constant.cpp` | UNI-13 | accept | accept | reject | accept | {question}`Q-0455` |
 | `chain-assign-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
 | `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
 | `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
@@ -963,7 +972,12 @@ configuration.
 - UNI-13: every compiler accepts the constant evaluations in which an
   assignment through `.` and `[]` makes members of one or two unions
   active. Every compiler rejects a later read of a part that the
-  assignment did not write.
+  assignment did not write. Every compiler accepts the evaluation when
+  the member's class has a defaulted default constructor. When the
+  class deletes its default constructor at its first declaration, Clang
+  and EDG accept and GCC rejects
+  (`chain-assign-deleted-default-constructor-constant.cpp`, RV11-R-5,
+  {question}`Q-0455`).
 - UNI-15, UNI-16: no core-language check shows whether two types are
   layout-compatible (inventory item OBS-no-core-layout-compatible). The
   run tests read through the other struct for each kind of match. The
