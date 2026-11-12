@@ -65,7 +65,7 @@ name of the function is `operator` followed by the target type.
 
 :::{rule} CVF-1
 :kind: required
-:tests: classes/conversion-functions/basic.cpp classes/conversion-functions/call-by-name.cpp classes/conversion-functions/constexpr-conversion.cpp classes/conversion-functions/deduced-auto.cpp classes/conversion-functions/explicit-object-conversion.cpp classes/conversion-functions/out-of-line.cpp classes/conversion-functions/pointer-target.cpp classes/conversion-functions/to-function-pointer.cpp classes/conversion-functions/to-reference.cpp classes/conversion-functions/virtual-conversion.cpp overloading/overload-resolution/direct-init-through-conversion-function.cpp
+:tests: classes/conversion-functions/basic.cpp classes/conversion-functions/call-by-name.cpp classes/conversion-functions/constexpr-conversion.cpp classes/conversion-functions/deduced-auto.cpp classes/conversion-functions/explicit-object-conversion.cpp classes/conversion-functions/out-of-line.cpp classes/conversion-functions/pointer-target.cpp classes/conversion-functions/to-function-pointer.cpp classes/conversion-functions/to-reference.cpp classes/conversion-functions/virtual-conversion.cpp overloading/overload-resolution/direct-init-through-conversion-function.cpp declarations/initialization/list/no-elision-conversion-function.cpp
 
 A conversion function is a non-static member function. Its target type
 can be:
@@ -296,8 +296,8 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 70 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 68
+of 71 tests.
 
 ### Divergences
 

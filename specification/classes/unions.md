@@ -15,7 +15,7 @@ copy and move, list initialization and aggregates, standard conversions.
 ## Principles
 
 :::{principle} UNI-P1
-:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8 UNI-13 UNI-14
+:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8 UNI-13 UNI-14 UNI-17
 :exceptions: UNI-10 UNI-12
 
 A union is one piece of storage with several views. All members of the
@@ -59,6 +59,9 @@ storage of its own, so a union cannot hold a reference. A union and
 each of its members are {term}`pointer-interconvertible`, so a
 `reinterpret_cast` turns a pointer to one into a pointer to the other
 ({rule}`STG-16`).
+
+A union is a class, so a union definition names the union in the
+forms that a class definition uses, template-ids included.
 :::
 
 :::{principle} UNI-P2
@@ -173,7 +176,8 @@ tracks the active member and rejects the read.
 % tidal-grammar: shape anonymous_union
 ```{eval-rst}
 .. productionlist:: tidal
-   union_def: "union" {`attribute_spec` | `alignment_specifier`} [`class_name` ["final"]] "{" {`member_decl`} "}"
+   union_def: "union" {`attribute_spec` | `alignment_specifier`}
+            :    [[`nested_name`] (`class_name` | `template_id`) ["final"]] "{" {`member_decl`} "}"
    anonymous_union: ["static"] "union" "{" {`member_decl`} "}" ";"
    bitfield: [`identifier`] ":" `constant_expr` [`member_init`]
 ```
@@ -210,6 +214,17 @@ A union must not have a member of reference type. Rules DER-1 and VIRT-2
 give the limits on bases and virtual functions. A union can carry
 `final` after its name, and the marker changes nothing, because DER-1
 already forbids a union as a base.
+:::
+
+:::{rule} UNI-17
+:kind: required
+:tests: classes/unions/union-qualified-definition.cpp classes/unions/member-union-template-outside.cpp templates/specialization/union-key-union-template.cpp
+
+A union definition names its union in the same forms as a class
+definition (`class_head`). The name can have a qualifier, as in
+`union Outer::Inner { ... }`. The name can be a {term}`template-id`, for
+an explicit or partial specialization of a union template
+({rule}`TSP-32`).
 :::
 
 :::{rule} UNI-3
@@ -767,8 +782,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 162
-of 182 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 165
+of 185 tests.
 
 ### Divergences
 
@@ -967,6 +982,11 @@ configuration.
   gap review of item O. A `const` member matches a plain one
   (`common-initial-sequence-cv.cpp`). The grid row "cv on one member"
   matches a `volatile` member with a plain one.
+- UNI-17: every compiler accepts a union defined with a namespace or a
+  class qualifier, a member union template defined outside its class,
+  and a partial or explicit specialization of a union template, with or
+  without `final`. Every compiler rejects a specialization whose key
+  does not agree with the template's ({rule}`TSP-32`).
 
 ### Sources
 

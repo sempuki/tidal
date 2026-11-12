@@ -105,7 +105,7 @@ braces or in parentheses. LIST-12 lists what is not valid.
 
 :::{rule} LIST-12
 :kind: reject
-:tests: declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/missing-reference-member.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp statements/if/constexpr-requirement-too-many-values-discards-binding.cpp
+:tests: declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/no-elision-conversion-too-many.cpp declarations/initialization/list/missing-reference-member.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp statements/if/constexpr-requirement-too-many-values-discards-binding.cpp
 
 The list for an aggregate must not have more values than the aggregate
 has bases and members. A reference member without a default member
@@ -114,13 +114,24 @@ initializer must have a value in the list.
 
 :::{rule} LIST-4
 :kind: required
-:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp
+:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp declarations/initialization/list/no-elision-conversion-function.cpp declarations/initialization/list/no-elision-string-literal-member.cpp declarations/initialization/list/no-elision-conversion-too-many.cpp
 
 The inner braces for a member that is an array or an aggregate can be
 omitted. The values then fill the elements of that member in order. The
-next values go to the next member. The inner braces are not omitted for
-a value that can initialize the member directly, such as an object of
-the member's type. LIST-13 lists what is not valid.
+next values go to the next member. The inner braces are not omitted
+for a value that can initialize the whole member. These values can
+initialize the whole member:
+
+- an object of the member's type, or of a class derived from that type,
+- an object of a class that converts to the member's type, through a
+  conversion function or a conversion function template
+  ({rule}`CVF-1`, {rule}`DED-31`),
+- a string literal, for a member that is a character array
+  ({rule}`LIST-6`).
+
+Such a value initializes the whole member even when the value also
+converts to the type of the member's first element. LIST-13 lists what
+is not valid.
 :::
 
 :::{rule} LIST-13
@@ -160,7 +171,7 @@ The designators in a braced list must obey these conditions:
 
 :::{rule} LIST-6
 :kind: required
-:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/char-array-rest-zero.cpp declarations/initialization/list/string-literal-plain-to-signed-unsigned.cpp declarations/initialization/list/string-literal-reference-temporary.cpp
+:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/char-array-rest-zero.cpp declarations/initialization/list/string-literal-plain-to-signed-unsigned.cpp declarations/initialization/list/string-literal-reference-temporary.cpp declarations/initialization/list/no-elision-string-literal-member.cpp
 
 A character array can be initialized from a string literal, with or
 without braces, if the table gives the array's element type for the
@@ -289,9 +300,22 @@ unsigned char n[] = "x";  // valid
 signed char o[] = u8"x";  // rejected: wrong character type
 ```
 
+```cpp
+struct Range { int low; int high; };
+struct Span { Range range; int step; };
+struct Unit {
+  constexpr operator Range() const { return {0, 1}; }
+  constexpr operator int() const { return 9; }
+};
+constexpr Span s{Unit{}, 2};  // range == {0, 1}, step == 2: Unit
+                              // converts to Range, so the value
+                              // initializes the whole member range
+static_assert(s.range.high == 1 && s.step == 2);
+```
+
 ## Evidence
 
-All eight compilers agree on 71 of 75 tests. The results are in
+All eight compilers agree on 74 of 78 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

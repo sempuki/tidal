@@ -159,7 +159,7 @@ specialization with the declared function type.
 
 :::{rule} TSP-32
 :kind: reject
-:tests: templates/specialization/explicit-union-key.cpp templates/specialization/partial-union-key.cpp templates/specialization/explicit-class-key.cpp
+:tests: templates/specialization/explicit-union-key.cpp templates/specialization/partial-union-key.cpp templates/specialization/explicit-class-key.cpp templates/specialization/union-key-union-template.cpp
 
 The class key of an explicit or partial specialization of a class
 template must agree with the primary template's. `struct` and `class`
@@ -609,8 +609,8 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 98 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 84
+of 99 tests.
 
 ### Divergences
 
