@@ -1,9 +1,8 @@
 # Q-0450: Can a member initializer that names its base with `decltype` take a braced list?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DTY-3, `tests/expressions/decltype/member-initializer-base-braces.cpp`
 **Source:** phase 17, item GR (decision 0065), a probe of the `mem_init_id` production.
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -42,7 +41,7 @@ for the form with parentheses, which every compiler accepts.
 2. Only parentheses can follow a `decltype` base name in a member
    initializer list.
 
-## Provisional answer
+## Answer
 
 The braced form is valid (option 1). Clang and EDG accept it, the form
 with parentheses is valid on every compiler, and DTY-3 lets the result
@@ -51,6 +50,7 @@ grammar gives no separate form for a `decltype` base name. GCC's
 rejection resembles its rejection of `decltype` after `~` in
 {question}`Q-0089`.
 
+Settled on 2026-11-11 under decision 0054 (decision 0065, item RV10). The gap review of the phase 17 text supports the answer with no doubt (RV10-1), and GCC 16 alone differs. DTY-P2 gives the answer: the result of `decltype` is a type, so it can stand wherever a type name can stand. The name of a base in a member initializer takes parentheses or a braced list, so the `decltype` form takes either one, and the model rules out option 2. DTY-P2 did not change in phase 17, so decision 0055 does not hold it back. Tidal records GCC 16's result as a deviation, and the test keeps its override for GCC.
 
 ## Opinions
 

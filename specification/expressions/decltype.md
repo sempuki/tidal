@@ -329,7 +329,7 @@ skips them.
 - {question}`Q-0089` (DTY-3; settled on DTY-P2): whether `decltype` can
   name the class after `~` in an explicit destructor call. It can, as
   Clang and EDG say. GCC rejects the call.
-- {question}`Q-0450` (DTY-3): whether a member initializer that names its base with
+- {question}`Q-0450` (DTY-3; settled on DTY-P2): whether a member initializer that names its base with
   `decltype` can take a braced list. It can, as Clang and EDG say. GCC
   rejects the braced form and accepts the form with parentheses.
 
