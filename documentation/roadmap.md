@@ -329,6 +329,24 @@ round 28 with 64 tests that fail their check, 38 of them marked.
 | R11 | Done: records: DESIGN-rewrite.md section 7 to X24; a failing check for takeover-list problems; every gap in the parse count; stale ledger Records | none |
 | E | Done: propose X26 on P26; the portfolio step with P30 | none |
 
+## Phase 18: finish build step 3, hold the takeover in every check, and answer the open rows
+
+Decision 0066 (provisional) adopts this phase from the fifteenth round
+of clean-room roadmaps (`reports/clean-room/roadmap-15/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| TK | Hold the takeover in every check: the new front end's status for owned tests in every run, and check_all.sh runs them | none |
+| RW3 | The rest of build step 3, `unsupported` first; then build step 4 part a | TK for the status of owned tests |
+| T7 | Tests for the round 15 reductions and probes, and the round 15 programs and clean tries as program tests | none |
+| F8 | Answer the 13 `open` rows, RV11-R-1 first, with a question or table row for each new split | none |
+| GR2 | G182 and G183 into the text, then the parser function | none |
+| FE | Front-end round 29 on the old code: phase 18's new tests and twin changes only | T7; F8 for its tests |
+| DQ | A narrow second review of the questions held only by a doubt | none |
+| RV12 | A gap review of F8's and GR2's text and the old gaps; repairs and a recorded read of their diff | F8 and GR2 |
+| R12 | Records: stale ledger Records, X24's prototype test directory, review ID forms, the design documents | none |
+| E | The hook answers X26's three gaps; a step 3 P26 prototype; Propose X27 on P30 | none; the P26 prototype after the hook |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U

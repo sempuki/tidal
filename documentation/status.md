@@ -190,23 +190,17 @@ forward-progress rule belongs with threads, which are out of scope.
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
 0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, 0062, 0063, 0064,
-and 0065). Phases 1 to 17 are done, except that build step 3 of the
-rewrite is done in part. Next:
+0065, and 0066). Phases 1 to 17 are done, except that build step 3 of
+the rewrite is done in part. Phase 18 (decision 0066) is next:
 
-1. A fifteenth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-15/`, from the same five views, then a
-   decision that adopts phase 18. Its inputs include the open rows of
-   the exercise ledger (X26-1 to X26-6, RV11-R-1 to RV11-R-3, RV11-R-5,
-   RV11-R-7, RV11-R-8, and F7-2), the open front-end rows G182 and G183,
-   the rest of build step 3 (lambdas, structured bindings, linking,
-   and 122 missing reject checks in the plain scope), the completion
-   line after phase 17 (70 tests that fail their check, 38 of them
-   marked; 1 of 178 program tests that does not run), and the rewrite's
-   lines (`next: owned` 1327, `next: shadow: step 3 plain` 1602 of
-   1897).
-2. The rewrite owns 1327 tests through the takeover list (decision
-   0065). The old front end stays the front end of record for every
-   other test.
+1. Items TK, T7, F8, GR2, DQ, R12, and E, which can run together. TK
+   makes every check hold the 1327 owned tests on the new front end. F8
+   answers the 13 open exercise rows, RV11-R-1 first.
+2. The rest of build step 3 (item RW3) after TK, `unsupported` first,
+   then build step 4 part a. Front-end round 29 (item FE) on the old code
+   after T7, with F8's tests as they arrive.
+3. The RV12 gap review after F8 and GR2, ending with a recorded read of
+   its repair diff.
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,
