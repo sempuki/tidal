@@ -360,7 +360,10 @@ prototype of P22 (`src/proposals/p22.rs`) follows X24 under
 
 The new front end owns the tests of
 `reports/clean-room/rust-frontend/takeover.tsv`. The old front end in
-`src/` stays the front end of record for every other test.
+`src/` stays the front end of record for every other test. Every run of
+`tools/frontend_check.py`, and so `tools/check_all.sh`, takes the new
+front end's status for each owned test, and an owned test that the new
+front end does not pass fails the check.
 
 ```sh
 cd next

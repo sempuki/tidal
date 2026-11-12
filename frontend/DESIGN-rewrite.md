@@ -396,9 +396,11 @@ marks file, and the step of its model section takes it over.
 
 ### What `tools/frontend_check.py` measures
 
-Without `--next`, the tool runs the old front end and prints the lines
-it printed before the rewrite started. With `--next`, it also builds
-`frontend/next/` and prints these lines after them:
+Every run builds both front ends. Each test of the takeover list takes
+the new front end's status in the "0 worse" comparison, in `--update`,
+and on the completion line, which ends with "O owned by the new front
+end"; every other test keeps the old front end's status (decision 0066,
+item TK). With `--next`, the tool also prints these lines after them:
 
 ```text
 next: unit: K tests pass
@@ -432,8 +434,8 @@ next: owned: O tests (takeover list)
   an owned test whose status on the new front end is not a passing
   status, and each of these fails the check (decision 0065: ownership
   moves test by test, and a listed test that the new front end then
-  fails is a worse status). The lines without `--next` stay the old
-  front end's.
+  fails is a worse status). Every run, with or without `--next`, reports
+  these problems, so `tools/check_all.sh` holds the owned tests.
 - **A shadow run** (step 3). The tool also runs `tidal-next conform` on
   every test and prints the shadow lines above. "step 3" is the tests
   whose rules sit on the pages of the step 3 chapters (the prefixes of

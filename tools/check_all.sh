@@ -2,8 +2,10 @@
 # Run every check before pushing: specification cross-references, the page
 # examples on the baseline compilers, the full compiler matrix, the
 # similarity check (when TIDAL_REFERENCE points at the reference corpus, see
-# reports/README.md), the clean-room front end's conformance against its
-# baseline (when cargo is installed), and the HTML site build.
+# reports/README.md), the clean-room front ends' conformance against their
+# baseline (when cargo is installed; each test that takeover.tsv lists
+# takes the new front end's status, so a failing owned test fails here),
+# and the HTML site build.
 set -e
 cd "$(dirname "$0")/.."
 python3 -I tools/check_specification.py

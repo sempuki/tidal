@@ -7,6 +7,15 @@ change disagrees with the front end's reading of the spec, or the front end
 is out of date. The baseline is reports/clean-room/rust-frontend/conformance.tsv,
 one line per test with its status.
 
+Every run builds both front ends: the old one in frontend/ (tidal-fe) and
+the new one in frontend/next/ (tidal-next, decision 0060). The takeover
+list, reports/clean-room/rust-frontend/takeover.tsv, names the tests that
+the new front end owns (decisions 0065 and 0066). For an owned test, the
+status is the new front end's (`tidal-next conform -v`); for every other
+test, it is the old front end's (`tidal-fe conform -v`). The comparison
+with the baseline, --update, and the completion line use these statuses.
+An owned test whose new status is not a passing status fails the check.
+
 A test passes when the front end's answer matches the test's base
 expectation (`tidal-expect`). The passing statuses:
 
@@ -45,7 +54,7 @@ The summary counts these tests and how many of them pass.
 Fails when a test's status changes to a failing status: a move from a
 passing status, and a move from one failing status to another, both fail.
 New tests and tests that improved are reported. --update rewrites the
-baseline.
+baseline, with the new front end's status for each owned test.
 
 The last line gives the count that decision 0060's completion test
 uses: the tests that fail their check, and the program tests under
@@ -56,12 +65,13 @@ their check by the marks file, reports/clean-room/rust-frontend/rewrite-marks.ts
 (decision 0063). A marked test needs the template model of
 frontend/TEMPLATE-MODEL.md, and the rewrite takes it over. The rest count
 toward the gate of decisions 0062 and 0063. The line keeps its earlier
-numbers in their order and adds the two counts after the first:
+numbers in their order, adds the two counts after the first, and ends
+with the count of the takeover list:
 
     frontend: completion (decision 0060): N tests fail their check, of which
     M need the template model (marks file) and N-M count toward the gate of
     decisions 0062 and 0063; P/Q program tests do not run to their result;
-    K tests out of scope
+    K tests out of scope; O owned by the new front end
 
 A row of the marks file is a test path under tests/, the section of
 TEMPLATE-MODEL.md that passes the test, and a cause, separated by tabs.
@@ -116,11 +126,13 @@ shadow run changes no status and no baseline.
 
 The takeover list, reports/clean-room/rust-frontend/takeover.tsv, names
 the tests that the new front end owns: a test path, the build step, and
-the commit, separated by tabs. The tool reports a row whose test does
+the commit, separated by tabs. Every run reports a row whose test does
 not exist, a row of the wrong form, a test listed twice, and an owned
-test whose status on the new front end is not a passing status. Each of
-these problems fails the check. Without --next the tool does not read
-the list, and its lines are the old front end's alone.
+test whose status on the new front end is not a passing status, on
+lines that start with "frontend: takeover list:". Each of these problems
+fails the check. With --next, the "next: takeover list:" lines report
+them again, and the shadow lines compare with the old front end's status
+of each test, owned or not.
 
 Usage:
     tools/frontend_check.py [--update] [--next]
@@ -164,16 +176,17 @@ def cargo() -> str | None:
     return found or (str(home) if home.exists() else None)
 
 
-def results(cargo_bin: str) -> tuple[dict[str, str], str]:
-    """Return {test path: status} for every test, and the report, from
-    `tidal-fe conform -v`."""
-    build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=FRONTEND,
+def conform(cargo_bin: str, crate: Path, binary: str) -> tuple[dict[str, str], str]:
+    """Build a front end's crate and return {test path: status} for every
+    test, and the report, from `BINARY conform tests -v`. A test that the
+    report does not list passes."""
+    build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=crate,
                            capture_output=True, text=True)
     if build.returncode:
-        sys.exit(f"frontend: build failed\n{build.stderr}")
-    out = subprocess.run([str(FRONTEND / "target" / "release" / "tidal-fe"), "conform",
+        sys.exit(f"frontend: build of {crate.relative_to(ROOT)} failed\n{build.stderr}")
+    out = subprocess.run([str(crate / "target" / "release" / binary), "conform",
                           str(ROOT / "tests"), "-v"],
-                         cwd=FRONTEND, capture_output=True, text=True, check=True).stdout
+                         cwd=crate, capture_output=True, text=True, errors="replace", check=True).stdout
     status = {}
     for line in out.splitlines():
         parts = line.split("\t")
@@ -184,13 +197,30 @@ def results(cargo_bin: str) -> tuple[dict[str, str], str]:
         name = path.relative_to(tests).as_posix()
         if not name.endswith(".tu.cpp"):
             status.setdefault(name, "pass")
+    return status, out
+
+
+def allow_no_diagnostic(status: dict[str, str]) -> dict[str, str]:
+    """`MISSED-REJECT` becomes `NO-DIAGNOSTIC-ALLOWED` for a test whose
+    cited rules are all `no-diagnostic` (decision 0061, item CT)."""
+    tests = ROOT / "tests"
     no_diagnostic = {m.group(1) for f in SPEC.rglob("*.md")
                      for m in re.finditer(r"^:::\{rule\} (\S+)\n:kind: no-diagnostic$", f.read_text(), re.M)}
+    out = dict(status)
     for name, s in status.items():
+        if s != "MISSED-REJECT":
+            continue
         rules = cited_rules(tests / name)
-        if s == "MISSED-REJECT" and rules and rules <= no_diagnostic:
-            status[name] = "NO-DIAGNOSTIC-ALLOWED"
-    return status, out
+        if rules and rules <= no_diagnostic:
+            out[name] = "NO-DIAGNOSTIC-ALLOWED"
+    return out
+
+
+def results(cargo_bin: str) -> tuple[dict[str, str], str]:
+    """Return {test path: status} for every test, and the report, from
+    `tidal-fe conform -v`."""
+    status, out = conform(cargo_bin, FRONTEND, "tidal-fe")
+    return allow_no_diagnostic(status), out
 
 
 def cited_rules(path: Path) -> set[str]:
@@ -263,7 +293,8 @@ def read_baseline() -> dict[str, str]:
 
 def write_baseline(status: dict[str, str]) -> None:
     lines = ["# The clean-room front end's result for each test. tools/frontend_check.py",
-             "# compares with this file and rewrites it with --update."]
+             "# compares with this file and rewrites it with --update. A test that",
+             "# takeover.tsv lists has the new front end's status (tidal-next)."]
     lines += [f"{s}\t{n}" for n, s in sorted(status.items())]
     # Other agents run this tool, so a reader must never see half a file.
     with tempfile.NamedTemporaryFile("w", dir=BASELINE.parent, prefix=".conformance.",
@@ -281,11 +312,24 @@ def main() -> int:
     if not cargo_bin:
         print("frontend: skipped (cargo not found, see documentation/setup.md)")
         return 0
-    now, report = results(cargo_bin)
+    old_now, report = results(cargo_bin)
+    # The new front end's status counts for each owned test (decision 0066).
+    new_now, _ = conform(cargo_bin, NEXT, "tidal-next")
+    owned, takeover_problems = read_takeover()
+    now = dict(old_now)
+    for t in owned:
+        if t in new_now:
+            now[t] = new_now[t]
+    now = allow_no_diagnostic(now)
+    for t in owned:
+        if t in new_now and now[t] not in PASSING:
+            takeover_problems.append(f"{t} is owned by the new front end, which gives {now[t]}")
     if args.update or not BASELINE.exists():
+        for p in takeover_problems:
+            print(f"frontend: takeover list: {p}")
         write_baseline(now)
         print(f"frontend: baseline written, {sum(s in PASSING for s in now.values())}/{len(now)} pass")
-        return 0
+        return 1 if takeover_problems else 0
     base = read_baseline()
     # Any move to a failing status fails, from a pass or from another
     # failing status.
@@ -334,7 +378,7 @@ def main() -> int:
           f"of which {marked} need the template model (marks file) and "
           f"{len(failing) - marked} count toward the gate of decisions 0062 and 0063; "
           f"{not_run}/{len(programs)} program tests do not run to their result; "
-          f"{len(oos & set(now))} tests out of scope")
+          f"{len(oos & set(now))} tests out of scope; {len(owned)} owned by the new front end")
     no_base = sorted(n for n, s in now.items() if s == "NO-BASE")
     if no_base:
         print(f"frontend: {len(no_base)} tests with no base expectation: {', '.join(no_base)}")
@@ -346,8 +390,10 @@ def main() -> int:
         print(f"frontend: {int(cells[2]) + int(cells[3])}/{cells[1]} passing rejects name a "
               f"cited rule ({cells[2]}) or a linked rule ({cells[3]}) in their first error; "
               f"`tidal-fe conform` gives the table per page")
-    next_failed = check_next(cargo_bin, now) if args.next else False
-    return 1 if worse or next_failed else 0
+    for p in takeover_problems:
+        print(f"frontend: takeover list: {p}")
+    next_failed = check_next(cargo_bin, old_now, new_now) if args.next else False
+    return 1 if worse or takeover_problems or next_failed else 0
 
 
 def header_expect(path: Path) -> tuple[str | None, list[str]]:
@@ -418,10 +464,11 @@ def read_takeover() -> tuple[list[str], list[str]]:
     return owned, problems
 
 
-def check_next(cargo_bin: str, now: dict[str, str]) -> bool:
+def check_next(cargo_bin: str, now: dict[str, str], new_now: dict[str, str]) -> bool:
     """The `next:` lines (decision 0064, item RW). Returns True when a unit
     test fails, the crate does not build, or the takeover list has a
-    problem. `now` is the old front end's status for each test."""
+    problem. `now` is the old front end's status for each test, and
+    `new_now` the new front end's."""
     build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=NEXT, capture_output=True, text=True)
     if build.returncode:
         print(f"next: build failed\n{build.stderr}")
@@ -498,7 +545,7 @@ def check_next(cargo_bin: str, now: dict[str, str]) -> bool:
     print(f"next: parse: {agree}/{len(want)} tests parse as their outcome needs")
     print(f"next: parse: {same_line} of the {len(disagree)} disagreements are reject tests that stop on the line "
           f"of the old front end's first error")
-    shadow = shadow_lines(new, files, now)
+    shadow = shadow_lines(new_now, now)
     owned, problems = read_takeover()
     for t in owned:
         if t in shadow and shadow[t] not in PASSING:
@@ -535,21 +582,10 @@ def code_text(path: Path) -> str:
     return re.sub(r'"(\\.|[^"\\\n])*"|\'(\\.|[^\'\\\n])*\'', " ", t)
 
 
-def shadow_lines(new: Path, files: list[str], base: dict[str, str]) -> dict[str, str]:
-    """The shadow run of build step 3: the new front end's status for
-    every test, and the lines that count them by scope."""
-    out = subprocess.run([str(new), "conform", str(ROOT / "tests"), "-v"], cwd=NEXT, capture_output=True,
-                         text=True, errors="replace").stdout
-    status: dict[str, str] = {}
-    for line in out.splitlines():
-        parts = line.split("\t")
-        if len(parts) >= 2 and parts[1].endswith(".cpp"):
-            status[parts[1]] = parts[0]
+def shadow_lines(status: dict[str, str], base: dict[str, str]) -> dict[str, str]:
+    """The shadow lines of build step 3: they count the new front end's
+    status of each test by scope, and return the status."""
     tests = ROOT / "tests"
-    for f in files:
-        name = f.removeprefix("tests/")
-        if not name.endswith(".tu.cpp"):
-            status.setdefault(name, "pass")
     prefixes = page_prefixes()
     step3, plain = [], []
     for name in sorted(status):

@@ -1,5 +1,6 @@
 # The clean-room front end's result for each test. tools/frontend_check.py
-# compares with this file and rewrites it with --update.
+# compares with this file and rewrites it with --update. A test that
+# takeover.tsv lists has the new front end's status (tidal-next).
 pass	classes/access/access-after-overload-resolution.cpp
 pass	classes/access/access-best-path.cpp
 pass	classes/access/access-label-on-nothing.cpp
@@ -1353,6 +1354,7 @@ pass	declarations/attributes/likely-identifier-label.cpp
 pass	declarations/attributes/likely-unlikely.cpp
 pass	declarations/attributes/likely-with-argument.cpp
 pass	declarations/attributes/maybe-unused-on-type.cpp
+MISSED-REJECT	declarations/attributes/maybe-unused-on-using-directive.cpp
 pass	declarations/attributes/maybe-unused-silences.cpp
 pass	declarations/attributes/maybe-unused-with-argument.cpp
 pass	declarations/attributes/no-unique-address-bitfield.cpp
@@ -1419,11 +1421,15 @@ pass	declarations/auto/decays-arrays-and-functions.cpp
 pass	declarations/auto/decltype-auto-address-of-function.cpp
 pass	declarations/auto/decltype-auto-array-member.cpp
 pass	declarations/auto/decltype-auto-array.cpp
+pass	declarations/auto/decltype-auto-as-base.cpp
 pass	declarations/auto/decltype-auto-braced-multiple.cpp
 pass	declarations/auto/decltype-auto-braced.cpp
 pass	declarations/auto/decltype-auto-copy-list.cpp
+MISSED-REJECT	declarations/auto/decltype-auto-destructor-call.cpp
 pass	declarations/auto/decltype-auto-function.cpp
+MISSED-REJECT	declarations/auto/decltype-auto-functional-cast.cpp
 pass	declarations/auto/decltype-auto-keeps-cv.cpp
+pass	declarations/auto/decltype-auto-member-initializer.cpp
 pass	declarations/auto/decltype-auto-overload-set.cpp
 pass	declarations/auto/decltype-auto-value-category.cpp
 pass	declarations/auto/decltype-auto-with-pointer.cpp
@@ -1694,8 +1700,10 @@ pass	declarations/enumerations/unscoped-underlying-holds-values.cpp
 pass	declarations/enumerations/unscoped-value-too-large-ilp32.cpp
 pass	declarations/enumerations/unscoped-value-too-large.cpp
 pass	declarations/enumerations/using-declaration-enumerator.cpp
+pass	declarations/enumerations/using-enum-alias-template.cpp
 pass	declarations/enumerations/using-enum-alias.cpp
 pass	declarations/enumerations/using-enum-conflict.cpp
+MISSED-REJECT	declarations/enumerations/using-enum-dependent.cpp
 pass	declarations/enumerations/using-enum-not-enum.cpp
 EDG-ONLY	declarations/enumerations/using-enum-opaque.cpp
 pass	declarations/enumerations/using-enum-qualified.cpp
@@ -1828,8 +1836,8 @@ pass	declarations/functions/definitions/main-auto.cpp
 pass	declarations/functions/definitions/main-call.cpp
 pass	declarations/functions/definitions/main-consteval.cpp
 pass	declarations/functions/definitions/main-constexpr.cpp
-EDG-ONLY	declarations/functions/definitions/main-four-params-ilp32.cpp
-EDG-ONLY	declarations/functions/definitions/main-four-params.cpp
+EDG-ALLOWED	declarations/functions/definitions/main-four-params-ilp32.cpp
+EDG-ALLOWED	declarations/functions/definitions/main-four-params.cpp
 pass	declarations/functions/definitions/main-global-variable.cpp
 pass	declarations/functions/definitions/main-in-namespace.cpp
 pass	declarations/functions/definitions/main-inline.cpp
@@ -1841,8 +1849,8 @@ pass	declarations/functions/definitions/main-returns-zero.cpp
 pass	declarations/functions/definitions/main-template.cpp
 pass	declarations/functions/definitions/main-three-params-ilp32.cpp
 pass	declarations/functions/definitions/main-three-params.cpp
-EDG-ONLY	declarations/functions/definitions/main-wrong-first-param-ilp32.cpp
-EDG-ONLY	declarations/functions/definitions/main-wrong-first-param.cpp
+EDG-ALLOWED	declarations/functions/definitions/main-wrong-first-param-ilp32.cpp
+EDG-ALLOWED	declarations/functions/definitions/main-wrong-first-param.cpp
 pass	declarations/functions/definitions/main-wrong-return-type.cpp
 pass	declarations/functions/definitions/member-in-class-specialization-over-class.cpp
 pass	declarations/functions/definitions/member-in-class-type-completed-after-class.cpp
@@ -2243,6 +2251,7 @@ pass	declarations/namespaces/using-declaration-unqualified.cpp
 pass	declarations/namespaces/using-declaration.cpp
 pass	declarations/namespaces/using-directive-ambiguous-unused.cpp
 pass	declarations/namespaces/using-directive-ambiguous-use.cpp
+pass	declarations/namespaces/using-directive-attribute.cpp
 pass	declarations/namespaces/using-directive-block-scope.cpp
 pass	declarations/namespaces/using-directive-global-ambiguity.cpp
 pass	declarations/namespaces/using-directive-local-hides.cpp
@@ -2357,6 +2366,7 @@ pass	declarations/structured-bindings/array-hidden-copy.cpp
 pass	declarations/structured-bindings/array-reference.cpp
 pass	declarations/structured-bindings/as-class-member.cpp
 pass	declarations/structured-bindings/as-parameter.cpp
+pass	declarations/structured-bindings/attribute-before-binding.cpp
 pass	declarations/structured-bindings/binding-types.cpp
 pass	declarations/structured-bindings/bit-field-address-copy.cpp
 pass	declarations/structured-bindings/bit-field-address.cpp
@@ -2999,7 +3009,7 @@ pass	expressions/comparison/nan.cpp
 pass	expressions/comparison/noexcept-function-pointer-equality.cpp
 pass	expressions/comparison/null-pointer-equality.cpp
 pass	expressions/comparison/nullptr-equals-zero.cpp
-EDG-ONLY	expressions/comparison/one-past-end-adjacent-constant.cpp
+EDG-ALLOWED	expressions/comparison/one-past-end-adjacent-constant.cpp
 pass	expressions/comparison/one-past-end-adjacent.cpp
 pass	expressions/comparison/one-past-member-adjacent-constant.cpp
 pass	expressions/comparison/pointer-array-member-order.cpp
@@ -3576,6 +3586,7 @@ pass	expressions/new-delete/leak-in-constant-evaluation.cpp
 pass	expressions/new-delete/multi-dimension-type.cpp
 pass	expressions/new-delete/new-auto-no-initializer.cpp
 pass	expressions/new-delete/new-auto-two-values.cpp
+FALSE-REJECT	expressions/new-delete/new-type-pointer-forms.cpp
 pass	expressions/new-delete/new-void.cpp
 pass	expressions/new-delete/non-allocating-placement-over-aligned.cpp
 pass	expressions/new-delete/null-result-class-function-sanitizer.cpp
@@ -3801,7 +3812,7 @@ pass	expressions/primary/number-runs-over-underscore.cpp
 pass	expressions/primary/paren-function-call.cpp
 pass	expressions/primary/paren-lvalue.cpp
 pass	expressions/primary/paren-same-type.cpp
-EDG-ONLY	expressions/primary/string-compare-constant.cpp
+EDG-ALLOWED	expressions/primary/string-compare-constant.cpp
 pass	expressions/primary/string-concat-mixed.cpp
 pass	expressions/primary/string-concat-u8-u.cpp
 pass	expressions/primary/string-concat.cpp
@@ -3999,6 +4010,8 @@ pass	foundations/constant-evaluation/moderate-loops-split.cpp
 pass	foundations/constant-evaluation/moderate-recursion.cpp
 pass	foundations/constant-evaluation/modify-local-object.cpp
 pass	foundations/constant-evaluation/modify-outside-object.cpp
+pass	foundations/constant-evaluation/mutable-member-part-read-inside.cpp
+pass	foundations/constant-evaluation/mutable-member-part-read-outside.cpp
 EDG-ONLY	foundations/constant-evaluation/mutable-member-read-outside.cpp
 pass	foundations/constant-evaluation/new-delete-transient.cpp
 pass	foundations/constant-evaluation/non-constexpr-call.cpp
@@ -4638,8 +4651,10 @@ pass	foundations/objects/thread-local-started-by-other-variable.cpp
 pass	foundations/objects/unbraced-substatement-ends-object.cpp
 pass	foundations/objects/uninitialized-member-read-constant.cpp
 pass	foundations/objects/virtual-bases-first.cpp
+pass	foundations/objects/write-after-destructor-union-class-member-constant.cpp
 pass	foundations/objects/write-after-end-constant.cpp
 EDG-ONLY	foundations/objects/write-after-pseudo-destructor-element-constant.cpp
+pass	foundations/objects/write-after-pseudo-destructor-nested-union-member-constant.cpp
 EDG-ONLY	foundations/objects/write-after-pseudo-destructor-union-array-element-constant.cpp
 pass	foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp
 EDG-ONLY	foundations/objects/write-after-pseudo-destructor-variable-constant.cpp
@@ -4910,8 +4925,8 @@ pass	foundations/translation/main-trailing-return-int.cpp
 pass	foundations/translation/main-two-definitions.cpp
 pass	foundations/translation/main-variable.cpp
 pass	foundations/translation/main-with-args.cpp
-EDG-ONLY	foundations/translation/main-wrong-parameter-types-ilp32.cpp
-EDG-ONLY	foundations/translation/main-wrong-parameter-types.cpp
+EDG-ALLOWED	foundations/translation/main-wrong-parameter-types-ilp32.cpp
+EDG-ALLOWED	foundations/translation/main-wrong-parameter-types.cpp
 pass	foundations/translation/observable-volatile-kept-optimized.cpp
 pass	foundations/translation/string-literal-open-at-end-of-file.cpp
 pass	foundations/translation/undefined-at-link.cpp
@@ -6433,6 +6448,7 @@ pass	templates/declarations/template-template-inner-default.cpp
 pass	templates/declarations/template-template-parameter-heads.cpp
 pass	templates/declarations/template-template-parameter.cpp
 pass	templates/declarations/two-declarators.cpp
+MISSED-REJECT	templates/declarations/two-template-heads-in-class.cpp
 pass	templates/declarations/type-parameter-keywords-unnamed.cpp
 pass	templates/declarations/type-parameter-keywords.cpp
 pass	templates/declarations/typedef-template.cpp
@@ -6668,6 +6684,8 @@ pass	templates/dependent-names/qualified-member-other-at-instantiation.cpp
 EDG-AGREES	templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp
 EDG-AGREES	templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp
 pass	templates/dependent-names/syntax-error-unused.cpp
+run-unsupported	templates/dependent-names/template-keyword-base-last-name.cpp
+pass	templates/dependent-names/template-keyword-cast-last-name.cpp
 EDG-ONLY	templates/dependent-names/template-keyword-destructor-dot.cpp
 EDG-ONLY	templates/dependent-names/template-keyword-destructor.cpp
 run-unsupported	templates/dependent-names/template-keyword-forms.cpp
