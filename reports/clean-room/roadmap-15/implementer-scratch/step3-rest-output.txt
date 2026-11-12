@@ -1,0 +1,52 @@
+291 tests
+121	missing check
+75	lambda
+34	other (unsupported)
+13	noexcept
+12	missing check (EDG-AGREES)
+12	if consteval
+12	structured binding
+6	assume
+5	long double
+1	other (FALSE-REJECT)
+
+missing checks by page directory:
+24	declarations/functions
+17	declarations/attributes
+8	expressions/comparison
+6	declarations/namespaces
+6	expressions/decltype
+5	declarations/auto
+5	declarations/constexpr
+5	declarations/linkage-specifications
+4	expressions/bitwise
+4	foundations/constant-evaluation
+3	declarations/enumerations
+3	declarations/initialization
+3	declarations/volatile
+3	foundations/odr
+2	declarations/alignment
+2	declarations/declarators
+2	declarations/inline
+2	declarations/type-names
+2	expressions/additive
+2	expressions/casts
+2	expressions/logical
+2	expressions/multiplicative
+2	expressions/primary
+2	expressions/shift
+2	foundations/translation
+2	statements/if
+2	statements/loops
+2	statements/switch
+2	foundations/objects
+1	expressions/comma
+1	expressions/postfix
+1	expressions/unary
+1	foundations/storage
+1	statements/blocks
+1	statements/jumps
+1	foundations/conversions
+
+missing checks by prefix of the first cited rule:
+ATTR 17, DEFARG 9, FN 8, RET 8, CMP 8, NS 6, AUTO 5, ENUM 5, UNEV 5, LSP 4, BIT 4, CE 4, CV 3, ODR 3, JMP 3, ALN 2, CEV 2, CX 2, DCL 2, REF 2, INL 2, ADD 2, CAST 2, LOG 2, MUL 2, PRIM 2, SHF 2, TR 2, IF 2, SW 2, CONV 2, OBJ 2, CINIT 1, VOL 1, COMMA 1, DTY 1, PFX 1, UN 1, STMT 1

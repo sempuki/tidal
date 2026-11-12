@@ -1,0 +1,15 @@
+scope	tests	old-check	new-check	both	new-only	owned	programs	programs-old-run
+3-plain	1897	1891	1602	1600	2	1327	3	3
+4-plain	2823	2819	225	224	1	0	29	29
+3-templ	586	577	22	22	0	0	22	22
+4-templ	407	399	1	1	0	0	47	47
+5-7	1435	1377	65	62	3	0	77	76
+4-plain, step 3 rules only	1349	1346	171
+4-plain, a step 4 rule	1474	1473	54
+
+step 3 plain, both pass their check, not owned: 273 {'run': 74, 'reject': 185, 'run-fail': 7, 'accept': 7} {'run-unsupported': 67, 'EDG-ONLY': 6, 'pass': 182, 'RUN-UNEXPECTED-UB': 7, 'RUN-MISSED-UB': 8, 'RUN-WRONG-RESULT': 3}
+
+step 4 plain, new statuses: {'unsupported': 2507, 'pass': 213, 'FALSE-REJECT': 73, 'MISSED-REJECT': 16, 'EDG-ONLY': 8, 'run-unsupported': 3, 'EDG-AGREES': 2, 'RUN-WRONG-RESULT': 1}
+step 4 plain, by chapter of the test directory: {'classes': 1092, 'foundations': 442, 'declarations': 437, 'expressions': 415, 'exceptions': 214, 'overloading': 113, 'statements': 81, 'programs': 29}
+
+owned tests the old front end does not pass: []

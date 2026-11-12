@@ -1,0 +1,19 @@
+| | compile |
+|---|---|
+| o1.cpp | accept |
+| m1.cpp | accept |
+| u1.cpp | accept |
+| f1.cpp | accept |
+| f1.cpp -DTWO | accept |
+| s1.cpp | accept |
+| t1.cpp | accept |
+| t1.cpp -DUSE | accept |
+| t1.cpp -DDEFER_CLASS | accept |
+| t1.cpp -DDEFER | accept |
+| X26-1: left operand temporary ends at the end of the full expression | accept |
+| X26-1: the same with a cast to void | accept |
+| X26-1: a class prvalue as an expression statement ends at once | accept |
+| X26-2: a class prvalue as the iteration expression ends before the condition | accept |
+| X26-2: a comma in the iteration expression keeps its temporary to the end of it | accept |
+| X26-5: a right fold over class elements calls the overloaded comma | accept |
+| X26-5: a left fold over class elements calls the overloaded comma | accept |

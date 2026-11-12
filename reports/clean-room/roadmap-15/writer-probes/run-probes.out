@@ -1,0 +1,119 @@
+## Runs
+
+| Program | Compiler | Result | Output |
+|---|---|---|---|
+| f1.cpp | clang-18 | exit 0 |  |
+| f1.cpp | clang-22 | exit 0 |  |
+| f1.cpp | clang-host | exit 0 |  |
+| f1.cpp | gcc-14 | exit 0 |  |
+| f1.cpp | gcc-16 | exit 0 |  |
+| f1.cpp | gcc-host | exit 0 |  |
+| f1.cpp -DTWO | clang-18 | exit 0 |  |
+| f1.cpp -DTWO | clang-22 | exit 0 |  |
+| f1.cpp -DTWO | clang-host | exit 0 |  |
+| f1.cpp -DTWO | gcc-14 | exit 0 |  |
+| f1.cpp -DTWO | gcc-16 | exit 0 |  |
+| f1.cpp -DTWO | gcc-host | exit 0 |  |
+| m1.cpp | clang-18 | exit 0 |  |
+| m1.cpp | clang-22 | exit 0 |  |
+| m1.cpp | clang-host | exit 0 |  |
+| m1.cpp | gcc-14 | exit 0 |  |
+| m1.cpp | gcc-16 | exit 0 |  |
+| m1.cpp | gcc-host | exit 0 |  |
+| o1.cpp | clang-18 | exit 0 |  |
+| o1.cpp | clang-22 | exit 0 |  |
+| o1.cpp | clang-host | exit 0 |  |
+| o1.cpp | gcc-14 | exit 0 |  |
+| o1.cpp | gcc-16 | exit 0 |  |
+| o1.cpp | gcc-host | exit 0 |  |
+| s1.cpp | clang-18 | exit 0 |  |
+| s1.cpp | clang-22 | exit 0 |  |
+| s1.cpp | clang-host | exit 0 |  |
+| s1.cpp | gcc-14 | exit 0 |  |
+| s1.cpp | gcc-16 | exit 0 |  |
+| s1.cpp | gcc-host | exit 0 |  |
+| t1.cpp | clang-18 | exit 0 |  |
+| t1.cpp | clang-22 | exit 0 |  |
+| t1.cpp | clang-host | exit 0 |  |
+| t1.cpp | gcc-14 | exit 0 |  |
+| t1.cpp | gcc-16 | exit 0 |  |
+| t1.cpp | gcc-host | exit 0 |  |
+| t1.cpp -DDEFER | clang-18 | exit 0 |  |
+| t1.cpp -DDEFER | clang-22 | exit 0 |  |
+| t1.cpp -DDEFER | clang-host | exit 0 |  |
+| t1.cpp -DDEFER | gcc-14 | exit 0 |  |
+| t1.cpp -DDEFER | gcc-16 | exit 0 |  |
+| t1.cpp -DDEFER | gcc-host | exit 0 |  |
+| t1.cpp -DDEFER_CLASS | clang-18 | exit 0 |  |
+| t1.cpp -DDEFER_CLASS | clang-22 | exit 0 |  |
+| t1.cpp -DDEFER_CLASS | clang-host | exit 0 |  |
+| t1.cpp -DDEFER_CLASS | gcc-14 | exit 0 |  |
+| t1.cpp -DDEFER_CLASS | gcc-16 | exit 0 |  |
+| t1.cpp -DDEFER_CLASS | gcc-host | exit 0 |  |
+| t1.cpp -DUSE | clang-18 | exit 0 |  |
+| t1.cpp -DUSE | clang-22 | exit 0 |  |
+| t1.cpp -DUSE | clang-host | exit 0 |  |
+| t1.cpp -DUSE | gcc-14 | exit 0 |  |
+| t1.cpp -DUSE | gcc-16 | exit 0 |  |
+| t1.cpp -DUSE | gcc-host | exit 0 |  |
+| u1.cpp | clang-18 | exit 0 |  |
+| u1.cpp | clang-22 | exit 0 |  |
+| u1.cpp | clang-host | exit 0 |  |
+| u1.cpp | gcc-14 | exit 0 |  |
+| u1.cpp | gcc-16 | exit 0 |  |
+| u1.cpp | gcc-host | exit 0 |  |
+
+## Warnings
+
+In w1.cpp, line n holds case L(n-8). With a define, line numbers of t1 and f1 are one more than in the file.
+
+| Program | Compiler | Status | Warnings |
+|---|---|---|---|
+| f1.cpp -Wunused-value | clang-18 | ok | lines [] |
+| f1.cpp -Wunused-value | clang-22 | ok | lines [] |
+| f1.cpp -Wunused-value | clang-host | ok | lines [] |
+| f1.cpp -Wunused-value | gcc-14 | ok | lines [] |
+| f1.cpp -Wunused-value | gcc-16 | ok | lines [] |
+| f1.cpp -Wunused-value | gcc-host | ok | lines [] |
+| f1.cpp -Wunused-value -DTWO | clang-18 | ok | lines [4] -Wunused-value |
+| f1.cpp -Wunused-value -DTWO | clang-22 | ok | lines [4] -Wunused-value |
+| f1.cpp -Wunused-value -DTWO | clang-host | ok | lines [4] -Wunused-value |
+| f1.cpp -Wunused-value -DTWO | gcc-14 | ok | lines [4] -Wunused-value |
+| f1.cpp -Wunused-value -DTWO | gcc-16 | ok | lines [4] -Wunused-value |
+| f1.cpp -Wunused-value -DTWO | gcc-host | ok | lines [4] -Wunused-value |
+| m1.cpp -Wall -Wextra | clang-18 | ok | lines [] |
+| m1.cpp -Wall -Wextra | clang-22 | ok | lines [] |
+| m1.cpp -Wall -Wextra | clang-host | ok | lines [] |
+| m1.cpp -Wall -Wextra | gcc-14 | ok | lines [] |
+| m1.cpp -Wall -Wextra | gcc-16 | ok | lines [] |
+| m1.cpp -Wall -Wextra | gcc-host | ok | lines [] |
+| t1.cpp -Wunused-value | clang-18 | ok | lines [] |
+| t1.cpp -Wunused-value | clang-22 | ok | lines [] |
+| t1.cpp -Wunused-value | clang-host | ok | lines [] |
+| t1.cpp -Wunused-value | gcc-14 | ok | lines [] |
+| t1.cpp -Wunused-value | gcc-16 | ok | lines [] |
+| t1.cpp -Wunused-value | gcc-host | ok | lines [] |
+| t1.cpp -Wunused-value -DDEFER | clang-18 | ok | lines [7] -Wunused-value |
+| t1.cpp -Wunused-value -DDEFER | clang-22 | ok | lines [7] -Wunused-value |
+| t1.cpp -Wunused-value -DDEFER | clang-host | ok | lines [7] -Wunused-value |
+| t1.cpp -Wunused-value -DDEFER | gcc-14 | ok | lines [7] -Wunused-value |
+| t1.cpp -Wunused-value -DDEFER | gcc-16 | ok | lines [7] -Wunused-value |
+| t1.cpp -Wunused-value -DDEFER | gcc-host | ok | lines [7] -Wunused-value |
+| t1.cpp -Wunused-value -DDEFER_CLASS | clang-18 | ok | lines [] |
+| t1.cpp -Wunused-value -DDEFER_CLASS | clang-22 | ok | lines [] |
+| t1.cpp -Wunused-value -DDEFER_CLASS | clang-host | ok | lines [] |
+| t1.cpp -Wunused-value -DDEFER_CLASS | gcc-14 | ok | lines [] |
+| t1.cpp -Wunused-value -DDEFER_CLASS | gcc-16 | ok | lines [] |
+| t1.cpp -Wunused-value -DDEFER_CLASS | gcc-host | ok | lines [] |
+| t1.cpp -Wunused-value -DUSE | clang-18 | ok | lines [6] -Wunused-value |
+| t1.cpp -Wunused-value -DUSE | clang-22 | ok | lines [6] -Wunused-value |
+| t1.cpp -Wunused-value -DUSE | clang-host | ok | lines [6] -Wunused-value |
+| t1.cpp -Wunused-value -DUSE | gcc-14 | ok | lines [6] -Wunused-value |
+| t1.cpp -Wunused-value -DUSE | gcc-16 | ok | lines [6] -Wunused-value |
+| t1.cpp -Wunused-value -DUSE | gcc-host | ok | lines [6] -Wunused-value |
+| w1.cpp -Wunused-value | clang-18 | ok | lines [9, 10, 11, 12, 13, 19, 20, 21, 22, 23, 24, 25, 33, 37, 38] -Wunused-comparison -Wunused-value |
+| w1.cpp -Wunused-value | clang-22 | ok | lines [9, 10, 11, 12, 13, 19, 20, 21, 22, 23, 24, 25, 33, 37, 38] -Wunused-comparison -Wunused-value |
+| w1.cpp -Wunused-value | clang-host | ok | lines [9, 10, 11, 12, 13, 19, 20, 21, 22, 23, 24, 25, 33, 37, 38] -Wunused-comparison -Wunused-value |
+| w1.cpp -Wunused-value | gcc-14 | ok | lines [9, 10, 11, 12, 13, 20, 21, 22, 23, 24, 25, 33, 37] -Wunused-value |
+| w1.cpp -Wunused-value | gcc-16 | ok | lines [9, 10, 11, 12, 13, 20, 21, 22, 23, 24, 25, 33, 37] -Wunused-value |
+| w1.cpp -Wunused-value | gcc-host | ok | lines [9, 10, 11, 12, 13, 20, 21, 22, 23, 24, 25, 33, 37] -Wunused-value |

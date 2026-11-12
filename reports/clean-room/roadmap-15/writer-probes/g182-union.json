@@ -1,0 +1,18 @@
+{
+ "prelude": "",
+ "template": "{prelude}\n{row}\n",
+ "rows": {
+  "union partial specialization": "template <class T, class U> union S { T t; U u; };\ntemplate <class T> union S<T, int> { T t; int u; char c[3]; };\nS<char, int> s{};\nstatic_assert(sizeof(S<char, int>) >= sizeof(int));",
+  "union explicit specialization": "template <class T> union S { T t; };\ntemplate <> union S<int> { int a; long b; };\nstatic_assert(sizeof(S<int>) == sizeof(long));",
+  "union partial specialization with final": "template <class T> union S { T t; };\ntemplate <class T> union S<T*> final { T* p; long n; };\nS<int*> s{};",
+  "union defined with a namespace qualifier": "namespace N { union V; }\nunion N::V { int a; float f; };\nN::V v{1};",
+  "union defined with a class qualifier": "struct O { union I; };\nunion O::I { int x; };\nO::I i{2};",
+  "member union template defined outside": "template <class T> struct O { template <class U> union I; };\ntemplate <class T> template <class U> union O<T>::I { T t; U u; };\nO<int>::I<char> i{1};",
+  "explicit specialization of a member union": "template <class T> struct O { union I { T t; }; };\ntemplate <> union O<int>::I { int t; long l; };\nstatic_assert(sizeof(O<int>::I) == sizeof(long));",
+  "partial specialization: union key for a struct template": "template <class T> struct S {};\ntemplate <class T> union S<T*> { T* p; };",
+  "explicit specialization: struct key for a union template": "template <class T> union S { T t; };\ntemplate <> struct S<int> { int a; };"
+ },
+ "cols": {
+  "compile": ""
+ }
+}

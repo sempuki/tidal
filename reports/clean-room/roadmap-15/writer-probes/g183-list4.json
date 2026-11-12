@@ -1,0 +1,19 @@
+{
+ "prelude": "struct In { int a; int b; };\nstruct Out { In in; int z; };\nstruct DIn : In {};\nstruct ToIn { constexpr operator In() const { return {7, 8}; } };\nstruct Both { constexpr operator In() const { return {7, 8}; } constexpr operator int() const { return 1; } };\nstruct Any {\n  template <class T> constexpr operator T() const {\n    if constexpr (sizeof(T) == sizeof(int)) return T(1); else return T{7, 8};\n  }\n};\n",
+ "template": "{prelude}\n{row}\n",
+ "rows": {
+  "ToIn (converts only to In): takes the member whole": "constexpr Out o{ToIn{}, 5};\nstatic_assert(o.in.a == 7 && o.in.b == 8 && o.z == 5);",
+  "Both (to In and to int): takes the member whole": "constexpr Out o{Both{}, 5};\nstatic_assert(o.in.a == 7 && o.in.b == 8 && o.z == 5);",
+  "Both (to In and to int): braces elided": "constexpr Out o{Both{}, 5};\nstatic_assert(o.in.a == 1 && o.in.b == 5 && o.z == 0);",
+  "Any (template): takes the member whole": "constexpr Out o{Any{}, 5};\nstatic_assert(o.in.a == 7 && o.in.b == 8 && o.z == 5);",
+  "Any (template): braces elided": "constexpr Out o{Any{}, 5};\nstatic_assert(o.in.a == 1 && o.in.b == 5 && o.z == 0);",
+  "Any, Any: takes the member whole": "constexpr Out o{Any{}, Any{}};\nstatic_assert(o.in.a == 7 && o.z == 1);",
+  "Any, Any, Any (three values for two members)": "constexpr Out o{Any{}, Any{}, Any{}};",
+  "DIn (derived from In): takes the member whole": "constexpr Out o{DIn{{7, 8}}, 5};\nstatic_assert(o.in.a == 7 && o.in.b == 8 && o.z == 5);",
+  "control: In object takes the member whole": "constexpr In i{7, 8};\nconstexpr Out o{i, 5};\nstatic_assert(o.in.a == 7 && o.z == 5);",
+  "control: int values fill the member by elision": "constexpr Out o{1, 2, 3};\nstatic_assert(o.in.a == 1 && o.in.b == 2 && o.z == 3);"
+ },
+ "cols": {
+  "compile": ""
+ }
+}

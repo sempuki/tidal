@@ -1,0 +1,37 @@
+a using-declaration of an operator function: 10 tests
+  classes/comparisons/ne-matching-using-declaration.cpp (pass)
+  classes/comparisons/ne-not-matching.cpp (pass)
+  expressions/lambdas/closure-as-base-overload-set.cpp (pass)
+  programs/W18/visitor.cpp (pass)
+  programs/roadmap/r10-variant.cpp (pass)
+  programs/roadmap/r14-fsm-second-try.cpp (unsupported)
+  programs/roadmap/r14-fsm.cpp (pass)
+  templates/class-template-deduction/aggregate-candidate-pack.cpp (pass)
+  templates/deduction/losing-candidate-body-not-instantiated.cpp (pass)
+  templates/packs/using-declaration-pack.cpp (pass)
+a template template parameter pack: 6 tests
+  templates/arguments/pack-takes-rest-kinds.cpp (pass)
+  templates/declarations/default-pack-template.cpp (pass)
+  templates/packs/expansion-elements.cpp (unsupported)
+  templates/packs/member-template-pack-expansion.cpp (pass)
+  templates/packs/member-template-pack-length.cpp (MISSED-REJECT)
+  templates/packs/size-operator.cpp (pass)
+a base named with ::template: 1 tests
+  templates/dependent-names/template-keyword-base-last-name.cpp (no row)
+a member template of a specialization as a template argument: 0 tests
+a constructor template with a parameter of reference to array of deduced bound: 8 tests
+  programs/P1/stats.cpp (pass)
+  programs/W20/span_sort.cpp (pass-partial)
+  programs/W7/small_string.cpp (pass)
+  programs/roadmap/r11-views.cpp (pass-partial)
+  programs/roadmap/r13-bits-first-try.cpp (pass)
+  programs/roadmap/r13-bits.cpp (pass)
+  programs/roadmap/r14-keys-first-try.cpp (pass)
+  programs/roadmap/r14-keys.cpp (pass)
+tidal-next: a class template whose base clause names the class template with arguments: 6 tests
+  programs/P3/pipeline-first-try.cpp (pass)
+  programs/roadmap/r10-tuple-second-try.cpp (pass-partial)
+  programs/roadmap/r10-tuple.cpp (pass-partial)
+  programs/roadmap/r14-fsm-second-try.cpp (unsupported)
+  programs/roadmap/r14-fsm.cpp (pass)
+  programs/roadmap/r8-tasks.cpp (pass)

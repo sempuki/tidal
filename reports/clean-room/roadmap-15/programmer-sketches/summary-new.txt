@@ -1,0 +1,63 @@
+tidal-fe
+  bug        result other   1
+  bug        undefined      13
+  invalid    rejected       13
+  invalid    result 0       1
+  valid      rejected       10
+  valid      result 0       56
+  valid      undefined      1
+  valid      unsupported    9
+tidal-next run
+  bug        result 0       4
+  bug        undefined      5
+  bug        unsupported    5
+  invalid    rejected       8
+  invalid    unsupported    6
+  valid      rejected       25
+  valid      result 0       7
+  valid      undefined      1
+  valid      unsupported    43
+Files where a front end disagrees with the compilers:
+  tidal-next run: new/anybox.cpp: compilers valid, rejected: rejected [NAM-14] at line 183: 'Any' is not a member of the named scope 
+  tidal-fe: new/anybox_first_try.cpp: compilers valid, undefined: undefined [STG-23] at line 53: access to an object of type unsigned char through a glvalue of type int explore
+  tidal-next run: new/anybox_first_try.cpp: compilers valid, rejected: rejected [NAM-14] at line 173: 'Any' is not a member of the named scope 
+  tidal-next run: new/bugs/enum_out_of_range.cpp: compilers bug, result 0: result: 0 
+  tidal-next run: new/bugs/unsequenced_increments.cpp: compilers bug, result 0: result: 0 
+  tidal-next run: new/flags.cpp: compilers valid, rejected: rejected [NAM-14] at line 174: 'Flags' is not a member of the named scope 
+  tidal-fe: new/flags_third_try.cpp: compilers valid, rejected: rejected [SA-1] at line 197: static assertion failed 
+  tidal-next run: new/flags_third_try.cpp: compilers valid, rejected: rejected [NAM-14] at line 175: 'Flags' is not a member of the named scope 
+  tidal-fe: new/guard_second_try.cpp: compilers bug, result other: result: 23 
+  tidal-fe: new/intervals_first_try.cpp: compilers valid, rejected: rejected [DED-35] at line 107: no viable function for the call of 'lower_bound': deduction fails for each temp
+  tidal-next run: new/one-line/implicit_move_rvalue_reference_return_first_try.cpp: compilers bug, result 0: result: 0 
+  tidal-next run: new/strong.cpp: compilers valid, rejected: rejected [TR-12] at line 40: the grammar derives no declaration here: expected '{', found '>' 
+  tidal-next run: new/strong_fifth_try.cpp: compilers valid, rejected: rejected [TR-12] at line 36: the grammar derives no declaration here: expected '{', found '>' 
+  tidal-next run: new/strong_fourth_try.cpp: compilers valid, rejected: rejected [TR-12] at line 35: the grammar derives no declaration here: expected '{', found '>' 
+  tidal-fe: new/strong_second_try.cpp: compilers valid, rejected: rejected [TARG-10] at line 127: the template 'skill' is used without an argument list 
+  tidal-next run: new/strong_second_try.cpp: compilers valid, rejected: rejected [TR-12] at line 29: the grammar derives no declaration here: expected '{', found '>>' 
+  tidal-next run: new/strong_third_try.cpp: compilers valid, rejected: rejected [TR-12] at line 29: the grammar derives no declaration here: expected '{', found '>>' 
+  tidal-next run: probes/adl_named_function_through_using_declaration.cpp: compilers valid, rejected: rejected [NAM-14] at line 6: 'f' is not a member of the named scope 
+  tidal-fe: probes/adl_operator_function_through_using_declaration.cpp: compilers valid, rejected: rejected [BIT-3] at line 6: scoped enumeration operand of '|' (ENUM-3) 
+  tidal-next run: probes/adl_operator_function_through_using_declaration.cpp: compilers valid, rejected: rejected [BIT-3] at line 6: invalid operands of types enum#0 and enum#0 
+  tidal-fe: probes/adl_operator_template_through_using_declaration.cpp: compilers valid, rejected: rejected [BIT-3] at line 8: scoped enumeration operand of '|' (ENUM-3) 
+  tidal-next run: probes/adl_operator_template_through_using_declaration.cpp: compilers valid, rejected: rejected [BIT-3] at line 8: invalid operands of types enum#0 and enum#0 
+  tidal-next run: probes/next_alias_of_specialization_qualifier.cpp: compilers valid, rejected: rejected [NAM-16] at line 3: 'B' does not name a namespace, class, or enumeration 
+  tidal-next run: probes/operator_through_using_declaration_unqualified.cpp: compilers valid, rejected: rejected [BIT-3] at line 7: invalid operands of types enum#0 and enum#0 
+  tidal-next run: probes/strong_mix_concept.cpp: compilers valid, rejected: rejected [TR-12] at line 6: the grammar derives no declaration here: expected '{', found '>' 
+  tidal-next run: probes/template_template_parameter_base_one_skill.cpp: compilers valid, rejected: rejected [TR-12] at line 3: the grammar derives no declaration here: expected '{', found '>>' 
+  tidal-fe: reductions/adl_operator_scoped_enum_own_namespace.cpp: compilers valid, rejected: rejected [BIT-3] at line 5: scoped enumeration operand of '|' (ENUM-3) 
+  tidal-next run: reductions/adl_operator_scoped_enum_own_namespace.cpp: compilers valid, rejected: rejected [BIT-3] at line 5: invalid operands of types enum#0 and enum#0 
+  tidal-fe: reductions/adl_operator_through_using_declaration_requires.cpp: compilers valid, rejected: rejected [SA-1] at line 9: static assertion failed 
+  tidal-fe: reductions/const_member_function_array_member_decay.cpp: compilers valid, rejected: rejected [PFX-16] at line 4: argument 1: no implicit conversion from const int* to int* 
+  tidal-fe: reductions/const_member_function_array_member_deduction.cpp: compilers valid, rejected: rejected [DED-35] at line 4: no viable function for the call of 'first': deduction fails for each template 
+  tidal-fe: reductions/member_template_of_specialization_as_template_argument.cpp: compilers valid, rejected: rejected [TARG-10] at line 3: the template 'skill' is used without an argument list 
+  tidal-next run: reductions/next_alias_of_class_qualifier_false_reject.cpp: compilers valid, rejected: rejected [NAM-16] at line 3: 'B' does not name a namespace, class, or enumeration 
+  tidal-next run: reductions/next_byte_copy_false_undefined.cpp: compilers valid, undefined: undefined [PFX-4] at line 6: the subscript 1 is outside the array of 1 elements 
+  tidal-next run: reductions/next_class_template_own_name_in_base.cpp: compilers valid, rejected: rejected [TR-12] at line 2: the grammar derives no declaration here: expected '{', found '>' 
+  tidal-next run: reductions/next_dangling_reference_to_argument_temporary.cpp: compilers bug, result 0: result: 0 
+  tidal-next run: reductions/next_enum_operator_function_false_reject.cpp: compilers valid, rejected: rejected [BIT-3] at line 3: invalid operands of types enum#0 and enum#0 
+  tidal-next run: reductions/next_forward_class_declaration_false_reject.cpp: compilers valid, rejected: rejected [TR-12] at line 1: the declaration declares nothing 
+  tidal-next run: reductions/next_member_function_pointer_type_false_reject.cpp: compilers valid, rejected: rejected [DCL-21] at line 2: a function that is not a member has a cv-qualifier 
+  tidal-next run: reductions/next_multi_subscript_class_false_reject.cpp: compilers valid, rejected: rejected [COMMA-6] at line 2: a subscript with more than one expression 
+  tidal-next run: reductions/next_out_of_class_const_member_false_reject.cpp: compilers valid, rejected: rejected [DCL-21] at line 2: a function that is not a member has a cv-qualifier 
+  tidal-next run: reductions/next_using_declaration_class_false_reject.cpp: compilers valid, rejected: rejected [NAM-14] at line 2: 'T' is not a member of the named scope 
+  tidal-fe: reductions/recursive_constraint_hidden_friend_mixin.cpp: compilers invalid, result 0: result: 0 

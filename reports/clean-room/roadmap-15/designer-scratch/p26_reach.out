@@ -1,0 +1,36 @@
+classes/operators/comma-order-kept.cpp	run	classes	class,operator,	X26		
+classes/operators/comma-overload.cpp	run	classes	class,operator,	X26		
+declarations/initialization/references/lifetime-through-parens-and-conditional.cpp	run	declarations	class	X26		
+expressions/comma/argument-separator.cpp	run	expressions	-	X26	owned	plain-guess
+expressions/comma/array-bound-parenthesized.cpp	accept	expressions	-	X26	owned	plain-guess
+expressions/comma/array-bound-unparenthesized.cpp	reject	expressions	-			plain-guess
+expressions/comma/braced-list-left-operand.cpp	reject	expressions	-			plain-guess
+expressions/comma/braced-list-operand.cpp	reject	expressions	-			plain-guess
+expressions/comma/case-label-unparenthesized.cpp	reject	expressions	-			plain-guess
+expressions/comma/constant-expression.cpp	accept	expressions	-	X26	owned	plain-guess
+expressions/comma/grouping.cpp	accept	expressions	-		owned	plain-guess
+expressions/comma/in-loop-and-condition.cpp	run	expressions	-		owned	plain-guess
+expressions/comma/initializer-separator.cpp	run	expressions	-	X26	owned	plain-guess
+expressions/comma/left-before-right.cpp	run	expressions	-		owned	plain-guess
+expressions/comma/left-side-effects-complete.cpp	run	expressions	-		owned	plain-guess
+expressions/comma/left-void.cpp	accept	expressions	-		owned	plain-guess
+expressions/comma/overloaded-comma-order.cpp	run	expressions	class,operator,	X26		
+expressions/comma/overloaded-void-operand-built-in.cpp	run	expressions	class,operator,	X26		
+expressions/comma/result-category.cpp	run	expressions	class,template	X26		
+expressions/comma/result-lvalue-address.cpp	run	expressions	-	X26	owned	plain-guess
+expressions/comma/result-not-converted.cpp	accept	expressions	class,template	X26		
+expressions/comma/separators.cpp	run	expressions	class	X26		
+expressions/comma/subscript-comma.cpp	reject	expressions	-		owned	plain-guess
+expressions/comma/subscript-parenthesized.cpp	run	expressions	-	X26	owned	plain-guess
+expressions/comma/template-argument.cpp	accept	expressions	template	X26		
+expressions/comma/temporaries-end-with-full-expression.cpp	run	expressions	class	X26		
+expressions/comma/unused-left-void-cast.cpp	accept	expressions	-	X26	owned	plain-guess
+expressions/comma/unused-left-warns.cpp	reject	expressions	-	X26		plain-guess
+foundations/constant-evaluation/extended-temporary-through-cast.cpp	accept	foundations	-	X26	owned	plain-guess
+foundations/evaluation-order/full-expression-subexpression-not.cpp	run	foundations	class	X26		
+foundations/odr/constant-read-through-operators.cpp	run	foundations	class	X26		
+foundations/values/temporaries-reverse-order-comma.cpp	run	foundations	class	X26		
+overloading/overload-resolution/builtin-none-for-address-comma.cpp	accept	overloading	class,template,operator,	X26		
+templates/dependent-names/type-dependent-fold.cpp	run	templates	class,template,fold	X26		
+X26-named tests 24 owned 8 no class/template/operator,/fold and step-3 chapters only 9
+comma dir tests 25 owned 13

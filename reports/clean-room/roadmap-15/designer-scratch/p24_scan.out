@@ -1,0 +1,4 @@
+programs files with a scoped enumeration 30 with a bitwise operator on one 1
+   tests/programs/roadmap/r8-config.cpp |
+rule tests files with a scoped enumeration 141 with a bitwise operator on one 1
+   tests/classes/operators/enum-operator.cpp |

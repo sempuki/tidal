@@ -1,0 +1,47 @@
+program tests (not reject): 178 files; parse to a tree 176; run: {'unsupported': 155, 'rejected': 21, 'result': 1, 'undefined': 1}
+  programs/P3/machine.cpp: rejected [TR-12] at line 20: the declaration declares nothing
+  programs/P3/pipeline-first-try.cpp: rejected [TR-12] at line 41: the grammar derives no declaration here: expected (, found '>>'
+  programs/P4/money.cpp: rejected [DCL-21] at line 99: a function that is not a member has a cv-qualifier
+  programs/W11/enum_names.cpp: result: 0
+  programs/W12/sort.cpp: rejected [DCL-21] at line 91: a function that is not a member has a cv-qualifier
+  programs/W17/units/main.cpp: rejected [NAM-16] at line 22: 'Q16' does not name a namespace, class, or enumeration
+  programs/W18/container.cpp: rejected [COMMA-6] at line 62: a subscript with more than one expression
+  programs/W19/matrix.cpp: rejected [COMMA-6] at line 58: a subscript with more than one expression
+  programs/W7/money.cpp: rejected [NAM-16] at line 104: 'Usd' does not name a namespace, class, or enumeration
+  programs/W9/memptr.cpp: rejected [DCL-21] at line 28: a function that is not a member has a cv-qualifier
+  programs/W9/visitor.cpp: rejected [TR-12] at line 11: the declaration declares nothing
+  programs/roadmap/r10-variant.cpp: rejected [TR-12] at line 39: the grammar derives no declaration here: expected a storage class, found '{'
+  programs/roadmap/r12-matrix.cpp: rejected [COMMA-6] at line 131: a subscript with more than one expression
+  programs/roadmap/r13-units-seventh-try.cpp: rejected [NAM-16] at line 154: 'Quotient' does not name a namespace, class, or enumeration
+  programs/roadmap/r13-units-sixth-try.cpp: rejected [NAM-16] at line 156: 'Quotient' does not name a namespace, class, or enumeration
+  programs/roadmap/r13-units.cpp: rejected [NAM-16] at line 154: 'Quotient' does not name a namespace, class, or enumeration
+  programs/roadmap/r14-fsm-second-try.cpp: rejected [NAM-16] at line 153: 'Door' does not name a namespace, class, or enumeration
+  programs/roadmap/r14-fsm.cpp: rejected [NAM-16] at line 156: 'Door' does not name a namespace, class, or enumeration
+  programs/roadmap/r14-keys-first-try.cpp: rejected [NAM-16] at line 167: 'Point' does not name a namespace, class, or enumeration
+  programs/roadmap/r14-keys.cpp: rejected [NAM-16] at line 173: 'Point' does not name a namespace, class, or enumeration
+  programs/roadmap/r4-bits.cpp: undefined [PFX-4] at line 11: the subscript 1 is outside the array of 1 elements
+  programs/roadmap/r7-grid.cpp: rejected [COMMA-6] at line 78: a subscript with more than one expression
+  programs/roadmap/r8-config.cpp: rejected [BIT-3] at line 37: invalid operands of types enum#0 and enum#0
+  first unsupported construct, by count:
+      66  a declaration of the form template_decl
+      58  a type specifier of the form class_def
+      24  an operator function or a declarator-id of this form
+       2  a lambda expression (its closure type is a class, build step 4)
+       1  a call of 'c_triple', which has no definition in this unit
+       1  a call of 'total', which has no definition in this unit
+       1  a call of 'max_users_seen_by_a', which has no definition in this unit
+       1  a call of 'pick', which the front end does not model
+       1  a call of 'puts', which has no definition in this unit
+roadmap programs, last versions, rounds 8 to 15: 35 files; parse to a tree 33; run: {'unsupported': 27, 'rejected': 8}
+  roadmap-10/programmer-sketches/new/variant.cpp: rejected [TR-12] at line 35: the grammar derives no declaration here: expected a storage class, found '{'
+  roadmap-12/programmer-sketches/new/matrix.cpp: rejected [COMMA-6] at line 125: a subscript with more than one expression
+  roadmap-13/programmer-sketches/new/units.cpp: rejected [NAM-16] at line 147: 'Quotient' does not name a namespace, class, or enumeration
+  roadmap-14/programmer-sketches/new/fsm.cpp: rejected [NAM-16] at line 152: 'Door' does not name a namespace, class, or enumeration
+  roadmap-14/programmer-sketches/new/keys.cpp: rejected [NAM-16] at line 169: 'Point' does not name a namespace, class, or enumeration
+  roadmap-15/programmer-sketches/new/anybox.cpp: rejected [NAM-14] at line 183: 'Any' is not a member of the named scope
+  roadmap-15/programmer-sketches/new/flags.cpp: rejected [NAM-14] at line 174: 'Flags' is not a member of the named scope
+  roadmap-15/programmer-sketches/new/strong.cpp: rejected [TR-12] at line 40: the grammar derives no declaration here: expected '{', found '>'
+  first unsupported construct, by count:
+      19  a declaration of the form template_decl
+       4  an operator function or a declarator-id of this form
+       4  a type specifier of the form class_def

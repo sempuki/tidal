@@ -1,0 +1,470 @@
+frontend: new test declarations/attributes/maybe-unused-on-using-directive.cpp: MISSED-REJECT
+frontend: new test declarations/auto/decltype-auto-destructor-call.cpp: MISSED-REJECT
+frontend: new test declarations/auto/decltype-auto-functional-cast.cpp: MISSED-REJECT
+frontend: new test declarations/enumerations/using-enum-dependent.cpp: MISSED-REJECT
+frontend: new test expressions/new-delete/new-type-pointer-forms.cpp: FALSE-REJECT
+frontend: new test templates/declarations/two-template-heads-in-class.cpp: MISSED-REJECT
+frontend: new test templates/dependent-names/template-keyword-base-last-name.cpp: run-unsupported
+frontend: 7049/7148 pass, 7069/7148 pass their check, 0 worse, 0 better, 0 moved between passing statuses, 17 new (7 not passing)
+frontend: 22/22 interpreter-only expectations met
+frontend: completion (decision 0060): 70 tests fail their check, of which 38 need the template model (marks file) and 32 count toward the gate of decisions 0062 and 0063; 1/178 program tests do not run to their result; 9 tests out of scope
+frontend: 2177/2805 passing rejects name a cited rule (1988) or a linked rule (189) in their first error; `tidal-fe conform` gives the table per page
+next: unit: 126 tests pass
+next: lex: 7266/7266 files give the old front end's tokens
+next: parse: classes/constructors/mem-init-in-declaration-only.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a function body, found ';'
+next: parse: classes/conversion-functions/function-pointer-without-alias.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected a storage class, found '*'
+next: parse: classes/conversion-functions/nonmember.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected 'const' or 'volatile', found ';'
+next: parse: classes/derived/base-not-class.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected an access specifier, found 'int'
+next: parse: classes/derived/union-as-derived.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected '{', found ':'
+next: parse: classes/members/local-class-member-defined-outside.cpp: wants a tree, the unit gives stop 10: the grammar derives no declaration here: expected ;, found '}'
+next: parse: classes/members/paren-default-member-init.cpp: wants a tree, the unit gives stop 4: the grammar derives no declaration here: expected a storage class, found a literal
+next: parse: classes/members/register-member.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'register'
+next: parse: classes/operators/not-overloadable-conditional.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected '""', found '?'
+next: parse: classes/operators/not-overloadable-dot-star.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected '""', found '.*'
+next: parse: classes/operators/not-overloadable-dot.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected '""', found '.'
+next: parse: classes/operators/not-overloadable-scope.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected a type name, found '('
+next: parse: classes/unions/bitfield-pointer.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected 'override' or 'final', found ':'
+next: parse: classes/virtual/final-twice.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a function body, found 'final'
+next: parse: classes/virtual/override-twice.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a function body, found 'override'
+next: parse: declarations/alignment/enum.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an identifier, found 'alignas'
+next: parse: declarations/alignment/on-alias-declaration.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a nested name, found 'I'
+next: parse: declarations/alignment/on-handler-variable.cpp: wants a tree, the unit gives stop 10: the grammar derives no declaration here: expected a type name, found 'alignas'
+next: parse: declarations/alignment/on-parameter.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a storage class, found 'alignas'
+next: parse: declarations/alignment/scoped-enum.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an identifier, found 'alignas'
+next: parse: declarations/attributes/double-bracket-lambda-subscript.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an assignment operator, found '['
+next: parse: declarations/auto/combined-type-specifier.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a storage class, found 'int'
+next: parse: declarations/exception-specifications/throw-type-removed.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected 'const' or 'volatile', found 'throw'
+next: parse: declarations/functions/definitions/nested-function-definition-member.cpp: wants a tree, the unit gives stop 9: the grammar derives no declaration here: expected a type name, found 'return'
+next: parse: declarations/functions/definitions/nested-function-definition.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected ;, found '}'
+next: parse: declarations/functions/definitions/typedef-function-definition.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a type name, found 'return'
+next: parse: declarations/functions/deleted/deleted-member-with-message.cpp: wants a stop (TR-12), gives tree
+next: parse: declarations/functions/deleted/deleted-with-message.cpp: wants a stop (TR-12), gives tree
+next: parse: declarations/linkage-specifications/block-scope.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected a storage class, found a literal
+next: parse: declarations/linkage-specifications/class-scope.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected a storage class, found a literal
+next: parse: declarations/namespaces/block-scope-namespace.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected =, found '{'
+next: parse: declarations/namespaces/directive-in-class.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a nested name, found 'namespace'
+next: parse: declarations/namespaces/nested-first-inline-both.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected '{', found '::'
+next: parse: declarations/namespaces/nested-first-inline.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected '{', found '::'
+next: parse: declarations/namespaces/using-declaration-unqualified.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a nested name, found 'x'
+next: parse: declarations/namespaces/using-directive-attribute.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected a storage class, found 'using'
+next: parse: declarations/static-assert/in-for-init.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected a storage class, found 'static_assert'
+next: parse: declarations/static-assert/message-not-literal.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a string literal, found 'msg'
+next: parse: declarations/static-assert/message-object.cpp: wants a tree, the unit gives stop 10: the grammar derives no declaration here: expected a string literal, found 'Msg'
+next: parse: declarations/storage-linkage/register-parameter.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a storage class, found 'register'
+next: parse: declarations/storage-linkage/register.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'register'
+next: parse: declarations/structured-bindings/as-class-member.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/as-parameter.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected ], found ','
+next: parse: declarations/structured-bindings/constexpr-binding.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/constinit-specifier.cpp: wants a tree, the unit gives stop 10: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/constrained.cpp: wants a tree, the unit gives stop 9: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/decltype-auto.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/explicit-type.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/extern-specifier.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/inline-specifier.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: declarations/structured-bindings/no-initializer.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected an initializer, found ';'
+next: parse: declarations/structured-bindings/pointer-declarator.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected 'const' or 'volatile', found '['
+next: parse: declarations/type-names/alias-function-type-definition.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a type name, found 'return'
+next: parse: declarations/type-names/alias-scope.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a function body, found 'g'
+next: parse: declarations/type-names/elaborated-declares-in-block.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a function body, found '*'
+next: parse: declarations/type-names/elaborated-scoped-enum-key.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected ;, found '*'
+next: parse: declarations/type-names/explicit-instantiation-attribute.cpp: wants a stop (TR-12), gives tree
+next: parse: declarations/type-names/typedef-with-unsigned.cpp: wants a tree, the unit gives stop 4: the grammar derives no declaration here: expected a function body, found 'x'
+next: parse: exceptions/handlers/param-storage-class.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a type name, found 'static'
+next: parse: expressions/comma/case-label-unparenthesized.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected :, found ','
+next: parse: expressions/decltype/declarative-nested-name-static-member.cpp: wants a stop (TR-12), gives tree
+next: parse: expressions/decltype/declarative-nested-name.cpp: wants a stop (TR-12), gives tree
+next: parse: expressions/new-delete/reference-type.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a type name, found ';'
+next: parse: expressions/postfix/ellipsis-argument-conversions.cpp: wants a tree, the unit gives stop 10: the grammar derives no declaration here: expected an assignment operator, found 'list'; also stops at 12: the grammar derives no declaration here: expected (, found ')'; also stops at 13: the grammar derives no declaration here: expected (, found ')'; also stops at 14: the grammar derives no declaration here: expected (, found ')'; also stops at 15: the grammar derives no declaration here: expected (, found ')'; also stops at 16: the grammar derives no declaration here: expected (, found ')'; also stops at 18: the grammar derives no declaration here: expected a type name, found 'const'; also stops at 19: the grammar derives no declaration here: expected a type name, found ')'
+next: parse: expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected an assignment operator, found 'list'; also stops at 9: the grammar derives no declaration here: expected (, found '*'
+next: parse: expressions/primary/fold-operand-binary.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a type name, found '...'
+next: parse: expressions/primary/fold-three-way-operator.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a type name, found '...'
+next: parse: expressions/primary/fold-without-parentheses.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a type name, found '...'
+next: parse: expressions/primary/string-raw-bad-delimiter.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected an assignment operator, found the end of the file
+next: parse: expressions/primary/string-raw-delimiter-backslash.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected an assignment operator, found the end of the file
+next: parse: expressions/primary/string-raw-delimiter-paren.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected an assignment operator, found the end of the file
+next: parse: expressions/primary/string-raw-delimiter-tab.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected an assignment operator, found the end of the file
+next: parse: foundations/keywords/keyword-auto.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found 'auto'
+next: parse: foundations/keywords/keyword-bool.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-char.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-char16-t.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-char32-t.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-char8-t.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-double.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-float.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-int.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-mutable.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-register.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found 'register'
+next: parse: foundations/keywords/keyword-void.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/keywords/keyword-wchar-t.cpp: wants a tree, the unit gives stop 3: the grammar derives no declaration here: expected a storage class, found '='
+next: parse: foundations/names/class-member-type-needs-order.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected 'override' or 'final', found 't'
+next: parse: foundations/names/definition-return-type-before-name.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a function body, found 'C'
+next: parse: foundations/names/definition-return-type-namespace.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a function body, found 'n'
+next: parse: foundations/names/injected-base-name-not-outside.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a function body, found 'copy'
+next: parse: foundations/names/shared-name-member-not-class.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a function body, found 'first'
+next: parse: foundations/names/shared-name-qualified-not-class.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a function body, found 'origin'
+next: parse: programs/P3/pipeline-first-try.cpp: wants a tree, the unit gives stop 41: the grammar derives no declaration here: expected (, found '>>'; also stops at 54: the grammar derives no declaration here: expected a declarator, found '>>'; also stops at 68: the grammar derives no declaration here: expected a declarator, found '>>'; also stops at 81: the grammar derives no declaration here: expected (, found '>>'; also stops at 94: the grammar derives no declaration here: expected a storage class, found '<'; also stops at 98: the grammar derives no declaration here: expected a storage class, found '<'; also stops at 102: the grammar derives no declaration here: expected a storage class, found '<'
+next: parse: programs/roadmap/r10-variant.cpp: wants a tree, the unit gives stop 39: the grammar derives no declaration here: expected a storage class, found '{'
+next: parse: statements/if/condition-declaration-no-init.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected ;, found ')'
+next: parse: statements/if/condition-declaration-two.cpp: wants a tree, the unit gives stop 5: the grammar derives no declaration here: expected an assignment operator, found ')'
+next: parse: statements/if/condition-structured-binding.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an assignment operator, found ')'
+next: parse: statements/if/consteval-else-requires-braces.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected {, found 'return'
+next: parse: statements/if/consteval-no-condition.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected {, found '('
+next: parse: statements/if/consteval-requires-braces.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected {, found 'return'
+next: parse: statements/if/init-static-assert.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a storage class, found 'static_assert'
+next: parse: statements/if/init-using-declaration.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected =, found '::'
+next: parse: statements/if/init-using-directive.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected an identifier, found 'namespace'
+next: parse: statements/if/not-constexpr.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected (, found '!'
+next: parse: statements/loops/do-condition-declaration-bool.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected (, found 'done'
+next: parse: statements/loops/do-condition-declaration.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected (, found 'x'
+next: parse: statements/loops/for-init-static-assert.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a storage class, found 'static_assert'
+next: parse: templates/class-template-deduction/guide-definition.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected ;, found '{'
+next: parse: templates/class-template-deduction/guide-result-not-specialization.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected an identifier, found 'int'
+next: parse: templates/class-template-deduction/guide-result-qualified.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an identifier, found 'const'
+next: parse: templates/class-template-deduction/guide-specifier.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected ), found '*'
+next: parse: templates/concepts/clause-call.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a nested name, found ')'
+next: parse: templates/concepts/clause-comparison.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a literal, found 'sizeof'
+next: parse: templates/concepts/clause-negation.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a literal, found '!'
+next: parse: templates/concepts/compound-requirement-type-name.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a concept name, found 'int'
+next: parse: templates/concepts/declaration-only.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected =, found ';'
+next: parse: templates/concepts/explicit-instantiation.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a declaration, found 'concept'
+next: parse: templates/concepts/friend.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'concept'
+next: parse: templates/concepts/namespace-scope-block.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'template'
+next: parse: templates/concepts/namespace-scope-class.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'concept'
+next: parse: templates/concepts/partial-specialization.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected =, found '<'
+next: parse: templates/concepts/placeholder-functional-cast-braces.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected an assignment operator, found 'auto'
+next: parse: templates/concepts/placeholder-functional-cast.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected an assignment operator, found 'auto'
+next: parse: templates/concepts/placeholder-structured-binding.cpp: wants a tree, the unit gives stop 9: the grammar derives no declaration here: expected a storage class, found '['
+next: parse: templates/concepts/requirement-body-empty.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a type name, found '}'
+next: parse: templates/concepts/simple-requirement-noexcept.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected an assignment operator, found 'noexcept'
+next: parse: templates/concepts/trailing-clause-before-return-member.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a function body, found '->'
+next: parse: templates/concepts/trailing-clause-before-return.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a function body, found '->'
+next: parse: templates/concepts/trailing-clause-comparison.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a literal, found 'sizeof'
+next: parse: templates/concepts/trailing-clause-parameter.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected ',' or ')', found 'requires'
+next: parse: templates/concepts/trailing-clause-variable.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected ;, found '='
+next: parse: templates/concepts/type-requirement-keyword.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected an identifier, found 'int'
+next: parse: templates/declarations/block-scope.cpp: wants a tree, the unit gives stop 9: the grammar derives no declaration here: expected a storage class, found 'template'
+next: parse: templates/declarations/default-pack-template.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected '>', found '='
+next: parse: templates/declarations/default-pack.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected ',' or '>', found '='
+next: parse: templates/dependent-names/current-instantiation-alias.cpp: wants a tree, the unit gives stop 10: the grammar derives no declaration here: expected an assignment operator, found 'a'
+next: parse: templates/dependent-names/dependent-base-type-not-found.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected 'override' or 'final', found 'count'
+next: parse: templates/dependent-names/partial-primary-form-needs-typename.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an assignment operator, found 'a'
+next: parse: templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an assignment operator, found 'value'
+next: parse: templates/dependent-names/template-keyword-in-declarator-class.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected an identifier, found 'template'
+next: parse: templates/dependent-names/template-keyword-needed-after-typename.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected a storage class, found '<'
+next: parse: templates/dependent-names/template-keyword-needed-member.cpp: wants a stop (TR-12), gives tree
+next: parse: templates/dependent-names/template-keyword-needed-qualified.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected (, found '>'
+next: parse: templates/dependent-names/template-keyword-not-template.cpp: wants a stop (TR-12), gives tree
+next: parse: templates/dependent-names/typename-needs-qualified-name.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a nested name, found 'T'
+next: parse: templates/instantiation/explicit-attribute-before.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'template'
+next: parse: templates/instantiation/explicit-implicit-destructor.cpp: wants a tree, the unit gives stop 8: the grammar derives no declaration here: expected 'const' or 'volatile', found ';'
+next: parse: templates/instantiation/explicit-implicit-member.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected 'const' or 'volatile', found ';'
+next: parse: templates/instantiation/explicit-in-block.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found 'template'
+next: parse: templates/instantiation/explicit-in-class.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected <, found 'int'
+next: parse: templates/instantiation/explicit-not-declared.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected a function body, found '<'
+next: parse: templates/packs/size-operator-parentheses.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected (, found 'T'
+next: parse: templates/packs/size-operator-pattern.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected ), found '*'
+next: parse: templates/specialization/alias-explicit.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a declarator, found '>'
+next: parse: templates/specialization/alias-partial.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected 'const' or 'volatile', found '>'
+next: parse: templates/specialization/explicit-block-scope.cpp: wants a tree, the unit gives stop 9: the grammar derives no declaration here: expected a storage class, found 'template'
+next: parse: templates/specialization/explicit-not-template.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected '{', found '<'
+next: parse: templates/specialization/explicit-union-key.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found '{'
+next: parse: templates/specialization/partial-no-primary.cpp: wants a tree, the unit gives stop 6: the grammar derives no declaration here: expected '{', found '<'
+next: parse: templates/specialization/partial-union-key.cpp: wants a tree, the unit gives stop 7: the grammar derives no declaration here: expected a storage class, found '{'
+next: parse: 6828/6987 tests parse as their outcome needs
+next: parse: 142 of the 159 disagreements are reject tests that stop on the line of the old front end's first error
+next: shadow: declarations/alignment/on-function.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/alignment/on-typedef.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/assume-call-not-evaluated.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/assume-comma.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/assume-false-constant.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/assume-false-sanitizer.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/assume-not-evaluated.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/assume-on-declaration.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/assume-true-constant.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/carries-dependency-redeclared.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/deprecated-added-later.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/double-bracket-parenthesized-ok.cpp: unsupported, the old front end pass
+next: shadow: declarations/attributes/fallthrough-end-of-loop.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/fallthrough-if-without-else-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/fallthrough-into-outer-switch.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/fallthrough-misplaced.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/fallthrough-not-before-case.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/fallthrough-on-declaration.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/implicit-fallthrough-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/maybe-unused-on-type.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/nodiscard-on-type-alias.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/noreturn-not-first.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/noreturn-returns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/unused-set-not-read-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/unused-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/attributes/using-prefix-qualified.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/auto/copy-list-without-library.cpp: unsupported, the old front end pass
+next: shadow: declarations/auto/decltype-auto-array.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/auto/decltype-auto-function.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/auto/decltype-auto-overload-set.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/auto/overloaded-function.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/auto/pointer-placeholder-return-nullptr.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/constexpr/consteval-address-taken.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/constexpr/consteval-redeclare-constexpr.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/constexpr/consteval-selected-by-target.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/constexpr/constexpr-redeclaration-mismatch.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/constexpr/constinit-on-declaration-only.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/constexpr/lambda-escalates-constant.cpp: unsupported, the old front end pass
+next: shadow: declarations/declarators/array-4gib-ilp32.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/declarators/volatile-return-deprecated.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/enumerations/cast-out-of-range.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: declarations/enumerations/unscoped-value-too-large-ilp32.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/enumerations/unscoped-value-too-large.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/exception-specifications/call-through-noexcept-pointer.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/constexpr-not-implied.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/forms.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/lambda-not-noexcept.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/narrowing-operand.cpp: unsupported, the old front end EDG-ONLY
+next: shadow: declarations/exception-specifications/non-constant.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/null-pointer-constant-operand.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/null-pointer-operand.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/operand-uses-parameters.cpp: unsupported, the old front end pass
+next: shadow: declarations/exception-specifications/pointer-operand.cpp: unsupported, the old front end EDG-ONLY
+next: shadow: declarations/exception-specifications/user-function-not-noexcept.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/default-arguments/alias-function-type-default.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: declarations/functions/default-arguments/local-constant-value-read.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/default-arguments/local-constexpr-value-read.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/default-arguments/parameter-in-sizeof.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: declarations/functions/default-arguments/pointer-declaration-default.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/default-arguments/refers-to-local.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/default-arguments/typedef-function-type-default.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/flow-off-end-goto-out-of-loop-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/flow-off-end-loop-break-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/flow-off-end-plain-call-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/flow-off-end-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/main-global-variable.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/definitions/parameter-duplicate.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/auto-ref-no-return.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/auto-ref-return-local.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/braced-return.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/conflicting-returns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/decltype-auto-dangling.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/return-deduction/discarded-return-not-deduced.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/return-deduction/recursion-after-return.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/return-deduction/recursion-before-return.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/redeclare-after-definition.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/redeclare-with-type.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/functions/return-deduction/use-after-definition.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/return-deduction/use-before-definition.cpp: unsupported, the old front end pass
+next: shadow: declarations/functions/return-deduction/void-and-value.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: declarations/initialization/list/string-literal-reference-temporary.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-function-noexcept.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/initialization/references/braced-function-reference.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-array-drops-const.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-array-temporary.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-array-too-many.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-array-unknown-bound.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-unknown-bound-empty.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-list-unknown-bound-values.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/braced-string-literal-rvalue-ref.cpp: unsupported, the old front end pass
+next: shadow: declarations/initialization/references/lifetime-not-through-return.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/initialization/static/consteval-branch-in-initializer.cpp: unsupported, the old front end pass
+next: shadow: declarations/inline/inline-parameter.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/inline/inline-typedef.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/inline/inline-variable-undefined-used.cpp: MISSED-REJECT, the old front end NO-DIAGNOSTIC-ALLOWED
+next: shadow: declarations/linkage-specifications/c-name-before-global.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/linkage-specifications/c-name-conflicts-global.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: declarations/linkage-specifications/c-static-not-joined.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/linkage-specifications/redeclare-linkage-mismatch.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/linkage-specifications/unknown-language-block.cpp: unsupported, the old front end pass
+next: shadow: declarations/linkage-specifications/unknown-language.cpp: unsupported, the old front end pass
+next: shadow: declarations/namespaces/alias-not-reopen.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/namespaces/inline-namespace-duplicate.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/namespaces/inline-namespace-same-function-ambiguous.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/namespaces/qualified-definition-through-directive.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/namespaces/qualified-definition-unnamed-namespace-member.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/namespaces/undeclared-qualified-definition.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/namespaces/using-directive-attribute.cpp: FALSE-REJECT, the old front end pass
+next: shadow: declarations/static-assert/generic-lambda-not-called.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/array-copy.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/array-hidden-copy.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/array-reference.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/count-mismatch-array.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/duplicate-names.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/initializer-braces.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/initializer-equals.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/initializer-parens.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/names-in-scope.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/own-initializer.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/scalar-rejected.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/static-and-thread-local.cpp: unsupported, the old front end pass
+next: shadow: declarations/structured-bindings/underscore-twice.cpp: unsupported, the old front end pass
+next: shadow: declarations/type-names/enum-fixed-after-not-fixed.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/type-names/enum-fixed-mismatch.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/volatile/assignment-result-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/volatile/volatile-parameter-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: declarations/volatile/volatile-return-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/additive/enum-float-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/additive/mixed-enum-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/additive/pointer-difference-largest-ilp32.cpp: unsupported, the old front end pass
+next: shadow: expressions/additive/pointer-difference-overflow-ilp32.cpp: unsupported, the old front end pass
+next: shadow: expressions/assignment/compound-indeterminate-with-call.cpp: unsupported, the old front end pass
+next: shadow: expressions/bitwise/complement-bool-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/bitwise/mixed-enum-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/bitwise/mixed-enum-xor-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/bitwise/parentheses-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/casts/const-cast-function-pointer.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/casts/decay-copy-auto.cpp: unsupported, the old front end pass
+next: shadow: expressions/casts/functional-braced-unknown-bound.cpp: unsupported, the old front end pass
+next: shadow: expressions/casts/reinterpret-reference.cpp: unsupported, the old front end pass
+next: shadow: expressions/casts/static-cast-enum-out-of-range-constant.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: expressions/comma/unused-left-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/array-comparison-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/array-relational-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/chained-comparison-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/chained-less-equal-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/chained-mixed-relational-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/different-enums-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/enum-float-comparison-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/sign-compare-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/comparison/three-way-no-library.cpp: unsupported, the old front end pass
+next: shadow: expressions/decltype/discarded-sum-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/decltype/discarded-volatile-read.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/decltype/discarded-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/decltype/lambda-in-unevaluated.cpp: unsupported, the old front end pass
+next: shadow: expressions/decltype/no-side-effects.cpp: unsupported, the old front end pass
+next: shadow: expressions/decltype/overloaded-name.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/decltype/side-effect-decltype-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/decltype/side-effect-unevaluated-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/lambdas/capture-by-copy-at-creation.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capture-by-reference.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capture-copy-same-as-default.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capture-default-at-namespace.cpp: unsupported, the old front end EDG-ONLY
+next: shadow: expressions/lambdas/capture-global-rejected.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capture-repeated.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capture-same-as-default.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capturing-no-function-pointer-argument.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capturing-no-function-pointer.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/capturing-not-default-constructible.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/closure-copy-array-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/closure-copy-assign-deleted.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/closure-copy-keeps-state.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/closure-size-unspecified.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/const-call-operator-init-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/const-call-operator.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/constant-address-needs-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/constant-needs-no-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/constant-value-no-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/constexpr-implicit.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/copy-capture-array-and-reference.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/dangling-reference-capture-constant.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/default-argument-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/default-arguments.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/default-capture-mixed.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/default-captures.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/default-constructed-call.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/default-constructible.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/distinct-types-overload.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/function-pointer-constant.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/function-pointer.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/generic-function-pointer.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/immediately-invoked.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/init-capture-order.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/init-capture-outer-lookup.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/init-capture-same-mode-as-default.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/init-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/modify-through-reference-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/mutable.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/named-capture-in-block-function-default-argument.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/namespace-init-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/nested-capture-ok.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/nested-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/noexcept-function-pointer.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/parameter-same-as-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/return-deduction-void-and-value.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/return-deduction.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/static-and-global-no-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/static-with-capture-default.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/static-with-capture.cpp: unsupported, the old front end pass
+next: shadow: expressions/lambdas/uncaptured-variable.cpp: unsupported, the old front end pass
+next: shadow: expressions/logical/not-on-lhs-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/logical/parentheses-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/multiplicative/enum-enum-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/multiplicative/enum-float-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/multiplicative/ieee-types.cpp: unsupported, the old front end pass
+next: shadow: expressions/new-delete/default-new-alignment-ilp32-clang.cpp: unsupported, the old front end pass
+next: shadow: expressions/new-delete/default-new-alignment-ilp32.cpp: unsupported, the old front end pass
+next: shadow: expressions/postfix/postfix-on-const.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/primary/char-multichar-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/primary/float-extended-suffix.cpp: unsupported, the old front end pass
+next: shadow: expressions/primary/float-overflow-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/primary/int-bad-suffix.cpp: unsupported, the old front end pass
+next: shadow: expressions/primary/number-runs-over-letters.cpp: unsupported, the old front end pass
+next: shadow: expressions/shift/count-constant-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/shift/count-negative-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: expressions/unary/noexcept-not-evaluated.cpp: unsupported, the old front end pass
+next: shadow: expressions/unary/sizeof-array-parameter-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/constant-evaluation/lambda-call.cpp: unsupported, the old front end pass
+next: shadow: foundations/constant-evaluation/literal-closure.cpp: unsupported, the old front end pass
+next: shadow: foundations/constant-evaluation/read-extended-temporary-not-const.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/constant-evaluation/reference-reads-constant-object.cpp: unsupported, the old front end pass
+next: shadow: foundations/constant-evaluation/reference-to-local-not-usable.cpp: unsupported, the old front end pass
+next: shadow: foundations/constant-evaluation/string-literal-identity-variables.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: foundations/constant-evaluation/string-literal-identity.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: foundations/constant-evaluation/void-pointer-to-object.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/conversions/char-zero-not-null.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: foundations/evaluation-order/init-capture-order.cpp: unsupported, the old front end pass
+next: shadow: foundations/language-support/initializer-list-missing-range-for.cpp: unsupported, the old front end pass
+next: shadow: foundations/language-support/initializer-list-missing.cpp: unsupported, the old front end pass
+next: shadow: foundations/language-support/strong-ordering-missing.cpp: unsupported, the old front end pass
+next: shadow: foundations/names/qualifier-fundamental-alias-destructor.cpp: unsupported, the old front end pass
+next: shadow: foundations/objects/scalar-write-in-own-initializer-constant.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp: EDG-AGREES, the old front end EDG-ONLY
+next: shadow: foundations/objects/write-after-pseudo-destructor-variable-constant.cpp: unsupported, the old front end EDG-ONLY
+next: shadow: foundations/odr/constant-array-element-in-lambda.cpp: unsupported, the old front end pass
+next: shadow: foundations/odr/discarded-branch-address-in-lambda.cpp: unsupported, the old front end pass
+next: shadow: foundations/odr/discarded-value-constant-in-lambda.cpp: unsupported, the old front end pass
+next: shadow: foundations/odr/internal-function-not-defined-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/odr/internal-function-used-in-unused-inline.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/odr/unevaluated-name-not-use.cpp: unsupported, the old front end pass
+next: shadow: foundations/odr/unnamed-namespace-function-not-defined-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/storage/array-size-exceeds-size-type.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/translation/if-consteval-selects.cpp: unsupported, the old front end pass
+next: shadow: foundations/translation/main-variable.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/translation/warning-as-error-with-flag.cpp: MISSED-REJECT, the old front end pass
+next: shadow: foundations/types/floating-range-ilp32.cpp: unsupported, the old front end pass
+next: shadow: foundations/types/floating-range.cpp: unsupported, the old front end pass
+next: shadow: foundations/types/long-double-precision-ilp32.cpp: unsupported, the old front end pass
+next: shadow: foundations/types/long-double-precision.cpp: unsupported, the old front end pass
+next: shadow: foundations/values/array-prvalue-argument.cpp: unsupported, the old front end pass
+next: shadow: foundations/values/materialize-array-decay.cpp: unsupported, the old front end pass
+next: shadow: foundations/values/materialize-array-subscript.cpp: unsupported, the old front end pass
+next: shadow: programs/roadmap/r4-lambda-generic.cpp: unsupported, the old front end pass
+next: shadow: statements/blocks/unused-value-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/if/consteval-branches.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-enclosing-evaluation.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-immediate-context.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-immediate-else.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-immediate-outside.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-in-consteval.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-local-reference-static-object.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-local-reference.cpp: unsupported, the old front end pass
+next: shadow: statements/if/consteval-plain-function.cpp: unsupported, the old front end pass
+next: shadow: statements/if/constexpr-case-into.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/if/constexpr-goto-into.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/if/not-consteval-else-immediate.cpp: unsupported, the old front end pass
+next: shadow: statements/jumps/break-in-lambda-in-loop.cpp: unsupported, the old front end pass
+next: shadow: statements/jumps/goto-out-of-lambda.cpp: unsupported, the old front end pass
+next: shadow: statements/jumps/label-name-in-lambda-and-function.cpp: unsupported, the old front end pass
+next: shadow: statements/jumps/return-parameter-as-lvalue-ref.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/loops/jump-into-range-for-body.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/loops/jump-into-while-body-past-condition-declaration.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/switch/case-in-lambda-body.cpp: unsupported, the old front end pass
+next: shadow: statements/switch/case-value-not-enumerator-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: statements/switch/enum-missing-case-warns.cpp: MISSED-REJECT, the old front end pass
+next: shadow: step 3 plain: 1602/1897 pass their check, 1600 of the old front end's 1892
+next: shadow: step 3: 1795/3832 pass their check, 1792 of the old front end's 3816; 3 pass on the new front end only
+next: shadow: all: 1915/7148 pass their check; 4954 unsupported
+next: owned: 1327 tests (takeover list)

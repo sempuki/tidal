@@ -1,0 +1,22 @@
+tidal-fe
+  bug        undefined      8
+  invalid    rejected       17
+  invalid    unsupported    1
+  valid      result 0       69
+  valid      unsupported    3
+tidal-next run
+  bug        result 0       1
+  bug        undefined      4
+  bug        unsupported    3
+  invalid    rejected       7
+  invalid    unsupported    11
+  valid      rejected       5
+  valid      result 0       3
+  valid      unsupported    64
+Files where a front end disagrees with the compilers:
+  tidal-next run: round14/new/bugs/dangling_reference_return.cpp: compilers bug, result 0: result: 0 
+  tidal-next run: round14/new/fsm.cpp: compilers valid, rejected: rejected [NAM-16] at line 152: 'Door' does not name a namespace, class, or enumeration 
+  tidal-next run: round14/new/fsm_second_try.cpp: compilers valid, rejected: rejected [NAM-16] at line 149: 'Door' does not name a namespace, class, or enumeration 
+  tidal-next run: round14/new/keys.cpp: compilers valid, rejected: rejected [NAM-16] at line 169: 'Point' does not name a namespace, class, or enumeration 
+  tidal-next run: round14/new/keys_first_try.cpp: compilers valid, rejected: rejected [NAM-16] at line 163: 'Point' does not name a namespace, class, or enumeration 
+  tidal-next run: round14/new/one-line/multi_subscript.cpp: compilers valid, rejected: rejected [COMMA-6] at line 5: a subscript with more than one expression 

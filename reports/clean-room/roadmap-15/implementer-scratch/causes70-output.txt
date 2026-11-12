@@ -1,0 +1,54 @@
+70 tests fail their check; 38 marked
+statuses: {'MISSED-REJECT': 40, 'EDG-AGREES': 6, 'FALSE-REJECT': 5, 'unsupported': 19}
+
+marked, by model section:
+  section 1: 4  {'MISSED-REJECT': 1, 'unsupported': 1, 'EDG-AGREES': 2}
+  section 2: 6  {'MISSED-REJECT': 2, 'unsupported': 1, 'FALSE-REJECT': 3}
+  section 3: 15  {'unsupported': 5, 'MISSED-REJECT': 8, 'EDG-AGREES': 2}
+  section 4: 6  {'MISSED-REJECT': 3, 'unsupported': 3}
+  section 5: 7  {'MISSED-REJECT': 7}
+
+unmarked: 32
+  2	EDG-AGREES in class and constraint code	(step 4-5)	{'EDG-AGREES': 2}	scopes {'4-templ': 1, '5-7': 1}
+      EDG-AGREES	classes/copy-move/trivially-copyable-member-template-selected.cpp
+      EDG-AGREES	templates/constraints/friend-distinct-from-namespace.cpp
+  4	RV10 grammar forms (decltype(auto), attributes, new_ptr)	(step 3 rest)	{'MISSED-REJECT': 3, 'FALSE-REJECT': 1}	scopes {'3-plain': 2, '4-plain': 2}
+      MISSED-REJECT	declarations/attributes/maybe-unused-on-using-directive.cpp
+      MISSED-REJECT	declarations/auto/decltype-auto-destructor-call.cpp
+      MISSED-REJECT	declarations/auto/decltype-auto-functional-cast.cpp
+      FALSE-REJECT	expressions/new-delete/new-type-pointer-forms.cpp
+  2	lambdas (closure classes)	(step 3 rest / 4)	{'MISSED-REJECT': 1, 'unsupported': 1}	scopes {'3-plain': 1, '3-templ': 1}
+      MISSED-REJECT	declarations/constexpr/lambda-escalates-runtime.cpp
+      unsupported	expressions/lambdas/capture-visible-in-trailing-return.cpp
+  11	template checks outside the marks (missed rejects)	(step 5-7)	{'MISSED-REJECT': 11}	scopes {'3-templ': 1, '5-7': 10}
+      MISSED-REJECT	declarations/enumerations/using-enum-dependent.cpp
+      MISSED-REJECT	templates/arguments/class-argument-reference-temporary.cpp
+      MISSED-REJECT	templates/arguments/concept-for-template.cpp
+      MISSED-REJECT	templates/class-template-deduction/tie-own-constructor-template.cpp
+      MISSED-REJECT	templates/concepts/placeholder-parameter-decltype-auto.cpp
+      MISSED-REJECT	templates/constraints/explicit-instantiation-member-not-satisfied.cpp
+      MISSED-REJECT	templates/declarations/alias-template-self-through-class.cpp
+      MISSED-REJECT	templates/declarations/constant-parameter-no-constexpr-constructor.cpp
+      MISSED-REJECT	templates/declarations/two-template-heads-in-class.cpp
+      MISSED-REJECT	templates/ordering/nondeduced-only-parameter.cpp
+      MISSED-REJECT	templates/specialization/explicit-member-class-template-no-prefix.cpp
+  1	structured bindings	(step 3 rest)	{'FALSE-REJECT': 1}	scopes {'3-templ': 1}
+      FALSE-REJECT	declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp
+  3	lookup and complete-class checks	(step 3 / 4)	{'MISSED-REJECT': 3}	scopes {'4-plain': 1, '4-templ': 1, '3-templ': 1}
+      MISSED-REJECT	expressions/decltype/nested-class-member-evaluated.cpp
+      MISSED-REJECT	expressions/postfix/default-template-argument-incomplete-class.cpp
+      MISSED-REJECT	foundations/names/adl-function-template-parameter-adds-nothing.cpp
+  2	overload sets as arguments	(step 4 / 5)	{'unsupported': 1, 'MISSED-REJECT': 1}	scopes {'4-templ': 2}
+      unsupported	overloading/conversion-sequences/overload-set-argument-sequence.cpp
+      MISSED-REJECT	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp
+  7	template constructs outside the marks (unsupported)	(step 5-7)	{'unsupported': 7}	scopes {'5-7': 7}
+      unsupported	templates/arguments/pointer-subobject.cpp
+      unsupported	templates/class-template-deduction/sites-for-and-condition.cpp
+      unsupported	templates/concepts/concept-id-value.cpp
+      unsupported	templates/concepts/placeholder-parameter.cpp
+      unsupported	templates/constraints/function-type-specialization.cpp
+      unsupported	templates/packs/ellipsis-after-parameter.cpp
+      unsupported	templates/packs/expansion-elements.cpp
+
+run stops (pass their check, stop in the run): 20
+  by scope: {'4-templ': 1, '4-plain': 6, '3-plain': 3, '5-7': 10}

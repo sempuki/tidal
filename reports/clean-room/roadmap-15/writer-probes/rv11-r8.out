@@ -1,0 +1,21 @@
+| | compile |
+|---|---|
+| decltype(auto)::t in sizeof | reject |
+| decltype(auto)::v in an expression | reject |
+| control: decltype(s)::v in an expression | accept |
+decltype(auto)::t in sizeof / compile / clang-18: /tidal/build/probes/rv11-r8/0000-decltype-auto-t-in-sizeof--compile.cpp:4:30: error: expected ')'
+decltype(auto)::t in sizeof / compile / clang-22: /tidal/build/probes/rv11-r8/0000-decltype-auto-t-in-sizeof--compile.cpp:4:30: error: expected ')'
+decltype(auto)::t in sizeof / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/rv11-r8/0000-decltype-auto-t-in-sizeof--compile.cpp:4:30: error: expected ')'
+decltype(auto)::t in sizeof / compile / edg-7.0: 4: error: type name is not allowed
+decltype(auto)::t in sizeof / compile / edg-7.0-ilp32: 4: error: type name is not allowed
+decltype(auto)::t in sizeof / compile / gcc-14: /tidal/build/probes/rv11-r8/0000-decltype-auto-t-in-sizeof--compile.cpp:4:32: error: 'decltype(auto)' is not a class type
+decltype(auto)::t in sizeof / compile / gcc-16: /tidal/build/probes/rv11-r8/0000-decltype-auto-t-in-sizeof--compile.cpp:4:32: error: 'decltype(auto)' is not a class type
+decltype(auto)::t in sizeof / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/rv11-r8/0000-decltype-auto-t-in-sizeof--compile.cpp:4:32: error: ‘decltype(auto)’ is not a class type
+decltype(auto)::v in an expression / compile / clang-18: /tidal/build/probes/rv11-r8/0001-decltype-auto-v-in-an-expression--compile.cpp:4:23: error: expected '(' for function-style cast or type construction
+decltype(auto)::v in an expression / compile / clang-22: /tidal/build/probes/rv11-r8/0001-decltype-auto-v-in-an-expression--compile.cpp:4:23: error: expected '(' for function-style cast or type construction
+decltype(auto)::v in an expression / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/rv11-r8/0001-decltype-auto-v-in-an-expression--compile.cpp:4:23: error: expected '(' for function-style cast or type construction
+decltype(auto)::v in an expression / compile / edg-7.0: ", line 4: error: type name is not allowed
+decltype(auto)::v in an expression / compile / edg-7.0-ilp32: ", line 4: error: type name is not allowed
+decltype(auto)::v in an expression / compile / gcc-14: /tidal/build/probes/rv11-r8/0001-decltype-auto-v-in-an-expression--compile.cpp:4:25: error: 'decltype(auto)' is not a class type
+decltype(auto)::v in an expression / compile / gcc-16: /tidal/build/probes/rv11-r8/0001-decltype-auto-v-in-an-expression--compile.cpp:4:25: error: 'decltype(auto)' is not a class type
+decltype(auto)::v in an expression / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/rv11-r8/0001-decltype-auto-v-in-an-expression--compile.cpp:4:25: error: ‘decltype(auto)’ is not a class type

@@ -1,0 +1,56 @@
+| | compile |
+|---|---|
+| std::initializer_list<int> | accept: clang-host, gcc-host, gcc-16, clang-18, gcc-14, clang-22; reject: edg-7.0-ilp32, edg-7.0 |
+| std::strong_ordering | accept: gcc-host, clang-host, clang-18, gcc-16, clang-22, gcc-14; reject: edg-7.0-ilp32, edg-7.0 |
+| std::weak_ordering | accept: clang-host, gcc-host, clang-18, gcc-14, clang-22, gcc-16; reject: edg-7.0, edg-7.0-ilp32 |
+| std::partial_ordering | accept: gcc-host, clang-host, clang-18, gcc-14, clang-22, gcc-16; reject: edg-7.0-ilp32, edg-7.0 |
+| std::byte | accept: gcc-host, clang-host, clang-18, clang-22, gcc-14, gcc-16; reject: edg-7.0-ilp32, edg-7.0 |
+| std::nullptr_t | accept: gcc-host, clang-host, clang-18, clang-22, gcc-16, gcc-14; reject: edg-7.0-ilp32, edg-7.0 |
+| std::size_t | accept: clang-host, gcc-host, clang-18, gcc-14, gcc-16, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| std::align_val_t | accept: gcc-host, clang-host, gcc-16, clang-22, gcc-14, clang-18; reject: edg-7.0, edg-7.0-ilp32 |
+| std::nothrow_t | accept: gcc-host, clang-host, clang-18, gcc-14, gcc-16, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| std::exception | accept: gcc-host, clang-host, clang-18, clang-22, gcc-14, gcc-16; reject: edg-7.0-ilp32, edg-7.0 |
+| std::bad_alloc | accept: gcc-host, clang-host, clang-18, gcc-16, clang-22, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+| std::bad_array_new_length | accept: gcc-host, clang-host, clang-18, gcc-16, clang-22, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+| std::bad_cast | accept: gcc-host, clang-host, clang-18, gcc-16, clang-22, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+| std::type_info | accept: gcc-host, clang-host, clang-18, gcc-14, gcc-16, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| std::allocator<int> | accept: gcc-host, clang-host, clang-18, clang-22, gcc-16, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+| control: a class with a member operator, | accept: gcc-host, clang-host, gcc-16, clang-18, clang-22, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+| control: a class with a free operator, | accept: gcc-host, clang-host, clang-18, gcc-16, clang-22, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+| comma of two std::byte is the built-in one | accept: gcc-host, clang-host, clang-18, gcc-16, clang-22, gcc-14; reject: edg-7.0, edg-7.0-ilp32 |
+std::initializer_list<int> / compile / edg-7.0: line 1: catastrophic error: cannot open source file
+std::initializer_list<int> / compile / edg-7.0-ilp32: line 1: catastrophic error: cannot open source file
+std::strong_ordering / compile / edg-7.0: 1: catastrophic error: cannot open source file "initializer_list"
+std::strong_ordering / compile / edg-7.0-ilp32: 1: catastrophic error: cannot open source file "initializer_list"
+std::weak_ordering / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::weak_ordering / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::partial_ordering / compile / edg-7.0: 1: catastrophic error: cannot open source file "initializer_list"
+std::partial_ordering / compile / edg-7.0-ilp32: 1: catastrophic error: cannot open source file "initializer_list"
+std::byte / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::byte / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::nullptr_t / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::nullptr_t / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::size_t / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::size_t / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::align_val_t / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::align_val_t / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::nothrow_t / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::nothrow_t / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::exception / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::exception / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::bad_alloc / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::bad_alloc / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::bad_array_new_length / compile / edg-7.0: line 1: catastrophic error: cannot open source file
+std::bad_array_new_length / compile / edg-7.0-ilp32: line 1: catastrophic error: cannot open source file
+std::bad_cast / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::bad_cast / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::type_info / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::type_info / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+std::allocator<int> / compile / edg-7.0: catastrophic error: cannot open source file "initializer_list"
+std::allocator<int> / compile / edg-7.0-ilp32: catastrophic error: cannot open source file "initializer_list"
+control: a class with a member operator, / compile / edg-7.0: ompile.cpp", line 1: catastrophic error: cannot open source file
+control: a class with a member operator, / compile / edg-7.0-ilp32: ompile.cpp", line 1: catastrophic error: cannot open source file
+control: a class with a free operator, / compile / edg-7.0: pile.cpp", line 1: catastrophic error: cannot open source file
+control: a class with a free operator, / compile / edg-7.0-ilp32: pile.cpp", line 1: catastrophic error: cannot open source file
+comma of two std::byte is the built-in one / compile / edg-7.0: --compile.cpp", line 1: catastrophic error: cannot open source file
+comma of two std::byte is the built-in one / compile / edg-7.0-ilp32: --compile.cpp", line 1: catastrophic error: cannot open source file

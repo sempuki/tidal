@@ -1,0 +1,27 @@
+| | compile |
+|---|---|
+| union partial specialization | accept |
+| union explicit specialization | accept |
+| union partial specialization with final | accept |
+| union defined with a namespace qualifier | accept |
+| union defined with a class qualifier | accept |
+| member union template defined outside | accept |
+| explicit specialization of a member union | accept |
+| partial specialization: union key for a struct template | reject |
+| explicit specialization: struct key for a union template | reject |
+partial specialization: union key for a struct template / compile / clang-18: /tidal/build/probes/g182-union/0007-partial-specialization-union-key-for-a-struct-template--compile.cpp:3:20: error: use of 'S' with tag type that does not match previous declaration
+partial specialization: union key for a struct template / compile / clang-22: /tidal/build/probes/g182-union/0007-partial-specialization-union-key-for-a-struct-template--compile.cpp:3:20: error: use of 'S' with tag type that does not match previous declaration
+partial specialization: union key for a struct template / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/g182-union/0007-partial-specialization-union-key-for-a-struct-template--compile.cpp:3:20: error: use of 'S' with tag type that does not match previous declaration
+partial specialization: union key for a struct template / compile / edg-7.0: uct-template--compile.cpp", line 3: error: tag kind of union is
+partial specialization: union key for a struct template / compile / edg-7.0-ilp32: uct-template--compile.cpp", line 3: error: tag kind of union is
+partial specialization: union key for a struct template / compile / gcc-14: /tidal/build/probes/g182-union/0007-partial-specialization-union-key-for-a-struct-template--compile.cpp:3:26: error: 'union' tag used in naming 'struct S<T*>' [-fpermissive]
+partial specialization: union key for a struct template / compile / gcc-16: /tidal/build/probes/g182-union/0007-partial-specialization-union-key-for-a-struct-template--compile.cpp:3:26: error: 'union' tag used in naming 'struct S<T*>' [-fpermissive]
+partial specialization: union key for a struct template / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/g182-union/0007-partial-specialization-union-key-for-a-struct-template--compile.cpp:3:26: error: ‘union’ tag used in naming ‘struct S<T*>’ [-fpermissive]
+explicit specialization: struct key for a union template / compile / clang-18: /tidal/build/probes/g182-union/0008-explicit-specialization-struct-key-for-a-union-template--compile.cpp:3:13: error: use of 'S' with tag type that does not match previous declaration
+explicit specialization: struct key for a union template / compile / clang-22: /tidal/build/probes/g182-union/0008-explicit-specialization-struct-key-for-a-union-template--compile.cpp:3:13: error: use of 'S' with tag type that does not match previous declaration
+explicit specialization: struct key for a union template / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/g182-union/0008-explicit-specialization-struct-key-for-a-union-template--compile.cpp:3:13: error: use of 'S' with tag type that does not match previous declaration
+explicit specialization: struct key for a union template / compile / edg-7.0: nion-template--compile.cpp", line 3: error: invalid reference to
+explicit specialization: struct key for a union template / compile / edg-7.0-ilp32: nion-template--compile.cpp", line 3: error: invalid reference to
+explicit specialization: struct key for a union template / compile / gcc-14: /tidal/build/probes/g182-union/0008-explicit-specialization-struct-key-for-a-union-template--compile.cpp:3:20: error: 'struct' tag used in naming 'union S<int>' [-fpermissive]
+explicit specialization: struct key for a union template / compile / gcc-16: /tidal/build/probes/g182-union/0008-explicit-specialization-struct-key-for-a-union-template--compile.cpp:3:20: error: 'struct' tag used in naming 'union S<int>' [-fpermissive]
+explicit specialization: struct key for a union template / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/g182-union/0008-explicit-specialization-struct-key-for-a-union-template--compile.cpp:3:20: error: ‘struct’ tag used in naming ‘union S<int>’ [-fpermissive]

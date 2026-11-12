@@ -1,0 +1,27 @@
+{
+ "prelude": "#include <initializer_list>\n#include <compare>\n#include <cstddef>\n#include <new>\n#include <exception>\n#include <typeinfo>\n#include <memory>\ntemplate <class T, class U> concept member_comma = requires(T& a, U& b) { a.operator,(b); };\ntemplate <class T, class U> concept free_comma = requires(T& a, U& b) { operator,(a, b); };\ntemplate <class T> constexpr bool none = !member_comma<T, T> && !free_comma<T, T> &&\n    !member_comma<T, int> && !free_comma<T, int> && !free_comma<int, T>;\ntemplate <class T> struct same { static constexpr bool v = false; };\ntemplate <class T> struct same<T&(T&)> { static constexpr bool v = true; };\n",
+ "template": "{prelude}\n{row}\n",
+ "rows": {
+  "std::initializer_list<int>": "static_assert(none<std::initializer_list<int>>);",
+  "std::strong_ordering": "static_assert(none<std::strong_ordering>);",
+  "std::weak_ordering": "static_assert(none<std::weak_ordering>);",
+  "std::partial_ordering": "static_assert(none<std::partial_ordering>);",
+  "std::byte": "static_assert(none<std::byte>);",
+  "std::nullptr_t": "static_assert(none<std::nullptr_t>);",
+  "std::size_t": "static_assert(none<std::size_t>);",
+  "std::align_val_t": "static_assert(none<std::align_val_t>);",
+  "std::nothrow_t": "static_assert(none<std::nothrow_t>);",
+  "std::exception": "static_assert(none<std::exception>);",
+  "std::bad_alloc": "static_assert(none<std::bad_alloc>);",
+  "std::bad_array_new_length": "static_assert(none<std::bad_array_new_length>);",
+  "std::bad_cast": "static_assert(none<std::bad_cast>);",
+  "std::type_info": "static_assert(none<std::type_info>);",
+  "std::allocator<int>": "static_assert(none<std::allocator<int>>);",
+  "control: a class with a member operator,": "struct C { int operator,(C&); };\nstatic_assert(!none<C>);",
+  "control: a class with a free operator,": "namespace n { struct D {}; int operator,(D&, D&); }\nstatic_assert(!none<n::D>);",
+  "comma of two std::byte is the built-in one": "std::byte x{}, y{};\nstatic_assert(same<decltype((x, y))(std::byte&)>::v);"
+ },
+ "cols": {
+  "compile": ""
+ }
+}

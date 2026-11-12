@@ -1,0 +1,71 @@
+# test	old status	cause	scope (scopes.py)
+classes/copy-move/class-template-ctor-by-value.cpp	MISSED-REJECT	marked, section 2	4-templ
+programs/roadmap/r14-fsm-second-try.cpp	unsupported	marked, section 3	5-7
+statements/if/constexpr-template-nondependent-call-checked.cpp	MISSED-REJECT	marked, section 5	3-templ
+templates/arguments/argument-makes-parameter-invalid.cpp	MISSED-REJECT	marked, section 4	5-7
+templates/constraints/out-of-class-other-clause.cpp	MISSED-REJECT	marked, section 5	5-7
+templates/constraints/out-of-class-without-clause.cpp	MISSED-REJECT	marked, section 5	5-7
+templates/deduction/substitution-explicit-specifier.cpp	unsupported	marked, section 4	5-7
+templates/deduction/substitution-lambda-body.cpp	MISSED-REJECT	marked, section 4	5-7
+templates/deduction/substitution-lambda-default.cpp	MISSED-REJECT	marked, section 4	5-7
+templates/deduction/substitution-member-wrong-kind.cpp	unsupported	marked, section 4	5-7
+templates/dependent-names/binary-operator-pack-never-fits.cpp	MISSED-REJECT	marked, section 5	5-7
+templates/dependent-names/current-instantiation-enclosing-base.cpp	unsupported	marked, section 2	5-7
+templates/dependent-names/member-template-current-instantiation-pointer.cpp	FALSE-REJECT	marked, section 2	5-7
+templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp	MISSED-REJECT	marked, section 2	5-7
+templates/dependent-names/member-template-non-dependent-base.cpp	FALSE-REJECT	marked, section 2	5-7
+templates/dependent-names/member-template-through-current-instantiation-object.cpp	FALSE-REJECT	marked, section 2	5-7
+templates/dependent-names/operator-pack-never-fits.cpp	MISSED-REJECT	marked, section 5	5-7
+templates/dependent-names/other-specialization-constant-argument-member-missing.cpp	MISSED-REJECT	marked, section 1	5-7
+templates/dependent-names/other-specialization-constant-argument-no-typename.cpp	unsupported	marked, section 1	5-7
+templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp	EDG-AGREES	marked, section 1	5-7
+templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp	EDG-AGREES	marked, section 1	5-7
+templates/dependent-names/type-only-positions-more.cpp	unsupported	marked, section 4	5-7
+templates/instantiation/class-point-after-enclosing-class-not-later.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/instantiation/class-point-not-later-member-type.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/instantiation/class-point-not-later-type.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/instantiation/class-point-not-later.cpp	unsupported	marked, section 3	5-7
+templates/instantiation/class-point-static-const-member.cpp	unsupported	marked, section 3	5-7
+templates/instantiation/class-point-static-constexpr-made-at-use.cpp	unsupported	marked, section 3	5-7
+templates/instantiation/class-static-constexpr-member-calls-own-member.cpp	unsupported	marked, section 3	5-7
+templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	EDG-AGREES	marked, section 3	5-7
+templates/instantiation/local-class-default-argument.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/instantiation/local-class-exception-specification.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/instantiation/recursion-endless-function.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/instantiation/static-inline-member-incomplete-argument.cpp	EDG-AGREES	marked, section 3	5-7
+templates/packs/fold-in-outer-pattern.cpp	MISSED-REJECT	marked, section 5	5-7
+templates/packs/member-template-pack-length.cpp	MISSED-REJECT	marked, section 3	5-7
+templates/packs/size-operator-in-outer-pattern.cpp	MISSED-REJECT	marked, section 5	5-7
+templates/specialization/partial-no-primary-variable.cpp	MISSED-REJECT	marked, section 3	5-7
+classes/copy-move/trivially-copyable-member-template-selected.cpp	EDG-AGREES	EDG-AGREES in class and constraint code	4-templ
+declarations/attributes/maybe-unused-on-using-directive.cpp	MISSED-REJECT	RV10 grammar forms (decltype(auto), attributes, new_ptr)	3-plain
+declarations/auto/decltype-auto-destructor-call.cpp	MISSED-REJECT	RV10 grammar forms (decltype(auto), attributes, new_ptr)	4-plain
+declarations/auto/decltype-auto-functional-cast.cpp	MISSED-REJECT	RV10 grammar forms (decltype(auto), attributes, new_ptr)	3-plain
+declarations/constexpr/lambda-escalates-runtime.cpp	MISSED-REJECT	lambdas (closure classes)	3-plain
+declarations/enumerations/using-enum-dependent.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	3-templ
+declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp	FALSE-REJECT	structured bindings	3-templ
+expressions/decltype/nested-class-member-evaluated.cpp	MISSED-REJECT	lookup and complete-class checks	4-plain
+expressions/lambdas/capture-visible-in-trailing-return.cpp	unsupported	lambdas (closure classes)	3-templ
+expressions/new-delete/new-type-pointer-forms.cpp	FALSE-REJECT	RV10 grammar forms (decltype(auto), attributes, new_ptr)	4-plain
+expressions/postfix/default-template-argument-incomplete-class.cpp	MISSED-REJECT	lookup and complete-class checks	4-templ
+foundations/names/adl-function-template-parameter-adds-nothing.cpp	MISSED-REJECT	lookup and complete-class checks	3-templ
+overloading/conversion-sequences/overload-set-argument-sequence.cpp	unsupported	overload sets as arguments	4-templ
+overloading/overload-resolution/address-no-target-auto-template-parameter.cpp	MISSED-REJECT	overload sets as arguments	4-templ
+templates/arguments/class-argument-reference-temporary.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/arguments/concept-for-template.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/arguments/pointer-subobject.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/class-template-deduction/sites-for-and-condition.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/class-template-deduction/tie-own-constructor-template.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/concepts/concept-id-value.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/concepts/placeholder-parameter-decltype-auto.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/concepts/placeholder-parameter.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/constraints/explicit-instantiation-member-not-satisfied.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/constraints/friend-distinct-from-namespace.cpp	EDG-AGREES	EDG-AGREES in class and constraint code	5-7
+templates/constraints/function-type-specialization.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/declarations/alias-template-self-through-class.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/declarations/constant-parameter-no-constexpr-constructor.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/declarations/two-template-heads-in-class.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/ordering/nondeduced-only-parameter.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7
+templates/packs/ellipsis-after-parameter.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/packs/expansion-elements.cpp	unsupported	template constructs outside the marks (unsupported)	5-7
+templates/specialization/explicit-member-class-template-no-prefix.cpp	MISSED-REJECT	template checks outside the marks (missed rejects)	5-7

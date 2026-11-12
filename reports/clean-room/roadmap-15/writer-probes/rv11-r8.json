@@ -1,0 +1,12 @@
+{
+ "prelude": "",
+ "template": "{prelude}\n{row}\n",
+ "rows": {
+  "decltype(auto)::t in sizeof": "struct S { using t = int; };\nS s;\nint y = sizeof(decltype(auto)::t);",
+  "decltype(auto)::v in an expression": "struct S { static constexpr int v = 1; };\nS s;\nint y = decltype(auto)::v;",
+  "control: decltype(s)::v in an expression": "struct S { static constexpr int v = 1; };\nS s;\nint y = decltype(s)::v;"
+ },
+ "cols": {
+  "compile": ""
+ }
+}

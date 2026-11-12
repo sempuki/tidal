@@ -1,0 +1,344 @@
+| | compile |
+|---|---|
+| comma left: name | reject |
+| comma left: literal | reject |
+| comma left: a + 1 | reject |
+| comma left: a + f() | reject |
+| comma left: a == 1 | reject |
+| comma left: volatile name | accept |
+| comma left: P(1) | accept |
+| comma left: P{1} | accept |
+| comma left: new int | accept |
+| comma left: user-defined literal | accept |
+| comma left: lambda not called | accept: gcc-host, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22 |
+| comma left: sizeof a | reject |
+| comma left: s.m | reject |
+| comma left: p[0] | reject |
+| comma left: *p | reject |
+| comma left: (long)a | reject |
+| comma left: static_cast<long>(a) | reject |
+| comma left: ++a | accept |
+| comma left: a = 1 | accept |
+| comma left: a += 1 | accept |
+| comma left: f() | accept |
+| comma left: pf() | accept |
+| comma left: (void)a | accept |
+| comma left: c ? f() : f() | accept |
+| comma left: c ? a : b | reject |
+| comma left: called lambda | accept |
+| comma left: g() (void) | accept |
+| comma left: a++ | accept |
+| comma left: (a, f()) | reject |
+| comma left: (f(), a) | accept: gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+| statement: name | reject |
+| statement: literal | reject |
+| statement: a + 1 | reject |
+| statement: a + f() | reject |
+| statement: a == 1 | reject |
+| statement: volatile name | accept |
+| statement: P(1) | accept |
+| statement: P{1} | accept |
+| statement: new int | accept |
+| statement: user-defined literal | accept |
+| statement: lambda not called | accept: gcc-14, gcc-16, gcc-host; reject: clang-host, clang-18, clang-22 |
+| statement: sizeof a | reject |
+| statement: s.m | reject |
+| statement: p[0] | reject |
+| statement: *p | reject |
+| statement: (long)a | reject |
+| statement: static_cast<long>(a) | reject |
+| statement: ++a | accept |
+| statement: a = 1 | accept |
+| statement: a += 1 | accept |
+| statement: f() | accept |
+| statement: pf() | accept |
+| statement: (void)a | accept |
+| statement: c ? f() : f() | accept |
+| statement: c ? a : b | reject |
+| statement: called lambda | accept |
+| statement: g() (void) | accept |
+| statement: a++ | accept |
+| statement: (a, f()) | reject |
+| statement: (f(), a) | accept: gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+| for iteration: name | reject |
+| for iteration: literal | reject |
+| for iteration: a + 1 | reject |
+| for iteration: a + f() | reject |
+| for iteration: a == 1 | reject |
+| for iteration: volatile name | accept |
+| for iteration: P(1) | accept |
+| for iteration: P{1} | accept |
+| for iteration: new int | accept |
+| for iteration: user-defined literal | accept |
+| for iteration: lambda not called | accept: gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+| for iteration: sizeof a | reject |
+| for iteration: s.m | reject |
+| for iteration: p[0] | reject |
+| for iteration: *p | reject |
+| for iteration: (long)a | reject |
+| for iteration: static_cast<long>(a) | reject |
+| for iteration: ++a | accept |
+| for iteration: a = 1 | accept |
+| for iteration: a += 1 | accept |
+| for iteration: f() | accept |
+| for iteration: pf() | accept |
+| for iteration: (void)a | accept |
+| for iteration: c ? f() : f() | accept |
+| for iteration: c ? a : b | reject |
+| for iteration: called lambda | accept |
+| for iteration: g() (void) | accept |
+| for iteration: a++ | accept |
+| for iteration: (a, f()) | reject |
+| for iteration: (f(), a) | accept: gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+comma left: name / compile / clang-18: /tidal/build/probes/x26-warnings/0000-comma-left-name--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: name / compile / clang-22: /tidal/build/probes/x26-warnings/0000-comma-left-name--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: name / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0000-comma-left-name--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: name / compile / gcc-14: /tidal/build/probes/x26-warnings/0000-comma-left-name--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: name / compile / gcc-16: /tidal/build/probes/x26-warnings/0000-comma-left-name--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: name / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0000-comma-left-name--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: literal / compile / clang-18: /tidal/build/probes/x26-warnings/0001-comma-left-literal--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: literal / compile / clang-22: /tidal/build/probes/x26-warnings/0001-comma-left-literal--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: literal / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0001-comma-left-literal--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: literal / compile / gcc-14: /tidal/build/probes/x26-warnings/0001-comma-left-literal--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: literal / compile / gcc-16: /tidal/build/probes/x26-warnings/0001-comma-left-literal--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: literal / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0001-comma-left-literal--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: a + 1 / compile / clang-18: /tidal/build/probes/x26-warnings/0002-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: a + 1 / compile / clang-22: /tidal/build/probes/x26-warnings/0002-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: a + 1 / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0002-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: a + 1 / compile / gcc-14: /tidal/build/probes/x26-warnings/0002-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: a + 1 / compile / gcc-16: /tidal/build/probes/x26-warnings/0002-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: a + 1 / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0002-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: a + f() / compile / clang-18: /tidal/build/probes/x26-warnings/0003-comma-left-a-f--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: a + f() / compile / clang-22: /tidal/build/probes/x26-warnings/0003-comma-left-a-f--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: a + f() / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0003-comma-left-a-f--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: a + f() / compile / gcc-14: /tidal/build/probes/x26-warnings/0003-comma-left-a-f--compile.cpp:9:54: error: value computed is not used [-Werror=unused-value]
+comma left: a + f() / compile / gcc-16: /tidal/build/probes/x26-warnings/0003-comma-left-a-f--compile.cpp:9:54: error: value computed is not used [-Werror=unused-value]
+comma left: a + f() / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0003-comma-left-a-f--compile.cpp:9:54: error: value computed is not used [-Werror=unused-value]
+comma left: a == 1 / compile / clang-18: /tidal/build/probes/x26-warnings/0004-comma-left-a-1--compile.cpp:9:54: error: equality comparison result unused [-Werror,-Wunused-comparison]
+comma left: a == 1 / compile / clang-22: /tidal/build/probes/x26-warnings/0004-comma-left-a-1--compile.cpp:9:54: error: equality comparison result unused [-Werror,-Wunused-comparison]
+comma left: a == 1 / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0004-comma-left-a-1--compile.cpp:9:54: error: equality comparison result unused [-Werror,-Wunused-comparison]
+comma left: a == 1 / compile / gcc-14: /tidal/build/probes/x26-warnings/0004-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: a == 1 / compile / gcc-16: /tidal/build/probes/x26-warnings/0004-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: a == 1 / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0004-comma-left-a-1--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: lambda not called / compile / clang-18: /tidal/build/probes/x26-warnings/0010-comma-left-lambda-not-called--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: lambda not called / compile / clang-22: /tidal/build/probes/x26-warnings/0010-comma-left-lambda-not-called--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: lambda not called / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0010-comma-left-lambda-not-called--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: sizeof a / compile / clang-18: /tidal/build/probes/x26-warnings/0011-comma-left-sizeof-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: sizeof a / compile / clang-22: /tidal/build/probes/x26-warnings/0011-comma-left-sizeof-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: sizeof a / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0011-comma-left-sizeof-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: sizeof a / compile / gcc-14: /tidal/build/probes/x26-warnings/0011-comma-left-sizeof-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: sizeof a / compile / gcc-16: /tidal/build/probes/x26-warnings/0011-comma-left-sizeof-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: sizeof a / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0011-comma-left-sizeof-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: s.m / compile / clang-18: /tidal/build/probes/x26-warnings/0012-comma-left-s-m--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: s.m / compile / clang-22: /tidal/build/probes/x26-warnings/0012-comma-left-s-m--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: s.m / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0012-comma-left-s-m--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: s.m / compile / gcc-14: /tidal/build/probes/x26-warnings/0012-comma-left-s-m--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: s.m / compile / gcc-16: /tidal/build/probes/x26-warnings/0012-comma-left-s-m--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: s.m / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0012-comma-left-s-m--compile.cpp:9:54: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: p[0] / compile / clang-18: /tidal/build/probes/x26-warnings/0013-comma-left-p-0--compile.cpp:9:55: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: p[0] / compile / clang-22: /tidal/build/probes/x26-warnings/0013-comma-left-p-0--compile.cpp:9:55: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: p[0] / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0013-comma-left-p-0--compile.cpp:9:55: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: p[0] / compile / gcc-14: /tidal/build/probes/x26-warnings/0013-comma-left-p-0--compile.cpp:9:55: error: value computed is not used [-Werror=unused-value]
+comma left: p[0] / compile / gcc-16: /tidal/build/probes/x26-warnings/0013-comma-left-p-0--compile.cpp:9:55: error: value computed is not used [-Werror=unused-value]
+comma left: p[0] / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0013-comma-left-p-0--compile.cpp:9:55: error: value computed is not used [-Werror=unused-value]
+comma left: *p / compile / clang-18: /tidal/build/probes/x26-warnings/0014-comma-left-p--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: *p / compile / clang-22: /tidal/build/probes/x26-warnings/0014-comma-left-p--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: *p / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0014-comma-left-p--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: *p / compile / gcc-14: /tidal/build/probes/x26-warnings/0014-comma-left-p--compile.cpp:9:52: error: value computed is not used [-Werror=unused-value]
+comma left: *p / compile / gcc-16: /tidal/build/probes/x26-warnings/0014-comma-left-p--compile.cpp:9:52: error: value computed is not used [-Werror=unused-value]
+comma left: *p / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0014-comma-left-p--compile.cpp:9:52: error: value computed is not used [-Werror=unused-value]
+comma left: (long)a / compile / clang-18: /tidal/build/probes/x26-warnings/0015-comma-left-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (long)a / compile / clang-22: /tidal/build/probes/x26-warnings/0015-comma-left-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (long)a / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0015-comma-left-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (long)a / compile / gcc-14: /tidal/build/probes/x26-warnings/0015-comma-left-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: (long)a / compile / gcc-16: /tidal/build/probes/x26-warnings/0015-comma-left-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: (long)a / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0015-comma-left-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: static_cast<long>(a) / compile / clang-18: /tidal/build/probes/x26-warnings/0016-comma-left-static-cast-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: static_cast<long>(a) / compile / clang-22: /tidal/build/probes/x26-warnings/0016-comma-left-static-cast-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: static_cast<long>(a) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0016-comma-left-static-cast-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: static_cast<long>(a) / compile / gcc-14: /tidal/build/probes/x26-warnings/0016-comma-left-static-cast-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: static_cast<long>(a) / compile / gcc-16: /tidal/build/probes/x26-warnings/0016-comma-left-static-cast-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: static_cast<long>(a) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0016-comma-left-static-cast-long-a--compile.cpp:9:52: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: c ? a : b / compile / clang-18: /tidal/build/probes/x26-warnings/0024-comma-left-c-a-b--compile.cpp:9:60: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: c ? a : b / compile / clang-22: /tidal/build/probes/x26-warnings/0024-comma-left-c-a-b--compile.cpp:9:60: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: c ? a : b / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0024-comma-left-c-a-b--compile.cpp:9:60: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: c ? a : b / compile / gcc-14: /tidal/build/probes/x26-warnings/0024-comma-left-c-a-b--compile.cpp:9:63: error: second operand of conditional expression has no effect [-Werror=unused-value]
+comma left: c ? a : b / compile / gcc-16: /tidal/build/probes/x26-warnings/0024-comma-left-c-a-b--compile.cpp:9:63: error: second operand of conditional expression has no effect [-Werror=unused-value]
+comma left: c ? a : b / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0024-comma-left-c-a-b--compile.cpp:9:63: error: second operand of conditional expression has no effect [-Werror=unused-value]
+comma left: (a, f()) / compile / clang-18: /tidal/build/probes/x26-warnings/0028-comma-left-a-f--compile.cpp:9:53: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (a, f()) / compile / clang-22: /tidal/build/probes/x26-warnings/0028-comma-left-a-f--compile.cpp:9:53: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (a, f()) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0028-comma-left-a-f--compile.cpp:9:53: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (a, f()) / compile / gcc-14: /tidal/build/probes/x26-warnings/0028-comma-left-a-f--compile.cpp:9:53: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: (a, f()) / compile / gcc-16: /tidal/build/probes/x26-warnings/0028-comma-left-a-f--compile.cpp:9:53: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: (a, f()) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0028-comma-left-a-f--compile.cpp:9:53: error: left operand of comma operator has no effect [-Werror=unused-value]
+comma left: (f(), a) / compile / clang-18: /tidal/build/probes/x26-warnings/0029-comma-left-f-a--compile.cpp:9:58: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (f(), a) / compile / clang-22: /tidal/build/probes/x26-warnings/0029-comma-left-f-a--compile.cpp:9:58: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+comma left: (f(), a) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0029-comma-left-f-a--compile.cpp:9:58: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+statement: name / compile / clang-18: /tidal/build/probes/x26-warnings/0030-statement-name--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: name / compile / clang-22: /tidal/build/probes/x26-warnings/0030-statement-name--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: name / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0030-statement-name--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: name / compile / gcc-14: /tidal/build/probes/x26-warnings/0030-statement-name--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: name / compile / gcc-16: /tidal/build/probes/x26-warnings/0030-statement-name--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: name / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0030-statement-name--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: literal / compile / clang-18: /tidal/build/probes/x26-warnings/0031-statement-literal--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: literal / compile / clang-22: /tidal/build/probes/x26-warnings/0031-statement-literal--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: literal / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0031-statement-literal--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: literal / compile / gcc-14: /tidal/build/probes/x26-warnings/0031-statement-literal--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: literal / compile / gcc-16: /tidal/build/probes/x26-warnings/0031-statement-literal--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: literal / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0031-statement-literal--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: a + 1 / compile / clang-18: /tidal/build/probes/x26-warnings/0032-statement-a-1--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: a + 1 / compile / clang-22: /tidal/build/probes/x26-warnings/0032-statement-a-1--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: a + 1 / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0032-statement-a-1--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: a + 1 / compile / gcc-14: /tidal/build/probes/x26-warnings/0032-statement-a-1--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: a + 1 / compile / gcc-16: /tidal/build/probes/x26-warnings/0032-statement-a-1--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: a + 1 / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0032-statement-a-1--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: a + f() / compile / clang-18: /tidal/build/probes/x26-warnings/0033-statement-a-f--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: a + f() / compile / clang-22: /tidal/build/probes/x26-warnings/0033-statement-a-f--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: a + f() / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0033-statement-a-f--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: a + f() / compile / gcc-14: /tidal/build/probes/x26-warnings/0033-statement-a-f--compile.cpp:9:47: error: value computed is not used [-Werror=unused-value]
+statement: a + f() / compile / gcc-16: /tidal/build/probes/x26-warnings/0033-statement-a-f--compile.cpp:9:47: error: value computed is not used [-Werror=unused-value]
+statement: a + f() / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0033-statement-a-f--compile.cpp:9:47: error: value computed is not used [-Werror=unused-value]
+statement: a == 1 / compile / clang-18: /tidal/build/probes/x26-warnings/0034-statement-a-1--compile.cpp:9:47: error: equality comparison result unused [-Werror,-Wunused-comparison]
+statement: a == 1 / compile / clang-22: /tidal/build/probes/x26-warnings/0034-statement-a-1--compile.cpp:9:47: error: equality comparison result unused [-Werror,-Wunused-comparison]
+statement: a == 1 / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0034-statement-a-1--compile.cpp:9:47: error: equality comparison result unused [-Werror,-Wunused-comparison]
+statement: a == 1 / compile / gcc-14: /tidal/build/probes/x26-warnings/0034-statement-a-1--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: a == 1 / compile / gcc-16: /tidal/build/probes/x26-warnings/0034-statement-a-1--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: a == 1 / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0034-statement-a-1--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: lambda not called / compile / clang-18: /tidal/build/probes/x26-warnings/0040-statement-lambda-not-called--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: lambda not called / compile / clang-22: /tidal/build/probes/x26-warnings/0040-statement-lambda-not-called--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: lambda not called / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0040-statement-lambda-not-called--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: sizeof a / compile / clang-18: /tidal/build/probes/x26-warnings/0041-statement-sizeof-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: sizeof a / compile / clang-22: /tidal/build/probes/x26-warnings/0041-statement-sizeof-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: sizeof a / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0041-statement-sizeof-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: sizeof a / compile / gcc-14: /tidal/build/probes/x26-warnings/0041-statement-sizeof-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: sizeof a / compile / gcc-16: /tidal/build/probes/x26-warnings/0041-statement-sizeof-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: sizeof a / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0041-statement-sizeof-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: s.m / compile / clang-18: /tidal/build/probes/x26-warnings/0042-statement-s-m--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: s.m / compile / clang-22: /tidal/build/probes/x26-warnings/0042-statement-s-m--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: s.m / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0042-statement-s-m--compile.cpp:9:47: error: expression result unused [-Werror,-Wunused-value]
+statement: s.m / compile / gcc-14: /tidal/build/probes/x26-warnings/0042-statement-s-m--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: s.m / compile / gcc-16: /tidal/build/probes/x26-warnings/0042-statement-s-m--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: s.m / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0042-statement-s-m--compile.cpp:9:47: error: statement has no effect [-Werror=unused-value]
+statement: p[0] / compile / clang-18: /tidal/build/probes/x26-warnings/0043-statement-p-0--compile.cpp:9:48: error: expression result unused [-Werror,-Wunused-value]
+statement: p[0] / compile / clang-22: /tidal/build/probes/x26-warnings/0043-statement-p-0--compile.cpp:9:48: error: expression result unused [-Werror,-Wunused-value]
+statement: p[0] / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0043-statement-p-0--compile.cpp:9:48: error: expression result unused [-Werror,-Wunused-value]
+statement: p[0] / compile / gcc-14: /tidal/build/probes/x26-warnings/0043-statement-p-0--compile.cpp:9:48: error: value computed is not used [-Werror=unused-value]
+statement: p[0] / compile / gcc-16: /tidal/build/probes/x26-warnings/0043-statement-p-0--compile.cpp:9:48: error: value computed is not used [-Werror=unused-value]
+statement: p[0] / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0043-statement-p-0--compile.cpp:9:48: error: value computed is not used [-Werror=unused-value]
+statement: *p / compile / clang-18: /tidal/build/probes/x26-warnings/0044-statement-p--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: *p / compile / clang-22: /tidal/build/probes/x26-warnings/0044-statement-p--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: *p / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0044-statement-p--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: *p / compile / gcc-14: /tidal/build/probes/x26-warnings/0044-statement-p--compile.cpp:9:45: error: value computed is not used [-Werror=unused-value]
+statement: *p / compile / gcc-16: /tidal/build/probes/x26-warnings/0044-statement-p--compile.cpp:9:45: error: value computed is not used [-Werror=unused-value]
+statement: *p / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0044-statement-p--compile.cpp:9:45: error: value computed is not used [-Werror=unused-value]
+statement: (long)a / compile / clang-18: /tidal/build/probes/x26-warnings/0045-statement-long-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: (long)a / compile / clang-22: /tidal/build/probes/x26-warnings/0045-statement-long-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: (long)a / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0045-statement-long-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: (long)a / compile / gcc-14: /tidal/build/probes/x26-warnings/0045-statement-long-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: (long)a / compile / gcc-16: /tidal/build/probes/x26-warnings/0045-statement-long-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: (long)a / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0045-statement-long-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: static_cast<long>(a) / compile / clang-18: /tidal/build/probes/x26-warnings/0046-statement-static-cast-long-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: static_cast<long>(a) / compile / clang-22: /tidal/build/probes/x26-warnings/0046-statement-static-cast-long-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: static_cast<long>(a) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0046-statement-static-cast-long-a--compile.cpp:9:45: error: expression result unused [-Werror,-Wunused-value]
+statement: static_cast<long>(a) / compile / gcc-14: /tidal/build/probes/x26-warnings/0046-statement-static-cast-long-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: static_cast<long>(a) / compile / gcc-16: /tidal/build/probes/x26-warnings/0046-statement-static-cast-long-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: static_cast<long>(a) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0046-statement-static-cast-long-a--compile.cpp:9:45: error: statement has no effect [-Werror=unused-value]
+statement: c ? a : b / compile / clang-18: /tidal/build/probes/x26-warnings/0054-statement-c-a-b--compile.cpp:9:53: error: expression result unused [-Werror,-Wunused-value]
+statement: c ? a : b / compile / clang-22: /tidal/build/probes/x26-warnings/0054-statement-c-a-b--compile.cpp:9:53: error: expression result unused [-Werror,-Wunused-value]
+statement: c ? a : b / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0054-statement-c-a-b--compile.cpp:9:53: error: expression result unused [-Werror,-Wunused-value]
+statement: c ? a : b / compile / gcc-14: /tidal/build/probes/x26-warnings/0054-statement-c-a-b--compile.cpp:9:54: error: second operand of conditional expression has no effect [-Werror=unused-value]
+statement: c ? a : b / compile / gcc-16: /tidal/build/probes/x26-warnings/0054-statement-c-a-b--compile.cpp:9:54: error: second operand of conditional expression has no effect [-Werror=unused-value]
+statement: c ? a : b / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0054-statement-c-a-b--compile.cpp:9:54: error: second operand of conditional expression has no effect [-Werror=unused-value]
+statement: (a, f()) / compile / clang-18: /tidal/build/probes/x26-warnings/0058-statement-a-f--compile.cpp:9:46: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+statement: (a, f()) / compile / clang-22: /tidal/build/probes/x26-warnings/0058-statement-a-f--compile.cpp:9:46: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+statement: (a, f()) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0058-statement-a-f--compile.cpp:9:46: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+statement: (a, f()) / compile / gcc-14: /tidal/build/probes/x26-warnings/0058-statement-a-f--compile.cpp:9:46: error: left operand of comma operator has no effect [-Werror=unused-value]
+statement: (a, f()) / compile / gcc-16: /tidal/build/probes/x26-warnings/0058-statement-a-f--compile.cpp:9:46: error: left operand of comma operator has no effect [-Werror=unused-value]
+statement: (a, f()) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0058-statement-a-f--compile.cpp:9:46: error: left operand of comma operator has no effect [-Werror=unused-value]
+statement: (f(), a) / compile / clang-18: /tidal/build/probes/x26-warnings/0059-statement-f-a--compile.cpp:9:51: error: expression result unused [-Werror,-Wunused-value]
+statement: (f(), a) / compile / clang-22: /tidal/build/probes/x26-warnings/0059-statement-f-a--compile.cpp:9:51: error: expression result unused [-Werror,-Wunused-value]
+statement: (f(), a) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0059-statement-f-a--compile.cpp:9:51: error: expression result unused [-Werror,-Wunused-value]
+for iteration: name / compile / clang-18: /tidal/build/probes/x26-warnings/0060-for-iteration-name--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: name / compile / clang-22: /tidal/build/probes/x26-warnings/0060-for-iteration-name--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: name / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0060-for-iteration-name--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: name / compile / gcc-14: /tidal/build/probes/x26-warnings/0060-for-iteration-name--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: name / compile / gcc-16: /tidal/build/probes/x26-warnings/0060-for-iteration-name--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: name / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0060-for-iteration-name--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: literal / compile / clang-18: /tidal/build/probes/x26-warnings/0061-for-iteration-literal--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: literal / compile / clang-22: /tidal/build/probes/x26-warnings/0061-for-iteration-literal--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: literal / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0061-for-iteration-literal--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: literal / compile / gcc-14: /tidal/build/probes/x26-warnings/0061-for-iteration-literal--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: literal / compile / gcc-16: /tidal/build/probes/x26-warnings/0061-for-iteration-literal--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: literal / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0061-for-iteration-literal--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: a + 1 / compile / clang-18: /tidal/build/probes/x26-warnings/0062-for-iteration-a-1--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: a + 1 / compile / clang-22: /tidal/build/probes/x26-warnings/0062-for-iteration-a-1--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: a + 1 / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0062-for-iteration-a-1--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: a + 1 / compile / gcc-14: /tidal/build/probes/x26-warnings/0062-for-iteration-a-1--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: a + 1 / compile / gcc-16: /tidal/build/probes/x26-warnings/0062-for-iteration-a-1--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: a + 1 / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0062-for-iteration-a-1--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: a + f() / compile / clang-18: /tidal/build/probes/x26-warnings/0063-for-iteration-a-f--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: a + f() / compile / clang-22: /tidal/build/probes/x26-warnings/0063-for-iteration-a-f--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: a + f() / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0063-for-iteration-a-f--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: a + f() / compile / gcc-14: /tidal/build/probes/x26-warnings/0063-for-iteration-a-f--compile.cpp:9:70: error: value computed is not used [-Werror=unused-value]
+for iteration: a + f() / compile / gcc-16: /tidal/build/probes/x26-warnings/0063-for-iteration-a-f--compile.cpp:9:70: error: value computed is not used [-Werror=unused-value]
+for iteration: a + f() / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0063-for-iteration-a-f--compile.cpp:9:70: error: value computed is not used [-Werror=unused-value]
+for iteration: a == 1 / compile / clang-18: /tidal/build/probes/x26-warnings/0064-for-iteration-a-1--compile.cpp:9:70: error: equality comparison result unused [-Werror,-Wunused-comparison]
+for iteration: a == 1 / compile / clang-22: /tidal/build/probes/x26-warnings/0064-for-iteration-a-1--compile.cpp:9:70: error: equality comparison result unused [-Werror,-Wunused-comparison]
+for iteration: a == 1 / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0064-for-iteration-a-1--compile.cpp:9:70: error: equality comparison result unused [-Werror,-Wunused-comparison]
+for iteration: a == 1 / compile / gcc-14: /tidal/build/probes/x26-warnings/0064-for-iteration-a-1--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: a == 1 / compile / gcc-16: /tidal/build/probes/x26-warnings/0064-for-iteration-a-1--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: a == 1 / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0064-for-iteration-a-1--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: lambda not called / compile / clang-18: /tidal/build/probes/x26-warnings/0070-for-iteration-lambda-not-called--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: lambda not called / compile / clang-22: /tidal/build/probes/x26-warnings/0070-for-iteration-lambda-not-called--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: lambda not called / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0070-for-iteration-lambda-not-called--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: sizeof a / compile / clang-18: /tidal/build/probes/x26-warnings/0071-for-iteration-sizeof-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: sizeof a / compile / clang-22: /tidal/build/probes/x26-warnings/0071-for-iteration-sizeof-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: sizeof a / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0071-for-iteration-sizeof-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: sizeof a / compile / gcc-14: /tidal/build/probes/x26-warnings/0071-for-iteration-sizeof-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: sizeof a / compile / gcc-16: /tidal/build/probes/x26-warnings/0071-for-iteration-sizeof-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: sizeof a / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0071-for-iteration-sizeof-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: s.m / compile / clang-18: /tidal/build/probes/x26-warnings/0072-for-iteration-s-m--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: s.m / compile / clang-22: /tidal/build/probes/x26-warnings/0072-for-iteration-s-m--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: s.m / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0072-for-iteration-s-m--compile.cpp:9:70: error: expression result unused [-Werror,-Wunused-value]
+for iteration: s.m / compile / gcc-14: /tidal/build/probes/x26-warnings/0072-for-iteration-s-m--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: s.m / compile / gcc-16: /tidal/build/probes/x26-warnings/0072-for-iteration-s-m--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: s.m / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0072-for-iteration-s-m--compile.cpp:9:70: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: p[0] / compile / clang-18: /tidal/build/probes/x26-warnings/0073-for-iteration-p-0--compile.cpp:9:71: error: expression result unused [-Werror,-Wunused-value]
+for iteration: p[0] / compile / clang-22: /tidal/build/probes/x26-warnings/0073-for-iteration-p-0--compile.cpp:9:71: error: expression result unused [-Werror,-Wunused-value]
+for iteration: p[0] / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0073-for-iteration-p-0--compile.cpp:9:71: error: expression result unused [-Werror,-Wunused-value]
+for iteration: p[0] / compile / gcc-14: /tidal/build/probes/x26-warnings/0073-for-iteration-p-0--compile.cpp:9:71: error: value computed is not used [-Werror=unused-value]
+for iteration: p[0] / compile / gcc-16: /tidal/build/probes/x26-warnings/0073-for-iteration-p-0--compile.cpp:9:71: error: value computed is not used [-Werror=unused-value]
+for iteration: p[0] / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0073-for-iteration-p-0--compile.cpp:9:71: error: value computed is not used [-Werror=unused-value]
+for iteration: *p / compile / clang-18: /tidal/build/probes/x26-warnings/0074-for-iteration-p--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: *p / compile / clang-22: /tidal/build/probes/x26-warnings/0074-for-iteration-p--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: *p / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0074-for-iteration-p--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: *p / compile / gcc-14: /tidal/build/probes/x26-warnings/0074-for-iteration-p--compile.cpp:9:68: error: value computed is not used [-Werror=unused-value]
+for iteration: *p / compile / gcc-16: /tidal/build/probes/x26-warnings/0074-for-iteration-p--compile.cpp:9:68: error: value computed is not used [-Werror=unused-value]
+for iteration: *p / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0074-for-iteration-p--compile.cpp:9:68: error: value computed is not used [-Werror=unused-value]
+for iteration: (long)a / compile / clang-18: /tidal/build/probes/x26-warnings/0075-for-iteration-long-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: (long)a / compile / clang-22: /tidal/build/probes/x26-warnings/0075-for-iteration-long-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: (long)a / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0075-for-iteration-long-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: (long)a / compile / gcc-14: /tidal/build/probes/x26-warnings/0075-for-iteration-long-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: (long)a / compile / gcc-16: /tidal/build/probes/x26-warnings/0075-for-iteration-long-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: (long)a / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0075-for-iteration-long-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: static_cast<long>(a) / compile / clang-18: /tidal/build/probes/x26-warnings/0076-for-iteration-static-cast-long-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: static_cast<long>(a) / compile / clang-22: /tidal/build/probes/x26-warnings/0076-for-iteration-static-cast-long-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: static_cast<long>(a) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0076-for-iteration-static-cast-long-a--compile.cpp:9:68: error: expression result unused [-Werror,-Wunused-value]
+for iteration: static_cast<long>(a) / compile / gcc-14: /tidal/build/probes/x26-warnings/0076-for-iteration-static-cast-long-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: static_cast<long>(a) / compile / gcc-16: /tidal/build/probes/x26-warnings/0076-for-iteration-static-cast-long-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: static_cast<long>(a) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0076-for-iteration-static-cast-long-a--compile.cpp:9:68: error: for increment expression has no effect [-Werror=unused-value]
+for iteration: c ? a : b / compile / clang-18: /tidal/build/probes/x26-warnings/0084-for-iteration-c-a-b--compile.cpp:9:76: error: expression result unused [-Werror,-Wunused-value]
+for iteration: c ? a : b / compile / clang-22: /tidal/build/probes/x26-warnings/0084-for-iteration-c-a-b--compile.cpp:9:76: error: expression result unused [-Werror,-Wunused-value]
+for iteration: c ? a : b / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0084-for-iteration-c-a-b--compile.cpp:9:76: error: expression result unused [-Werror,-Wunused-value]
+for iteration: c ? a : b / compile / gcc-14: /tidal/build/probes/x26-warnings/0084-for-iteration-c-a-b--compile.cpp:9:76: error: second operand of conditional expression has no effect [-Werror=unused-value]
+for iteration: c ? a : b / compile / gcc-16: /tidal/build/probes/x26-warnings/0084-for-iteration-c-a-b--compile.cpp:9:76: error: second operand of conditional expression has no effect [-Werror=unused-value]
+for iteration: c ? a : b / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0084-for-iteration-c-a-b--compile.cpp:9:76: error: second operand of conditional expression has no effect [-Werror=unused-value]
+for iteration: (a, f()) / compile / clang-18: /tidal/build/probes/x26-warnings/0088-for-iteration-a-f--compile.cpp:9:69: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+for iteration: (a, f()) / compile / clang-22: /tidal/build/probes/x26-warnings/0088-for-iteration-a-f--compile.cpp:9:69: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+for iteration: (a, f()) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0088-for-iteration-a-f--compile.cpp:9:69: error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+for iteration: (a, f()) / compile / gcc-14: /tidal/build/probes/x26-warnings/0088-for-iteration-a-f--compile.cpp:9:69: error: left operand of comma operator has no effect [-Werror=unused-value]
+for iteration: (a, f()) / compile / gcc-16: /tidal/build/probes/x26-warnings/0088-for-iteration-a-f--compile.cpp:9:69: error: left operand of comma operator has no effect [-Werror=unused-value]
+for iteration: (a, f()) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/x26-warnings/0088-for-iteration-a-f--compile.cpp:9:69: error: left operand of comma operator has no effect [-Werror=unused-value]
+for iteration: (f(), a) / compile / clang-18: /tidal/build/probes/x26-warnings/0089-for-iteration-f-a--compile.cpp:9:74: error: expression result unused [-Werror,-Wunused-value]
+for iteration: (f(), a) / compile / clang-22: /tidal/build/probes/x26-warnings/0089-for-iteration-f-a--compile.cpp:9:74: error: expression result unused [-Werror,-Wunused-value]
+for iteration: (f(), a) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/x26-warnings/0089-for-iteration-f-a--compile.cpp:9:74: error: expression result unused [-Werror,-Wunused-value]

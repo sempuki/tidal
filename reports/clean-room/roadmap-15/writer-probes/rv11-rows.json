@@ -1,0 +1,38 @@
+{
+ "prelude": "",
+ "template": "{prelude}\n{row}\n",
+ "rows": {
+  "R-1: friend member template of a class template's specializations, two heads": "template <class T> struct A { template <class U> int g(U); };\nclass C { int secret = 3; template <class T> template <class U> friend int A<T>::g(U); };\ntemplate <class T> template <class U> int A<T>::g(U) { return C{}.secret; }\nint use() { return A<int>{}.g(1); }",
+  "R-1: friend member class template of a class template's specializations, two heads": "template <class T> struct A { template <class U> struct In; };\nclass C { int secret = 3; template <class T> template <class U> friend struct A<T>::In; };\ntemplate <class T> template <class U> struct A<T>::In { int get() { return C{}.secret; } };\nint use() { return A<int>::In<char>{}.get(); }",
+  "R-1: two heads, the first parameter not in the qualifier": "template <class T> struct A { template <class U> int g(U); };\nclass C { template <class T> template <class U> friend int A<int>::g(U); };",
+  "R-1: control: two heads before a member declaration": "struct C { template <class T> template <class U> void g(T, U); };",
+  "R-2: functional cast to an alias template, parentheses": "template <class T> struct Box { T v; Box(T x) : v(x) {} };\ntemplate <class T> using B = Box<T>;\nauto b = B(3);\nstatic_assert(sizeof(b.v) == sizeof(int));",
+  "R-2: functional cast to an alias template, braces": "template <class T> struct Box { T v; Box(T x) : v(x) {} };\ntemplate <class T> using B = Box<T>;\nauto b = B{3.0};\nstatic_assert(sizeof(b.v) == sizeof(double));",
+  "R-2: functional cast, qualifier not dependent": "struct H { template <class U> struct Box { U v; Box(U x) : v(x) {} }; };\nauto b = H::Box(3);\nstatic_assert(sizeof(b.v) == sizeof(int));",
+  "R-2: typename T::Box(3), dependent qualifier, no argument list": "struct H { template <class U> struct Box { U v; Box(U x) : v(x) {} }; };\ntemplate <class T> auto f() { return typename T::Box(3); }\nauto x = f<H>();",
+  "R-2: typename T::template Box(3), dependent qualifier, no argument list": "struct H { template <class U> struct Box { U v; Box(U x) : v(x) {} }; };\ntemplate <class T> auto f() { return typename T::template Box(3); }\nauto x = f<H>();",
+  "R-2: control: typename T::template Box<int>(3)": "struct H { template <class U> struct Box { U v; Box(U x) : v(x) {} }; };\ntemplate <class T> auto f() { return typename T::template Box<int>(3); }\nauto x = f<H>();",
+  "R-3: [[]] before a using-directive": "namespace N { int x; }\n[[]] using namespace N;",
+  "R-3: [[maybe_unused]] before a using-directive": "namespace N { int x; }\n[[maybe_unused]] using namespace N;",
+  "R-3: [[deprecated]] before a using-directive": "namespace N { int x; }\n[[deprecated]] using namespace N;",
+  "R-3: [[nodiscard]] before a using-directive": "namespace N { int x; }\n[[nodiscard]] using namespace N;",
+  "R-3: [[deprecated]] before a using-declaration": "namespace N { int x; }\n[[deprecated]] using N::x;",
+  "R-5: union member of class type, default constructor deleted, written through the chain": "struct D { D() = delete; constexpr D(int v) : x(v) {} int x; };\nunion U { int i; D d; };\nconstexpr int f() { U u{.i = 1}; u.d.x = 2; return u.d.x; }\nstatic_assert(f() == 2);",
+  "R-5: control: default constructor defaulted, written through the chain": "struct D { D() = default; int x; };\nunion U { int i; D d; };\nconstexpr int f() { U u{.i = 1}; u.d.x = 2; return u.d.x; }\nstatic_assert(f() == 2);",
+  "R-5 and F7-2: a scalar ended inside a living union member of class type, then assigned": "using Int = int;\nstruct S { int a; int b; };\nunion U { S s; float f; };\nconstexpr int f() { U u{.s = {1, 2}}; u.s.a.~Int(); u.s.a = 3; return u.s.a; }\nstatic_assert(f() == 3);",
+  "F7-2: the same, read of the untouched member b after the write": "using Int = int;\nstruct S { int a; int b; };\nunion U { S s; float f; };\nconstexpr int f() { U u{.s = {1, 2}}; u.s.a.~Int(); u.s.a = 3; return u.s.b; }\nstatic_assert(f() == 2);",
+  "R-7: braced value for an int parameter": "template <int N> struct X { static constexpr int v = N; };\nstatic_assert(X<{3}>::v == 3);",
+  "R-7: empty braces for an int parameter": "template <int N> struct X { static constexpr int v = N; };\nstatic_assert(X<{}>::v == 0);",
+  "R-7: narrowing double in braces for an int parameter": "template <int N> struct X { static constexpr int v = N; };\nint y = X<{3.5}>::v;",
+  "R-7: narrowing int constant in braces for a char parameter": "template <char C> struct X { static constexpr char v = C; };\nint y = X<{300}>::v;",
+  "R-7: two values in braces for an int parameter": "template <int N> struct X { static constexpr int v = N; };\nint y = X<{3, 4}>::v;",
+  "R-7: braced int constant for a double parameter": "template <double D> struct X { static constexpr double v = D; };\nstatic_assert(X<{1}>::v == 1.0);",
+  "R-7: braced nullptr for a pointer parameter": "template <int* P> struct X { static constexpr bool v = P == nullptr; };\nstatic_assert(X<{nullptr}>::v);",
+  "R-7: control: narrowing double without braces for an int parameter": "template <int N> struct X { static constexpr int v = N; };\nint y = X<3.5>::v;",
+  "R-8: decltype(auto) before ::": "struct S { using t = int; };\nS s;\ndecltype(auto)::t x = 0;",
+  "R-8: control: decltype(s) before ::": "struct S { using t = int; };\nS s;\ndecltype(s)::t x = 0;"
+ },
+ "cols": {
+  "compile": ""
+ }
+}

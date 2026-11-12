@@ -1,0 +1,64 @@
+changed new/fields_first_try.cpp
+  round 14: rejected [SB-2] at line 51: structured binding declares 1 names but the initializer has 4 elements
+  now:      result: 0
+changed new/fields_second_try.cpp
+  round 14: unsupported at line 201: check: static_assert: call needing template deduction or unknown arguments
+  now:      result: 0
+changed new/fnref_fifth_try.cpp
+  round 14: unsupported at line 191: check: static_assert: call needing template deduction or unknown arguments
+  now:      result: 0
+changed new/fnref_sixth_try.cpp
+  round 14: unsupported at line 169: converting constructor
+  now:      result: 0
+changed new/keys_first_try.cpp
+  round 14: unsupported at line 135: check: static_assert: call needing template deduction or unknown arguments
+  now:      result: 0
+changed probes/class_template_constant_parameter_member_read.cpp
+  round 14: unsupported at line 4: check: static_assert: dependent name
+  now:      result: 0
+changed probes/class_template_constant_parameter_object.cpp
+  round 14: unsupported at line 0: object of unknown type
+  now:      result: 0
+changed probes/closure_argument_function_ref_thunk.cpp
+  round 14: unsupported at line 11: converting constructor
+  now:      result: 0
+changed probes/generic_lambda_reference_capture_closure_constant.cpp
+  round 14: unsupported at line 4: check: static_assert: call needing template deduction or unknown arguments
+  now:      result: 0
+changed probes/generic_lambda_reference_capture_closure_in_template.cpp
+  round 14: unsupported at line 3: call needing template deduction or unknown arguments
+  now:      result: 0
+changed probes/literal_operator_class_template_parameter.cpp
+  round 14: unsupported at line 7: check: static_assert: literal operator template
+  now:      result: 0
+changed probes/requires_too_many_braced_initializers_array_member.cpp
+  round 14: unsupported at line 3: check: static_assert: concept
+  now:      result: 0
+changed probes/requires_too_many_braced_initializers_run.cpp
+  round 14: unsupported at line 4: concept
+  now:      result: 0
+changed reductions/class_template_constant_parameter_from_string_literal.cpp
+  round 14: unsupported at line 7: check: static_assert: dependent name
+  now:      result: 0
+changed reductions/closure_argument_converting_constructor_template.cpp
+  round 14: unsupported at line 7: converting constructor
+  now:      result: 0
+changed reductions/generic_lambda_reference_capture_member_pointer.cpp
+  round 14: unsupported at line 5: call needing template deduction or unknown arguments
+  now:      result: 0
+changed reductions/generic_lambda_reference_capture_object_call.cpp
+  round 14: unsupported at line 5: call needing template deduction or unknown arguments
+  now:      result: 0
+changed reductions/generic_lambda_reference_capture_template_argument.cpp
+  round 14: unsupported at line 6: call needing template deduction or unknown arguments
+  now:      result: 0
+changed reductions/if_constexpr_braced_initializers_nested_aggregate.cpp
+  round 14: rejected [SB-2] at line 5: structured binding declares 3 names but the initializer has 2 elements
+  now:      result: 0
+changed reductions/requires_too_many_braced_initializers_nested_aggregate.cpp
+  round 14: unsupported at line 4: check: static_assert: concept
+  now:      result: 0
+changed reductions/static_constexpr_member_from_member_function_plain_class.cpp
+  round 14: unsupported at line 3: check: constant initializer: body of 'make' is not available yet
+  now:      rejected [CX-1] at line 3: initializer is not a constant expression (CE-16: 'make' is defined in its class, which is not complete at this point (CLS-2
+tidal-fe: 77 same, 21 changed; tidal-fe kinds {'undefined': 8, 'result': 69, 'rejected': 17, 'unsupported': 4}; tidal-next run kinds {'unsupported': 78, 'result': 4, 'undefined': 4, 'rejected': 12}

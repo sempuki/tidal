@@ -1,0 +1,292 @@
+# test	new status	group
+declarations/alignment/on-function.cpp	MISSED-REJECT	missing check
+declarations/alignment/on-typedef.cpp	MISSED-REJECT	missing check
+declarations/attributes/assume-call-not-evaluated.cpp	unsupported	assume
+declarations/attributes/assume-comma.cpp	unsupported	assume
+declarations/attributes/assume-false-constant.cpp	unsupported	assume
+declarations/attributes/assume-false-sanitizer.cpp	unsupported	assume
+declarations/attributes/assume-not-evaluated.cpp	unsupported	assume
+declarations/attributes/assume-on-declaration.cpp	MISSED-REJECT	missing check
+declarations/attributes/assume-true-constant.cpp	unsupported	assume
+declarations/attributes/carries-dependency-redeclared.cpp	MISSED-REJECT	missing check
+declarations/attributes/deprecated-added-later.cpp	MISSED-REJECT	missing check
+declarations/attributes/double-bracket-parenthesized-ok.cpp	unsupported	lambda
+declarations/attributes/fallthrough-end-of-loop.cpp	MISSED-REJECT	missing check
+declarations/attributes/fallthrough-if-without-else-warns.cpp	MISSED-REJECT	missing check
+declarations/attributes/fallthrough-into-outer-switch.cpp	MISSED-REJECT	missing check
+declarations/attributes/fallthrough-misplaced.cpp	MISSED-REJECT	missing check
+declarations/attributes/fallthrough-not-before-case.cpp	MISSED-REJECT	missing check
+declarations/attributes/fallthrough-on-declaration.cpp	MISSED-REJECT	missing check
+declarations/attributes/implicit-fallthrough-warns.cpp	MISSED-REJECT	missing check
+declarations/attributes/maybe-unused-on-type.cpp	MISSED-REJECT	missing check
+declarations/attributes/nodiscard-on-type-alias.cpp	MISSED-REJECT	missing check
+declarations/attributes/noreturn-not-first.cpp	MISSED-REJECT	missing check
+declarations/attributes/noreturn-returns.cpp	MISSED-REJECT	missing check
+declarations/attributes/unused-set-not-read-warns.cpp	MISSED-REJECT	missing check
+declarations/attributes/unused-warns.cpp	MISSED-REJECT	missing check
+declarations/attributes/using-prefix-qualified.cpp	MISSED-REJECT	missing check
+declarations/auto/copy-list-without-library.cpp	unsupported	other (unsupported)
+declarations/auto/decltype-auto-array.cpp	MISSED-REJECT	missing check
+declarations/auto/decltype-auto-function.cpp	MISSED-REJECT	missing check
+declarations/auto/decltype-auto-overload-set.cpp	MISSED-REJECT	missing check
+declarations/auto/overloaded-function.cpp	MISSED-REJECT	missing check
+declarations/auto/pointer-placeholder-return-nullptr.cpp	MISSED-REJECT	missing check
+declarations/constexpr/consteval-address-taken.cpp	MISSED-REJECT	missing check
+declarations/constexpr/consteval-redeclare-constexpr.cpp	MISSED-REJECT	missing check
+declarations/constexpr/consteval-selected-by-target.cpp	MISSED-REJECT	missing check
+declarations/constexpr/constexpr-redeclaration-mismatch.cpp	MISSED-REJECT	missing check
+declarations/constexpr/constinit-on-declaration-only.cpp	MISSED-REJECT	missing check
+declarations/constexpr/lambda-escalates-constant.cpp	unsupported	lambda
+declarations/declarators/array-4gib-ilp32.cpp	MISSED-REJECT	missing check
+declarations/declarators/volatile-return-deprecated.cpp	MISSED-REJECT	missing check
+declarations/enumerations/cast-out-of-range.cpp	EDG-AGREES	missing check (EDG-AGREES)
+declarations/enumerations/unscoped-value-too-large-ilp32.cpp	MISSED-REJECT	missing check
+declarations/enumerations/unscoped-value-too-large.cpp	MISSED-REJECT	missing check
+declarations/exception-specifications/call-through-noexcept-pointer.cpp	unsupported	noexcept
+declarations/exception-specifications/constexpr-not-implied.cpp	unsupported	noexcept
+declarations/exception-specifications/forms.cpp	unsupported	noexcept
+declarations/exception-specifications/lambda-not-noexcept.cpp	unsupported	lambda
+declarations/exception-specifications/narrowing-operand.cpp	unsupported	noexcept
+declarations/exception-specifications/non-constant.cpp	unsupported	noexcept
+declarations/exception-specifications/null-pointer-constant-operand.cpp	unsupported	noexcept
+declarations/exception-specifications/null-pointer-operand.cpp	unsupported	noexcept
+declarations/exception-specifications/operand-uses-parameters.cpp	unsupported	noexcept
+declarations/exception-specifications/pointer-operand.cpp	unsupported	noexcept
+declarations/exception-specifications/user-function-not-noexcept.cpp	unsupported	noexcept
+declarations/functions/default-arguments/alias-function-type-default.cpp	MISSED-REJECT	missing check
+declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp	EDG-AGREES	missing check (EDG-AGREES)
+declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp	EDG-AGREES	missing check (EDG-AGREES)
+declarations/functions/default-arguments/local-constant-value-read.cpp	MISSED-REJECT	missing check
+declarations/functions/default-arguments/local-constexpr-value-read.cpp	MISSED-REJECT	missing check
+declarations/functions/default-arguments/parameter-in-sizeof.cpp	EDG-AGREES	missing check (EDG-AGREES)
+declarations/functions/default-arguments/pointer-declaration-default.cpp	MISSED-REJECT	missing check
+declarations/functions/default-arguments/refers-to-local.cpp	MISSED-REJECT	missing check
+declarations/functions/default-arguments/typedef-function-type-default.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/flow-off-end-goto-out-of-loop-warns.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/flow-off-end-loop-break-warns.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/flow-off-end-plain-call-warns.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/flow-off-end-warns.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/main-global-variable.cpp	MISSED-REJECT	missing check
+declarations/functions/definitions/parameter-duplicate.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/auto-ref-no-return.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/auto-ref-return-local.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/braced-return.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/conflicting-returns.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/decltype-auto-dangling.cpp	unsupported	other (unsupported)
+declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp	unsupported	other (unsupported)
+declarations/functions/return-deduction/discarded-return-not-deduced.cpp	unsupported	other (unsupported)
+declarations/functions/return-deduction/recursion-after-return.cpp	unsupported	other (unsupported)
+declarations/functions/return-deduction/recursion-before-return.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/redeclare-after-definition.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/redeclare-with-type.cpp	MISSED-REJECT	missing check
+declarations/functions/return-deduction/use-after-definition.cpp	unsupported	other (unsupported)
+declarations/functions/return-deduction/use-before-definition.cpp	unsupported	other (unsupported)
+declarations/functions/return-deduction/void-and-value.cpp	MISSED-REJECT	missing check
+declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp	EDG-AGREES	missing check (EDG-AGREES)
+declarations/initialization/list/string-literal-reference-temporary.cpp	unsupported	lambda
+declarations/initialization/references/braced-function-noexcept.cpp	MISSED-REJECT	missing check
+declarations/initialization/references/braced-function-reference.cpp	unsupported	other (unsupported)
+declarations/initialization/references/braced-list-array-drops-const.cpp	unsupported	lambda
+declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp	unsupported	lambda
+declarations/initialization/references/braced-list-array-temporary.cpp	unsupported	lambda
+declarations/initialization/references/braced-list-array-too-many.cpp	unsupported	lambda
+declarations/initialization/references/braced-list-array-unknown-bound.cpp	unsupported	lambda
+declarations/initialization/references/braced-list-unknown-bound-empty.cpp	unsupported	lambda
+declarations/initialization/references/braced-list-unknown-bound-values.cpp	unsupported	lambda
+declarations/initialization/references/braced-string-literal-rvalue-ref.cpp	unsupported	other (unsupported)
+declarations/initialization/references/lifetime-not-through-return.cpp	MISSED-REJECT	missing check
+declarations/initialization/static/consteval-branch-in-initializer.cpp	unsupported	if consteval
+declarations/inline/inline-parameter.cpp	MISSED-REJECT	missing check
+declarations/inline/inline-typedef.cpp	MISSED-REJECT	missing check
+declarations/linkage-specifications/c-name-before-global.cpp	MISSED-REJECT	missing check
+declarations/linkage-specifications/c-name-conflicts-global.cpp	MISSED-REJECT	missing check
+declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp	EDG-AGREES	missing check (EDG-AGREES)
+declarations/linkage-specifications/c-static-not-joined.cpp	MISSED-REJECT	missing check
+declarations/linkage-specifications/redeclare-linkage-mismatch.cpp	MISSED-REJECT	missing check
+declarations/linkage-specifications/unknown-language-block.cpp	unsupported	other (unsupported)
+declarations/linkage-specifications/unknown-language.cpp	unsupported	other (unsupported)
+declarations/namespaces/alias-not-reopen.cpp	MISSED-REJECT	missing check
+declarations/namespaces/inline-namespace-duplicate.cpp	MISSED-REJECT	missing check
+declarations/namespaces/inline-namespace-same-function-ambiguous.cpp	MISSED-REJECT	missing check
+declarations/namespaces/qualified-definition-through-directive.cpp	MISSED-REJECT	missing check
+declarations/namespaces/qualified-definition-unnamed-namespace-member.cpp	MISSED-REJECT	missing check
+declarations/namespaces/undeclared-qualified-definition.cpp	MISSED-REJECT	missing check
+declarations/namespaces/using-directive-attribute.cpp	FALSE-REJECT	other (FALSE-REJECT)
+declarations/static-assert/generic-lambda-not-called.cpp	unsupported	lambda
+declarations/structured-bindings/array-copy.cpp	unsupported	structured binding
+declarations/structured-bindings/array-hidden-copy.cpp	unsupported	structured binding
+declarations/structured-bindings/array-reference.cpp	unsupported	structured binding
+declarations/structured-bindings/count-mismatch-array.cpp	unsupported	structured binding
+declarations/structured-bindings/duplicate-names.cpp	unsupported	structured binding
+declarations/structured-bindings/initializer-braces.cpp	unsupported	lambda
+declarations/structured-bindings/initializer-equals.cpp	unsupported	structured binding
+declarations/structured-bindings/initializer-parens.cpp	unsupported	structured binding
+declarations/structured-bindings/names-in-scope.cpp	unsupported	structured binding
+declarations/structured-bindings/own-initializer.cpp	unsupported	structured binding
+declarations/structured-bindings/scalar-rejected.cpp	unsupported	structured binding
+declarations/structured-bindings/static-and-thread-local.cpp	unsupported	structured binding
+declarations/structured-bindings/underscore-twice.cpp	unsupported	structured binding
+declarations/type-names/enum-fixed-after-not-fixed.cpp	MISSED-REJECT	missing check
+declarations/type-names/enum-fixed-mismatch.cpp	MISSED-REJECT	missing check
+declarations/volatile/assignment-result-warns.cpp	MISSED-REJECT	missing check
+declarations/volatile/volatile-parameter-warns.cpp	MISSED-REJECT	missing check
+declarations/volatile/volatile-return-warns.cpp	MISSED-REJECT	missing check
+expressions/additive/enum-float-warns.cpp	MISSED-REJECT	missing check
+expressions/additive/mixed-enum-warns.cpp	MISSED-REJECT	missing check
+expressions/additive/pointer-difference-largest-ilp32.cpp	unsupported	other (unsupported)
+expressions/additive/pointer-difference-overflow-ilp32.cpp	unsupported	other (unsupported)
+expressions/assignment/compound-indeterminate-with-call.cpp	unsupported	lambda
+expressions/bitwise/complement-bool-warns.cpp	MISSED-REJECT	missing check
+expressions/bitwise/mixed-enum-warns.cpp	MISSED-REJECT	missing check
+expressions/bitwise/mixed-enum-xor-warns.cpp	MISSED-REJECT	missing check
+expressions/bitwise/parentheses-warns.cpp	MISSED-REJECT	missing check
+expressions/casts/const-cast-function-pointer.cpp	MISSED-REJECT	missing check
+expressions/casts/decay-copy-auto.cpp	unsupported	other (unsupported)
+expressions/casts/functional-braced-unknown-bound.cpp	unsupported	other (unsupported)
+expressions/casts/reinterpret-reference.cpp	unsupported	other (unsupported)
+expressions/casts/static-cast-enum-out-of-range-constant.cpp	EDG-AGREES	missing check (EDG-AGREES)
+expressions/comma/unused-left-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/array-comparison-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/array-relational-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/chained-comparison-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/chained-less-equal-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/chained-mixed-relational-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/different-enums-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/enum-float-comparison-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/sign-compare-warns.cpp	MISSED-REJECT	missing check
+expressions/comparison/three-way-no-library.cpp	unsupported	other (unsupported)
+expressions/decltype/discarded-sum-warns.cpp	MISSED-REJECT	missing check
+expressions/decltype/discarded-volatile-read.cpp	MISSED-REJECT	missing check
+expressions/decltype/discarded-warns.cpp	MISSED-REJECT	missing check
+expressions/decltype/lambda-in-unevaluated.cpp	unsupported	lambda
+expressions/decltype/no-side-effects.cpp	unsupported	noexcept
+expressions/decltype/overloaded-name.cpp	MISSED-REJECT	missing check
+expressions/decltype/side-effect-decltype-warns.cpp	MISSED-REJECT	missing check
+expressions/decltype/side-effect-unevaluated-warns.cpp	MISSED-REJECT	missing check
+expressions/lambdas/capture-by-copy-at-creation.cpp	unsupported	lambda
+expressions/lambdas/capture-by-reference.cpp	unsupported	lambda
+expressions/lambdas/capture-copy-same-as-default.cpp	unsupported	lambda
+expressions/lambdas/capture-default-at-namespace.cpp	unsupported	lambda
+expressions/lambdas/capture-global-rejected.cpp	unsupported	lambda
+expressions/lambdas/capture-repeated.cpp	unsupported	lambda
+expressions/lambdas/capture-same-as-default.cpp	unsupported	lambda
+expressions/lambdas/capturing-no-function-pointer-argument.cpp	unsupported	lambda
+expressions/lambdas/capturing-no-function-pointer.cpp	unsupported	lambda
+expressions/lambdas/capturing-not-default-constructible.cpp	unsupported	lambda
+expressions/lambdas/closure-copy-array-capture.cpp	unsupported	lambda
+expressions/lambdas/closure-copy-assign-deleted.cpp	unsupported	lambda
+expressions/lambdas/closure-copy-keeps-state.cpp	unsupported	lambda
+expressions/lambdas/closure-size-unspecified.cpp	unsupported	lambda
+expressions/lambdas/const-call-operator-init-capture.cpp	unsupported	lambda
+expressions/lambdas/const-call-operator.cpp	unsupported	lambda
+expressions/lambdas/constant-address-needs-capture.cpp	unsupported	lambda
+expressions/lambdas/constant-needs-no-capture.cpp	unsupported	lambda
+expressions/lambdas/constant-value-no-capture.cpp	unsupported	lambda
+expressions/lambdas/constexpr-implicit.cpp	unsupported	lambda
+expressions/lambdas/copy-capture-array-and-reference.cpp	unsupported	lambda
+expressions/lambdas/dangling-reference-capture-constant.cpp	unsupported	lambda
+expressions/lambdas/default-argument-capture.cpp	unsupported	lambda
+expressions/lambdas/default-arguments.cpp	unsupported	lambda
+expressions/lambdas/default-capture-mixed.cpp	unsupported	lambda
+expressions/lambdas/default-captures.cpp	unsupported	lambda
+expressions/lambdas/default-constructed-call.cpp	unsupported	lambda
+expressions/lambdas/default-constructible.cpp	unsupported	lambda
+expressions/lambdas/distinct-types-overload.cpp	unsupported	lambda
+expressions/lambdas/function-pointer-constant.cpp	unsupported	lambda
+expressions/lambdas/function-pointer.cpp	unsupported	lambda
+expressions/lambdas/generic-function-pointer.cpp	unsupported	lambda
+expressions/lambdas/immediately-invoked.cpp	unsupported	lambda
+expressions/lambdas/init-capture-order.cpp	unsupported	lambda
+expressions/lambdas/init-capture-outer-lookup.cpp	unsupported	lambda
+expressions/lambdas/init-capture-same-mode-as-default.cpp	unsupported	lambda
+expressions/lambdas/init-capture.cpp	unsupported	lambda
+expressions/lambdas/modify-through-reference-capture.cpp	unsupported	lambda
+expressions/lambdas/mutable.cpp	unsupported	lambda
+expressions/lambdas/named-capture-in-block-function-default-argument.cpp	unsupported	lambda
+expressions/lambdas/namespace-init-capture.cpp	unsupported	lambda
+expressions/lambdas/nested-capture-ok.cpp	unsupported	lambda
+expressions/lambdas/nested-capture.cpp	unsupported	lambda
+expressions/lambdas/noexcept-function-pointer.cpp	unsupported	lambda
+expressions/lambdas/parameter-same-as-capture.cpp	unsupported	lambda
+expressions/lambdas/return-deduction-void-and-value.cpp	unsupported	lambda
+expressions/lambdas/return-deduction.cpp	unsupported	lambda
+expressions/lambdas/static-and-global-no-capture.cpp	unsupported	lambda
+expressions/lambdas/static-with-capture-default.cpp	unsupported	other (unsupported)
+expressions/lambdas/static-with-capture.cpp	unsupported	other (unsupported)
+expressions/lambdas/uncaptured-variable.cpp	unsupported	lambda
+expressions/logical/not-on-lhs-warns.cpp	MISSED-REJECT	missing check
+expressions/logical/parentheses-warns.cpp	MISSED-REJECT	missing check
+expressions/multiplicative/enum-enum-warns.cpp	MISSED-REJECT	missing check
+expressions/multiplicative/enum-float-warns.cpp	MISSED-REJECT	missing check
+expressions/multiplicative/ieee-types.cpp	unsupported	long double
+expressions/new-delete/default-new-alignment-ilp32-clang.cpp	unsupported	other (unsupported)
+expressions/new-delete/default-new-alignment-ilp32.cpp	unsupported	other (unsupported)
+expressions/postfix/postfix-on-const.cpp	MISSED-REJECT	missing check
+expressions/primary/char-multichar-warns.cpp	MISSED-REJECT	missing check
+expressions/primary/float-extended-suffix.cpp	unsupported	other (unsupported)
+expressions/primary/float-overflow-warns.cpp	MISSED-REJECT	missing check
+expressions/primary/int-bad-suffix.cpp	unsupported	other (unsupported)
+expressions/primary/number-runs-over-letters.cpp	unsupported	other (unsupported)
+expressions/shift/count-constant-warns.cpp	MISSED-REJECT	missing check
+expressions/shift/count-negative-warns.cpp	MISSED-REJECT	missing check
+expressions/unary/noexcept-not-evaluated.cpp	unsupported	noexcept
+expressions/unary/sizeof-array-parameter-warns.cpp	MISSED-REJECT	missing check
+foundations/constant-evaluation/lambda-call.cpp	unsupported	lambda
+foundations/constant-evaluation/literal-closure.cpp	unsupported	lambda
+foundations/constant-evaluation/read-extended-temporary-not-const.cpp	MISSED-REJECT	missing check
+foundations/constant-evaluation/reference-reads-constant-object.cpp	unsupported	other (unsupported)
+foundations/constant-evaluation/reference-to-local-not-usable.cpp	unsupported	other (unsupported)
+foundations/constant-evaluation/string-literal-identity-variables.cpp	EDG-AGREES	missing check (EDG-AGREES)
+foundations/constant-evaluation/string-literal-identity.cpp	EDG-AGREES	missing check (EDG-AGREES)
+foundations/constant-evaluation/void-pointer-to-object.cpp	MISSED-REJECT	missing check
+foundations/conversions/char-zero-not-null.cpp	EDG-AGREES	missing check (EDG-AGREES)
+foundations/evaluation-order/init-capture-order.cpp	unsupported	lambda
+foundations/language-support/initializer-list-missing-range-for.cpp	unsupported	other (unsupported)
+foundations/language-support/initializer-list-missing.cpp	unsupported	other (unsupported)
+foundations/language-support/strong-ordering-missing.cpp	unsupported	other (unsupported)
+foundations/names/qualifier-fundamental-alias-destructor.cpp	unsupported	other (unsupported)
+foundations/objects/scalar-write-in-own-initializer-constant.cpp	EDG-AGREES	missing check (EDG-AGREES)
+foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp	EDG-AGREES	missing check (EDG-AGREES)
+foundations/objects/write-after-pseudo-destructor-variable-constant.cpp	unsupported	other (unsupported)
+foundations/odr/constant-array-element-in-lambda.cpp	unsupported	lambda
+foundations/odr/discarded-branch-address-in-lambda.cpp	unsupported	lambda
+foundations/odr/discarded-value-constant-in-lambda.cpp	unsupported	lambda
+foundations/odr/internal-function-not-defined-warns.cpp	MISSED-REJECT	missing check
+foundations/odr/internal-function-used-in-unused-inline.cpp	MISSED-REJECT	missing check
+foundations/odr/unevaluated-name-not-use.cpp	unsupported	noexcept
+foundations/odr/unnamed-namespace-function-not-defined-warns.cpp	MISSED-REJECT	missing check
+foundations/storage/array-size-exceeds-size-type.cpp	MISSED-REJECT	missing check
+foundations/translation/if-consteval-selects.cpp	unsupported	if consteval
+foundations/translation/main-variable.cpp	MISSED-REJECT	missing check
+foundations/translation/warning-as-error-with-flag.cpp	MISSED-REJECT	missing check
+foundations/types/floating-range-ilp32.cpp	unsupported	long double
+foundations/types/floating-range.cpp	unsupported	long double
+foundations/types/long-double-precision-ilp32.cpp	unsupported	long double
+foundations/types/long-double-precision.cpp	unsupported	long double
+foundations/values/array-prvalue-argument.cpp	unsupported	other (unsupported)
+foundations/values/materialize-array-decay.cpp	unsupported	other (unsupported)
+foundations/values/materialize-array-subscript.cpp	unsupported	other (unsupported)
+programs/roadmap/r4-lambda-generic.cpp	unsupported	lambda
+statements/blocks/unused-value-warns.cpp	MISSED-REJECT	missing check
+statements/if/consteval-branches.cpp	unsupported	if consteval
+statements/if/consteval-enclosing-evaluation.cpp	unsupported	if consteval
+statements/if/consteval-immediate-context.cpp	unsupported	if consteval
+statements/if/consteval-immediate-else.cpp	unsupported	if consteval
+statements/if/consteval-immediate-outside.cpp	unsupported	if consteval
+statements/if/consteval-in-consteval.cpp	unsupported	if consteval
+statements/if/consteval-local-reference-static-object.cpp	unsupported	if consteval
+statements/if/consteval-local-reference.cpp	unsupported	if consteval
+statements/if/consteval-plain-function.cpp	unsupported	if consteval
+statements/if/constexpr-case-into.cpp	MISSED-REJECT	missing check
+statements/if/constexpr-goto-into.cpp	MISSED-REJECT	missing check
+statements/if/not-consteval-else-immediate.cpp	unsupported	if consteval
+statements/jumps/break-in-lambda-in-loop.cpp	unsupported	lambda
+statements/jumps/goto-out-of-lambda.cpp	unsupported	lambda
+statements/jumps/label-name-in-lambda-and-function.cpp	unsupported	lambda
+statements/jumps/return-parameter-as-lvalue-ref.cpp	MISSED-REJECT	missing check
+statements/loops/jump-into-range-for-body.cpp	MISSED-REJECT	missing check
+statements/loops/jump-into-while-body-past-condition-declaration.cpp	MISSED-REJECT	missing check
+statements/switch/case-in-lambda-body.cpp	unsupported	lambda
+statements/switch/case-value-not-enumerator-warns.cpp	MISSED-REJECT	missing check
+statements/switch/enum-missing-case-warns.cpp	MISSED-REJECT	missing check

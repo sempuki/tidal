@@ -1,0 +1,3 @@
+pages 85 ids 1700
+{'conditionally-supported': 5, 'impl-defined': 52, 'no-diagnostic': 37, 'recommended': 43, 'reject': 559, 'required': 900, 'undefined': 57, 'unspecified': 32, 'withdrawn': 15}
+tests 7148 reject 2863 link-fail 46 m32 76

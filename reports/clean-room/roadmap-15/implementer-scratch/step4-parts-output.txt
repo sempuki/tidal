@@ -1,0 +1,4 @@
+part	tests	old-check	new-check	programs
+4a classes	1784	1781	167	15
+4b overloading	765	764	38	11
+4c exceptions	274	274	20	3

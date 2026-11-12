@@ -1,0 +1,2 @@
+fb0bcf87: rules 1700 (1685 in force, 15 withdrawn); examples 240 {'reject': 114, 'unmarked': 79, 'fragment': 30, 'diverges': 17}; tests 7073; program tests 166; lines under tests/programs 23005; rules cited by program tests 587; tests that open namespace std 307 (96 program tests)
+7a849708: rules 1700 (1685 in force, 15 withdrawn); examples 240 {'reject': 114, 'unmarked': 79, 'fragment': 30, 'diverges': 17}; tests 7148; program tests 178; lines under tests/programs 25553; rules cited by program tests 589; tests that open namespace std 307 (96 program tests)

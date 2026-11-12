@@ -1,0 +1,1144 @@
+=== new/anybox.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: FAILED: new/anybox.cpp:180:34: error: non-constant condition for static assertion new/anybox.cpp:180:34: error: ‘(((const void*)(& ab::type_tag<int>)) != ((const void*)(& ab::type_tag<long int>)))’ is not a constant expression 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 187 (the left operand of '!=' first) explored: 2 runs; other outcomes: result 0 
+tidal-next run: rejected [NAM-14] at line 183: 'Any' is not a member of the named scope 
+tidal-next parse: tree 
+=== new/anybox_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: FAILED: new/anybox_first_try.cpp:170:34: error: non-constant condition for static assertion new/anybox_first_try.cpp:170:34: error: ‘(((const void*)(& ab::type_tag<int>)) != ((const void*)(& ab::type_tag<long int>)))’ is not a constant expression 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: undefined [STG-23] at line 53: access to an object of type unsigned char through a glvalue of type int explored: 2 runs; other outcomes: undefined [STG-23] at line 53: access to an object of type unsigned char through a glvalue of type int 
+tidal-next run: rejected [NAM-14] at line 173: 'Any' is not a member of the named scope 
+tidal-next parse: tree 
+=== new/bugs/delete_base_without_virtual_destructor.cpp
+g++: built (warnings 0), exit 134 free(): invalid pointer timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 134 free(): invalid pointer timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 ================================================================= ==95068==ERROR: AddressSanitizer: attempting free on address which was not malloc()-ed: 0x7b5a68fe0018 in thread T0     #0 0x7f3a6acf1
+clang++: built (warnings 0), exit 134 free(): invalid pointer timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 134 free(): invalid pointer timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==95319==ERROR: AddressSanitizer: attempting free on address which was not malloc()-ed: 0x7b44067e0018 in thread T0     #0 0x0000004eb
+EDG: accepts
+tidal-fe: undefined [VIRT-12] at line 5: delete through a pointer to a base whose destructor is not virtual, or to a member 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/bugs/double_delete.cpp
+g++: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 ================================================================= ==95064==ERROR: AddressSanitizer: attempting double-free on 0x7ba1683e0010 in thread T0:     #0 0x7f816a0f13bf in operator delete(void
+clang++: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 134 free(): double free detected in tcache 2 timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==95274==ERROR: AddressSanitizer: attempting double-free on 0x7bb0627e0010 in thread T0:     #0 0x0000004eb816  (/tmp/claude-1000/-hom
+EDG: accepts
+tidal-fe: undefined [NEW-5] at line 6: delete of an object that was already deleted 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/bugs/enum_out_of_range.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 2), exit 0 
+clang++ ped: built (warnings 2), exit 0 
+clang++ san: built (warnings 2), exit 1 new/bugs/enum_out_of_range.cpp:5:10: runtime error: load of value 9, which is not a valid value for type 'Level' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/enum_out_of_range.cpp:
+EDG: accepts
+tidal-fe: undefined [ENUM-6] at line 4: value 9 is outside the range of the enumeration 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/bugs/flow_off_end_value.cpp
+g++: built (warnings 1), exit 132 timeout: the monitored command dumped core 
+g++ ped: built (warnings 1), exit 132 timeout: the monitored command dumped core 
+g++ san: built (warnings 1), exit 1 new/bugs/flow_off_end_value.cpp:1:5: runtime error: execution reached the end of a value-returning function without returning a value 
+clang++: built (warnings 2), exit 132 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 2), exit 132 timeout: the monitored command dumped core 
+clang++ san: built (warnings 2), exit 1 new/bugs/flow_off_end_value.cpp:1:5: runtime error: execution reached the end of a value-returning function without returning a value SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/f
+EDG: accepts
+tidal-fe: undefined [FN-3] at line 3: control reaches the end of 'sign' without a return 
+tidal-next run: undefined [FN-3] at line 3: control reaches the end of 'sign', which returns a value 
+tidal-next parse: tree 
+=== new/bugs/inactive_union_read.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: undefined [UNI-6] at line 8: read of a union member that is not active 
+tidal-next run: unsupported at line 1: a type specifier of the form union_def 
+tidal-next parse: tree 
+=== new/bugs/lambda_reference_capture_escapes.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 ================================================================= ==95825==ERROR: AddressSanitizer: stack-use-after-return on address 0x7bca47cf0060 at pc 0x0000004007c9 bp 0x7fff7151df00 sp 0x7fff715
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==96020==ERROR: AddressSanitizer: stack-use-after-return on address 0x7b8f760f0060 at pc 0x0000004ec323 bp 0x7ffc210d4990 sp 0x7ffc210
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 3: indirection through a pointer to an object whose lifetime has ended 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/bugs/off_by_one_read.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 ================================================================= ==96009==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7bce9d8f0030 at pc 0x0000004005b1 bp 0x7ffe8dc5c820 sp 0x7ffe8dc5
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==96180==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7bb2c50f0030 at pc 0x0000004ec0a9 bp 0x7ffec305b5f0 sp 0x7ffec305
+EDG: accepts
+tidal-fe: undefined [PFX-4] at line 3: subscript outside the array 
+tidal-next run: undefined [PFX-4] at line 3: the subscript 4 is outside the array of 4 elements 
+tidal-next parse: tree 
+=== new/bugs/shift_too_far.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 new/bugs/shift_too_far.cpp:1:38: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int' 
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 new/bugs/shift_too_far.cpp:1:38: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/shift_too_far.cpp:1:38  
+EDG: accepts
+tidal-fe: undefined [SHF-7] at line 1: shift count negative or not less than the width 
+tidal-next run: undefined [SHF-7] at line 1: the shift count 32 is not less than the width 32 
+tidal-next parse: tree 
+=== new/bugs/unsequenced_increments.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 2), exit 0 
+clang++ ped: built (warnings 2), exit 0 
+clang++ san: built (warnings 2), exit 0 
+EDG: accepts
+tidal-fe: undefined [SEQ-4] at line 3: unsequenced accesses to one memory location in the operands of '+', at least one a modification explored: 2 runs; other outcomes: undefined [SEQ-4] at line 3: unsequenced accesses to one memory location in the operands of '+', at least one a modification 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/flags.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 207 (the left operand of '!=' first) explored: 2 runs; other outcomes: result 0 
+tidal-next run: rejected [NAM-14] at line 174: 'Flags' is not a member of the named scope 
+tidal-next parse: tree 
+=== new/flags_first_try.cpp
+g++: FAILED: new/flags_first_try.cpp:192:15: error: static assertion failed new/flags_first_try.cpp:197:30: error: no match for ‘operator|’ (operand types are ‘fs::Perm’ and ‘fs::Perm’) 
+g++ ped: FAILED: new/flags_first_try.cpp:192:15: error: static assertion failed new/flags_first_try.cpp:197:30: error: no match for ‘operator|’ (operand types are ‘fs::Perm’ and ‘fs::Perm’) 
+g++ san: FAILED: new/flags_first_try.cpp:192:15: error: static assertion failed new/flags_first_try.cpp:197:30: error: no match for ‘operator|’ (operand types are ‘fs::Perm’ and ‘fs::Perm’) 
+clang++: FAILED: new/flags_first_try.cpp:192:15: error: static assertion failed new/flags_first_try.cpp:197:30: error: invalid operands to binary expression ('fs::Perm' and 'fs::Perm') 
+clang++ ped: FAILED: new/flags_first_try.cpp:192:15: error: static assertion failed new/flags_first_try.cpp:197:30: error: invalid operands to binary expression ('fs::Perm' and 'fs::Perm') 
+clang++ san: FAILED: new/flags_first_try.cpp:192:15: error: static assertion failed new/flags_first_try.cpp:197:30: error: invalid operands to binary expression ('fs::Perm' and 'fs::Perm') 
+EDG: rejects: "/w/flags_first_try.cpp", line 192: error: static assertion failed
+tidal-fe: rejected [SA-1] at line 192: static assertion failed 
+tidal-next run: rejected [NAM-14] at line 188: 'Flags' is not a member of the named scope 
+tidal-next parse: tree 
+=== new/flags_second_try.cpp
+g++: FAILED: new/flags_second_try.cpp:222:40: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ ped: FAILED: new/flags_second_try.cpp:222:40: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ san: FAILED: new/flags_second_try.cpp:222:40: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+clang++: FAILED: new/flags_second_try.cpp:222:24: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+clang++ ped: FAILED: new/flags_second_try.cpp:222:24: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+clang++ san: FAILED: new/flags_second_try.cpp:222:24: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+EDG: rejects: "/w/flags_second_try.cpp", line 222: error: an #include <initializer_list> is
+tidal-fe: rejected [SA-1] at line 197: static assertion failed 
+tidal-next run: rejected [NAM-14] at line 175: 'Flags' is not a member of the named scope 
+tidal-next parse: tree 
+=== new/flags_third_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SA-1] at line 197: static assertion failed 
+tidal-next run: rejected [NAM-14] at line 175: 'Flags' is not a member of the named scope 
+tidal-next parse: tree 
+=== new/guard.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 9: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/guard_first_try.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 1), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 9: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/guard_second_try.cpp
+g++: built (warnings 1), exit 23 
+g++ ped: built (warnings 0), exit 23 
+g++ san: built (warnings 1), exit 23 
+clang++: built (warnings 0), exit 23 
+clang++ ped: built (warnings 0), exit 23 
+clang++ san: built (warnings 0), exit 23 
+EDG: accepts
+tidal-fe: result: 23 
+tidal-next run: unsupported at line 9: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/intervals.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 109 (arguments evaluated from left to right); SEQ-8 at line 136 (the left operand of '<' first); SEQ-8 at line 137 (the left operand of '<' first); SEQ-8 at line 139 (the left operand of '<' first); SEQ-8 at line 213 (the left operand of '==' first); SEQ-1 at line 175 (arguments evaluated from left to
+tidal-next run: unsupported at line 11: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/intervals_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [DED-35] at line 107: no viable function for the call of 'lower_bound': deduction fails for each template 
+tidal-next run: unsupported at line 11: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/intervals_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 194: check: static_assert: constructor call 
+tidal-next run: unsupported at line 11: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/mistakes/ambiguous_call.cpp
+g++: FAILED: new/mistakes/ambiguous_call.cpp:3:22: error: call of overloaded ‘f(int)’ is ambiguous 
+g++ ped: FAILED: new/mistakes/ambiguous_call.cpp:3:22: error: call of overloaded ‘f(int)’ is ambiguous 
+g++ san: FAILED: new/mistakes/ambiguous_call.cpp:3:22: error: call of overloaded ‘f(int)’ is ambiguous 
+clang++: FAILED: new/mistakes/ambiguous_call.cpp:3:21: error: call to 'f' is ambiguous 1 error generated. 
+clang++ ped: FAILED: new/mistakes/ambiguous_call.cpp:3:21: error: call to 'f' is ambiguous 1 error generated. 
+clang++ san: FAILED: new/mistakes/ambiguous_call.cpp:3:21: error: call to 'f' is ambiguous 1 error generated. 
+EDG: rejects: "/w/ambiguous_call.cpp", line 3: error: more than one instance of overloaded
+tidal-fe: rejected [OVL-36] at line 3: ambiguous call of 'f': no viable function is better than each of the others 
+tidal-next run: rejected [OVL-36] at line 3: the call of 'f' is ambiguous 
+tidal-next parse: tree 
+=== new/mistakes/deleted_overload.cpp
+g++: FAILED: new/mistakes/deleted_overload.cpp:3:23: error: use of deleted function ‘int id(double)’ 
+g++ ped: FAILED: new/mistakes/deleted_overload.cpp:3:23: error: use of deleted function ‘int id(double)’ 
+g++ san: FAILED: new/mistakes/deleted_overload.cpp:3:23: error: use of deleted function ‘int id(double)’ 
+clang++: FAILED: new/mistakes/deleted_overload.cpp:3:21: error: call to deleted function 'id' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/deleted_overload.cpp:3:21: error: call to deleted function 'id' 1 error generated. 
+clang++ san: FAILED: new/mistakes/deleted_overload.cpp:3:21: error: call to deleted function 'id' 1 error generated. 
+EDG: rejects: "/w/deleted_overload.cpp", line 3: error: function "id(double)" (declared at
+tidal-fe: rejected [DEL-1] at line 3: call of deleted function 'id' 
+tidal-next run: rejected [DEL-1] at line 3: 'id' is deleted 
+tidal-next parse: tree 
+=== new/mistakes/explicit_constructor_copy_init.cpp
+g++: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:3:28: error: could not convert ‘3’ from ‘int’ to ‘Meters’ 
+g++ ped: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:3:28: error: could not convert ‘3’ from ‘int’ to ‘Meters’ 
+g++ san: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:3:28: error: could not convert ‘3’ from ‘int’ to ‘Meters’ 
+clang++: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:3:21: error: no matching function for call to 'length' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:3:21: error: no matching function for call to 'length' 1 error generated. 
+clang++ san: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:3:21: error: no matching function for call to 'length' 1 error generated. 
+EDG: rejects: "/w/explicit_constructor_copy_init.cpp", line 3: error: no suitable constructor
+tidal-fe: rejected [OVL-35] at line 3: no viable function: an argument has no implicit conversion sequence to its parameter 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/mistakes/jump_past_initialization.cpp
+g++: FAILED: new/mistakes/jump_past_initialization.cpp:4:1: error: jump to label ‘out’ 
+g++ ped: FAILED: new/mistakes/jump_past_initialization.cpp:4:1: error: jump to label ‘out’ 
+g++ san: FAILED: new/mistakes/jump_past_initialization.cpp:4:1: error: jump to label ‘out’ 
+clang++: FAILED: new/mistakes/jump_past_initialization.cpp:2:17: error: cannot jump from this goto statement to its label 1 error generated. 
+clang++ ped: FAILED: new/mistakes/jump_past_initialization.cpp:2:17: error: cannot jump from this goto statement to its label 1 error generated. 
+clang++ san: FAILED: new/mistakes/jump_past_initialization.cpp:2:17: error: cannot jump from this goto statement to its label 1 error generated. 
+EDG: rejects: "/w/jump_past_initialization.cpp", line 2: error: transfer of control bypasses
+tidal-fe: rejected [JMP-6] at line 2: goto 'out' jumps past the initialization of a variable 
+tidal-next run: rejected [JMP-6] at line 2: the jump to 'out' skips the initialization of a variable 
+tidal-next parse: tree 
+=== new/mistakes/missing_template_keyword.cpp
+g++: FAILED: new/mistakes/missing_template_keyword.cpp:2:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:2:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+g++ ped: FAILED: new/mistakes/missing_template_keyword.cpp:2:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:2:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+g++ san: FAILED: new/mistakes/missing_template_keyword.cpp:2:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:2:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+clang++: FAILED: new/mistakes/missing_template_keyword.cpp:2:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/missing_template_keyword.cpp:2:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+clang++ san: FAILED: new/mistakes/missing_template_keyword.cpp:2:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+EDG: rejects: "/w/missing_template_keyword.cpp", line 2: error: expected an expression
+tidal-fe: rejected [TR-12] at line 2: the grammar does not derive this: expected an expression, found ')' 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/mistakes/narrowing_in_braces.cpp
+g++: FAILED: new/mistakes/narrowing_in_braces.cpp:1:31: error: narrowing conversion of ‘(f * (double)10)’ from ‘double’ to ‘int’ [-Wnarrowing] 
+g++ ped: FAILED: new/mistakes/narrowing_in_braces.cpp:1:31: error: narrowing conversion of ‘(f * (double)10)’ from ‘double’ to ‘int’ [-Wnarrowing] 
+g++ san: FAILED: new/mistakes/narrowing_in_braces.cpp:1:31: error: narrowing conversion of ‘(f * (double)10)’ from ‘double’ to ‘int’ [-Wnarrowing] 
+clang++: FAILED: new/mistakes/narrowing_in_braces.cpp:1:29: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] 1 error generated. 
+clang++ ped: FAILED: new/mistakes/narrowing_in_braces.cpp:1:29: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] 1 error generated. 
+clang++ san: FAILED: new/mistakes/narrowing_in_braces.cpp:1:29: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] 1 error generated. 
+EDG: rejects: "/w/narrowing_in_braces.cpp", line 1: error: invalid narrowing conversion from
+tidal-fe: rejected [LIST-2] at line 1: narrowing conversion from double to int in braces 
+tidal-next run: rejected [LIST-2] at line 1: a narrowing conversion to int in braces 
+tidal-next parse: tree 
+=== new/mistakes/nonconst_member_on_const.cpp
+g++: FAILED: new/mistakes/nonconst_member_on_const.cpp:2:38: error: passing ‘const Box’ as ‘this’ argument discards qualifiers [-fpermissive] 
+g++ ped: FAILED: new/mistakes/nonconst_member_on_const.cpp:2:38: error: passing ‘const Box’ as ‘this’ argument discards qualifiers [-fpermissive] 
+g++ san: FAILED: new/mistakes/nonconst_member_on_const.cpp:2:38: error: passing ‘const Box’ as ‘this’ argument discards qualifiers [-fpermissive] 
+clang++: FAILED: new/mistakes/nonconst_member_on_const.cpp:2:33: error: 'this' argument to member function 'get' has type 'const Box', but function is not marked const 1 error generated. 
+clang++ ped: FAILED: new/mistakes/nonconst_member_on_const.cpp:2:33: error: 'this' argument to member function 'get' has type 'const Box', but function is not marked const 1 error generated. 
+clang++ san: FAILED: new/mistakes/nonconst_member_on_const.cpp:2:33: error: 'this' argument to member function 'get' has type 'const Box', but function is not marked const 1 error generated. 
+EDG: rejects: "/w/nonconst_member_on_const.cpp", line 2: error: the object has type
+tidal-fe: rejected [CLS-25] at line 2: non-const member function called on a const object 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/mistakes/nonconst_reference_to_temporary.cpp
+g++: FAILED: new/mistakes/nonconst_reference_to_temporary.cpp:2:26: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ 
+g++ ped: FAILED: new/mistakes/nonconst_reference_to_temporary.cpp:2:26: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ 
+g++ san: FAILED: new/mistakes/nonconst_reference_to_temporary.cpp:2:26: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ 
+clang++: FAILED: new/mistakes/nonconst_reference_to_temporary.cpp:2:21: error: no matching function for call to 'bump' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/nonconst_reference_to_temporary.cpp:2:21: error: no matching function for call to 'bump' 1 error generated. 
+clang++ san: FAILED: new/mistakes/nonconst_reference_to_temporary.cpp:2:21: error: no matching function for call to 'bump' 1 error generated. 
+EDG: rejects: "/w/nonconst_reference_to_temporary.cpp", line 2: error: initial value of
+tidal-fe: rejected [OVL-35] at line 2: no viable function: an argument cannot be converted to the parameter type 
+tidal-next run: rejected [REF-9] at line 2: a non-const lvalue reference bound to an rvalue 
+tidal-next parse: tree 
+=== new/mistakes/unsatisfied_constraint.cpp
+g++: FAILED: new/mistakes/unsatisfied_constraint.cpp:3:25: error: no matching function for call to ‘code(long long int)’ 
+g++ ped: FAILED: new/mistakes/unsatisfied_constraint.cpp:3:25: error: no matching function for call to ‘code(long long int)’ 
+g++ san: FAILED: new/mistakes/unsatisfied_constraint.cpp:3:25: error: no matching function for call to ‘code(long long int)’ 
+clang++: FAILED: new/mistakes/unsatisfied_constraint.cpp:3:21: error: no matching function for call to 'code' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/unsatisfied_constraint.cpp:3:21: error: no matching function for call to 'code' 1 error generated. 
+clang++ san: FAILED: new/mistakes/unsatisfied_constraint.cpp:3:21: error: no matching function for call to 'code' 1 error generated. 
+EDG: rejects: "/w/unsatisfied_constraint.cpp", line 3: error: no instance of function
+tidal-fe: rejected [DED-35] at line 3: no viable function for the call of 'code': deduction fails for each template 
+tidal-next run: unsupported at line 1: a declaration of the form concept_definition 
+tidal-next parse: tree 
+=== new/one-line/abbreviated_constrained.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form concept_definition 
+tidal-next parse: tree 
+=== new/one-line/aggregate_deduction.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/one-line/bitfield_default_initializer.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/one-line/constinit_global.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/designated_nested.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/one-line/explicit_object_by_value.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/one-line/floating_template_parameter.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/one-line/if_init_structured_binding.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/one-line/implicit_move_rvalue_reference_return.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/implicit_move_rvalue_reference_return_first_try.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 1 ================================================================= ==100524==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b45f96f0020 at pc 0x000000400624 bp 0x7fff4bfd67c0 sp 0x7fff4bf
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==100720==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7bd4c84f0020 at pc 0x0000004ec166 bp 0x7ffc91883910 sp 0x7ffc918
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 4: access to an object whose lifetime has ended 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/init_capture_pack.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/one-line/label_at_block_end.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/lambda_in_decltype.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== new/one-line/likely_unlikely.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 5 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/range_for_init.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/recursive_lambda_this_auto.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-8 at line 2 (the left operand of '+' first) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+tidal-next run: unsupported at line 2: a lambda expression (its closure type is a class, build step 4) 
+tidal-next parse: tree 
+=== new/one-line/static_call_lambda.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 4 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+tidal-next run: unsupported at line 2: a lambda expression (its closure type is a class, build step 4) 
+tidal-next parse: tree 
+=== new/one-line/static_local_in_constexpr.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== new/one-line/template_lambda.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 2: a lambda expression (its closure type is a class, build step 4) 
+tidal-next parse: tree 
+=== new/one-line/typename_optional_return.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/one-line/using_enum_in_class.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 2: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== new/strong.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 180 (arguments evaluated from left to right); SEQ-8 at line 83 (the left operand of '-' first); SEQ-8 at line 73 (the left operand of '+' first); SEQ-8 at line 58 (the left operand of '==' first); SEQ-8 at line 64 (the left operand of '<' first); SEQ-1 at line 185 (arguments evaluated from left to rig
+tidal-next run: rejected [TR-12] at line 40: the grammar derives no declaration here: expected '{', found '>' 
+tidal-next parse: stop 40: the grammar derives no declaration here: expected '{', found '>' 
+=== new/strong_fifth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 155: check: static_assert: concept 
+tidal-next run: rejected [TR-12] at line 36: the grammar derives no declaration here: expected '{', found '>' 
+tidal-next parse: stop 36: the grammar derives no declaration here: expected '{', found '>' 
+=== new/strong_first_try.cpp
+g++: FAILED: new/strong_first_try.cpp:110:58: error: ‘same_as’ does not name a type new/strong_first_try.cpp:110:65: error: expected primary-expression before ‘<’ token 
+g++ ped: FAILED: new/strong_first_try.cpp:110:58: error: ‘same_as’ does not name a type new/strong_first_try.cpp:110:65: error: expected primary-expression before ‘<’ token 
+g++ san: FAILED: new/strong_first_try.cpp:110:58: error: ‘same_as’ does not name a type new/strong_first_try.cpp:110:65: error: expected primary-expression before ‘<’ token 
+clang++: FAILED: new/strong_first_try.cpp:110:58: error: expected concept name with optional arguments new/strong_first_try.cpp:64:14: error: satisfaction of constraint 'requires (const S &s, N n) { s.get() * n; }' depends on itself 
+clang++ ped: FAILED: new/strong_first_try.cpp:110:58: error: expected concept name with optional arguments new/strong_first_try.cpp:64:14: error: satisfaction of constraint 'requires (const S &s, N n) { s.get() * n; }' depends on itself 
+clang++ san: FAILED: new/strong_first_try.cpp:110:58: error: expected concept name with optional arguments new/strong_first_try.cpp:64:14: error: satisfaction of constraint 'requires (const S &s, N n) { s.get() * n; }' depends on itself 
+EDG: rejects: "/w/strong_first_try.cpp", line 110: error: expected a concept name
+tidal-fe: rejected [CPT-34] at line 110: a type after '->' in a compound requirement; a type constraint is needed 
+tidal-next run: rejected [TR-12] at line 23: the grammar derives no declaration here: expected '{', found '>>' 
+tidal-next parse: stop 23: the grammar derives no declaration here: expected '{', found '>>' 
+=== new/strong_fourth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 140: check: static_assert: concept 
+tidal-next run: rejected [TR-12] at line 35: the grammar derives no declaration here: expected '{', found '>' 
+tidal-next parse: stop 35: the grammar derives no declaration here: expected '{', found '>' 
+=== new/strong_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TARG-10] at line 127: the template 'skill' is used without an argument list 
+tidal-next run: rejected [TR-12] at line 29: the grammar derives no declaration here: expected '{', found '>>' 
+tidal-next parse: stop 29: the grammar derives no declaration here: expected '{', found '>>' 
+=== new/strong_third_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 134: check: static_assert: concept 
+tidal-next run: rejected [TR-12] at line 29: the grammar derives no declaration here: expected '{', found '>>' 
+tidal-next parse: stop 29: the grammar derives no declaration here: expected '{', found '>>' 
+=== probes/adl_named_function_through_using_declaration.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [NAM-14] at line 6: 'f' is not a member of the named scope 
+tidal-next parse: tree 
+=== probes/adl_operator_class_through_using_declaration.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/adl_operator_function_through_using_declaration.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [BIT-3] at line 6: scoped enumeration operand of '|' (ENUM-3) 
+tidal-next run: rejected [BIT-3] at line 6: invalid operands of types enum#0 and enum#0 
+tidal-next parse: tree 
+=== probes/adl_operator_template_through_using_declaration.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [BIT-3] at line 8: scoped enumeration operand of '|' (ENUM-3) 
+tidal-next run: rejected [BIT-3] at line 8: invalid operands of types enum#0 and enum#0 
+tidal-next parse: tree 
+=== probes/const_local_array_deduction.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== probes/const_member_function_array_member_plus_zero.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== probes/constructor_array_reference_fixed_bound_braced.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/constructor_template_array_reference_named.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 2), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 2), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/dependent_member_class_base.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/dependent_template_base_through_alias.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/dependent_template_keyword_member_type.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/function_template_array_reference_braced.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/member_function_array_member_deduction.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== probes/member_template_of_plain_class_as_template_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/member_template_of_specialization_named.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== probes/next_alias_of_specialization_qualifier.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [NAM-16] at line 3: 'B' does not name a namespace, class, or enumeration 
+tidal-next parse: tree 
+=== probes/next_class_qualifier_direct.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/next_dangling_pointer_to_local.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 1 ================================================================= ==105948==ERROR: AddressSanitizer: stack-use-after-return on address 0x7b02446f0020 at pc 0x000000400629 bp 0x7ffff5121af0 sp 0x7ffff5
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==106147==ERROR: AddressSanitizer: stack-use-after-return on address 0x7baa9c6f0020 at pc 0x0000004ec164 bp 0x7fff965641d0 sp 0x7fff96
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 2: indirection through a pointer to an object whose lifetime has ended 
+tidal-next run: undefined [OBJ-2] at line 2: a read of x after its lifetime ended 
+tidal-next parse: tree 
+=== probes/next_dangling_reference_local.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== probes/next_dangling_reference_temporary_direct.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 1 ================================================================= ==106249==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b58926f0020 at pc 0x0000004005f2 bp 0x7ffdbec9b200 sp 0x7ffdbec
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==106438==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b62376f0020 at pc 0x0000004ec0f7 bp 0x7ffd7c717310 sp 0x7ffd7c7
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 4: indirection through a pointer to an object whose lifetime has ended 
+tidal-next run: undefined [OBJ-2] at line 4: a read of a temporary after its lifetime ended 
+tidal-next parse: tree 
+=== probes/operator_through_using_declaration_unqualified.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [BIT-3] at line 7: invalid operands of types enum#0 and enum#0 
+tidal-next parse: tree 
+=== probes/range_for_braced_list_without_header.cpp
+g++: FAILED: probes/range_for_braced_list_without_header.cpp:1:55: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ ped: FAILED: probes/range_for_braced_list_without_header.cpp:1:55: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ san: FAILED: probes/range_for_braced_list_without_header.cpp:1:55: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+clang++: FAILED: probes/range_for_braced_list_without_header.cpp:1:46: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+clang++ ped: FAILED: probes/range_for_braced_list_without_header.cpp:1:46: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+clang++ san: FAILED: probes/range_for_braced_list_without_header.cpp:1:46: error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list> 1 error generated. 
+EDG: rejects: "/w/range_for_braced_list_without_header.cpp", line 1: error: an #include
+tidal-fe: rejected [LSUP-1] at line 1: a braced list as the range needs std::initializer_list, which is not declared as a class template of the needed shape 
+tidal-next run: unsupported at line 1: a range-based for over a braced list (std::initializer_list, build step 4) 
+tidal-next parse: tree 
+=== probes/strong_mix_concept.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 9: check: static_assert: concept 
+tidal-next run: rejected [TR-12] at line 6: the grammar derives no declaration here: expected '{', found '>' 
+tidal-next parse: stop 6: the grammar derives no declaration here: expected '{', found '>' 
+=== probes/template_template_pack_partial_specialization_base.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== probes/template_template_parameter_base_one_skill.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [TR-12] at line 3: the grammar derives no declaration here: expected '{', found '>>' 
+tidal-next parse: stop 3: the grammar derives no declaration here: expected '{', found '>>' 
+=== probes/type_pack_base_expansion_sizeof.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== probes/variable_template_address_compare_constant.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: FAILED: probes/variable_template_address_compare_constant.cpp:2:25: error: non-constant condition for static assertion probes/variable_template_address_compare_constant.cpp:2:25: error: ‘((& tag<int>) != (& tag<long int>))’ is not a constant expression 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/adl_operator_scoped_enum_own_namespace.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [BIT-3] at line 5: scoped enumeration operand of '|' (ENUM-3) 
+tidal-next run: rejected [BIT-3] at line 5: invalid operands of types enum#0 and enum#0 
+tidal-next parse: tree 
+=== reductions/adl_operator_through_using_declaration_requires.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SA-1] at line 9: static assertion failed 
+tidal-next run: unsupported at line 2: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/const_member_function_array_member_decay.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [PFX-16] at line 4: argument 1: no implicit conversion from const int* to int* 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/const_member_function_array_member_deduction.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [DED-35] at line 4: no viable function for the call of 'first': deduction fails for each template 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/constructor_template_array_reference_braced.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 2), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 2), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: check: static_assert: class temporary 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== reductions/dependent_template_keyword_base.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 0: class layout the front end does not model 
+tidal-next run: unsupported at line 1: a type specifier of the form class_def 
+tidal-next parse: tree 
+=== reductions/member_template_of_specialization_as_template_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TARG-10] at line 3: the template 'skill' is used without an argument list 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/next_alias_of_class_qualifier_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [NAM-16] at line 3: 'B' does not name a namespace, class, or enumeration 
+tidal-next parse: tree 
+=== reductions/next_byte_copy_false_undefined.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: undefined [PFX-4] at line 6: the subscript 1 is outside the array of 1 elements 
+tidal-next parse: tree 
+=== reductions/next_class_template_own_name_in_base.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [TR-12] at line 2: the grammar derives no declaration here: expected '{', found '>' 
+tidal-next parse: stop 2: the grammar derives no declaration here: expected '{', found '>' 
+=== reductions/next_dangling_reference_to_argument_temporary.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 1 ================================================================= ==108953==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b6eadaf0020 at pc 0x000000400624 bp 0x7ffe5cf63bb0 sp 0x7ffe5cf
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==109120==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b8a2e4f0020 at pc 0x0000004ec166 bp 0x7ffe6e2192d0 sp 0x7ffe6e2
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 4: access to an object whose lifetime has ended 
+tidal-next run: result: 0 
+tidal-next parse: tree 
+=== reductions/next_enum_operator_function_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [BIT-3] at line 3: invalid operands of types enum#0 and enum#0 
+tidal-next parse: tree 
+=== reductions/next_forward_class_declaration_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [TR-12] at line 1: the declaration declares nothing 
+tidal-next parse: tree 
+=== reductions/next_member_function_pointer_type_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [DCL-21] at line 2: a function that is not a member has a cv-qualifier 
+tidal-next parse: tree 
+=== reductions/next_multi_subscript_class_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [COMMA-6] at line 2: a subscript with more than one expression 
+tidal-next parse: tree 
+=== reductions/next_out_of_class_const_member_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [DCL-21] at line 2: a function that is not a member has a cv-qualifier 
+tidal-next parse: tree 
+=== reductions/next_using_declaration_class_false_reject.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: rejected [NAM-14] at line 2: 'T' is not a member of the named scope 
+tidal-next parse: tree 
+=== reductions/recursive_constraint_hidden_friend_mixin.cpp
+g++: FAILED: reductions/recursive_constraint_hidden_friend_mixin.cpp:3:14: error: satisfaction of atomic constraint ‘requires(const S& s, N n) {s->get() * n;} [with S = M; N = M]’ depends on itself 
+g++ ped: FAILED: reductions/recursive_constraint_hidden_friend_mixin.cpp:3:14: error: satisfaction of atomic constraint ‘requires(const S& s, N n) {s->get() * n;} [with S = M; N = M]’ depends on itself 
+g++ san: FAILED: reductions/recursive_constraint_hidden_friend_mixin.cpp:3:14: error: satisfaction of atomic constraint ‘requires(const S& s, N n) {s->get() * n;} [with S = M; N = M]’ depends on itself 
+clang++: FAILED: reductions/recursive_constraint_hidden_friend_mixin.cpp:3:14: error: satisfaction of constraint 'requires (const S &s, N n) { s.get() * n; }' depends on itself reductions/recursive_constraint_hidden_friend_mixin.cpp:14:19: error: invalid operands to binary expression ('int' and 'M') 
+clang++ ped: FAILED: reductions/recursive_constraint_hidden_friend_mixin.cpp:3:14: error: satisfaction of constraint 'requires (const S &s, N n) { s.get() * n; }' depends on itself reductions/recursive_constraint_hidden_friend_mixin.cpp:14:19: error: invalid operands to binary expression ('int' and 'M') 
+clang++ san: FAILED: reductions/recursive_constraint_hidden_friend_mixin.cpp:3:14: error: satisfaction of constraint 'requires (const S &s, N n) { s.get() * n; }' depends on itself reductions/recursive_constraint_hidden_friend_mixin.cpp:14:19: error: invalid operands to binary expression ('int' and 'M') 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/template_template_pack_as_arguments.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 3: check: constant initializer: dependent name 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 
+=== reductions/template_template_pack_base_expansion.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 0: class layout the front end does not model 
+tidal-next run: unsupported at line 1: a declaration of the form template_decl 
+tidal-next parse: tree 

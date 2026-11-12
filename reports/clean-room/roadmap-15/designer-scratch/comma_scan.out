@@ -1,0 +1,20 @@
+declare operator,: 0 []
+fold tests/programs/roadmap/r10-list-first-try.cpp 59 template <class... U> explicit List(U&&... us) { (push_back(forward<U>(us)), ...); }
+fold tests/programs/roadmap/r10-list.cpp 62 template <class... U> explicit List(U&&... us) { (push_back(forward<U>(us)), ...); }
+fold tests/programs/roadmap/r10-tuple-second-try.cpp 111 constexpr void each_impl(Tuple<Ts...>& t, F& f, index_seq<I...>) { (f(get<I>(t)), ...); }
+fold tests/programs/roadmap/r10-tuple.cpp 115 constexpr void each_impl(Tuple<Ts...>& t, F& f, index_seq<I...>) { (f(get<I>(t)), ...); }
+fold tests/programs/roadmap/r12-bigint-second-try.cpp 155 ((r = r * 10u + static_cast<u64>(Cs - '0')), ...);
+for-inc tests/programs/roadmap/r13-intrusive-second-try.cpp 128 ++a, ++b
+for-inc tests/programs/roadmap/r13-intrusive.cpp 130 ++a, ++b
+fold tests/programs/roadmap/r14-fsm-second-try.cpp 36 ((found = found || same<T, Ts>, i += found ? 0 : 1), ...);
+fold tests/programs/roadmap/r14-fsm-second-try.cpp 79 ((row[e++] = next_of<St, E>()), ...);
+fold tests/programs/roadmap/r14-fsm-second-try.cpp 85 (fill_row<S>(t.next[s++]), ...);
+fold tests/programs/roadmap/r14-fsm.cpp 37 ((found = found || same<T, Ts>, i += found ? 0 : 1), ...);
+fold tests/programs/roadmap/r14-fsm.cpp 80 ((row[e++] = next_of<St, E>()), ...);
+fold tests/programs/roadmap/r14-fsm.cpp 86 (fill_row<S>(t.next[s++]), ...);
+for-inc tests/programs/roadmap/r5-hashmap-kept-pointer.cpp 51 ++step, i = (i + 1
+for-inc tests/programs/roadmap/r5-hashmap-kept-pointer.cpp 67 ++step, i = (i + 1
+fold tests/programs/roadmap/r7-registry/registry.h 51 ((acc = fn(acc, rest)), ...);
+fold tests/programs/roadmap/r8-fmt.cpp 81 ((next_hole(), write_one(out, args)), ...);
+fold tests/programs/roadmap/r9-vec.cpp 106 (v.emplace_back(forward<U>(us)), ...);
+files with a fold over the comma: 10

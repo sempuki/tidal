@@ -1,0 +1,12 @@
+changed 9 ATTR-2 AUTO-11 CE-3 DEP-30 ENUM-20 JMP-14 JMP-7 OBJ-2 TPL-4
+new []
+ATTR-2 rows: X22 | mentions: X3,X14
+AUTO-11 rows: X5 | mentions: -
+CE-3 rows: X6,X7,X10 | mentions: -
+DEP-30 rows: X6,X12,X13,X18,X22,X24,X26 | mentions: X17
+ENUM-20 rows: X20 | mentions: X12
+JMP-14 rows: X6,X11,X24 | mentions: -
+JMP-7 rows: X6,X11,X24 | mentions: -
+OBJ-2 rows: X3,X9,X11,X25 | mentions: X4,X21
+TPL-4 rows: - | mentions: -
+change-table rows 23 in 15 reports ['X3', 'X5', 'X6', 'X7', 'X9', 'X10', 'X11', 'X12', 'X13', 'X18', 'X20', 'X22', 'X24', 'X25', 'X26']

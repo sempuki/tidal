@@ -1,0 +1,1419 @@
+| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only | Agrees with EDG only | EDG, allowed | No base expectation |
+|---|---|---|---|---|---|---|---|---|---|
+| classes | 1257 | 1207 | 0 | 1 | 0 | 48 | 1 | 0 | 0 |
+| declarations | 1295 | 1239 | 1 | 6 | 0 | 46 | 0 | 3 | 0 |
+| exceptions | 217 | 217 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions | 1171 | 1127 | 4 | 2 | 2 | 34 | 0 | 2 | 0 |
+| foundations | 1113 | 1060 | 0 | 2 | 1 | 46 | 0 | 4 | 0 |
+| overloading | 316 | 280 | 0 | 1 | 5 | 30 | 0 | 0 | 0 |
+| programs | 178 | 159 | 0 | 0 | 1 | 18 | 0 | 0 | 0 |
+| statements | 285 | 275 | 0 | 1 | 0 | 9 | 0 | 0 | 0 |
+| templates | 1316 | 1177 | 3 | 33 | 16 | 81 | 5 | 1 | 0 |
+| **total** | 7148 | 6741 | 8 | 46 | 25 | 312 | 6 | 10 | 0 |
+
+Rejected tests where the diagnostic names one of the test's rules: 1998
+
+Passing rejects whose first error names a rule, by page:
+
+| Page | Passing rejects | A cited rule | A linked rule | Another rule | No rule | Share |
+|---|---|---|---|---|---|---|
+| classes/access | 38 | 30 | 0 | 8 | 0 | 79% |
+| classes/comparisons | 39 | 35 | 1 | 3 | 0 | 92% |
+| classes/constructors | 123 | 111 | 0 | 12 | 0 | 90% |
+| classes/conversion-functions | 29 | 19 | 0 | 10 | 0 | 66% |
+| classes/copy-move | 48 | 40 | 0 | 8 | 0 | 83% |
+| classes/derived | 38 | 23 | 0 | 15 | 0 | 61% |
+| classes/initializer-lists | 11 | 6 | 0 | 5 | 0 | 55% |
+| classes/members | 56 | 38 | 0 | 18 | 0 | 68% |
+| classes/operators | 43 | 38 | 0 | 5 | 0 | 88% |
+| classes/unions | 60 | 42 | 6 | 12 | 0 | 80% |
+| classes/virtual | 71 | 60 | 0 | 11 | 0 | 85% |
+| declarations/alignment | 25 | 23 | 0 | 2 | 0 | 92% |
+| declarations/attributes | 43 | 42 | 0 | 1 | 0 | 98% |
+| declarations/auto | 35 | 27 | 3 | 5 | 0 | 86% |
+| declarations/constexpr | 31 | 30 | 0 | 1 | 0 | 97% |
+| declarations/declarators | 46 | 36 | 0 | 10 | 0 | 78% |
+| declarations/enumerations | 29 | 21 | 0 | 8 | 0 | 72% |
+| declarations/exception-specifications | 10 | 6 | 0 | 4 | 0 | 60% |
+| declarations/functions | 87 | 67 | 0 | 20 | 0 | 77% |
+| declarations/initialization | 81 | 56 | 6 | 19 | 0 | 77% |
+| declarations/inline | 12 | 7 | 0 | 5 | 0 | 58% |
+| declarations/linkage-specifications | 17 | 14 | 0 | 3 | 0 | 82% |
+| declarations/namespaces | 30 | 19 | 2 | 9 | 0 | 70% |
+| declarations/static-assert | 11 | 7 | 0 | 4 | 0 | 64% |
+| declarations/storage-linkage | 24 | 21 | 0 | 3 | 0 | 88% |
+| declarations/structured-bindings | 33 | 21 | 2 | 10 | 0 | 70% |
+| declarations/type-names | 43 | 31 | 0 | 12 | 0 | 72% |
+| declarations/volatile | 18 | 10 | 0 | 8 | 0 | 56% |
+| exceptions/handlers | 32 | 25 | 0 | 7 | 0 | 78% |
+| exceptions/throw | 9 | 9 | 0 | 0 | 0 | 100% |
+| exceptions/unwinding | 5 | 4 | 0 | 1 | 0 | 80% |
+| expressions/additive | 30 | 27 | 0 | 3 | 0 | 90% |
+| expressions/assignment | 13 | 7 | 0 | 6 | 0 | 54% |
+| expressions/bitwise | 12 | 12 | 0 | 0 | 0 | 100% |
+| expressions/casts | 21 | 15 | 1 | 5 | 0 | 76% |
+| expressions/comma | 6 | 3 | 0 | 3 | 0 | 50% |
+| expressions/comparison | 37 | 32 | 0 | 5 | 0 | 86% |
+| expressions/conditional | 33 | 20 | 0 | 13 | 0 | 61% |
+| expressions/decltype | 14 | 4 | 0 | 10 | 0 | 29% |
+| expressions/lambdas | 32 | 24 | 0 | 8 | 0 | 75% |
+| expressions/logical | 9 | 6 | 0 | 3 | 0 | 67% |
+| expressions/member-pointers | 33 | 15 | 0 | 18 | 0 | 45% |
+| expressions/multiplicative | 23 | 19 | 0 | 4 | 0 | 83% |
+| expressions/new-delete | 49 | 38 | 3 | 8 | 0 | 84% |
+| expressions/postfix | 36 | 22 | 0 | 14 | 0 | 61% |
+| expressions/primary | 61 | 47 | 0 | 14 | 0 | 77% |
+| expressions/shift | 13 | 12 | 0 | 1 | 0 | 92% |
+| expressions/unary | 30 | 25 | 0 | 5 | 0 | 83% |
+| foundations/constant-evaluation | 85 | 71 | 4 | 10 | 0 | 88% |
+| foundations/conversions | 21 | 7 | 0 | 14 | 0 | 33% |
+| foundations/evaluation-order | 2 | 2 | 0 | 0 | 0 | 100% |
+| foundations/keywords | 94 | 0 | 79 | 15 | 0 | 84% |
+| foundations/language-support | 23 | 15 | 0 | 8 | 0 | 65% |
+| foundations/names | 97 | 49 | 0 | 48 | 0 | 51% |
+| foundations/objects | 14 | 10 | 0 | 4 | 0 | 71% |
+| foundations/odr | 19 | 8 | 7 | 4 | 0 | 79% |
+| foundations/storage | 14 | 8 | 1 | 5 | 0 | 64% |
+| foundations/translation | 34 | 19 | 0 | 15 | 0 | 56% |
+| foundations/types | 20 | 20 | 0 | 0 | 0 | 100% |
+| foundations/values | 9 | 0 | 0 | 9 | 0 | 0% |
+| overloading/conversion-sequences | 17 | 15 | 2 | 0 | 0 | 100% |
+| overloading/overload-resolution | 65 | 55 | 5 | 5 | 0 | 92% |
+| statements/blocks | 8 | 2 | 3 | 3 | 0 | 63% |
+| statements/if | 37 | 28 | 1 | 8 | 0 | 78% |
+| statements/jumps | 26 | 22 | 2 | 2 | 0 | 92% |
+| statements/loops | 14 | 11 | 1 | 2 | 0 | 86% |
+| statements/range-for | 14 | 13 | 0 | 1 | 0 | 93% |
+| statements/switch | 22 | 21 | 0 | 1 | 0 | 95% |
+| templates/arguments | 39 | 31 | 4 | 4 | 0 | 90% |
+| templates/class-template-deduction | 65 | 53 | 8 | 4 | 0 | 94% |
+| templates/concepts | 61 | 44 | 4 | 13 | 0 | 79% |
+| templates/constraints | 57 | 36 | 12 | 9 | 0 | 84% |
+| templates/declarations | 67 | 58 | 1 | 8 | 0 | 88% |
+| templates/deduction | 37 | 27 | 4 | 6 | 0 | 84% |
+| templates/dependent-names | 49 | 28 | 3 | 18 | 0 | 63% |
+| templates/instantiation | 86 | 39 | 2 | 45 | 0 | 48% |
+| templates/ordering | 19 | 1 | 15 | 3 | 0 | 84% |
+| templates/packs | 24 | 18 | 6 | 0 | 0 | 100% |
+| templates/specialization | 37 | 31 | 1 | 5 | 0 | 86% |
+| **total** | 2805 | 1988 | 189 | 628 | 0 | 78% |
+
+By subdirectory:
+
+| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only | Agrees with EDG only | EDG, allowed | No base expectation |
+|---|---|---|---|---|---|---|---|---|---|
+| classes/access | 82 | 78 | 0 | 0 | 0 | 4 | 0 | 0 | 0 |
+| classes/comparisons | 82 | 79 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
+| classes/constructors | 201 | 188 | 0 | 0 | 0 | 13 | 0 | 0 | 0 |
+| classes/conversion-functions | 63 | 61 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| classes/copy-move | 127 | 123 | 0 | 1 | 0 | 2 | 1 | 0 | 0 |
+| classes/derived | 83 | 82 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| classes/initializer-lists | 34 | 34 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| classes/members | 161 | 153 | 0 | 0 | 0 | 8 | 0 | 0 | 0 |
+| classes/operators | 123 | 119 | 0 | 0 | 0 | 4 | 0 | 0 | 0 |
+| classes/unions | 155 | 147 | 0 | 0 | 0 | 8 | 0 | 0 | 0 |
+| classes/virtual | 146 | 143 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
+| declarations/alignment | 53 | 46 | 0 | 0 | 0 | 7 | 0 | 0 | 0 |
+| declarations/attributes | 90 | 88 | 0 | 1 | 0 | 0 | 0 | 1 | 0 |
+| declarations/auto | 66 | 64 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| declarations/constexpr | 67 | 63 | 0 | 1 | 0 | 1 | 0 | 2 | 0 |
+| declarations/declarators | 96 | 95 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| declarations/enumerations | 78 | 75 | 0 | 1 | 0 | 2 | 0 | 0 | 0 |
+| declarations/exception-specifications | 46 | 40 | 0 | 0 | 0 | 6 | 0 | 0 | 0 |
+| declarations/functions | 162 | 155 | 0 | 0 | 0 | 7 | 0 | 0 | 0 |
+| declarations/initialization | 205 | 198 | 0 | 0 | 0 | 7 | 0 | 0 | 0 |
+| declarations/inline | 36 | 34 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |
+| declarations/linkage-specifications | 45 | 40 | 0 | 0 | 0 | 5 | 0 | 0 | 0 |
+| declarations/namespaces | 57 | 55 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| declarations/static-assert | 29 | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| declarations/storage-linkage | 71 | 69 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| declarations/structured-bindings | 71 | 67 | 1 | 0 | 0 | 3 | 0 | 0 | 0 |
+| declarations/type-names | 79 | 79 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| declarations/volatile | 44 | 42 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| exceptions/handlers | 107 | 107 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| exceptions/throw | 53 | 53 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| exceptions/unwinding | 57 | 57 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/additive | 61 | 61 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/assignment | 34 | 34 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/bitwise | 24 | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/casts | 60 | 59 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| expressions/comma | 25 | 25 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/comparison | 102 | 95 | 0 | 0 | 0 | 7 | 0 | 0 | 0 |
+| expressions/conditional | 94 | 91 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
+| expressions/decltype | 55 | 54 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| expressions/lambdas | 98 | 94 | 0 | 0 | 1 | 3 | 0 | 0 | 0 |
+| expressions/logical | 34 | 34 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/member-pointers | 75 | 74 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| expressions/multiplicative | 56 | 51 | 0 | 0 | 0 | 5 | 0 | 0 | 0 |
+| expressions/new-delete | 139 | 135 | 1 | 0 | 0 | 3 | 0 | 0 | 0 |
+| expressions/postfix | 75 | 69 | 2 | 1 | 0 | 3 | 0 | 0 | 0 |
+| expressions/primary | 142 | 131 | 1 | 0 | 1 | 7 | 0 | 2 | 0 |
+| expressions/shift | 29 | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| expressions/unary | 68 | 67 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| foundations/constant-evaluation | 150 | 134 | 0 | 0 | 0 | 16 | 0 | 0 | 0 |
+| foundations/conversions | 76 | 72 | 0 | 0 | 0 | 4 | 0 | 0 | 0 |
+| foundations/evaluation-order | 48 | 48 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| foundations/keywords | 101 | 101 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| foundations/language-support | 51 | 47 | 0 | 1 | 0 | 3 | 0 | 0 | 0 |
+| foundations/names | 235 | 233 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |
+| foundations/objects | 56 | 50 | 0 | 0 | 0 | 6 | 0 | 0 | 0 |
+| foundations/odr | 96 | 91 | 0 | 0 | 1 | 4 | 0 | 0 | 0 |
+| foundations/storage | 102 | 96 | 0 | 0 | 0 | 6 | 0 | 0 | 0 |
+| foundations/translation | 82 | 73 | 0 | 0 | 0 | 5 | 0 | 4 | 0 |
+| foundations/types | 63 | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| foundations/values | 53 | 52 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| overloading/conversion-sequences | 138 | 123 | 0 | 0 | 5 | 10 | 0 | 0 | 0 |
+| overloading/overload-resolution | 178 | 157 | 0 | 1 | 0 | 20 | 0 | 0 | 0 |
+| programs/P1 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/P2 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/P3 | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/P4 | 5 | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| programs/W0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W1 | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W10 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W11 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W12 | 4 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| programs/W13 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W14 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W15 | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W16 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W17 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W18 | 4 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| programs/W19 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W2 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W20 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W3 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W4 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W5 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W6 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W7 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W8 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| programs/W9 | 4 | 1 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
+| programs/roadmap | 79 | 67 | 0 | 0 | 1 | 11 | 0 | 0 | 0 |
+| statements/blocks | 29 | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| statements/if | 82 | 81 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| statements/jumps | 63 | 60 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
+| statements/loops | 29 | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| statements/range-for | 37 | 33 | 0 | 0 | 0 | 4 | 0 | 0 | 0 |
+| statements/switch | 45 | 43 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| templates/arguments | 92 | 84 | 0 | 3 | 1 | 4 | 0 | 0 | 0 |
+| templates/class-template-deduction | 135 | 123 | 0 | 1 | 1 | 10 | 0 | 0 | 0 |
+| templates/concepts | 128 | 119 | 0 | 1 | 2 | 6 | 0 | 0 | 0 |
+| templates/constraints | 129 | 107 | 0 | 3 | 1 | 17 | 1 | 0 | 0 |
+| templates/declarations | 139 | 134 | 0 | 3 | 0 | 2 | 0 | 0 | 0 |
+| templates/deduction | 143 | 134 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |
+| templates/dependent-names | 141 | 117 | 3 | 7 | 3 | 9 | 2 | 0 | 0 |
+| templates/instantiation | 172 | 145 | 0 | 6 | 4 | 14 | 2 | 1 | 0 |
+| templates/ordering | 60 | 49 | 0 | 1 | 0 | 10 | 0 | 0 | 0 |
+| templates/packs | 80 | 74 | 0 | 3 | 2 | 1 | 0 | 0 | 0 |
+| templates/specialization | 97 | 91 | 0 | 3 | 0 | 3 | 0 | 0 | 0 |
+
+Run tests (`run` and `run-fail`):
+
+| Directory | Tests | Pass | Pass, partial | Other outcome | Wrong result | Missed undefined behavior | Unexpected undefined behavior | Unsupported | Check did not accept |
+|---|---|---|---|---|---|---|---|---|---|
+| classes | 388 | 386 | 0 | 0 | 0 | 0 | 0 | 2 | 0 |
+| declarations | 274 | 272 | 0 | 0 | 0 | 0 | 0 | 2 | 0 |
+| exceptions | 152 | 150 | 0 | 0 | 0 | 0 | 0 | 2 | 0 |
+| expressions | 318 | 313 | 0 | 0 | 0 | 0 | 0 | 2 | 3 |
+| foundations | 326 | 324 | 0 | 0 | 0 | 0 | 0 | 2 | 0 |
+| overloading | 15 | 14 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| programs | 178 | 177 | 35 | 0 | 0 | 0 | 0 | 0 | 1 |
+| statements | 117 | 117 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| templates | 177 | 160 | 0 | 0 | 0 | 0 | 0 | 9 | 8 |
+| **total** | 1945 | 1913 | 35 | 0 | 0 | 0 | 0 | 20 | 12 |
+
+Constructs the interpreter does not run (tests affected):
+
+      3  new expression
+      2  call of unknown callee
+      2  dependent name
+      2  destructor body the front end did not parse
+      2  missing argument
+      2  variable '_' has no definition in this translation unit
+      1  block-scope static variable used before its declaration ran
+      1  call needing template deduction or unknown arguments
+      1  class assignment
+      1  conversion function
+      1  indirection through a non-pointer
+      1  overloaded operator
+      1  unknown member
+
+Unsupported constructs (tests affected):
+
+      3  constant initializer: unqualified call to an undeclared name
+      2  constant initializer: body of '_' is not available yet
+      2  constant initializer: conversion function
+      2  static_assert: ambiguous call (in a variable template argument)
+      2  static_assert: body of '_' is not available yet
+      2  static_assert: call needing template deduction or unknown arguments
+      2  static_assert: conversion function
+      2  static_assert: dependent name
+      1  #include form other than "file" (outside the specification)
+      1  named escape \N{...} (needs Unicode name table)
+      1  parse: unknown type name '_'
+      1  parse: unknown type name '_' in uncertain scope
+      1  static_assert: a template-id that names a function specialization (in a variable template argument)
+      1  static_assert: a type the front end does not know (in a variable template argument)
+      1  static_assert: ambiguous call (needs full overload resolution) (in a variable template argument)
+      1  static_assert: call of unknown callee (in a variable template argument)
+      1  static_assert: class temporary
+      1  static_assert: concept
+      1  static_assert: range-based for
+      1  static_assert: the type of '_', which the front end does not know (in a variable template argument)
+      1  static_assert: unqualified call to an undeclared name
+      1  static_assert: variable template with unknown arguments (in a variable template argument)
+EDG-ONLY	classes/access/friend-member-of-explicit-specialization.cpp	ACC-20	
+EDG-ONLY	classes/access/friend-member-pattern-other-specialization.cpp	ACC-20	
+EDG-ONLY	classes/access/nested-class-friend-reads-enclosing.cpp	ACC-10 ACC-5	
+EDG-ONLY	classes/access/using-reduces-access.cpp	ACC-2	12:ACC-2 'x' is named by a using-declaration of 'D' that is not accessible here
+EDG-ONLY	classes/comparisons/eq-array-of-arrays-member-constant.cpp	DCMP-1	
+EDG-ONLY	classes/comparisons/out-of-class-reference-member-would-delete.cpp	DCMP-8	8:DCMP-8 'operator==' defaulted after its class would be deleted
+EDG-ONLY	classes/comparisons/out-of-class-would-delete.cpp	DCMP-8	9:DCMP-8 'operator==' defaulted after its class would be deleted
+run-unsupported	classes/comparisons/spaceship-specified-type-synthesized.cpp	DCMP-4	unsupported at line 67: overloaded operator
+EDG-ONLY	classes/constructors/base-init-calls-member-of-member-constant.cpp	CTOR-12 OBJ-2	13:CX-1 initializer is not a constant expression (OBJ-2: call of a member function of a member whose lifetime has not begun)
+EDG-ONLY	classes/constructors/const-object-only-anonymous-unions.cpp	CTOR-24	11:CTOR-4 const object of 'Cell' without an initializer leaves a member without a value
+EDG-ONLY	classes/constructors/delete-array-deleted-dtor.cpp	DTOR-3	8:DTOR-3 array new of 'S', whose destructor is deleted or not accessible
+EDG-ONLY	classes/constructors/double-destroy-constant.cpp	DTOR-7	13:DTOR-7 static_assert condition is not a constant expression: the end of the block destroys an object whose destructor already ran
+EDG-ONLY	classes/constructors/double-destroy-trivial-constant.cpp	DTOR-7	13:DTOR-7 static_assert condition is not a constant expression: the end of the block destroys an object whose destructor already ran
+EDG-ONLY	classes/constructors/initializer-list-default-member-from-braces.cpp	CTOR-17	17:CTOR-17 the default member initializer binds the member 'list' to a temporary object, and a constructor uses it
+EDG-ONLY	classes/constructors/initializer-list-member-from-braces.cpp	CTOR-17	17:CTOR-17 the mem-initializer binds the member 'list' to a temporary object
+EDG-ONLY	classes/constructors/nested-default-member-init-before-complete.cpp	CTOR-18	8:CTOR-18 the default argument uses a default member initializer of 'In' before the enclosing class is complete
+EDG-ONLY	classes/constructors/nested-default-member-init-read-in-default-argument.cpp	CTOR-18	10:CTOR-18 the default argument uses a default member initializer of 'In' before the enclosing class is complete
+EDG-ONLY	classes/constructors/parameter-destroyed-by-callee-constant.cpp	DTOR-7 VC-10	18:DTOR-7 static_assert condition is not a constant expression: the end of the block destroys an object whose destructor already ran
+EDG-ONLY	classes/constructors/reference-default-member-binds-temporary.cpp	CTOR-17	7:CTOR-17 the default member initializer binds the member 'r' to a temporary object, and the default constructor uses it
+EDG-ONLY	classes/constructors/reference-member-binds-converted-parameter.cpp	CTOR-17	9:CTOR-17 the mem-initializer binds the member 'r' to a temporary object
+EDG-ONLY	classes/constructors/reference-member-binds-temporary.cpp	CTOR-17	7:CTOR-17 the mem-initializer binds the member 'r' to a temporary object
+run-unsupported	classes/conversion-functions/deduced-auto.cpp	CVF-1	unsupported at line 8: conversion function
+EDG-ONLY	classes/conversion-functions/template-deduced-auto.cpp	CVF-7	8:CVF-7 a conversion function template whose name is a placeholder
+EDG-ONLY	classes/conversion-functions/template-pointer-to-placeholder.cpp	CVF-7	10:CVF-7 a conversion function template whose name is a placeholder
+MISSED-REJECT	classes/copy-move/class-template-ctor-by-value.cpp	CPY-15	
+EDG-ONLY	classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp	CNS-11 CPY-1	
+EDG-ONLY	classes/copy-move/trivially-copyable-member-selected.cpp	CPY-27 CPY-19 UNI-3	
+EDG-AGREES	classes/copy-move/trivially-copyable-member-template-selected.cpp	CPY-27 UNI-11	
+EDG-ONLY	classes/derived/constexpr-dtor-virtual-base.cpp	DER-12	8:DER-12 a constexpr destructor of 'D', which has a virtual base
+EDG-ONLY	classes/members/explicit-object-default-argument.cpp	CLS-14	8:CLS-14 a default argument on an explicit object parameter
+EDG-ONLY	classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-tail-padding-deleted-constructor.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-tail-padding-move-assignment-ilp32.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-tail-padding-move-assignment.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-union-end-padding-ilp32.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/layout-union-end-padding.cpp	CLS-35 CLS-34	
+EDG-ONLY	classes/members/standard-layout-address-constant.cpp	CLS-30	
+EDG-ONLY	classes/operators/literal-float-form-out-of-range.cpp	OPR-8 PRIM-15	
+EDG-ONLY	classes/operators/literal-operator-template-class-parameter-and-string-form.cpp	OPR-8	
+EDG-ONLY	classes/operators/literal-operator-template-class-parameter-not-valid-argument.cpp	OPR-16	12:OPR-16 the string literal is not a valid template argument of the literal operator template for the suffix '_tag'
+EDG-ONLY	classes/operators/literal-reserved-suffix-u8.cpp	OPR-9	
+EDG-ONLY	classes/unions/anonymous-union-unnamed-namespace.cpp	UNI-9	
+EDG-ONLY	classes/unions/bitfield-width-scoped-enumeration.cpp	BF-2	8:BF-2 bit-field width has a scoped enumeration type
+EDG-ONLY	classes/unions/chain-assign-array-element-nontrivial-constant.cpp	UNI-6 UNI-13	21:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/chain-assign-nontrivial-constant.cpp	UNI-6 UNI-13	10:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/construct-at-array-member-element-constant.cpp	UNI-14 UNI-6	19:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/construct-in-member-of-inactive-member-union-constant.cpp	UNI-14 UNI-6 CE-6	21:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/unions/union-copy-two-copy-constructors.cpp	UNI-3 CPY-27	
+EDG-ONLY	classes/unions/user-assignment-not-activating-constant.cpp	UNI-6	10:UNI-6 static_assert condition is not a constant expression: access to a member of a union member that is not active
+EDG-ONLY	classes/virtual/dynamic-cast-private-base-constant.cpp	VIRT-10	
+EDG-ONLY	classes/virtual/explicit-object-overrides.cpp	VIRT-19	8:VIRT-19 'f' is an explicit object member function with the name and parameters of a virtual function of a base
+EDG-ONLY	classes/virtual/override-independent-base-unused.cpp	VIRT-3 DEP-30	9:VIRT-3 'run' is marked override, and no base has a virtual function of that name
+EDG-ONLY	declarations/alignment/enum.cpp	ALN-7	8:ALN-7 alignas applied to an enumeration
+EDG-ONLY	declarations/alignment/extended-edg-beyond-ilp32.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/extended-edg-beyond.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/extended-huge-ilp32.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/extended-huge.cpp	ALN-5	
+EDG-ONLY	declarations/alignment/operand-scoped-enumeration.cpp	ALN-8	8:ALN-8 the operand of alignas has a scoped enumeration type
+EDG-ONLY	declarations/alignment/scoped-enum.cpp	ALN-7	8:ALN-7 alignas applied to an enumeration
+MISSED-REJECT	declarations/attributes/maybe-unused-on-using-directive.cpp	ATTR-2	
+EDG-ALLOWED	declarations/attributes/vendor-attribute-changes-layout.cpp	ATTR-20	7:SA-1 static assertion failed
+MISSED-REJECT	declarations/auto/decltype-auto-destructor-call.cpp	AUTO-11	
+MISSED-REJECT	declarations/auto/decltype-auto-functional-cast.cpp	AUTO-11	
+EDG-ONLY	declarations/constexpr/consteval-conversion-for-parameter-not-constant.cpp	CEV-1	14:CEV-1 call of consteval constructor is not a constant expression (CE-2: call of non-constexpr function 'fail')
+EDG-ALLOWED	declarations/constexpr/constinit-added-late-thread-local.cpp	CINIT-3	
+EDG-ALLOWED	declarations/constexpr/constinit-added-late.cpp	CINIT-3	
+MISSED-REJECT	declarations/constexpr/lambda-escalates-runtime.cpp	CEV-1	
+EDG-ONLY	declarations/declarators/qualified-function-type-parameter.cpp	DCL-16	9:DCL-16 reference to a function type with qualifiers
+EDG-ONLY	declarations/enumerations/cast-out-of-range.cpp	ENUM-6	8:CX-1 initializer is not a constant expression (ENUM-6: value 8 is outside the range of the enumeration)
+MISSED-REJECT	declarations/enumerations/using-enum-dependent.cpp	ENUM-20	
+EDG-ONLY	declarations/enumerations/using-enum-opaque.cpp	ENUM-20	8:ENUM-20 using enum names an incomplete enumeration
+EDG-ONLY	declarations/exception-specifications/defaulted-comparison-member-throwing.cpp	EXS-4	
+EDG-ONLY	declarations/exception-specifications/narrowing-operand.cpp	EXS-7	7:EXS-7 the operand of noexcept narrows in its conversion to bool
+EDG-ONLY	declarations/exception-specifications/pointer-operand.cpp	EXS-7	8:EXS-7 the operand of noexcept narrows in its conversion to bool
+EDG-ONLY	declarations/exception-specifications/throw-empty-pointer.cpp	EXS-5	
+EDG-ONLY	declarations/exception-specifications/throw-empty-removed-ilp32.cpp	EXS-5	
+EDG-ONLY	declarations/exception-specifications/throw-empty-removed.cpp	EXS-5	
+EDG-ONLY	declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp	DEFARG-10	
+EDG-ONLY	declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp	DEFARG-10	
+EDG-ONLY	declarations/functions/default-arguments/parameter-in-sizeof.cpp	DEFARG-4	
+EDG-ONLY	declarations/functions/definitions/main-four-params-ilp32.cpp	FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/functions/definitions/main-four-params.cpp	FN-6	7:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/functions/definitions/main-wrong-first-param-ilp32.cpp	FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/functions/definitions/main-wrong-first-param.cpp	FN-6	7:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	declarations/initialization/forms/read-uninitialized-array.cpp	INIT-1	12:OBJ-2, INIT-1 static_assert condition is not a constant expression: read of an object with no value
+EDG-ONLY	declarations/initialization/list/narrowing-bit-field-fits.cpp	LIST-2 CONV-21	
+EDG-ONLY	declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp	LIST-2 CONV-21	
+EDG-ONLY	declarations/initialization/list/paren-no-brace-elision.cpp	LIST-9	9:LIST-9 parenthesized aggregate initialization has more values than members; the values do not split across a nested aggregate
+EDG-ONLY	declarations/initialization/references/aggregate-member-paren-not-extended.cpp	REF-5	12:OBJ-2 static_assert condition is not a constant expression: access to an object whose lifetime has ended
+EDG-ONLY	declarations/initialization/references/extend-through-array-member-subscript.cpp	REF-4	
+EDG-ONLY	declarations/initialization/references/null-dereference-bind-constant.cpp	REF-5	10:UN-7 static_assert condition is not a constant expression: indirection through a null pointer
+run-unsupported	declarations/initialization/static/reference-constant-initialized.cpp	SINIT-1	unsupported at line 7: variable 'ref' has no definition in this translation unit
+EDG-ONLY	declarations/inline/inline-undefined-used.cpp	INL-6	
+MISSED-REJECT	declarations/inline/inline-variable-undefined-used.cpp	INL-6	
+EDG-ONLY	declarations/linkage-specifications/c-callback-alias.cpp	LSP-1 LSP-6	
+EDG-ONLY	declarations/linkage-specifications/c-function-pointer-assign-ilp32.cpp	LSP-6	
+EDG-ONLY	declarations/linkage-specifications/c-function-pointer-assign.cpp	LSP-6	
+EDG-ONLY	declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp	LSP-4 FN-14	8:FN-14 the C function 'code' is defined twice
+EDG-ONLY	declarations/linkage-specifications/c-parameter-type-linkage.cpp	LSP-1 LSP-6	
+EDG-ONLY	declarations/namespaces/qualified-definition-inline-member-inside-named.cpp	NS-15 NS-3	
+EDG-ONLY	declarations/namespaces/using-declaration-repeat-block.cpp	NS-7	
+EDG-ONLY	declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp	STO-11	
+run-unsupported	declarations/storage-linkage/block-function-declaration.cpp	LNK-9	unsupported at line 7: block-scope static variable used before its declaration ran
+EDG-ONLY	declarations/storage-linkage/extern-in-block-hidden.cpp	LNK-9	
+EDG-ONLY	declarations/structured-bindings/constinit-specifier.cpp	SB-11	10:SB-11 invalid specifier on a structured binding declaration
+EDG-ONLY	declarations/structured-bindings/constrained.cpp	SB-15	9:SB-15 structured binding declared with a constrained auto
+FALSE-REJECT	declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp	SB-5	17:DED-35 no viable function for the call of 'get': deduction fails for each template
+EDG-ONLY	declarations/structured-bindings/tuple-size-without-value.cpp	SB-5	
+EDG-ONLY	declarations/volatile/constant-read-through-plain.cpp	VOL-6 VOL-8	12:CX-1 initializer is not a constant expression (VOL-6: access to a volatile object through a glvalue of type int, which is not volatile)
+EDG-ONLY	declarations/volatile/static-const-volatile-in-class.cpp	CLS-23	7:CLS-23 in-class initializer for a static data member that is not const integral, inline, or constexpr
+run-unsupported	exceptions/handlers/dtor-try-block-member-destructor-throws.cpp	TRY-10	unsupported at line 8: destructor body the front end did not parse
+run-unsupported	exceptions/handlers/dtor-try-block-rethrows.cpp	TRY-10	unsupported at line 0: destructor body the front end did not parse
+EDG-ONLY	expressions/casts/static-cast-enum-out-of-range-constant.cpp	CAST-14	8:CX-1 initializer is not a constant expression (ENUM-6: value 9 is outside the range of the enumeration)
+EDG-ONLY	expressions/comparison/one-past-end-adjacent-constant.cpp	CMP-20	8:CMP-20 static_assert condition is not a constant expression: comparison of a past-the-end pointer with a pointer to another object
+EDG-ONLY	expressions/comparison/pointer-relational-nullptr.cpp	CMP-9	8:CMP-9 relational comparison of a pointer with a null pointer constant
+EDG-ONLY	expressions/comparison/pointer-relational-zero.cpp	CMP-9	8:CMP-9 relational comparison of a pointer with a null pointer constant
+EDG-ONLY	expressions/comparison/relational-nullptr-values.cpp	CMP-9	8:CMP-9 relational comparison of two nullptr values
+EDG-ONLY	expressions/comparison/struct-and-first-member-equal.cpp	CMP-15	
+EDG-ONLY	expressions/comparison/three-way-enum-float.cpp	CMP-18	36:CMP-18 three-way comparison of different enumerations, or of an enumeration and a floating value
+EDG-ONLY	expressions/comparison/three-way-pointer-zero.cpp	CMP-13	35:CMP-13 three-way comparison of a pointer with the literal 0
+EDG-ONLY	expressions/conditional/class-const-and-volatile-lvalues.cpp	COND-16 COND-3 COND-5	11:COND-5 conditional operands have no common type: const Box and volatile Box, and no built-in candidate is viable (COND-11)
+EDG-ONLY	expressions/conditional/class-const-and-volatile-xvalues.cpp	COND-3 COND-5 COND-16	12:COND-5 conditional operands have no common type: const Box and volatile Box, and no built-in candidate is viable (COND-11)
+EDG-ONLY	expressions/conditional/two-classes-float.cpp	COND-11	
+MISSED-REJECT	expressions/decltype/nested-class-member-evaluated.cpp	UNEV-1 PRIM-25	
+EDG-ONLY	expressions/lambdas/capture-default-at-namespace.cpp	LAM-6	7:LAM-6 capture default in a lambda outside a function
+EDG-ONLY	expressions/lambdas/capture-default-local-class-default-argument.cpp	LAM-6	9:LAM-6 capture default in a lambda that no block encloses, in a member declaration of a class
+EDG-ONLY	expressions/lambdas/capture-default-local-class-member.cpp	LAM-6	9:LAM-6 capture default in a lambda that no block encloses, in a member declaration of a class
+unsupported	expressions/lambdas/capture-visible-in-trailing-return.cpp	LAM-18	10:- static_assert: call of unknown callee (in a variable template argument)
+EDG-ONLY	expressions/member-pointers/converted-through-object-constant.cpp	MPTR-4	
+EDG-ONLY	expressions/multiplicative/floating-divide-by-zero.cpp	CE-28	8:CE-28 static_assert condition is not a constant expression: floating division by zero in constant evaluation
+EDG-ONLY	expressions/multiplicative/floating-zero-by-zero.cpp	CE-28	8:CE-28 static_assert condition is not a constant expression: floating division by zero in constant evaluation
+EDG-ONLY	expressions/multiplicative/signed-overflow-divide-long-long.cpp	MUL-10	8:CX-1 initializer is not a constant expression (MUL-10: quotient does not fit in the type)
+EDG-ONLY	expressions/multiplicative/signed-overflow-divide.cpp	MUL-10	9:MUL-10 static_assert condition is not a constant expression: quotient does not fit in the type
+EDG-ONLY	expressions/multiplicative/signed-overflow-remainder.cpp	MUL-10	9:MUL-10 static_assert condition is not a constant expression: quotient does not fit in the type
+EDG-ONLY	expressions/new-delete/constant-evaluation-nothrow.cpp	NEW-37 LSUP-6	
+FALSE-REJECT	expressions/new-delete/new-type-pointer-forms.cpp	NEW-1 ATTR-19	6:TR-12 the grammar does not derive this: expected '{' but found ']'
+run-unsupported	expressions/new-delete/throw-placement-default-argument.cpp	NEW-23	unsupported at line 11: missing argument
+EDG-ONLY	expressions/new-delete/throw-placement-deleted-function-and-template.cpp	NEW-24 DED-39	
+run-unsupported	expressions/new-delete/throw-placement-templates-unordered.cpp	NEW-24 DED-39	unsupported at line 18: new expression
+MISSED-REJECT	expressions/postfix/default-template-argument-incomplete-class.cpp	PFX-11 CLS-2	
+FALSE-REJECT	expressions/postfix/ellipsis-argument-conversions.cpp	PFX-22	10:NAM-8 use of undeclared name 'va_list'
+FALSE-REJECT	expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp	PFX-22	7:NAM-8 use of undeclared name 'va_list'
+EDG-ONLY	expressions/postfix/member-call-null-pointer-constant.cpp	PFX-21 UN-7 CE-9	12:PFX-21, UN-7 static_assert condition is not a constant expression: member function called through a null pointer
+EDG-ONLY	expressions/postfix/postfix-narrow-signed-wraps.cpp	PFX-12 UN-20	
+EDG-ONLY	expressions/postfix/subscript-prvalue-array.cpp	PFX-3	
+EDG-ALLOWED	expressions/primary/char-encoding-ilp32.cpp	PRIM-32	27:SA-1 static assertion failed
+EDG-ALLOWED	expressions/primary/char-encoding-lp64.cpp	PRIM-32	26:SA-1 static assertion failed
+unsupported	expressions/primary/char-named-escape-unknown.cpp	PRIM-18	7:- named escape \N{...} (needs Unicode name table)
+FALSE-REJECT	expressions/primary/char-named-escape.cpp	PRIM-5	4:SA-1 static assertion failed
+EDG-ONLY	expressions/primary/char-unknown-escape.cpp	PRIM-35	7:PRIM-18 unknown escape sequence '\q'
+EDG-ONLY	expressions/primary/double-overflow.cpp	PRIM-15	
+EDG-ONLY	expressions/primary/float-overflow.cpp	PRIM-15	
+EDG-ONLY	expressions/primary/fold-operand-binary.cpp	PRIM-29	7:PRIM-29 a binary operator in the operand of a fold expression needs parentheses
+EDG-ONLY	expressions/primary/int-too-large-signed-decimal.cpp	PRIM-2	7:PRIM-2 integer literal too large for its candidate types
+EDG-ONLY	expressions/primary/string-compare-constant.cpp	PRIM-9	7:CE-13 static_assert condition is not a constant expression: comparison of the addresses of string literals
+EDG-ONLY	expressions/primary/string-unknown-escape.cpp	PRIM-35	7:PRIM-18 unknown escape sequence '\q'
+EDG-ONLY	expressions/unary/prefix-narrow-signed-wraps.cpp	UN-20	
+EDG-ONLY	foundations/constant-evaluation/allocator-result-other-type.cpp	CE-4	21:CE-4 static_assert condition is not a constant expression: conversion of the storage of std::allocator<T> to a pointer to a type other than T
+EDG-ONLY	foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp	CE-24 CE-21 CINIT-1	8:CINIT-1 constinit variable without an initializer
+EDG-ONLY	foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp	CE-24 CE-21 CINIT-1	9:CINIT-1 default-initialization is not a constant expression (CE-21: result has a scalar part with no value)
+EDG-ONLY	foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp	CE-24 CE-21 CINIT-1	8:CINIT-1 default-initialization is not a constant expression (CE-21: result has a scalar part with no value)
+EDG-ONLY	foundations/constant-evaluation/explicit-condition-narrowing.cpp	CE-19	7:CE-19 the condition of explicit narrows in its conversion to bool
+EDG-ONLY	foundations/constant-evaluation/extended-temporary-member.cpp	CE-14	
+EDG-ONLY	foundations/constant-evaluation/extended-temporary-nested.cpp	CE-14	
+EDG-ONLY	foundations/constant-evaluation/literal-temporary-volatile-member.cpp	CE-17 CE-23	
+EDG-ONLY	foundations/constant-evaluation/mutable-member-read-outside.cpp	CE-3	9:CX-1 initializer is not a constant expression (CE-3: read of a mutable member of an object that the evaluation did not create)
+EDG-ONLY	foundations/constant-evaluation/read-extended-temporary-nested.cpp	CE-3 CE-14	
+EDG-ONLY	foundations/constant-evaluation/string-literal-identity-variables.cpp	CE-13	9:CE-13 static_assert condition is not a constant expression: comparison of the addresses of string literals
+EDG-ONLY	foundations/constant-evaluation/string-literal-identity.cpp	CE-13	8:CE-13 static_assert condition is not a constant expression: comparison of the addresses of string literals
+EDG-ONLY	foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp	CE-3 CE-22	9:CX-1 initializer is not a constant expression (CE-3: copy of an object with a mutable member that the evaluation did not create)
+EDG-ONLY	foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp	CE-22	14:CE-22 static_assert condition is not a constant expression: copy of a union whose active member is mutable, from an object that began outside the evaluation
+EDG-ONLY	foundations/constant-evaluation/union-copy-mutable-member-outside.cpp	CE-22	9:CX-1 initializer is not a constant expression (CE-22: copy of a union whose active member is mutable, from an object that began outside the evaluation)
+EDG-ONLY	foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp	CE-22	18:OBJ-2, INIT-1 static_assert condition is not a constant expression: read of an object with no value
+EDG-ONLY	foundations/conversions/char-zero-not-null.cpp	CONV-8	8:INIT-7 no implicit conversion from char to a pointer (CONV-8)
+EDG-ONLY	foundations/conversions/floating-narrowing-infinity-ilp32.cpp	CONV-11	
+EDG-ONLY	foundations/conversions/floating-narrowing-infinity.cpp	CONV-11	
+EDG-ONLY	foundations/conversions/floating-narrowing-out-of-range.cpp	CONV-11	
+MISSED-REJECT	foundations/language-support/alignment-enumeration-class.cpp	LSUP-5	
+EDG-ONLY	foundations/language-support/initializer-list-count-before-pointer.cpp	LSUP-1	18:LSUP-1 a braced list needs std::initializer_list, which is not declared as a class template of the needed shape
+EDG-ONLY	foundations/language-support/ordering-strong-only-builtin.cpp	LSUP-2	
+EDG-ONLY	foundations/language-support/ordering-strong-only-defaulted.cpp	LSUP-2	
+MISSED-REJECT	foundations/names/adl-function-template-parameter-adds-nothing.cpp	NAM-8 NAM-27	
+EDG-ONLY	foundations/names/operator-lookup-block-declaration-keeps-adl.cpp	NAM-38	
+EDG-ONLY	foundations/objects/scalar-write-in-own-initializer-constant.cpp	OBJ-1 OBJ-2	8:OBJ-2 static_assert condition is not a constant expression: write to a variable inside its own initializer, before its lifetime begins
+EDG-ONLY	foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp	OBJ-1 OBJ-2	9:OBJ-2 static_assert condition is not a constant expression: write to a variable inside its own initializer, before its lifetime begins
+EDG-ONLY	foundations/objects/statement-scope-ends-after-return-constant.cpp	OBJ-3 LOOP-3	
+EDG-ONLY	foundations/objects/write-after-pseudo-destructor-element-constant.cpp	OBJ-2	15:OBJ-2 static_assert condition is not a constant expression: assignment to an object whose lifetime a destructor call ended
+EDG-ONLY	foundations/objects/write-after-pseudo-destructor-union-array-element-constant.cpp	OBJ-2	15:OBJ-2 static_assert condition is not a constant expression: assignment to an object whose lifetime a destructor call ended
+EDG-ONLY	foundations/objects/write-after-pseudo-destructor-variable-constant.cpp	OBJ-2	14:OBJ-2 static_assert condition is not a constant expression: write to an object whose lifetime has ended
+EDG-ONLY	foundations/odr/class-constant-copy-in-lambda.cpp	ODR-2 ODR-3	10:LAM-9 the lambda copies 'size', which it does not capture
+unsupported	foundations/odr/include-missing-file-angle.cpp	INC-3	7:- #include form other than "file" (outside the specification)
+EDG-ONLY	foundations/odr/local-class-binds-constant.cpp	ODR-2	10:CLS-28 a member function of a local class binds a reference to the automatic variable 'limit' of the enclosing function
+EDG-ONLY	foundations/odr/member-read-beside-mutable-in-lambda.cpp	ODR-2 ODR-3	10:LAM-9 the lambda names 'settings', which it does not capture
+EDG-ONLY	foundations/odr/mutable-member-read-in-lambda.cpp	ODR-2	10:LAM-9 the lambda names 'settings', which it does not capture
+run-unsupported	foundations/odr/variable-declaration-forms.cpp	ODR-15	unsupported at line 14: variable 'count' has no definition in this translation unit
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-double-element.cpp	LSUP-11 CE-9	25:CE-9 static_assert condition is not a constant expression: assignment to an element of allocated storage before its construction
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-int-element.cpp	LSUP-11 CE-9	26:CE-9 static_assert condition is not a constant expression: assignment to an element of allocated storage before its construction
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-pod-member.cpp	LSUP-11 CE-9	26:CE-9 static_assert condition is not a constant expression: assignment to an element of allocated storage before its construction
+EDG-ONLY	foundations/storage/allocation-assign-before-construction-user-assignment.cpp	LSUP-11 CE-9	29:STG-18, STG-22 static_assert condition is not a constant expression: member function called on storage that holds no object of its class
+run-unsupported	foundations/storage/integer-pointer-no-object-sanitizer.cpp	UN-7 STG-15	unsupported at line 9: indirection through a non-pointer
+EDG-ONLY	foundations/storage/replace-base-old-pointer-constant.cpp	STG-19	16:STG-19, OBJ-2 static_assert condition is not a constant expression: indirection through a pointer to an object whose storage another object took
+EDG-ONLY	foundations/storage/reuse-const-automatic-object-constant.cpp	STG-20	14:STG-20 static_assert condition is not a constant expression: placement new in the storage of a const complete object
+EDG-ALLOWED	foundations/translation/limit-array-exceeded-gcc-lp64.cpp	TR-14	
+EDG-ALLOWED	foundations/translation/limit-array-largest-edg-lp64.cpp	TR-14	
+EDG-ALLOWED	foundations/translation/limit-class-exceeded-gcc-lp64.cpp	TR-15	
+EDG-ALLOWED	foundations/translation/limit-class-largest-edg-lp64.cpp	TR-15	
+EDG-ONLY	foundations/translation/limit-depth-one-template-100.cpp	TR-13	
+EDG-ONLY	foundations/translation/main-cpp-linkage-block.cpp	TR-3	
+EDG-ONLY	foundations/translation/main-cpp-linkage-specification.cpp	TR-3	
+EDG-ONLY	foundations/translation/main-wrong-parameter-types-ilp32.cpp	FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	foundations/translation/main-wrong-parameter-types.cpp	TR-3 FN-6	8:TR-3 'main' has a parameter list that this implementation does not accept (FN-6)
+EDG-ONLY	foundations/values/xvalue-array-subscript.cpp	VC-3	
+EDG-ONLY	overloading/conversion-sequences/bit-field-promotion.cpp	ICS-2	
+EDG-ONLY	overloading/conversion-sequences/chosen-explicit-copy-list.cpp	ICS-8 ILC-8	15:ILC-8 copy-list-initialization of 'Strict' chooses an explicit constructor
+unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp	ICS-44	11:- constant initializer: conversion function
+unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp	ICS-44	16:- constant initializer: conversion function
+EDG-ONLY	overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp	ICS-28 ICS-34	
+unsupported	overloading/conversion-sequences/floating-before-rvalue-reference.cpp	ICS-28 ICS-35	14:- static_assert: ambiguous call (in a variable template argument)
+unsupported	overloading/conversion-sequences/floating-equal-rank.cpp	ICS-35	12:- static_assert: ambiguous call (in a variable template argument)
+EDG-ONLY	overloading/conversion-sequences/initializer-list-over-kind.cpp	ICS-22 ICS-21	
+EDG-ONLY	overloading/conversion-sequences/list-class-nearest-base.cpp	ICS-19 ICS-36	
+unsupported	overloading/conversion-sequences/overload-set-argument-sequence.cpp	ICS-47	16:- static_assert: ambiguous call (needs full overload resolution) (in a variable template argument)
+EDG-ONLY	overloading/conversion-sequences/qualification-array-bound.cpp	ICS-31	
+EDG-ONLY	overloading/conversion-sequences/qualification-reference-temporary.cpp	ICS-31	
+EDG-ONLY	overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp	ICS-28 ICS-32 ICS-33 ICS-36	
+EDG-ONLY	overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp	ICS-45	
+EDG-ONLY	overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp	ICS-45	
+EDG-ONLY	overloading/overload-resolution/address-more-constrained.cpp	OVL-19	
+MISSED-REJECT	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp	OVL-20	
+EDG-ONLY	overloading/overload-resolution/address-no-target-constraints.cpp	OVL-20	
+EDG-ONLY	overloading/overload-resolution/address-no-target-more-constrained.cpp	OVL-20	
+EDG-ONLY	overloading/overload-resolution/builtin-chosen-other-operand.cpp	OVL-11	9:ADD-3 invalid operands to '+': int* and double
+EDG-ONLY	overloading/overload-resolution/call-through-address-parenthesized-qualified.cpp	OVL-44 OVL-21	10:OVL-44 a call through '&' of an unqualified or parenthesized name of a set with a non-static member
+EDG-ONLY	overloading/overload-resolution/call-through-address-static-member.cpp	OVL-21	
+EDG-ONLY	overloading/overload-resolution/call-through-address-unqualified-argument.cpp	OVL-21	
+EDG-ONLY	overloading/overload-resolution/call-through-address-unqualified.cpp	OVL-21 OVL-36	12:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/current-object-other-class.cpp	OVL-2 OVL-3	11:OVL-3 call of non-static member function 'f' without an object
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp	OVL-38	11:OVL-38 the call of 'tidal_ovl_p' uses a default argument that two declarations in different scopes give differently
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes-same-value.cpp	OVL-38	11:OVL-38 the call of 'tidal_ovl_k' uses a default argument that two declarations in different scopes give differently
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes.cpp	OVL-38	11:OVL-38 the call of 'tidal_ovl_f' uses a default argument that two declarations in different scopes give differently
+run-unsupported	overloading/overload-resolution/deleted-defaulted-move-not-candidate.cpp	OVL-42	unsupported at line 24: class assignment
+EDG-ONLY	overloading/overload-resolution/tie-constraints-default-parameter.cpp	OVL-30 OVL-36	13:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/tie-constraints-different-parameters.cpp	OVL-36 OVL-41	10:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/tie-constraints-ellipsis.cpp	OVL-30 OVL-36	14:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	overloading/overload-resolution/tie-conversion-result-noexcept.cpp	OVL-26	
+EDG-ONLY	overloading/overload-resolution/tie-conversion-result-templates.cpp	OVL-26	
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp	OVL-29 OVL-28	
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp	OVL-29 OVL-27	
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-template.cpp	OVL-29 OVL-27	
+EDG-ONLY	programs/P4/money-first-try.cpp	OPR-8 OPR-9 OPR-10 CONV-4 MUL-6 MUL-7 LSUP-2 LSUP-12 DCMP-4 DCMP-6 TR-2	
+EDG-ONLY	programs/P4/money.cpp	OPR-8 OPR-9 OPR-10 CONV-4 MUL-6 MUL-7 LSUP-2 LSUP-12 DCMP-4 DCMP-6 TR-2	
+pass-partial	programs/W0/calc.cpp	UNI-4 UNI-7 CE-6 DCL-1 PFX-7 MUL-9 MUL-10 ADD-9 THR-1 TRY-2 CE-8	unspecified: result 0 with fixed choices: SEQ-1 at line 72 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+EDG-ONLY	programs/W12/compose.cpp	RET-2 LAM-1 LAM-7 LAM-15 AUTO-4 DED-8 PACK-24 AUTO-10 DTY-2 MPTR-3	
+pass-partial	programs/W16/evaluator.cpp	TYN-1 TYP-1 TYP-4 CPY-1 CPY-2 CPY-3 CPY-8 CPY-11 TPL-24 CONV-14 DED-8 VIRT-1 VIRT-3 VIRT-7 VIRT-8 VIRT-12 THR-1 THR-4 TRY-1 TRY-2 MUL-9 MUL-10 SW-2 SW-7	unspecified: result 0 with fixed choices: SEQ-1 at line 290 (arguments evaluated from left to right); SEQ-1 at line 277 (arguments evaluated from left to right); SEQ-8 at line 199 (the left operand of '+' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W16/textstats.cpp	LSUP-4 LSUP-7 NEW-33 STG-4 STG-5 STG-6 STG-29 DTOR-6 DED-8 IF-7 IF-9 SW-2 SW-7 TYN-1 TPL-28 SB-1 SB-3 SB-12	unspecified: result 0 with fixed choices: SEQ-8 at line 125 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W17/hashmap.cpp	LSUP-4 LSUP-7 NEW-33 STG-4 STG-5 STG-6 STG-17 STG-19 STG-29 ALN-1 DTOR-6 CPY-8 CPT-10 CPT-33 TSP-10 TPL-23 TPL-24 TPL-43 CNS-26 DEP-20 TR-2	unspecified: result 0 with fixed choices: SEQ-8 at line 192 (the left operand of '>=' first); explored: 2 runs, partial: 1 line was settled after another choice there gave the first outcome
+EDG-ONLY	programs/W18/container.cpp	CLS-13 CLS-14 CLS-15 OPR-3 DED-8 RET-2 LSUP-4	
+pass-partial	programs/W19/matrix.cpp	OPR-3 DCMP-1 CE-21 SA-1	unspecified: result 0 with fixed choices: SEQ-8 at line 28 (the left operand of '*' first); SEQ-1 at line 77 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W20/span_sort.cpp	CTAD-1 LAM-1 LAM-12 TPL-13 ADD-6 STG-5	unspecified: result 0 with fixed choices: SEQ-1 at line 97 (arguments evaluated from left to right); SEQ-8 at line 108 (the left operand of '<' first); SEQ-1 at line 91 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W3/nested.cpp	JMP-1 JMP-8 JMP-5 JMP-6 JMP-9 JMP-4 LOOP-3 CE-2 CE-17	unspecified: result 0 with fixed choices: SEQ-1 at line 93 (arguments evaluated from left to right); SEQ-1 at line 94 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W4/grid.cpp	NEW-2 NEW-9 NEW-5 PFX-1 PFX-4 ADD-6 ADD-10 DCL-5 DCL-19 DCL-1 ADD-7	unspecified: result 0 with fixed choices: SEQ-8 at line 66 (the left operand of '+' first); SEQ-8 at line 70 (the left operand of '!=' first); SEQ-8 at line 70 (the left operand of '-' first); SEQ-8 at line 71 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/W5/recursion.cpp	RET-1 RET-3 RET-7 RET-4 DEFARG-1 DEFARG-3 DTY-2 CE-10	unspecified: result 0 with fixed choices: SEQ-8 at line 17 (the left operand of '+' first); explored: 2 runs, partial: 1 line was settled after another choice there gave the first outcome
+EDG-ONLY	programs/W9/memptr.cpp	MPTR-1 MPTR-2 MPTR-3 MPTR-4 MPTR-5 MPTR-10 VIRT-1	
+EDG-ONLY	programs/W9/mixin.cpp	DER-6 DER-7 DER-12 DER-13 DER-14 DER-16 ACC-4 ACC-8 ACC-9 MPTR-2 MPTR-4 CAST-15	
+EDG-ONLY	programs/W9/visitor.cpp	VIRT-1 VIRT-3 VIRT-8 DER-3 DER-14 ACC-4 ACC-9 CE-1	
+pass-partial	programs/roadmap/r10-hash-map.cpp	STG-5 STG-9 UNI-14 NEW-5 DTOR-6 CLS-9 TSP-15	unspecified: result 0 with fixed choices: SEQ-1 at line 80 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r10-list-first-try.cpp	TPL-13 OVL-35 DEP-15 RFOR-2 PRIM-27 CNS-13	unspecified: result 0 with fixed choices: SEQ-1 at line 76 (arguments evaluated from left to right); SEQ-1 at line 77 (arguments evaluated from left to right); SEQ-1 at line 145 (arguments evaluated from left to right); SEQ-1 at line 147 (arguments evaluated from left to right); SEQ-1 at line 157 (arguments evaluated from left to right); SEQ-1 at line 71 (arguments evaluated from left to right); SEQ-1 at line 24 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r10-list.cpp	TPL-13 OVL-35 RFOR-2 PRIM-27 CNS-13	unspecified: result 0 with fixed choices: SEQ-1 at line 79 (arguments evaluated from left to right); SEQ-1 at line 80 (arguments evaluated from left to right); SEQ-1 at line 148 (arguments evaluated from left to right); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-1 at line 160 (arguments evaluated from left to right); SEQ-1 at line 74 (arguments evaluated from left to right); SEQ-1 at line 24 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r10-tuple-second-try.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 53 (arguments evaluated from left to right); SEQ-1 at line 73 (arguments evaluated from left to right); SEQ-1 at line 22 (arguments evaluated from left to right); SEQ-1 at line 139 (arguments evaluated from left to right); SEQ-1 at line 86 (arguments evaluated from left to right); SEQ-1 at line 144 (arguments evaluated from left to right); SEQ-8 at line 95 (the left operand of '==' first); SEQ-1 at line 145 (arguments evaluated from left to right); SEQ-8 at line 103 (the left operand of '<' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r10-tuple.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 57 (arguments evaluated from left to right); SEQ-1 at line 50 (arguments evaluated from left to right); SEQ-1 at line 77 (arguments evaluated from left to right); SEQ-1 at line 22 (arguments evaluated from left to right); SEQ-1 at line 143 (arguments evaluated from left to right); SEQ-1 at line 90 (arguments evaluated from left to right); SEQ-1 at line 149 (arguments evaluated from left to right); SEQ-8 at line 99 (the left operand of '==' first); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-8 at line 107 (the left operand of '<' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r11-views.cpp	CTAD-1 CTAD-11 DED-34 LAM-15	unspecified: result 0 with fixed choices: SEQ-1 at line 154 (arguments evaluated from left to right); SEQ-1 at line 68 (arguments evaluated from left to right); SEQ-1 at line 160 (arguments evaluated from left to right); SEQ-1 at line 131 (arguments evaluated from left to right); SEQ-1 at line 127 (arguments evaluated from left to right); SEQ-1 at line 164 (arguments evaluated from left to right); SEQ-1 at line 167 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-bigint-second-try.cpp	OPR-8 OPR-10 PRIM-2	unspecified: result 0 with fixed choices: SEQ-1 at line 211 (arguments evaluated from left to right); SEQ-1 at line 155 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-bigint.cpp	OPR-8 PRIM-2 NAM-2	unspecified: result 0 with fixed choices: SEQ-1 at line 214 (arguments evaluated from left to right); SEQ-1 at line 157 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-matrix.cpp	DCMP-1 OPR-3 CLS-13	unspecified: result 0 with fixed choices: SEQ-8 at line 94 (the left operand of '*' first); SEQ-8 at line 73 (the left operand of '+' first); SEQ-1 at line 147 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-ring-fifth-try.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 132 (arguments evaluated from left to right); SEQ-1 at line 199 (arguments evaluated from left to right); SEQ-8 at line 173 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-ring-third-try.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 129 (arguments evaluated from left to right); SEQ-1 at line 196 (arguments evaluated from left to right); SEQ-8 at line 170 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-ring.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 132 (arguments evaluated from left to right); SEQ-1 at line 201 (arguments evaluated from left to right); SEQ-8 at line 175 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r12-sso.cpp	UNI-9 OPR-8	unspecified: result 0 with fixed choices: SEQ-1 at line 176 (arguments evaluated from left to right); SEQ-1 at line 198 (arguments evaluated from left to right); SEQ-1 at line 200 (arguments evaluated from left to right); SEQ-8 at line 201 (the left operand of '+' first); SEQ-1 at line 205 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r13-algo-third-try.cpp	NAM-5 OVL-27 DEL-1	unspecified: result 0 with fixed choices: SEQ-1 at line 90 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r13-algo.cpp	NAM-5 OVL-27 DEL-1	unspecified: result 0 with fixed choices: SEQ-1 at line 88 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+EDG-ONLY	programs/roadmap/r13-units-fifth-try.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+EDG-ONLY	programs/roadmap/r13-units-fourth-try.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+EDG-ONLY	programs/roadmap/r13-units-second-try.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+EDG-ONLY	programs/roadmap/r13-units-seventh-try.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+EDG-ONLY	programs/roadmap/r13-units-sixth-try.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+EDG-ONLY	programs/roadmap/r13-units-third-try.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+EDG-ONLY	programs/roadmap/r13-units.cpp	TSP-14 TARG-19 CNS-3 CNS-7 OVL-24 OVL-9 DED-31 INST-1 INST-2 LSUP-2	
+pass-partial	programs/roadmap/r14-fnref-fifth-try.cpp	LAM-5 LAM-18 CTOR-10 ICS-9	unspecified: result 0 with fixed choices: SEQ-1 at line 165 (arguments evaluated from left to right); SEQ-1 at line 171 (arguments evaluated from left to right); SEQ-1 at line 173 (arguments evaluated from left to right); SEQ-1 at line 177 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r14-fnref-sixth-try.cpp	LAM-5 LAM-18 CTOR-10 ICS-9	unspecified: result 0 with fixed choices: SEQ-1 at line 165 (arguments evaluated from left to right); SEQ-1 at line 171 (arguments evaluated from left to right); SEQ-1 at line 173 (arguments evaluated from left to right); SEQ-1 at line 177 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r14-fnref.cpp	LAM-5 LAM-18 CTOR-10 ICS-9	unspecified: result 0 with fixed choices: SEQ-1 at line 167 (arguments evaluated from left to right); SEQ-1 at line 174 (arguments evaluated from left to right); SEQ-1 at line 176 (arguments evaluated from left to right); SEQ-1 at line 180 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+unsupported	programs/roadmap/r14-fsm-second-try.cpp	INST-5	89:- constant initializer: body of 'make_table' is not available yet
+pass-partial	programs/roadmap/r14-heap-second-try.cpp	CPT-28	unspecified: result 0 with fixed choices: SEQ-1 at line 106 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r14-heap.cpp	CPT-28	unspecified: result 0 with fixed choices: SEQ-1 at line 107 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r6-scheduler.cpp	DER-7 DER-13 VIRT-4 VIRT-7 VIRT-12 TRY-1 TRY-8 TRY-10 THR-6 MPTR-3 STG-5 LSUP-7 ALN-1	unspecified: result 0 with fixed choices: SEQ-8 at line 133 (the left operand of '!=' first); SEQ-8 at line 133 (the left operand of '>' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r6-text.cpp	UNI-7 UNI-13 NEW-20 LSUP-7 LSUP-3 SB-5 CTAD-1 LIST-3 CTOR-10 OPR-8 IF-13	unspecified: result 0 with fixed choices: SEQ-1 at line 142 (arguments evaluated from left to right); SEQ-8 at line 78 (the left operand of '!=' first); SEQ-1 at line 108 (arguments evaluated from left to right); SEQ-8 at line 131 (the left operand of '>' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r7-lambdas.cpp	LAM-15 LAM-16 LAM-18 LAM-10	unspecified: result 0 with fixed choices: SEQ-8 at line 62 (the left operand of '+' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+EDG-ONLY	programs/roadmap/r7-registry/main.cpp	ENUM-20 SB-1 LIST-13 LAM-10 DCMP-4 LSUP-2 TR-4	
+EDG-ONLY	programs/roadmap/r8-config.cpp	ENUM-20 CLS-13 LIST-14 DCMP-1 DCMP-4 SB-5 CINIT-1	
+EDG-ONLY	programs/roadmap/r8-pipeline.cpp	CPT-1 CNS-12 CTAD-1 OPR-3 ACC-10 ACC-5	
+pass-partial	programs/roadmap/r9-map.cpp	PACK-13 SB-5 RFOR-1 CPT-1 OPR-8 INIT-9	unspecified: result 0 with fixed choices: SEQ-1 at line 69 (arguments evaluated from left to right); SEQ-1 at line 47 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r9-optional.cpp	UNI-7 UNI-13 NEW-20 LSUP-10 PACK-13 COND-16 CE-1	unspecified: result 0 with fixed choices: SEQ-8 at line 133 (the left operand of '+' first); SEQ-1 at line 54 (arguments evaluated from left to right); SEQ-1 at line 79 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+pass-partial	programs/roadmap/r9-vec.cpp	NEW-19 PACK-13 STG-5 LSUP-7 CPY-3 REF-2 DCL-5	unspecified: result 0 with fixed choices: SEQ-1 at line 71 (arguments evaluated from left to right); SEQ-1 at line 154 (arguments evaluated from left to right); SEQ-1 at line 155 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+MISSED-REJECT	statements/if/constexpr-template-nondependent-call-checked.cpp	IF-22	
+EDG-ONLY	statements/jumps/goto-past-nontrivial-destructor.cpp	JMP-6	
+EDG-ONLY	statements/jumps/goto-skips-nontrivial-destructor.cpp	JMP-6	
+EDG-ONLY	statements/jumps/return-structured-binding-lvalue.cpp	JMP-10	
+EDG-ONLY	statements/range-for/callable-data-members.cpp	RFOR-2	
+EDG-ONLY	statements/range-for/data-member-begin-counts.cpp	RFOR-7	13:RFOR-7 the member 'begin' of 'Odd' is a data member that cannot be called
+EDG-ONLY	statements/range-for/data-member-begin-not-callable-class.cpp	RFOR-7	13:RFOR-7 the member 'begin' of 'Odd' is a data member that cannot be called
+EDG-ONLY	statements/range-for/data-member-function-pointers.cpp	RFOR-2 RFOR-7	
+EDG-ONLY	statements/switch/case-skips-nontrivial-destructor.cpp	SW-5	
+EDG-ONLY	statements/switch/skipped-declaration-written-then-read.cpp	JMP-16	
+MISSED-REJECT	templates/arguments/argument-makes-parameter-invalid.cpp	TARG-24	
+MISSED-REJECT	templates/arguments/class-argument-reference-temporary.cpp	TARG-15	
+MISSED-REJECT	templates/arguments/concept-for-template.cpp	TARG-7	
+run-unsupported	templates/arguments/constant-overloaded-function.cpp	TARG-12	unsupported at line 9: call of unknown callee
+unsupported	templates/arguments/pointer-subobject.cpp	TARG-14	8:- static_assert: dependent name
+EDG-ONLY	templates/arguments/same-specialization-alias-template-explicit.cpp	TARG-22	
+EDG-ONLY	templates/arguments/same-specialization-alias-template.cpp	TARG-22	
+EDG-ONLY	templates/arguments/template-template-constant-type.cpp	TARG-17	
+EDG-ONLY	templates/arguments/type-or-expression-constant.cpp	TARG-7 TARG-8	8:TARG-7 a type is given for a constant parameter
+EDG-ONLY	templates/class-template-deduction/aggregate-string-fixed-array.cpp	CTAD-9 CTAD-10	
+EDG-ONLY	templates/class-template-deduction/alias-template-fixed-argument.cpp	CTAD-14	
+EDG-ONLY	templates/class-template-deduction/alias-template-rvalue-reference.cpp	CTAD-28 CTAD-8 CTAD-24	10:CTAD-24 no deduction guide of 'Alias' is viable for the initializer
+EDG-ONLY	templates/class-template-deduction/guide-not-deducible-constant.cpp	CTAD-13	8:CTAD-13 the template parameter 'N' of a deduction guide cannot be deduced
+EDG-ONLY	templates/class-template-deduction/guide-not-deducible.cpp	CTAD-13	8:CTAD-13 the template parameter 'U' of a deduction guide cannot be deduced
+EDG-ONLY	templates/class-template-deduction/guide-same-parameters.cpp	CTAD-12	9:CTAD-12 two deduction guides that are not templates have the same parameters
+EDG-ONLY	templates/class-template-deduction/initializer-list-guide-empty-list-defaults.cpp	CTAD-18	
+EDG-ONLY	templates/class-template-deduction/initializer-list-guide-empty-list.cpp	CTAD-18 CTAD-17	
+EDG-ONLY	templates/class-template-deduction/initializer-list-guide-reference-parameter.cpp	CTAD-18	
+EDG-ONLY	templates/class-template-deduction/list-single-specialization-alias.cpp	CTAD-18	
+unsupported	templates/class-template-deduction/sites-for-and-condition.cpp	CTAD-1	16:- static_assert: the type of 'p', which the front end does not know (in a variable template argument)
+MISSED-REJECT	templates/class-template-deduction/tie-own-constructor-template.cpp	CTAD-19 CTAD-23	
+unsupported	templates/concepts/concept-id-value.cpp	CPT-1	10:- static_assert: dependent name
+MISSED-REJECT	templates/concepts/placeholder-parameter-decltype-auto.cpp	CPT-37	
+unsupported	templates/concepts/placeholder-parameter.cpp	CPT-20	9:- static_assert: concept
+EDG-ONLY	templates/concepts/placeholder-structured-binding.cpp	CPT-37	9:SB-15 structured binding declared with a constrained auto
+EDG-ONLY	templates/concepts/trailing-clause-lambda.cpp	CPT-11	
+EDG-ONLY	templates/concepts/trailing-clause-local-class.cpp	CPT-11	
+EDG-ONLY	templates/concepts/trailing-clause-member-initializer-lambda.cpp	CPT-11	
+EDG-ONLY	templates/concepts/type-constraint-pack-one-atom.cpp	CPT-19 CNS-3 CNS-24	11:OVL-36 ambiguous call of 'count': no viable function is better than each of the others
+EDG-ONLY	templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp	CPT-19 CNS-4 OVL-36	11:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/constraints/constant-placeholder-more-constrained.cpp	CNS-1 CNS-23	
+EDG-ONLY	templates/constraints/eligible-copy.cpp	CNS-21	
+EDG-ONLY	templates/constraints/eligible-default.cpp	CNS-21	
+EDG-ONLY	templates/constraints/eligible-more-constrained.cpp	CNS-21	
+EDG-ONLY	templates/constraints/eligible-unsatisfied-more-constrained.cpp	CNS-21	
+EDG-ONLY	templates/constraints/exact-non-template-skips-constraint-check.cpp	CNS-11	
+MISSED-REJECT	templates/constraints/explicit-instantiation-member-not-satisfied.cpp	CNS-13	
+EDG-ONLY	templates/constraints/friend-definition-per-specialization.cpp	CNS-32	
+EDG-AGREES	templates/constraints/friend-distinct-from-namespace.cpp	CNS-32 CNS-24	
+EDG-ONLY	templates/constraints/friend-template-declaration.cpp	CNS-31	8:CNS-31 a friend declaration of 'touch' with a trailing requires clause is not a definition
+unsupported	templates/constraints/function-type-specialization.cpp	CNS-30	7:- static_assert: a template-id that names a function specialization (in a variable template argument)
+EDG-ONLY	templates/constraints/lambda-conversion-implicit.cpp	CNS-18	
+EDG-ONLY	templates/constraints/lambda-conversion.cpp	CNS-18	
+EDG-ONLY	templates/constraints/mapping-unused-parameter-not-substituted.cpp	CNS-4 CNS-7	
+EDG-ONLY	templates/constraints/mapping-unused-parameter.cpp	CNS-4	
+EDG-ONLY	templates/constraints/order-constant-placeholder-after-type.cpp	CNS-1 CNS-33	8:SA-1 static assertion failed
+MISSED-REJECT	templates/constraints/out-of-class-other-clause.cpp	CNS-29	
+MISSED-REJECT	templates/constraints/out-of-class-without-clause.cpp	CNS-29	
+EDG-ONLY	templates/constraints/partial-specialization-not-more-constrained.cpp	CNS-36	10:CNS-36 a partial specialization with the primary template's arguments is not more constrained than the primary template
+EDG-ONLY	templates/constraints/template-template-more-constrained.cpp	CNS-25	12:CNS-25 the template template parameter is not at least as constrained as the argument 'Box'
+EDG-ONLY	templates/constraints/template-template-parameter-constraint-alias.cpp	CNS-38	
+EDG-ONLY	templates/constraints/template-template-parameter-constraint-use.cpp	CNS-38	
+MISSED-REJECT	templates/declarations/alias-template-self-through-class.cpp	TPL-31	
+MISSED-REJECT	templates/declarations/constant-parameter-no-constexpr-constructor.cpp	TPL-7	
+EDG-ONLY	templates/declarations/member-outside-clause-missing.cpp	TPL-23 CNS-26	15:CNS-26 the constraints of the head differ from those of the class template 'Cell'
+EDG-ONLY	templates/declarations/parameter-friend-name.cpp	TPL-48	
+MISSED-REJECT	templates/declarations/two-template-heads-in-class.cpp	TPL-4	
+EDG-ONLY	templates/deduction/address-deduced-result-body-instantiated.cpp	DED-29	9:NAM-8 no member named 'side'
+EDG-ONLY	templates/deduction/address-deduced-result-body-static-cast.cpp	DED-29	9:NAM-8 no member named 'side'
+EDG-ONLY	templates/deduction/match-noexcept.cpp	DED-11	
+run-unsupported	templates/deduction/placement-deallocation-match.cpp	DED-39	unsupported at line 16: new expression
+run-unsupported	templates/deduction/placement-deallocation-ordered.cpp	DED-39 ORD-9	unsupported at line 18: new expression
+EDG-ONLY	templates/deduction/substitution-default-before-check.cpp	DED-28 DED-29	8:NAM-16 'T' names a type that is not a class, enumeration, or namespace, and cannot come before '::'
+unsupported	templates/deduction/substitution-explicit-specifier.cpp	DED-24	9:- static_assert: class temporary
+EDG-ONLY	templates/deduction/substitution-failure-negative-bound-ellipsis.cpp	DED-24	
+MISSED-REJECT	templates/deduction/substitution-lambda-body.cpp	DED-29	
+MISSED-REJECT	templates/deduction/substitution-lambda-default.cpp	DED-29	
+unsupported	templates/deduction/substitution-member-wrong-kind.cpp	DED-24	15:- static_assert: call needing template deduction or unknown arguments
+MISSED-REJECT	templates/dependent-names/base-pack-expanded-twice.cpp	DEP-33	
+MISSED-REJECT	templates/dependent-names/binary-operator-pack-never-fits.cpp	DEP-37	
+EDG-ONLY	templates/dependent-names/current-instantiation-alias.cpp	DEP-15	
+unsupported	templates/dependent-names/current-instantiation-enclosing-base.cpp	DEP-11	10:- parse: unknown type name 'value_type' in uncertain scope
+run-unsupported	templates/dependent-names/dependent-base-conversion-function.cpp	DEP-11	unsupported at line 10: call of unknown callee
+MISSED-REJECT	templates/dependent-names/incomplete-then-complete.cpp	DEP-31	
+MISSED-REJECT	templates/dependent-names/independent-error-unused-call.cpp	DEP-30	
+FALSE-REJECT	templates/dependent-names/member-template-current-instantiation-pointer.cpp	DEP-24 DEP-2	10:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+MISSED-REJECT	templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp	DEP-24	
+FALSE-REJECT	templates/dependent-names/member-template-non-dependent-base.cpp	DEP-24	9:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+FALSE-REJECT	templates/dependent-names/member-template-through-current-instantiation-object.cpp	DEP-24 DEP-2	7:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+MISSED-REJECT	templates/dependent-names/operator-pack-never-fits.cpp	DEP-37	
+MISSED-REJECT	templates/dependent-names/other-specialization-constant-argument-member-missing.cpp	DEP-30 DEP-15	
+unsupported	templates/dependent-names/other-specialization-constant-argument-no-typename.cpp	DEP-15 DEP-1	6:- parse: unknown type name 'unit'
+EDG-ONLY	templates/dependent-names/qualified-call-later-default.cpp	DEP-31	
+EDG-AGREES	templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp	DEP-4 DEP-5	18:SA-1 static assertion failed
+EDG-AGREES	templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp	DEP-4	8:DEP-29 the grammar does not derive this: expected '(' or '{' after a type name in an expression (a member of a specialization other than the current instantiation needs 'typename')
+run-unsupported	templates/dependent-names/template-keyword-base-last-name.cpp	DEP-25	unsupported at line 17: unknown member
+EDG-ONLY	templates/dependent-names/template-keyword-destructor-dot.cpp	DEP-34	8:DEP-34 the keyword 'template' comes before a destructor name
+EDG-ONLY	templates/dependent-names/template-keyword-destructor.cpp	DEP-34	8:DEP-34 the keyword 'template' comes before a destructor name
+run-unsupported	templates/dependent-names/template-keyword-forms.cpp	DEP-24 DEP-25	unsupported at line 15: dependent name
+EDG-ONLY	templates/dependent-names/template-keyword-in-declarator-class.cpp	DEP-27	9:TYN-7 variable of incomplete class type
+EDG-ONLY	templates/dependent-names/template-keyword-in-declarator-static.cpp	DEP-27	8:DEP-27 the keyword 'template' comes after the qualifier of the declared name
+EDG-ONLY	templates/dependent-names/template-keyword-in-declarator.cpp	DEP-27	8:DEP-27 the keyword 'template' comes after the qualifier of the declared name
+unsupported	templates/dependent-names/type-only-positions-more.cpp	DEP-20	14:- static_assert: variable template with unknown arguments (in a variable template argument)
+run-unsupported	templates/dependent-names/type-only-positions.cpp	DEP-20	unsupported at line 35: dependent name
+EDG-ONLY	templates/dependent-names/typename-needed-expression.cpp	DEP-19	8:DEP-19 'type' names a type, but the template reads it as a value without 'typename'
+EDG-ONLY	templates/instantiation/class-inline-static-member-unused.cpp	INST-5	
+MISSED-REJECT	templates/instantiation/class-point-after-enclosing-class-not-later.cpp	INST-30 INST-33	
+MISSED-REJECT	templates/instantiation/class-point-not-later-member-type.cpp	INST-33 INST-30	
+MISSED-REJECT	templates/instantiation/class-point-not-later-type.cpp	INST-33	
+unsupported	templates/instantiation/class-point-not-later.cpp	INST-32 INST-31	8:- constant initializer: unqualified call to an undeclared name
+unsupported	templates/instantiation/class-point-static-const-member.cpp	INST-33 INST-5	8:- constant initializer: unqualified call to an undeclared name
+unsupported	templates/instantiation/class-point-static-constexpr-made-at-use.cpp	INST-33 INST-5 INST-8	7:- constant initializer: unqualified call to an undeclared name
+unsupported	templates/instantiation/class-static-constexpr-member-calls-own-member.cpp	INST-5	6:- constant initializer: body of 'compute' is not available yet
+EDG-AGREES	templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	INST-5	7:NAM-9 no member named 'missing' in the named scope
+EDG-ONLY	templates/instantiation/explicit-array-bound-differs.cpp	INST-22	8:INST-22 the explicit instantiation writes the bound 4, and the specialization has the bound 3
+EDG-ONLY	templates/instantiation/explicit-declaration-internal-class.cpp	INST-29	9:INST-29 an explicit instantiation declaration of a specialization with internal linkage
+EDG-ONLY	templates/instantiation/explicit-declaration-internal-variable.cpp	INST-29	8:INST-29 an explicit instantiation declaration of a specialization with internal linkage
+EDG-ONLY	templates/instantiation/explicit-placeholder-variable.cpp	INST-22	
+EDG-ONLY	templates/instantiation/explicit-thread-local.cpp	INST-25	
+EDG-ONLY	templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp	INST-21	9:INST-21 an explicit instantiation outside the namespace of its template, or without a qualified name
+EDG-ONLY	templates/instantiation/explicit-unqualified-outside-namespace.cpp	INST-21	9:INST-21 an explicit instantiation outside the namespace of its template, or without a qualified name
+EDG-ALLOWED	templates/instantiation/function-point-constexpr-later.cpp	INST-32 INST-31	12:NAM-8 call of undeclared function 'probe': argument-dependent lookup finds no function
+EDG-ONLY	templates/instantiation/function-unevaluated-braced-untaken.cpp	INST-7 INST-6	6:SA-1 static assertion failed
+MISSED-REJECT	templates/instantiation/local-class-default-argument.cpp	INST-12 INST-6	
+MISSED-REJECT	templates/instantiation/local-class-exception-specification.cpp	INST-12 INST-6	
+EDG-ONLY	templates/instantiation/local-class-requires-clause-substitution-failure.cpp	INST-12 CNS-12	
+EDG-ONLY	templates/instantiation/local-class-requires-clause-waits.cpp	INST-12	
+run-unsupported	templates/instantiation/local-entities-per-specialization.cpp	INST-36	unsupported at line 16: call needing template deduction or unknown arguments
+EDG-ONLY	templates/instantiation/member-partial-specializations-collide.cpp	INST-6	10:INST-6 the instantiation makes two definitions of one partial specialization of 'In'
+MISSED-REJECT	templates/instantiation/recursion-endless-function.cpp	INST-15 TR-13	
+EDG-ONLY	templates/instantiation/specialization-after-explicit-declaration.cpp	INST-19	9:TSP-6 explicit specialization of 'get' after its first use
+EDG-AGREES	templates/instantiation/static-inline-member-incomplete-argument.cpp	INST-5	8:NAM-9 no type named 'value_type' in the named scope
+EDG-ONLY	templates/instantiation/virtual-called-through-pointer.cpp	INST-7 INST-6	7:NAM-16 'T' names a type that is not a class, enumeration, or namespace, and cannot come before '::'
+EDG-ONLY	templates/ordering/constraints-conversion-results-differ.cpp	ORD-13 ORD-15	11:ICS-8 ambiguous conversion from class#0 to int*
+EDG-ONLY	templates/ordering/constraints-default-parameter.cpp	ORD-13 ORD-15	9:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/constraints-different-heads.cpp	ORD-13 ORD-15	9:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/constraints-reference-against-value.cpp	ORD-13 ORD-15	10:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/member-object-const.cpp	ORD-6	
+EDG-ONLY	templates/ordering/member-object-rvalue.cpp	ORD-6 ORD-15	11:OVL-36 ambiguous operator '+': no viable candidate is better than each of the others
+MISSED-REJECT	templates/ordering/nondeduced-only-parameter.cpp	ORD-3 ORD-15	
+EDG-ONLY	templates/ordering/pack-default-parameter.cpp	ORD-12 ORD-15	9:OVL-36 ambiguous call of 'f': no viable function is better than each of the others
+EDG-ONLY	templates/ordering/partial-specializations-int-against-constrained-auto.cpp	ORD-14 ORD-17	
+EDG-ONLY	templates/ordering/reference-kind-and-qualifiers.cpp	ORD-11 ORD-15 ORD-8	13:ICS-8 ambiguous conversion from class#0 to int
+EDG-ONLY	templates/ordering/reversed-member-object.cpp	ORD-7 ORD-6	
+unsupported	templates/packs/ellipsis-after-parameter.cpp	PACK-3	5:- static_assert: call needing template deduction or unknown arguments
+unsupported	templates/packs/expansion-elements.cpp	PACK-5	15:- static_assert: a type the front end does not know (in a variable template argument)
+EDG-ONLY	templates/packs/expansion-to-concept-parameters.cpp	PACK-11	8:PACK-11 a pack expansion gives an argument to a parameter of 'Two' that is not a pack
+MISSED-REJECT	templates/packs/fold-in-outer-pattern.cpp	PACK-8	
+MISSED-REJECT	templates/packs/member-template-pack-length.cpp	PACK-26 PACK-6	
+MISSED-REJECT	templates/packs/size-operator-in-outer-pattern.cpp	PACK-8	
+run-unsupported	templates/specialization/explicit-class-member-default.cpp	TSP-22 TSP-8	unsupported at line 7: missing argument
+MISSED-REJECT	templates/specialization/explicit-member-class-template-no-prefix.cpp	TSP-23	
+EDG-ONLY	templates/specialization/explicit-thread-local-only.cpp	TSP-24 TSP-25	
+EDG-ONLY	templates/specialization/function-partial.cpp	TSP-7	8:TSP-7 a partial specialization of the function template 'pick'
+MISSED-REJECT	templates/specialization/partial-after-use.cpp	TSP-17	
+MISSED-REJECT	templates/specialization/partial-no-primary-variable.cpp	TSP-31	
+EDG-ONLY	templates/specialization/partial-reordered.cpp	TSP-11	8:TSP-11 the argument list of a partial specialization only reorders the parameters, so it is not more specialized than the primary template
+RUN	run-unsupported	classes/comparisons/spaceship-specified-type-synthesized.cpp	DCMP-4	unsupported at line 67: overloaded operator
+RUN	run-unsupported	classes/conversion-functions/deduced-auto.cpp	CVF-1	unsupported at line 8: conversion function
+RUN	run-unsupported	declarations/initialization/static/reference-constant-initialized.cpp	SINIT-1	unsupported at line 7: variable 'ref' has no definition in this translation unit
+RUN	run-unsupported	declarations/storage-linkage/block-function-declaration.cpp	LNK-9	unsupported at line 7: block-scope static variable used before its declaration ran
+RUN	run-unsupported	exceptions/handlers/dtor-try-block-member-destructor-throws.cpp	TRY-10	unsupported at line 8: destructor body the front end did not parse
+RUN	run-unsupported	exceptions/handlers/dtor-try-block-rethrows.cpp	TRY-10	unsupported at line 0: destructor body the front end did not parse
+RUN	run-not-run	expressions/new-delete/new-type-pointer-forms.cpp	NEW-1 ATTR-19	the check did not accept the program
+RUN	run-unsupported	expressions/new-delete/throw-placement-default-argument.cpp	NEW-23	unsupported at line 11: missing argument
+RUN	run-unsupported	expressions/new-delete/throw-placement-templates-unordered.cpp	NEW-24 DED-39	unsupported at line 18: new expression
+RUN	run-not-run	expressions/postfix/ellipsis-argument-conversions.cpp	PFX-22	the check did not accept the program
+RUN	run-not-run	expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp	PFX-22	the check did not accept the program
+RUN	run-unsupported	foundations/odr/variable-declaration-forms.cpp	ODR-15	unsupported at line 14: variable 'count' has no definition in this translation unit
+RUN	run-unsupported	foundations/storage/integer-pointer-no-object-sanitizer.cpp	UN-7 STG-15	unsupported at line 9: indirection through a non-pointer
+RUN	run-unsupported	overloading/overload-resolution/deleted-defaulted-move-not-candidate.cpp	OVL-42	unsupported at line 24: class assignment
+RUN	run-pass-partial	programs/W0/calc.cpp	UNI-4 UNI-7 CE-6 DCL-1 PFX-7 MUL-9 MUL-10 ADD-9 THR-1 TRY-2 CE-8	unspecified: result 0 with fixed choices: SEQ-1 at line 72 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W16/evaluator.cpp	TYN-1 TYP-1 TYP-4 CPY-1 CPY-2 CPY-3 CPY-8 CPY-11 TPL-24 CONV-14 DED-8 VIRT-1 VIRT-3 VIRT-7 VIRT-8 VIRT-12 THR-1 THR-4 TRY-1 TRY-2 MUL-9 MUL-10 SW-2 SW-7	unspecified: result 0 with fixed choices: SEQ-1 at line 290 (arguments evaluated from left to right); SEQ-1 at line 277 (arguments evaluated from left to right); SEQ-8 at line 199 (the left operand of '+' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W16/textstats.cpp	LSUP-4 LSUP-7 NEW-33 STG-4 STG-5 STG-6 STG-29 DTOR-6 DED-8 IF-7 IF-9 SW-2 SW-7 TYN-1 TPL-28 SB-1 SB-3 SB-12	unspecified: result 0 with fixed choices: SEQ-8 at line 125 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W17/hashmap.cpp	LSUP-4 LSUP-7 NEW-33 STG-4 STG-5 STG-6 STG-17 STG-19 STG-29 ALN-1 DTOR-6 CPY-8 CPT-10 CPT-33 TSP-10 TPL-23 TPL-24 TPL-43 CNS-26 DEP-20 TR-2	unspecified: result 0 with fixed choices: SEQ-8 at line 192 (the left operand of '>=' first); explored: 2 runs, partial: 1 line was settled after another choice there gave the first outcome
+RUN	run-pass-partial	programs/W19/matrix.cpp	OPR-3 DCMP-1 CE-21 SA-1	unspecified: result 0 with fixed choices: SEQ-8 at line 28 (the left operand of '*' first); SEQ-1 at line 77 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W20/span_sort.cpp	CTAD-1 LAM-1 LAM-12 TPL-13 ADD-6 STG-5	unspecified: result 0 with fixed choices: SEQ-1 at line 97 (arguments evaluated from left to right); SEQ-8 at line 108 (the left operand of '<' first); SEQ-1 at line 91 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W3/nested.cpp	JMP-1 JMP-8 JMP-5 JMP-6 JMP-9 JMP-4 LOOP-3 CE-2 CE-17	unspecified: result 0 with fixed choices: SEQ-1 at line 93 (arguments evaluated from left to right); SEQ-1 at line 94 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W4/grid.cpp	NEW-2 NEW-9 NEW-5 PFX-1 PFX-4 ADD-6 ADD-10 DCL-5 DCL-19 DCL-1 ADD-7	unspecified: result 0 with fixed choices: SEQ-8 at line 66 (the left operand of '+' first); SEQ-8 at line 70 (the left operand of '!=' first); SEQ-8 at line 70 (the left operand of '-' first); SEQ-8 at line 71 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/W5/recursion.cpp	RET-1 RET-3 RET-7 RET-4 DEFARG-1 DEFARG-3 DTY-2 CE-10	unspecified: result 0 with fixed choices: SEQ-8 at line 17 (the left operand of '+' first); explored: 2 runs, partial: 1 line was settled after another choice there gave the first outcome
+RUN	run-pass-partial	programs/roadmap/r10-hash-map.cpp	STG-5 STG-9 UNI-14 NEW-5 DTOR-6 CLS-9 TSP-15	unspecified: result 0 with fixed choices: SEQ-1 at line 80 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r10-list-first-try.cpp	TPL-13 OVL-35 DEP-15 RFOR-2 PRIM-27 CNS-13	unspecified: result 0 with fixed choices: SEQ-1 at line 76 (arguments evaluated from left to right); SEQ-1 at line 77 (arguments evaluated from left to right); SEQ-1 at line 145 (arguments evaluated from left to right); SEQ-1 at line 147 (arguments evaluated from left to right); SEQ-1 at line 157 (arguments evaluated from left to right); SEQ-1 at line 71 (arguments evaluated from left to right); SEQ-1 at line 24 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r10-list.cpp	TPL-13 OVL-35 RFOR-2 PRIM-27 CNS-13	unspecified: result 0 with fixed choices: SEQ-1 at line 79 (arguments evaluated from left to right); SEQ-1 at line 80 (arguments evaluated from left to right); SEQ-1 at line 148 (arguments evaluated from left to right); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-1 at line 160 (arguments evaluated from left to right); SEQ-1 at line 74 (arguments evaluated from left to right); SEQ-1 at line 24 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r10-tuple-second-try.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 53 (arguments evaluated from left to right); SEQ-1 at line 73 (arguments evaluated from left to right); SEQ-1 at line 22 (arguments evaluated from left to right); SEQ-1 at line 139 (arguments evaluated from left to right); SEQ-1 at line 86 (arguments evaluated from left to right); SEQ-1 at line 144 (arguments evaluated from left to right); SEQ-8 at line 95 (the left operand of '==' first); SEQ-1 at line 145 (arguments evaluated from left to right); SEQ-8 at line 103 (the left operand of '<' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r10-tuple.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 57 (arguments evaluated from left to right); SEQ-1 at line 50 (arguments evaluated from left to right); SEQ-1 at line 77 (arguments evaluated from left to right); SEQ-1 at line 22 (arguments evaluated from left to right); SEQ-1 at line 143 (arguments evaluated from left to right); SEQ-1 at line 90 (arguments evaluated from left to right); SEQ-1 at line 149 (arguments evaluated from left to right); SEQ-8 at line 99 (the left operand of '==' first); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-8 at line 107 (the left operand of '<' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r11-views.cpp	CTAD-1 CTAD-11 DED-34 LAM-15	unspecified: result 0 with fixed choices: SEQ-1 at line 154 (arguments evaluated from left to right); SEQ-1 at line 68 (arguments evaluated from left to right); SEQ-1 at line 160 (arguments evaluated from left to right); SEQ-1 at line 131 (arguments evaluated from left to right); SEQ-1 at line 127 (arguments evaluated from left to right); SEQ-1 at line 164 (arguments evaluated from left to right); SEQ-1 at line 167 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-bigint-second-try.cpp	OPR-8 OPR-10 PRIM-2	unspecified: result 0 with fixed choices: SEQ-1 at line 211 (arguments evaluated from left to right); SEQ-1 at line 155 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-bigint.cpp	OPR-8 PRIM-2 NAM-2	unspecified: result 0 with fixed choices: SEQ-1 at line 214 (arguments evaluated from left to right); SEQ-1 at line 157 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-matrix.cpp	DCMP-1 OPR-3 CLS-13	unspecified: result 0 with fixed choices: SEQ-8 at line 94 (the left operand of '*' first); SEQ-8 at line 73 (the left operand of '+' first); SEQ-1 at line 147 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-ring-fifth-try.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 132 (arguments evaluated from left to right); SEQ-1 at line 199 (arguments evaluated from left to right); SEQ-8 at line 173 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-ring-third-try.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 129 (arguments evaluated from left to right); SEQ-1 at line 196 (arguments evaluated from left to right); SEQ-8 at line 170 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-ring.cpp	TYN-4 ACC-5 ILC-3 DED-28 DED-35	unspecified: result 0 with fixed choices: SEQ-1 at line 132 (arguments evaluated from left to right); SEQ-1 at line 201 (arguments evaluated from left to right); SEQ-8 at line 175 (the left operand of '!=' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r12-sso.cpp	UNI-9 OPR-8	unspecified: result 0 with fixed choices: SEQ-1 at line 176 (arguments evaluated from left to right); SEQ-1 at line 198 (arguments evaluated from left to right); SEQ-1 at line 200 (arguments evaluated from left to right); SEQ-8 at line 201 (the left operand of '+' first); SEQ-1 at line 205 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r13-algo-third-try.cpp	NAM-5 OVL-27 DEL-1	unspecified: result 0 with fixed choices: SEQ-1 at line 90 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r13-algo.cpp	NAM-5 OVL-27 DEL-1	unspecified: result 0 with fixed choices: SEQ-1 at line 88 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r14-fnref-fifth-try.cpp	LAM-5 LAM-18 CTOR-10 ICS-9	unspecified: result 0 with fixed choices: SEQ-1 at line 165 (arguments evaluated from left to right); SEQ-1 at line 171 (arguments evaluated from left to right); SEQ-1 at line 173 (arguments evaluated from left to right); SEQ-1 at line 177 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r14-fnref-sixth-try.cpp	LAM-5 LAM-18 CTOR-10 ICS-9	unspecified: result 0 with fixed choices: SEQ-1 at line 165 (arguments evaluated from left to right); SEQ-1 at line 171 (arguments evaluated from left to right); SEQ-1 at line 173 (arguments evaluated from left to right); SEQ-1 at line 177 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r14-fnref.cpp	LAM-5 LAM-18 CTOR-10 ICS-9	unspecified: result 0 with fixed choices: SEQ-1 at line 167 (arguments evaluated from left to right); SEQ-1 at line 174 (arguments evaluated from left to right); SEQ-1 at line 176 (arguments evaluated from left to right); SEQ-1 at line 180 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-not-run	programs/roadmap/r14-fsm-second-try.cpp	INST-5	the check did not accept the program
+RUN	run-pass-partial	programs/roadmap/r14-heap-second-try.cpp	CPT-28	unspecified: result 0 with fixed choices: SEQ-1 at line 106 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r14-heap.cpp	CPT-28	unspecified: result 0 with fixed choices: SEQ-1 at line 107 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r6-scheduler.cpp	DER-7 DER-13 VIRT-4 VIRT-7 VIRT-12 TRY-1 TRY-8 TRY-10 THR-6 MPTR-3 STG-5 LSUP-7 ALN-1	unspecified: result 0 with fixed choices: SEQ-8 at line 133 (the left operand of '!=' first); SEQ-8 at line 133 (the left operand of '>' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r6-text.cpp	UNI-7 UNI-13 NEW-20 LSUP-7 LSUP-3 SB-5 CTAD-1 LIST-3 CTOR-10 OPR-8 IF-13	unspecified: result 0 with fixed choices: SEQ-1 at line 142 (arguments evaluated from left to right); SEQ-8 at line 78 (the left operand of '!=' first); SEQ-1 at line 108 (arguments evaluated from left to right); SEQ-8 at line 131 (the left operand of '>' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r7-lambdas.cpp	LAM-15 LAM-16 LAM-18 LAM-10	unspecified: result 0 with fixed choices: SEQ-8 at line 62 (the left operand of '+' first); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r9-map.cpp	PACK-13 SB-5 RFOR-1 CPT-1 OPR-8 INIT-9	unspecified: result 0 with fixed choices: SEQ-1 at line 69 (arguments evaluated from left to right); SEQ-1 at line 47 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r9-optional.cpp	UNI-7 UNI-13 NEW-20 LSUP-10 PACK-13 COND-16 CE-1	unspecified: result 0 with fixed choices: SEQ-8 at line 133 (the left operand of '+' first); SEQ-1 at line 54 (arguments evaluated from left to right); SEQ-1 at line 79 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-pass-partial	programs/roadmap/r9-vec.cpp	NEW-19 PACK-13 STG-5 LSUP-7 CPY-3 REF-2 DCL-5	unspecified: result 0 with fixed choices: SEQ-1 at line 71 (arguments evaluated from left to right); SEQ-1 at line 154 (arguments evaluated from left to right); SEQ-1 at line 155 (arguments evaluated from left to right); explored: 64 runs, partial: the bound of 64 runs stopped the exploration
+RUN	run-unsupported	templates/arguments/constant-overloaded-function.cpp	TARG-12	unsupported at line 9: call of unknown callee
+RUN	run-unsupported	templates/deduction/placement-deallocation-match.cpp	DED-39	unsupported at line 16: new expression
+RUN	run-unsupported	templates/deduction/placement-deallocation-ordered.cpp	DED-39 ORD-9	unsupported at line 18: new expression
+RUN	run-not-run	templates/dependent-names/current-instantiation-enclosing-base.cpp	DEP-11	the check did not accept the program
+RUN	run-unsupported	templates/dependent-names/dependent-base-conversion-function.cpp	DEP-11	unsupported at line 10: call of unknown callee
+RUN	run-not-run	templates/dependent-names/member-template-current-instantiation-pointer.cpp	DEP-24 DEP-2	the check did not accept the program
+RUN	run-not-run	templates/dependent-names/member-template-non-dependent-base.cpp	DEP-24	the check did not accept the program
+RUN	run-not-run	templates/dependent-names/member-template-through-current-instantiation-object.cpp	DEP-24 DEP-2	the check did not accept the program
+RUN	run-not-run	templates/dependent-names/other-specialization-constant-argument-no-typename.cpp	DEP-15 DEP-1	the check did not accept the program
+RUN	run-not-run	templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp	DEP-4	the check did not accept the program
+RUN	run-unsupported	templates/dependent-names/template-keyword-base-last-name.cpp	DEP-25	unsupported at line 17: unknown member
+RUN	run-unsupported	templates/dependent-names/template-keyword-forms.cpp	DEP-24 DEP-25	unsupported at line 15: dependent name
+RUN	run-unsupported	templates/dependent-names/type-only-positions.cpp	DEP-20	unsupported at line 35: dependent name
+RUN	run-not-run	templates/instantiation/class-static-constexpr-member-calls-own-member.cpp	INST-5	the check did not accept the program
+RUN	run-not-run	templates/instantiation/function-point-constexpr-later.cpp	INST-32 INST-31	the check did not accept the program
+RUN	run-unsupported	templates/instantiation/local-entities-per-specialization.cpp	INST-36	unsupported at line 16: call needing template deduction or unknown arguments
+RUN	run-unsupported	templates/specialization/explicit-class-member-default.cpp	TSP-22 TSP-8	unsupported at line 7: missing argument
+RULE-ID	other-rule	classes/access/enclosing-not-access-nested-function.cpp	ACC-19	ACC-3
+RULE-ID	other-rule	classes/access/enclosing-not-access-nested.cpp	ACC-19	ACC-2
+RULE-ID	other-rule	classes/access/friend-not-inherited.cpp	ACC-6	ACC-2
+RULE-ID	other-rule	classes/access/friend-not-transitive.cpp	ACC-6	ACC-2
+RULE-ID	other-rule	classes/access/hidden-friend-block-declaration-scope.cpp	ACC-17	NAM-8 NAM-30
+RULE-ID	other-rule	classes/access/hidden-friend-declared-after-use.cpp	ACC-17	NAM-8 NAM-30
+RULE-ID	other-rule	classes/access/hidden-friend-not-visible.cpp	ACC-17	NAM-8 NAM-30
+RULE-ID	other-rule	classes/access/private-base-conversion.cpp	ACC-12	CONV-17
+RULE-ID	other-rule	classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp	DCMP-12	OVL-35 OPR-15
+RULE-ID	other-rule	classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp	DCMP-10	OVL-35 OPR-15
+RULE-ID	other-rule	classes/comparisons/spaceship-no-header-types.cpp	DCMP-10	DCMP-11
+RULE-ID	other-rule	classes/constructors/const-object-anonymous-union-no-init.cpp	CTOR-24	CTOR-4
+RULE-ID	other-rule	classes/constructors/const-object-only-anonymous-unions.cpp	CTOR-24	CTOR-4
+RULE-ID	other-rule	classes/constructors/const-object-union-no-init.cpp	CTOR-24	CTOR-4
+RULE-ID	other-rule	classes/constructors/defaulted-leaves-members.cpp	CTOR-12	OBJ-2, INIT-1
+RULE-ID	other-rule	classes/constructors/explicit-argument.cpp	CTOR-9	OVL-35
+RULE-ID	other-rule	classes/constructors/explicit-copy-list-init.cpp	CTOR-9	ILC-8
+RULE-ID	other-rule	classes/constructors/explicit-default-copy-list.cpp	CTOR-9	ILC-8
+RULE-ID	other-rule	classes/constructors/init-order-reads-later.cpp	CTOR-12	CX-1 OBJ-2, INIT-1
+RULE-ID	other-rule	classes/constructors/mem-init-braces-narrowing-array.cpp	CTOR-21	LIST-2
+RULE-ID	other-rule	classes/constructors/mem-init-braces-narrowing.cpp	CTOR-21	LIST-2
+RULE-ID	other-rule	classes/constructors/mem-init-pack-of-reference.cpp	CTOR-15	REF-9
+RULE-ID	other-rule	classes/constructors/one-user-conversion.cpp	CTOR-22	OVL-35
+RULE-ID	other-rule	classes/conversion-functions/const-qualified-needed.cpp	CVF-9	INIT-7
+RULE-ID	other-rule	classes/conversion-functions/explicit-argument.cpp	CVF-11	OVL-35
+RULE-ID	other-rule	classes/conversion-functions/explicit-arithmetic.cpp	CVF-11	OVL-35 OPR-15
+RULE-ID	other-rule	classes/conversion-functions/explicit-bool-comparison.cpp	CVF-11	OVL-35 OPR-15
+RULE-ID	other-rule	classes/conversion-functions/function-pointer-without-alias.cpp	CVF-7	CLS-1
+RULE-ID	other-rule	classes/conversion-functions/redeclared.cpp	CVF-7	CLS-9
+RULE-ID	other-rule	classes/conversion-functions/switch-two-integral-conversions.cpp	CVF-8	SW-2
+RULE-ID	other-rule	classes/conversion-functions/to-array.cpp	CVF-7	DCL-20
+RULE-ID	other-rule	classes/conversion-functions/two-converting-ctors.cpp	CVF-10	OVL-35
+RULE-ID	other-rule	classes/conversion-functions/two-user-conversions.cpp	CVF-10	OVL-35
+RULE-ID	other-rule	classes/copy-move/by-value-constructor-template-constraint-checked.cpp	CPY-15 CNS-11	SA-1
+RULE-ID	other-rule	classes/copy-move/copy-assign-nonmember.cpp	CPY-16	OPR-2
+RULE-ID	other-rule	classes/copy-move/copy-assign-static.cpp	CPY-16	OPR-2
+RULE-ID	other-rule	classes/copy-move/named-return-needs-move.cpp	CPY-25	CPY-23
+RULE-ID	other-rule	classes/copy-move/return-global-not-moved.cpp	CPY-25	CPY-21 CPY-24
+RULE-ID	other-rule	classes/copy-move/return-local-as-lvalue-ref.cpp	CPY-25	REF-8
+RULE-ID	other-rule	classes/copy-move/return-lvalue-ref-not-moved.cpp	CPY-25	CPY-21 CPY-24
+RULE-ID	other-rule	classes/copy-move/return-member-not-moved.cpp	CPY-25	CPY-21 CPY-24
+RULE-ID	other-rule	classes/derived/ambiguous-base-conversion.cpp	DER-10	CONV-17
+RULE-ID	other-rule	classes/derived/base-private-ctor.cpp	DER-21	CTOR-20
+RULE-ID	other-rule	classes/derived/base-private-dtor.cpp	DER-21	CTOR-20
+RULE-ID	other-rule	classes/derived/base-protected-dtor-direct.cpp	ACC-4	DTOR-3
+RULE-ID	other-rule	classes/derived/base-to-derived-implicit.cpp	DER-10	INIT-7
+RULE-ID	other-rule	classes/derived/data-member-hides-function.cpp	DER-19	PFX-17
+RULE-ID	other-rule	classes/derived/derived-hides-base-overloads.cpp	DER-19	OVL-35
+RULE-ID	other-rule	classes/derived/direct-and-indirect-base-call.cpp	DER-22	DER-4
+RULE-ID	other-rule	classes/derived/direct-and-indirect-base-use.cpp	DER-22	DER-4
+RULE-ID	other-rule	classes/derived/inherited-ctor-access.cpp	DER-20	ACC-2
+RULE-ID	other-rule	classes/derived/inherited-ctor-explicit.cpp	DER-20	CTOR-9
+RULE-ID	other-rule	classes/derived/inherited-ctor-no-default.cpp	DER-20	CTOR-20
+RULE-ID	other-rule	classes/derived/inherited-ctor-not-copy.cpp	DER-20 DER-8	CTOR-25
+RULE-ID	other-rule	classes/derived/virtual-and-nonvirtual-base.cpp	DER-10	CONV-17
+RULE-ID	other-rule	classes/derived/virtual-base-private-dtor.cpp	DER-21	DTOR-3
+RULE-ID	other-rule	classes/initializer-lists/deduce-list-element-type-mismatch.cpp	ILC-10	DED-35
+RULE-ID	other-rule	classes/initializer-lists/elements-const.cpp	ILC-9	CV-4
+RULE-ID	other-rule	classes/initializer-lists/move-only-element.cpp	ILC-9	CPY-21 CPY-24
+RULE-ID	other-rule	classes/initializer-lists/not-aggregate-with-ctor.cpp	ILC-7	CTOR-25
+RULE-ID	other-rule	classes/initializer-lists/return-deduced-from-list.cpp	ILC-10	RET-7
+RULE-ID	other-rule	classes/members/auto-data-member.cpp	CLS-9	AUTO-17
+RULE-ID	other-rule	classes/members/bound-member-function.cpp	CLS-24	PFX-20 PFX-14
+RULE-ID	other-rule	classes/members/class-name-alias.cpp	CLS-9	TYN-2
+RULE-ID	other-rule	classes/members/class-name-anon-union-member.cpp	CLS-9	NAM-3
+RULE-ID	other-rule	classes/members/class-name-enumerator.cpp	CLS-9	ENUM-15
+RULE-ID	other-rule	classes/members/class-name-function.cpp	CLS-9	CTOR-1
+RULE-ID	other-rule	classes/members/const-member-modifies.cpp	CLS-25	CV-4
+RULE-ID	other-rule	classes/members/explicit-object-and-unqualified-clash.cpp	CLS-26	CLS-9
+RULE-ID	other-rule	classes/members/explicit-object-by-value-and-unqualified-clash.cpp	CLS-26	CLS-9
+RULE-ID	other-rule	classes/members/explicit-object-no-this.cpp	CLS-14	PRIM-20
+RULE-ID	other-rule	classes/members/local-class-member-defined-outside.cpp	CLS-28	FN-9
+RULE-ID	other-rule	classes/members/local-class-member-template.cpp	CLS-28	TPL-2
+RULE-ID	other-rule	classes/members/mutable-const.cpp	CLS-9	STO-6
+RULE-ID	other-rule	classes/members/mutable-reference.cpp	CLS-9	STO-6
+RULE-ID	other-rule	classes/members/register-member.cpp	CLS-9	STO-5
+RULE-ID	other-rule	classes/members/sizeof-in-class-incomplete.cpp	CLS-22	UN-14
+RULE-ID	other-rule	classes/members/static-uses-this.cpp	CLS-27	PRIM-20
+RULE-ID	other-rule	classes/members/volatile-object-nonvolatile-call.cpp	CLS-25	OVL-35
+RULE-ID	other-rule	classes/operators/default-argument.cpp	OPR-2	DEFARG-6
+RULE-ID	other-rule	classes/operators/new-operator-token.cpp	OPR-2	TR-12
+RULE-ID	other-rule	classes/operators/no-candidate.cpp	OPR-15	ADD-3
+RULE-ID	other-rule	classes/operators/postfix-not-declared.cpp	OPR-13	OVL-35 OPR-15
+RULE-ID	other-rule	classes/operators/prefix-not-declared.cpp	OPR-13	OVL-35 OPR-15
+RULE-ID	other-rule	classes/unions/anonymous-union-name-conflict.cpp	UNI-9	NAM-3
+RULE-ID	other-rule	classes/unions/anonymous-union-static-member.cpp	UNI-9	CLS-9
+RULE-ID	other-rule	classes/unions/bitfield-const-volatile-ref.cpp	BF-4 VOL-10	REF-8
+RULE-ID	other-rule	classes/unions/bitfield-narrowing-double.cpp	BF-11	LIST-2
+RULE-ID	other-rule	classes/unions/bitfield-narrowing-init.cpp	BF-11	LIST-2
+RULE-ID	other-rule	classes/unions/bitfield-nonconst-ref.cpp	BF-4	REF-8
+RULE-ID	other-rule	classes/unions/chain-assign-other-part-no-value-constant.cpp	UNI-13 OBJ-2	OBJ-2, INIT-1
+RULE-ID	other-rule	classes/unions/common-initial-sequence-constant.cpp	UNI-12	UNI-6
+RULE-ID	other-rule	classes/unions/common-initial-sequence-second-member-constant.cpp	UNI-12	UNI-6
+RULE-ID	other-rule	classes/unions/narrowing-first-member.cpp	UNI-8	LIST-2
+RULE-ID	other-rule	classes/unions/two-initializers.cpp	UNI-8	LIST-12
+RULE-ID	other-rule	classes/unions/union-member-deleted-copy.cpp	UNI-11 UNI-3	CPY-23 CPY-24
+RULE-ID	other-rule	classes/virtual/abstract-capture-by-value.cpp	VIRT-8	LAM-6
+RULE-ID	other-rule	classes/virtual/abstract-new.cpp	VIRT-8	NEW-7
+RULE-ID	other-rule	classes/virtual/delete-array-through-base-constant.cpp	VIRT-12	NEW-5
+RULE-ID	other-rule	classes/virtual/explicit-object-virtual.cpp	VIRT-2	CLS-14
+RULE-ID	other-rule	classes/virtual/pure-call-in-ctor-constant.cpp	VIRT-12	CX-1 CE-16
+RULE-ID	other-rule	classes/virtual/pure-inline-definition.cpp	VIRT-9	TR-12
+RULE-ID	other-rule	classes/virtual/pure-nonvirtual.cpp	VIRT-9	CLS-9
+RULE-ID	other-rule	classes/virtual/pure-not-zero.cpp	VIRT-9	TR-12
+RULE-ID	other-rule	classes/virtual/virtual-auto-return.cpp	VIRT-2	RET-5
+RULE-ID	other-rule	classes/virtual/virtual-static.cpp	VIRT-2	CLS-27
+RULE-ID	other-rule	classes/virtual/virtual-template.cpp	VIRT-2	TPL-25
+RULE-ID	other-rule	declarations/alignment/on-alias-declaration.cpp	ALN-2	NS-16
+RULE-ID	other-rule	declarations/alignment/operand-floating.cpp	ALN-8	ALN-2
+RULE-ID	other-rule	declarations/attributes/pointer-attribute-before-cv.cpp	ATTR-18	TR-12
+RULE-ID	other-rule	declarations/auto/decltype-auto-array-member.cpp	AUTO-15	INIT-8
+RULE-ID	other-rule	declarations/auto/decltype-auto-as-base.cpp	AUTO-11	TR-12
+RULE-ID	other-rule	declarations/auto/decltype-auto-member-initializer.cpp	AUTO-11	TR-12
+RULE-ID	other-rule	declarations/auto/static-member-no-initializer.cpp	AUTO-17	AUTO-8
+RULE-ID	other-rule	declarations/auto/static-member-non-const-initializer.cpp	AUTO-17	CLS-23
+RULE-ID	other-rule	declarations/constexpr/variable-assign.cpp	CX-1	CV-4
+RULE-ID	other-rule	declarations/declarators/const-floating-not-constant.cpp	CV-11	CE-3
+RULE-ID	other-rule	declarations/declarators/const-integral-runtime.cpp	CV-11	DCL-19 CE-3
+RULE-ID	other-rule	declarations/declarators/const-volatile-not-constant.cpp	CV-11	DCL-19 CE-12
+RULE-ID	other-rule	declarations/declarators/cv-qualified-reference.cpp	DCL-18	TR-12
+RULE-ID	other-rule	declarations/declarators/ellipsis-first.cpp	DCL-22	TR-12
+RULE-ID	other-rule	declarations/declarators/modify-const-object-via-cast.cpp	CV-5	CAST-5, CV-5
+RULE-ID	other-rule	declarations/declarators/pointer-to-void-member.cpp	DCL-23	MPTR-8
+RULE-ID	other-rule	declarations/declarators/qualification-conversion-array-to-known.cpp	CV-10	INIT-7
+RULE-ID	other-rule	declarations/declarators/qualification-conversion-drops-const.cpp	CV-10	INIT-7
+RULE-ID	other-rule	declarations/declarators/qualification-conversion-unsafe.cpp	CV-10	INIT-7
+RULE-ID	other-rule	declarations/enumerations/increment-enum.cpp	ENUM-16	UN-11
+RULE-ID	other-rule	declarations/enumerations/int-to-unscoped-rejected.cpp	ENUM-15	INIT-7
+RULE-ID	other-rule	declarations/enumerations/list-init-narrowing.cpp	ENUM-19	LIST-2
+RULE-ID	other-rule	declarations/enumerations/scoped-compare-int.cpp	ENUM-16	CMP-23
+RULE-ID	other-rule	declarations/enumerations/scoped-names-scoped.cpp	ENUM-16	NAM-8
+RULE-ID	other-rule	declarations/enumerations/scoped-no-arithmetic.cpp	ENUM-16	ADD-3
+RULE-ID	other-rule	declarations/enumerations/scoped-no-conversion.cpp	ENUM-16	INIT-7
+RULE-ID	other-rule	declarations/enumerations/scoped-parentheses-from-integer.cpp	ENUM-16	INIT-7
+RULE-ID	other-rule	declarations/exception-specifications/dependent-operand-needed-by-call.cpp	EXS-10	NAM-16
+RULE-ID	other-rule	declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp	EXS-10	NAM-16
+RULE-ID	other-rule	declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp	EXS-8	DCL-14
+RULE-ID	other-rule	declarations/exception-specifications/overload-on-noexcept.cpp	EXS-8	DCL-14
+RULE-ID	other-rule	declarations/functions/default-arguments/default-checked-unused.cpp	DEFARG-10	INIT-7
+RULE-ID	other-rule	declarations/functions/default-arguments/function-pointer-no-default.cpp	DEFARG-5	PFX-5
+RULE-ID	other-rule	declarations/functions/default-arguments/function-reference-no-default.cpp	DEFARG-5	PFX-5
+RULE-ID	other-rule	declarations/functions/default-arguments/template-default-independent-unused.cpp	DEFARG-10 DEP-30	INIT-7
+RULE-ID	other-rule	declarations/functions/definitions/c-linkage-main-in-namespace.cpp	FN-4	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-address.cpp	FN-4	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-call.cpp	FN-4	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-four-params-ilp32.cpp	FN-6	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-four-params.cpp	FN-6	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-template.cpp	FN-4	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-wrong-first-param-ilp32.cpp	FN-6	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-wrong-first-param.cpp	FN-6	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/main-wrong-return-type.cpp	FN-4	TR-3
+RULE-ID	other-rule	declarations/functions/definitions/parameter-duplicate.cpp	FN-13	NAM-3
+RULE-ID	other-rule	declarations/functions/definitions/parameter-scope-redeclare.cpp	FN-13	NAM-3
+RULE-ID	other-rule	declarations/functions/definitions/typedef-function-definition.cpp	FN-12	TYN-2
+RULE-ID	other-rule	declarations/functions/deleted/deleted-member-with-message.cpp	DEL-3	TR-12
+RULE-ID	other-rule	declarations/functions/deleted/deleted-with-message.cpp	DEL-3	TR-12
+RULE-ID	other-rule	declarations/functions/return-deduction/auto-ref-return-local.cpp	RET-3	AUTO-18
+RULE-ID	other-rule	declarations/functions/return-deduction/decltype-auto-dangling.cpp	RET-6	OBJ-2
+RULE-ID	other-rule	declarations/initialization/forms/array-member-from-array.cpp	INIT-8	INIT-7
+RULE-ID	other-rule	declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp	CE-22 INIT-1	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/forms/default-init-member-no-value.cpp	INIT-9 OBJ-2	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/forms/default-init-member-not-named-no-value.cpp	INIT-9 OBJ-2	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/forms/default-init-scalar-no-value.cpp	INIT-9 INIT-1	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/forms/incomplete-type-copy.cpp	INIT-7	TYN-7
+RULE-ID	other-rule	declarations/initialization/forms/incomplete-type-paren.cpp	INIT-7	TYN-7
+RULE-ID	other-rule	declarations/initialization/forms/incomplete-type.cpp	INIT-7	TYN-7
+RULE-ID	other-rule	declarations/initialization/forms/read-uninitialized-array.cpp	INIT-1	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/forms/read-uninitialized.cpp	INIT-1	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/forms/self-initialization.cpp	INIT-1	OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/initialization/list/designated-array.cpp	LIST-14	TR-12
+RULE-ID	other-rule	declarations/initialization/list/designated-nested.cpp	LIST-14	TR-12
+RULE-ID	other-rule	declarations/initialization/references/braced-list-array-too-many.cpp	REF-11	DCL-19
+RULE-ID	other-rule	declarations/initialization/references/braced-list-explicit-constructor.cpp	REF-11	ILC-8
+RULE-ID	other-rule	declarations/initialization/references/const-volatile-ref-rvalue.cpp	REF-9	REF-8
+RULE-ID	other-rule	declarations/initialization/references/null-dereference-bind-constant.cpp	REF-5	UN-7
+RULE-ID	other-rule	declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp	REF-10	OVL-35
+RULE-ID	other-rule	declarations/initialization/static/member-read-before-constructor-constant.cpp	OBJ-2	CINIT-1 OBJ-2, INIT-1
+RULE-ID	other-rule	declarations/inline/inline-main.cpp	INL-2	FN-4
+RULE-ID	other-rule	declarations/inline/inline-redefinition-same-tu.cpp	INL-2	FN-14
+RULE-ID	other-rule	declarations/inline/inline-static-member-declared-later.cpp	INL-8	TYN-7
+RULE-ID	other-rule	declarations/inline/inline-static-member-incomplete.cpp	INL-8	TYN-7
+RULE-ID	other-rule	declarations/inline/inline-typedef.cpp	INL-2	TYN-2
+RULE-ID	other-rule	declarations/linkage-specifications/c-linkage-main.cpp	LSP-2	TR-3
+RULE-ID	other-rule	declarations/linkage-specifications/c-linkage-template.cpp	LSP-2	TPL-3
+RULE-ID	other-rule	declarations/linkage-specifications/c-variable-named-main.cpp	LSP-7	TR-3
+RULE-ID	other-rule	declarations/namespaces/inline-namespace-class-and-variable-ambiguous.cpp	NS-12	NAM-26 NAM-24
+RULE-ID	other-rule	declarations/namespaces/inline-namespace-duplicate.cpp	NS-12	NAM-14
+RULE-ID	other-rule	declarations/namespaces/inline-namespace-same-function-ambiguous.cpp	NS-12	OVL-36
+RULE-ID	other-rule	declarations/namespaces/inline-namespace-unqualified-ambiguous.cpp	NS-12	NAM-26 NAM-24
+RULE-ID	other-rule	declarations/namespaces/unnamed-namespace-duplicate-function.cpp	NS-13	OVL-36
+RULE-ID	other-rule	declarations/namespaces/unnamed-namespace-duplicate.cpp	NS-13	NAM-26 NAM-24
+RULE-ID	other-rule	declarations/namespaces/using-declaration-then-conflict.cpp	NS-16	NAM-3
+RULE-ID	other-rule	declarations/namespaces/using-directive-ambiguous-use.cpp	NS-17	NAM-26 NAM-24
+RULE-ID	other-rule	declarations/namespaces/using-directive-global-ambiguity.cpp	NS-17	NAM-26 NAM-24
+RULE-ID	other-rule	declarations/static-assert/condition-not-constant.cpp	SA-7	CE-3
+RULE-ID	other-rule	declarations/static-assert/condition-ub.cpp	SA-7	MUL-9
+RULE-ID	other-rule	declarations/static-assert/in-class-incomplete-self.cpp	SA-6	UN-14
+RULE-ID	other-rule	declarations/static-assert/in-for-init.cpp	SA-6	LOOP-7
+RULE-ID	other-rule	declarations/storage-linkage/block-extern-after-local.cpp	STO-13	NAM-3
+RULE-ID	other-rule	declarations/storage-linkage/mutable-static-member.cpp	STO-6	CLS-9
+RULE-ID	other-rule	declarations/storage-linkage/register-parameter.cpp	STO-5	STO-6
+RULE-ID	other-rule	declarations/structured-bindings/as-parameter.cpp	SB-15	NAM-8
+RULE-ID	other-rule	declarations/structured-bindings/bit-field-address-copy.cpp	SB-16	BF-4
+RULE-ID	other-rule	declarations/structured-bindings/bit-field-address.cpp	SB-16	BF-4
+RULE-ID	other-rule	declarations/structured-bindings/empty-bindings.cpp	SB-15	TR-12
+RULE-ID	other-rule	declarations/structured-bindings/names-in-scope.cpp	SB-8	NAM-3
+RULE-ID	other-rule	declarations/structured-bindings/own-initializer.cpp	SB-8	NAM-8
+RULE-ID	other-rule	declarations/structured-bindings/parenthesized.cpp	SB-15	TR-12
+RULE-ID	other-rule	declarations/structured-bindings/scalar-rejected.cpp	SB-13	SB-2
+RULE-ID	other-rule	declarations/structured-bindings/tuple-member-get-type-parameter-no-free.cpp	SB-5 SB-14	DED-35
+RULE-ID	other-rule	declarations/structured-bindings/with-other-declarator.cpp	SB-15	TR-12
+RULE-ID	other-rule	declarations/type-names/alias-overload-same.cpp	TYN-8	FN-14
+RULE-ID	other-rule	declarations/type-names/alias-scope.cpp	TYN-8	NAM-8
+RULE-ID	other-rule	declarations/type-names/definition-incomplete-return.cpp	TYN-7	FN-12
+RULE-ID	other-rule	declarations/type-names/elaborated-declares-in-block.cpp	TYN-10	NAM-8
+RULE-ID	other-rule	declarations/type-names/elaborated-declares-in-namespace.cpp	TYN-10	TYN-7
+RULE-ID	other-rule	declarations/type-names/elaborated-enum-undeclared.cpp	TYN-10	TYN-7
+RULE-ID	other-rule	declarations/type-names/elaborated-qualified-undeclared.cpp	TYN-10	NAM-8
+RULE-ID	other-rule	declarations/type-names/explicit-instantiation-attribute.cpp	TYN-10	TR-12
+RULE-ID	other-rule	declarations/type-names/forward-class-function-definition-param.cpp	TYN-7	FN-12
+RULE-ID	other-rule	declarations/type-names/typedef-storage-class.cpp	TYN-2	STO-6
+RULE-ID	other-rule	declarations/type-names/typedef-then-variable.cpp	TYN-2	NAM-3
+RULE-ID	other-rule	declarations/type-names/typedef-with-unsigned.cpp	TYN-2	NAM-3
+RULE-ID	other-rule	declarations/volatile/const-member-on-volatile.cpp	VOL-9	OVL-35
+RULE-ID	other-rule	declarations/volatile/const-ref-volatile-no-temporary.cpp	VOL-10	REF-8
+RULE-ID	other-rule	declarations/volatile/constant-read-rejected.cpp	VOL-8	CE-12
+RULE-ID	other-rule	declarations/volatile/nonvolatile-member-on-volatile.cpp	VOL-9	OVL-35
+RULE-ID	other-rule	declarations/volatile/pointer-remove-volatile.cpp	VOL-10	INIT-7
+RULE-ID	other-rule	declarations/volatile/ref-plain-to-volatile.cpp	VOL-10	REF-8
+RULE-ID	other-rule	declarations/volatile/volatile-constructor.cpp	VOL-7	CTOR-1
+RULE-ID	other-rule	declarations/volatile/volatile-destructor.cpp	VOL-7	DTOR-1
+RULE-ID	other-rule	exceptions/handlers/function-try-without-handler.cpp	TRY-16	TR-12
+RULE-ID	other-rule	exceptions/handlers/handler-param-scope.cpp	TRY-14	NAM-8
+RULE-ID	other-rule	exceptions/handlers/handler-redeclares-param.cpp	TRY-14	NAM-3
+RULE-ID	other-rule	exceptions/handlers/param-storage-class.cpp	TR-12	TRY-5
+RULE-ID	other-rule	exceptions/handlers/try-names-not-after.cpp	TRY-14	NAM-8
+RULE-ID	other-rule	exceptions/handlers/try-names-not-in-handler.cpp	TRY-14	NAM-8
+RULE-ID	other-rule	exceptions/handlers/try-without-handler.cpp	TRY-16	TR-12
+RULE-ID	other-rule	exceptions/unwinding/placement-new-usual-delete-rejected.cpp	UNW-11	NEW-25
+RULE-ID	other-rule	expressions/additive/base-pointer-derived-array.cpp	ADD-14	UN-7
+RULE-ID	other-rule	expressions/additive/result-prvalue.cpp	ADD-4 VC-12	UN-9
+RULE-ID	other-rule	expressions/additive/subtract-base-pointers-derived-array.cpp	ADD-14	CX-1 ADD-11
+RULE-ID	other-rule	expressions/assignment/bitfield-compound-result-address.cpp	ASN-10	BF-4
+RULE-ID	other-rule	expressions/assignment/bitfield-result-address.cpp	ASN-10	BF-4
+RULE-ID	other-rule	expressions/assignment/braced-narrowing.cpp	ASN-14	LIST-2
+RULE-ID	other-rule	expressions/assignment/compound-float-modulo.cpp	ASN-13	MUL-4
+RULE-ID	other-rule	expressions/assignment/compound-float-shift.cpp	ASN-13	SHF-3
+RULE-ID	other-rule	expressions/assignment/const-left.cpp	ASN-2	CV-4
+RULE-ID	other-rule	expressions/casts/braced-cast-narrowing.cpp	CAST-11	LIST-2
+RULE-ID	other-rule	expressions/casts/const-cast-write-const-object.cpp	CAST-5	CAST-5, CV-5
+RULE-ID	other-rule	expressions/casts/reinterpret-not-constant-function.cpp	CAST-8	CE-4
+RULE-ID	other-rule	expressions/casts/reinterpret-not-constant.cpp	CAST-8	CX-1 CE-4
+RULE-ID	other-rule	expressions/casts/static-cast-downcast-wrong-object-constant.cpp	CAST-14	DER-17
+RULE-ID	other-rule	expressions/comma/array-bound-unparenthesized.cpp	COMMA-8	TR-12
+RULE-ID	other-rule	expressions/comma/braced-list-left-operand.cpp	COMMA-9	TR-12
+RULE-ID	other-rule	expressions/comma/braced-list-operand.cpp	COMMA-9	TR-12
+RULE-ID	other-rule	expressions/comparison/base-and-member-pointers-constant.cpp	CMP-8	CE-15
+RULE-ID	other-rule	expressions/comparison/base-member-and-member-pointers-constant.cpp	CMP-8	CE-15
+RULE-ID	other-rule	expressions/comparison/base-subobject-pointers-constant.cpp	CMP-8	CE-15
+RULE-ID	other-rule	expressions/comparison/pointer-unrelated-constant.cpp	CMP-8	CE-15
+RULE-ID	other-rule	expressions/comparison/three-way-unrelated-pointers-constant.cpp	CMP-8	CX-1 CE-15
+RULE-ID	other-rule	expressions/conditional/bitfield-address-unevaluated.cpp	COND-9	BF-4
+RULE-ID	other-rule	expressions/conditional/bitfield-address.cpp	COND-9	BF-4
+RULE-ID	other-rule	expressions/conditional/class-lvalue-prvalue-copy.cpp	COND-8	DEL-1 CPY-24
+RULE-ID	other-rule	expressions/conditional/class-prvalue-lvalue-private-copy.cpp	COND-8	ACC-3
+RULE-ID	other-rule	expressions/conditional/const-volatile-lvalues-prvalue.cpp	COND-3 VC-12	UN-9
+RULE-ID	other-rule	expressions/conditional/constant-selected-division-by-zero.cpp	COND-15	MUL-9
+RULE-ID	other-rule	expressions/conditional/constant-selected-fails.cpp	COND-15	CE-2
+RULE-ID	other-rule	expressions/conditional/derived-xvalue-base-deleted-move.cpp	COND-8 COND-16	CPY-23
+RULE-ID	other-rule	expressions/conditional/gnu-omitted-operand-constant.cpp	COND-14	TR-12
+RULE-ID	other-rule	expressions/conditional/gnu-omitted-operand.cpp	COND-14	TR-12
+RULE-ID	other-rule	expressions/conditional/lvalue-xvalue-deleted-move.cpp	COND-8	CPY-23
+RULE-ID	other-rule	expressions/conditional/mixed-category-prvalue.cpp	COND-3 VC-12	ASN-2
+RULE-ID	other-rule	expressions/conditional/two-classes-int-references-prvalue.cpp	COND-11 OVL-11	UN-9
+RULE-ID	other-rule	expressions/decltype/declarative-nested-name-static-member.cpp	DTY-5	TR-12
+RULE-ID	other-rule	expressions/decltype/declarative-nested-name.cpp	DTY-5	TR-12
+RULE-ID	other-rule	expressions/decltype/deleted-destructor-sizeof.cpp	UNEV-5	DTOR-3
+RULE-ID	other-rule	expressions/decltype/deleted-function-in-unevaluated.cpp	UNEV-5	DEL-1
+RULE-ID	other-rule	expressions/decltype/discarded-sum-warns.cpp	UNEV-3	STMT-4
+RULE-ID	other-rule	expressions/decltype/discarded-volatile-operand-read.cpp	UNEV-6	CE-12
+RULE-ID	other-rule	expressions/decltype/discarded-volatile-read.cpp	UNEV-6	CE-12
+RULE-ID	other-rule	expressions/decltype/discarded-warns.cpp	UNEV-3	STMT-4
+RULE-ID	other-rule	expressions/decltype/incomplete-member-access.cpp	UNEV-5	TYN-7
+RULE-ID	other-rule	expressions/decltype/private-access-still-checked.cpp	UNEV-5	ACC-2
+RULE-ID	other-rule	expressions/lambdas/capturing-no-function-pointer-argument.cpp	LAM-25	OVL-35
+RULE-ID	other-rule	expressions/lambdas/capturing-no-function-pointer.cpp	LAM-25	INIT-7
+RULE-ID	other-rule	expressions/lambdas/const-call-operator-init-capture.cpp	LAM-23	CV-4
+RULE-ID	other-rule	expressions/lambdas/const-call-operator.cpp	LAM-23	CV-4
+RULE-ID	other-rule	expressions/lambdas/default-argument-capture.cpp	LAM-17	DEFARG-4
+RULE-ID	other-rule	expressions/lambdas/named-capture-in-block-function-default-argument.cpp	LAM-6	DEFARG-4
+RULE-ID	other-rule	expressions/lambdas/return-deduction-void-and-value.cpp	LAM-22	RET-7
+RULE-ID	other-rule	expressions/lambdas/return-deduction.cpp	LAM-22	RET-7
+RULE-ID	other-rule	expressions/logical/constant-evaluated-call.cpp	LOG-14	CE-2
+RULE-ID	other-rule	expressions/logical/constant-evaluated-division.cpp	LOG-14	MUL-9
+RULE-ID	other-rule	expressions/logical/operand-scoped-enum.cpp	LOG-3	ENUM-11
+RULE-ID	other-rule	expressions/member-pointers/address-of-bound-member.cpp	MPTR-9	PFX-20 PFX-14
+RULE-ID	other-rule	expressions/member-pointers/ambiguous-base-conversion.cpp	MPTR-11	CONV-17
+RULE-ID	other-rule	expressions/member-pointers/call-needs-parens.cpp	MPTR-10	PFX-17
+RULE-ID	other-rule	expressions/member-pointers/compare-relational.cpp	MPTR-12	CMP-9
+RULE-ID	other-rule	expressions/member-pointers/compare-three-way.cpp	MPTR-12	CMP-25
+RULE-ID	other-rule	expressions/member-pointers/declare-non-class.cpp	MPTR-8	TYP-7
+RULE-ID	other-rule	expressions/member-pointers/declare-pointer-to-reference.cpp	MPTR-8	DCL-23
+RULE-ID	other-rule	expressions/member-pointers/derived-to-base-implicit.cpp	MPTR-11	CONV-17
+RULE-ID	other-rule	expressions/member-pointers/explicit-object-not-member-pointer.cpp	MPTR-9	INIT-7
+RULE-ID	other-rule	expressions/member-pointers/form-constructor.cpp	MPTR-9	CTOR-1
+RULE-ID	other-rule	expressions/member-pointers/form-function-without-amp.cpp	MPTR-9	INIT-7
+RULE-ID	other-rule	expressions/member-pointers/form-needs-qualified.cpp	MPTR-9	INIT-7
+RULE-ID	other-rule	expressions/member-pointers/mutable-through-pointer.cpp	MPTR-10	CV-4
+RULE-ID	other-rule	expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp	MPTR-11	INIT-7
+RULE-ID	other-rule	expressions/member-pointers/private-base-conversion.cpp	MPTR-11	CONV-17
+RULE-ID	other-rule	expressions/member-pointers/result-const.cpp	MPTR-3 ASN-2	CV-4
+RULE-ID	other-rule	expressions/member-pointers/static-cast-from-int-pointer.cpp	MPTR-11	CAST-19
+RULE-ID	other-rule	expressions/member-pointers/virtual-base-conversion.cpp	MPTR-11	CONV-17
+RULE-ID	other-rule	expressions/multiplicative/result-prvalue-address.cpp	MUL-19	UN-9
+RULE-ID	other-rule	expressions/multiplicative/result-prvalue-assign.cpp	MUL-19	ASN-2
+RULE-ID	other-rule	expressions/multiplicative/unsequenced-modification-remainder.cpp	MUL-14	SEQ-7
+RULE-ID	other-rule	expressions/multiplicative/unsequenced-modification.cpp	MUL-14	SEQ-7
+RULE-ID	other-rule	expressions/new-delete/aligned-form-only-for-ordinary-type.cpp	NEW-30	OVL-35
+RULE-ID	other-rule	expressions/new-delete/aligned-form-only-placement.cpp	NEW-30	OVL-35
+RULE-ID	other-rule	expressions/new-delete/array-no-default-ctor.cpp	NEW-11	CTOR-19
+RULE-ID	other-rule	expressions/new-delete/constant-evaluation-placement.cpp	NEW-37	CE-4
+RULE-ID	other-rule	expressions/new-delete/default-new-alignment-ilp32-clang.cpp	NEW-27	SA-1
+RULE-ID	other-rule	expressions/new-delete/leak-array-in-constant-evaluation.cpp	NEW-6	CE-7
+RULE-ID	other-rule	expressions/new-delete/leak-in-constant-evaluation.cpp	NEW-6	CE-7
+RULE-ID	other-rule	expressions/new-delete/uninitialized-read.cpp	NEW-3	OBJ-2, NEW-3
+RULE-ID	other-rule	expressions/postfix/call-explicit-constructor-braced.cpp	PFX-16	ILC-8
+RULE-ID	other-rule	expressions/postfix/call-explicit-constructor.cpp	PFX-16	OVL-35
+RULE-ID	other-rule	expressions/postfix/increment-enum.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/postfix/increment-function-pointer.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/postfix/increment-incomplete-pointer.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/postfix/member-access-incomplete-class.cpp	PFX-11 CLS-22	TYN-7
+RULE-ID	other-rule	expressions/postfix/member-access-later-member-in-body.cpp	PFX-11 NAM-6	NAM-8
+RULE-ID	other-rule	expressions/postfix/member-call-null-pointer-constant.cpp	PFX-21 UN-7 CE-9	PFX-21, UN-7
+RULE-ID	other-rule	expressions/postfix/no-such-member.cpp	PFX-11	NAM-8
+RULE-ID	other-rule	expressions/postfix/postfix-decrement-bool.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/postfix/postfix-not-lvalue.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/postfix/postfix-on-bool.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/postfix/postfix-on-const.cpp	PFX-13	CV-4
+RULE-ID	other-rule	expressions/postfix/postfix-on-void-pointer.cpp	PFX-13	UN-11
+RULE-ID	other-rule	expressions/primary/char-unknown-escape.cpp	PRIM-35	PRIM-18
+RULE-ID	other-rule	expressions/primary/fold-without-parentheses.cpp	PRIM-29	PACK-8
+RULE-ID	other-rule	expressions/primary/int-separator-trailing.cpp	PRIM-16	TR-12
+RULE-ID	other-rule	expressions/primary/member-const-in-const-function.cpp	PRIM-12 ASN-2	CV-4
+RULE-ID	other-rule	expressions/primary/name-enumerator-prvalue.cpp	PRIM-12 VC-12	UN-9
+RULE-ID	other-rule	expressions/primary/nullptr-to-bool-copy.cpp	PRIM-24	INIT-7
+RULE-ID	other-rule	expressions/primary/nullptr-to-int.cpp	PRIM-24	INIT-7
+RULE-ID	other-rule	expressions/primary/number-extends-over-sign.cpp	PRIM-26	PRIM-16
+RULE-ID	other-rule	expressions/primary/string-compare-constant.cpp	PRIM-9	CE-13
+RULE-ID	other-rule	expressions/primary/string-modify-constant.cpp	PRIM-8	CE-5
+RULE-ID	other-rule	expressions/primary/string-to-nonconst-pointer.cpp	PRIM-19	INIT-7
+RULE-ID	other-rule	expressions/primary/string-unknown-escape.cpp	PRIM-35	PRIM-18
+RULE-ID	other-rule	expressions/primary/this-const-member-modify.cpp	PRIM-11 ASN-2	CV-4
+RULE-ID	other-rule	expressions/primary/this-prvalue.cpp	PRIM-11 VC-12	UN-9
+RULE-ID	other-rule	expressions/shift/result-prvalue.cpp	SHF-4 VC-12	UN-9
+RULE-ID	other-rule	expressions/unary/alignof-expression.cpp	UN-17	TR-12
+RULE-ID	other-rule	expressions/unary/increment-const.cpp	UN-11	CV-4
+RULE-ID	other-rule	expressions/unary/increment-pointer-past-end-constant.cpp	UN-21	ADD-10
+RULE-ID	other-rule	expressions/unary/indirection-incomplete-value.cpp	UN-6	TYN-7
+RULE-ID	other-rule	expressions/unary/indirection-past-end-constant.cpp	UN-7	ADD-10
+RULE-ID	other-rule	foundations/constant-evaluation/allocation-in-result.cpp	CE-7	CX-1 CX-2
+RULE-ID	other-rule	foundations/constant-evaluation/const-volatile-not-usable.cpp	CE-3	DCL-19 CE-12
+RULE-ID	other-rule	foundations/constant-evaluation/delete-mismatch.cpp	CE-7	NEW-5
+RULE-ID	other-rule	foundations/constant-evaluation/double-delete.cpp	CE-7	NEW-5
+RULE-ID	other-rule	foundations/constant-evaluation/modify-outside-object.cpp	CE-5	CE-3
+RULE-ID	other-rule	foundations/constant-evaluation/parameter-template-argument-consteval.cpp	CE-30 CE-3	TARG-13
+RULE-ID	other-rule	foundations/constant-evaluation/result-points-to-local.cpp	CE-14	CX-1 CX-2
+RULE-ID	other-rule	foundations/constant-evaluation/result-refers-to-temporary.cpp	CE-14	CX-1 CX-2
+RULE-ID	other-rule	foundations/constant-evaluation/undefined-behavior.cpp	CE-9	MUL-9
+RULE-ID	other-rule	foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp	CE-22	OBJ-2, INIT-1
+RULE-ID	other-rule	foundations/conversions/char-zero-not-null.cpp	CONV-8	INIT-7
+RULE-ID	other-rule	foundations/conversions/const-pointer-to-void-pointer.cpp	CONV-9	INIT-7
+RULE-ID	other-rule	foundations/conversions/deep-const-not-at-every-level.cpp	CONV-9	INIT-7
+RULE-ID	other-rule	foundations/conversions/false-not-null-pointer.cpp	CONV-8	INIT-7
+RULE-ID	other-rule	foundations/conversions/function-pointer-to-void-pointer.cpp	CONV-9	INIT-7
+RULE-ID	other-rule	foundations/conversions/integer-variable-to-pointer.cpp	CONV-8	INIT-7
+RULE-ID	other-rule	foundations/conversions/member-pointer-to-integer.cpp	CONV-18	INIT-7
+RULE-ID	other-rule	foundations/conversions/nonzero-to-pointer.cpp	CONV-8	INIT-7
+RULE-ID	other-rule	foundations/conversions/nullptr-to-bool-copy.cpp	CONV-12	INIT-7
+RULE-ID	other-rule	foundations/conversions/nullptr-to-integer.cpp	CONV-18	INIT-7
+RULE-ID	other-rule	foundations/conversions/pointer-to-integer.cpp	CONV-18	INIT-7
+RULE-ID	other-rule	foundations/conversions/potentially-throwing-to-noexcept.cpp	CONV-10	INIT-7
+RULE-ID	other-rule	foundations/conversions/qualification-volatile-inner-without-const.cpp	CONV-9	INIT-7
+RULE-ID	other-rule	foundations/conversions/void-pointer-to-pointer.cpp	CONV-9	INIT-7
+RULE-ID	other-rule	foundations/keywords/final-after-complete-class-redefines.cpp	KW-3 DER-1	TYN-7
+RULE-ID	other-rule	foundations/keywords/keyword-auto.cpp	KW-1	AUTO-8
+RULE-ID	other-rule	foundations/keywords/keyword-bool.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-char.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-char16-t.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-char32-t.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-char8-t.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-double.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-float.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-int.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-mutable.cpp	KW-1	STO-6
+RULE-ID	other-rule	foundations/keywords/keyword-register.cpp	KW-1	STO-5
+RULE-ID	other-rule	foundations/keywords/keyword-void.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/keyword-wchar-t.cpp	KW-1	TYP-7
+RULE-ID	other-rule	foundations/keywords/override-after-class-name.cpp	KW-3 INIT-7	TYN-7
+RULE-ID	other-rule	foundations/language-support/allocator-other-namespace-constant.cpp	LSUP-11 NEW-37	CE-2
+RULE-ID	other-rule	foundations/language-support/construct-at-object-outside-evaluation.cpp	LSUP-10 CE-5	CE-7
+RULE-ID	other-rule	foundations/language-support/ordering-defaulted-needs-equal-zero.cpp	LSUP-12	DCMP-11
+RULE-ID	other-rule	foundations/language-support/ordering-partial-not-declared.cpp	LSUP-2	CMP-25
+RULE-ID	other-rule	foundations/language-support/ordering-reversed-needs-zero-on-left.cpp	LSUP-12	OVL-43
+RULE-ID	other-rule	foundations/language-support/ordering-reversed-three-way-needs-zero-on-left.cpp	LSUP-12	CMP-9
+RULE-ID	other-rule	foundations/language-support/ordering-rewritten-needs-relational-zero.cpp	LSUP-12	CMP-9
+RULE-ID	other-rule	foundations/language-support/strong-ordering-missing.cpp	LSUP-2	CMP-25
+RULE-ID	other-rule	foundations/names/adl-ignores-base-access.cpp	NAM-30 ACC-12	CONV-17
+RULE-ID	other-rule	foundations/names/adl-lambda-member-function-body.cpp	NAM-28	NAM-8 NAM-30
+RULE-ID	other-rule	foundations/names/adl-parenthesized-name.cpp	NAM-32	NAM-8
+RULE-ID	other-rule	foundations/names/adl-qualified-name.cpp	NAM-32	OVL-35
+RULE-ID	other-rule	foundations/names/adl-suppressed-by-block-function.cpp	NAM-32	OVL-35
+RULE-ID	other-rule	foundations/names/adl-suppressed-by-member.cpp	NAM-32	OVL-35
+RULE-ID	other-rule	foundations/names/adl-suppressed-by-object.cpp	NAM-32	OVL-35
+RULE-ID	other-rule	foundations/names/adl-suppressed-by-variable.cpp	NAM-32	PFX-16
+RULE-ID	other-rule	foundations/names/class-member-type-needs-order.cpp	NAM-10	NAM-8
+RULE-ID	other-rule	foundations/names/class-qualified-missing.cpp	NAM-18	NAM-9
+RULE-ID	other-rule	foundations/names/class-qualified-not-enclosing-class.cpp	NAM-18	NAM-9
+RULE-ID	other-rule	foundations/names/class-qualified-not-outer-scope.cpp	NAM-18	NAM-9
+RULE-ID	other-rule	foundations/names/class-qualified-scoped-enumerator.cpp	NAM-18	NAM-9
+RULE-ID	other-rule	foundations/names/class-scope-outside-needs-qualification.cpp	NAM-10	NAM-8
+RULE-ID	other-rule	foundations/names/definition-return-type-before-name.cpp	NAM-22	NAM-8
+RULE-ID	other-rule	foundations/names/definition-return-type-namespace.cpp	NAM-22	NAM-8
+RULE-ID	other-rule	foundations/names/directive-block-ends.cpp	NAM-24	NAM-8
+RULE-ID	other-rule	foundations/names/directive-namespace-only.cpp	NAM-24	NAM-8
+RULE-ID	other-rule	foundations/names/enum-qualified-missing-unscoped.cpp	NAM-20	NAM-9
+RULE-ID	other-rule	foundations/names/enum-qualified-missing.cpp	NAM-20	NAM-9
+RULE-ID	other-rule	foundations/names/hiding-ignores-kind.cpp	NAM-12	PFX-17
+RULE-ID	other-rule	foundations/names/hiding-variable-hides-type.cpp	NAM-12	TR-12
+RULE-ID	other-rule	foundations/names/injected-base-name-not-outside.cpp	NAM-36	NAM-8
+RULE-ID	other-rule	foundations/names/label-duplicate-other-block.cpp	NAM-11	JMP-14
+RULE-ID	other-rule	foundations/names/label-duplicate.cpp	NAM-11	JMP-14
+RULE-ID	other-rule	foundations/names/member-access-no-enclosing-scope.cpp	NAM-37 PFX-11	NAM-8
+RULE-ID	other-rule	foundations/names/member-access-no-free-function.cpp	NAM-37 PFX-11	NAM-8
+RULE-ID	other-rule	foundations/names/namespace-qualified-call.cpp	NAM-9	NAM-8 NAM-30
+RULE-ID	other-rule	foundations/names/namespace-qualified-use.cpp	NAM-9	NAM-8
+RULE-ID	other-rule	foundations/names/qualified-before-declaration.cpp	NAM-14	NAM-9
+RULE-ID	other-rule	foundations/names/qualified-block-extern-not-member.cpp	NAM-14	NAM-9
+RULE-ID	other-rule	foundations/names/qualified-directive-cycle-missing.cpp	NAM-14	NAM-9
+RULE-ID	other-rule	foundations/names/qualified-enum-underlying-type-lookup.cpp	NAM-21 NAM-8	TR-12
+RULE-ID	other-rule	foundations/names/qualified-global-not-named-namespace.cpp	NAM-14	NAM-9
+RULE-ID	other-rule	foundations/names/qualified-hidden-friend.cpp	NAM-14 ACC-7	NAM-9
+RULE-ID	other-rule	foundations/names/qualified-not-enclosing-namespace.cpp	NAM-14	NAM-9
+RULE-ID	other-rule	foundations/names/qualified-not-nested-namespace.cpp	NAM-14	NAM-9
+RULE-ID	other-rule	foundations/names/qualifier-incomplete-class.cpp	NAM-16	NAM-9
+RULE-ID	other-rule	foundations/names/qualifier-opaque-enum.cpp	NAM-16	NAM-9
+RULE-ID	other-rule	foundations/names/shared-name-alias-template-variable.cpp	NAM-42	NAM-3
+RULE-ID	other-rule	foundations/names/shared-name-class-alone-variable-first.cpp	NAM-41	TR-12
+RULE-ID	other-rule	foundations/names/shared-name-class-alone.cpp	NAM-41	TR-12
+RULE-ID	other-rule	foundations/names/shared-name-class-template-variable.cpp	NAM-42	NAM-3
+RULE-ID	other-rule	foundations/names/shared-name-class-variable-template.cpp	NAM-42	TPL-21
+RULE-ID	other-rule	foundations/names/shared-name-conversion-function-type.cpp	NAM-41	TR-12
+RULE-ID	other-rule	foundations/names/shared-name-enumeration-alone.cpp	NAM-41	TR-12
+RULE-ID	other-rule	foundations/names/shared-name-in-class-not-class.cpp	NAM-41	TR-12
+RULE-ID	other-rule	foundations/names/shared-name-inner-block.cpp	NAM-41	TR-12
+RULE-ID	other-rule	foundations/objects/read-before-init-constant.cpp	OBJ-2	OBJ-2, INIT-1
+RULE-ID	other-rule	foundations/objects/storage-reuse-ends-old-object-constant.cpp	OBJ-10	CE-6
+RULE-ID	other-rule	foundations/objects/storage-reuse-member-of-member-constant.cpp	OBJ-10	UNI-6
+RULE-ID	other-rule	foundations/objects/uninitialized-member-read-constant.cpp	OBJ-2	OBJ-2, INIT-1
+RULE-ID	other-rule	foundations/odr/header-included-twice.cpp	ODR-1 INC-1	NAM-3
+RULE-ID	other-rule	foundations/odr/inline-variable-defined-twice.cpp	ODR-1	NAM-3
+RULE-ID	other-rule	foundations/odr/variable-defined-twice.cpp	ODR-1	NAM-3
+RULE-ID	other-rule	foundations/odr/variable-without-initializer-twice.cpp	ODR-1 ODR-15	NAM-3
+RULE-ID	other-rule	foundations/storage/allocation-array-unbuilt-element-constant.cpp	OBJ-2 STG-28	OBJ-2, NEW-3
+RULE-ID	other-rule	foundations/storage/allocation-assign-before-construction-user-assignment.cpp	LSUP-11 CE-9	STG-18, STG-22
+RULE-ID	other-rule	foundations/storage/member-call-inactive-member-constant.cpp	STG-22	UNI-6
+RULE-ID	other-rule	foundations/storage/replace-base-old-pointer-constant.cpp	STG-19	STG-19, OBJ-2
+RULE-ID	other-rule	foundations/storage/reuse-other-union-member-constant.cpp	STG-19 LSUP-10	CE-6
+RULE-ID	other-rule	foundations/translation/constant-evaluation-rejects-overflow.cpp	TR-10	ADD-9
+RULE-ID	other-rule	foundations/translation/constant-evaluation-rejects-ub.cpp	TR-10	MUL-9
+RULE-ID	other-rule	foundations/translation/ill-formed-diagnosed.cpp	TR-1 CONV-18	INIT-7
+RULE-ID	other-rule	foundations/translation/ill-formed-in-unused-function.cpp	TR-1	INIT-7
+RULE-ID	other-rule	foundations/translation/main-consteval.cpp	TR-3	FN-4
+RULE-ID	other-rule	foundations/translation/main-constexpr.cpp	TR-3	FN-4
+RULE-ID	other-rule	foundations/translation/main-deduced-return-type.cpp	TR-3	FN-4
+RULE-ID	other-rule	foundations/translation/main-deleted.cpp	TR-3	DEL-2
+RULE-ID	other-rule	foundations/translation/main-inline.cpp	TR-3	FN-4
+RULE-ID	other-rule	foundations/translation/main-static.cpp	TR-3	STO-6
+RULE-ID	other-rule	foundations/translation/main-variable.cpp	TR-3	FN-4
+RULE-ID	other-rule	foundations/translation/main-wrong-parameter-types-ilp32.cpp	FN-6	TR-3
+RULE-ID	other-rule	foundations/translation/undefined-on-taken-path-only.cpp	TR-8	UN-7
+RULE-ID	other-rule	foundations/translation/undefined-taints-whole-evaluation.cpp	TR-8	MUL-9
+RULE-ID	other-rule	foundations/translation/warning-as-error-with-flag.cpp	TR-6	ATTR-6
+RULE-ID	other-rule	foundations/values/address-of-prvalue.cpp	VC-12	UN-9
+RULE-ID	other-rule	foundations/values/address-of-xvalue-call.cpp	VC-13	UN-9
+RULE-ID	other-rule	foundations/values/address-of-xvalue.cpp	VC-13	UN-9
+RULE-ID	other-rule	foundations/values/assign-to-prvalue.cpp	VC-12	ASN-2
+RULE-ID	other-rule	foundations/values/assign-to-scalar-prvalue.cpp	VC-12	ASN-2
+RULE-ID	other-rule	foundations/values/discarded-call-deleted-destructor.cpp	VC-11	DTOR-3
+RULE-ID	other-rule	foundations/values/member-function-access-not-address.cpp	VC-12	PFX-20 PFX-14
+RULE-ID	other-rule	foundations/values/rvalue-reference-name-binding.cpp	VC-14	REF-10
+RULE-ID	other-rule	foundations/values/rvalue-reference-parameter-name-binding.cpp	VC-14	REF-10
+RULE-ID	other-rule	overloading/overload-resolution/builtin-chosen-other-operand.cpp	OVL-11	ADD-3
+RULE-ID	other-rule	overloading/overload-resolution/builtin-chosen-then-checked.cpp	OVL-11	ADD-3
+RULE-ID	other-rule	overloading/overload-resolution/builtin-logical-explicit-int.cpp	OVL-9 OVL-35	CVF-11
+RULE-ID	other-rule	overloading/overload-resolution/builtin-three-way-bool-operand.cpp	OVL-11 OVL-9	CMP-13
+RULE-ID	other-rule	overloading/overload-resolution/user-deleted-move-candidate.cpp	OVL-42 OVL-37	CPY-23
+RULE-ID	other-rule	statements/blocks/class-hidden-by-variable.cpp	STMT-10	TR-12
+RULE-ID	other-rule	statements/blocks/enumeration-hidden-by-variable.cpp	STMT-10	TR-12
+RULE-ID	other-rule	statements/blocks/redeclare-typedef-different-type.cpp	STMT-8	TYN-2
+RULE-ID	other-rule	statements/if/condition-scoped-enumeration.cpp	IF-4	ENUM-11
+RULE-ID	other-rule	statements/if/consteval-immediate-else.cpp	IF-24	CEV-1 CE-3
+RULE-ID	other-rule	statements/if/consteval-immediate-outside.cpp	IF-24	CEV-1 CE-3
+RULE-ID	other-rule	statements/if/constexpr-non-template-checked.cpp	IF-23	NAM-8 NAM-30
+RULE-ID	other-rule	statements/if/constexpr-non-template-type-error.cpp	IF-23	INIT-7
+RULE-ID	other-rule	statements/if/else-substatement-scope.cpp	IF-8	NAM-8
+RULE-ID	other-rule	statements/if/redeclare-init-and-condition.cpp	IF-10	NAM-3
+RULE-ID	other-rule	statements/if/substatement-scope.cpp	IF-8	NAM-8
+RULE-ID	other-rule	statements/jumps/return-parameter-as-lvalue-ref.cpp	JMP-15	REF-8
+RULE-ID	other-rule	statements/jumps/return-static-local-move-only.cpp	JMP-15	CPY-21 CPY-24
+RULE-ID	other-rule	statements/loops/do-body-name-not-in-condition.cpp	LOOP-7	NAM-8
+RULE-ID	other-rule	statements/loops/for-condition-scoped-enumeration.cpp	LOOP-5	ENUM-11
+RULE-ID	other-rule	statements/range-for/incomplete-element.cpp	RFOR-7	DCL-20
+RULE-ID	other-rule	statements/switch/skipped-declaration-read-first.cpp	JMP-16 OBJ-2	OBJ-2, INIT-1
+RULE-ID	other-rule	templates/arguments/function-explicit-too-many.cpp	TARG-6 TARG-20	DED-35
+RULE-ID	other-rule	templates/arguments/injected-name-two-bases-template-argument.cpp	TARG-27	NAM-36 DER-4
+RULE-ID	other-rule	templates/arguments/injected-name-two-bases-template.cpp	TARG-27	NAM-36 DER-4
+RULE-ID	other-rule	templates/arguments/injected-name-two-bases.cpp	TARG-27	NAM-36 DER-4
+RULE-ID	other-rule	templates/class-template-deduction/alias-template-result-check.cpp	CTAD-28 CTAD-24	CTAD-12
+RULE-ID	other-rule	templates/class-template-deduction/ambiguous-guides.cpp	CTAD-24	CTOR-1
+RULE-ID	other-rule	templates/class-template-deduction/guide-wrong-scope.cpp	CTAD-12	TR-12
+RULE-ID	other-rule	templates/class-template-deduction/selection-private-constructor.cpp	CTAD-26 CTAD-17 CTAD-25	ACC-2
+RULE-ID	other-rule	templates/concepts/explicit-instantiation.cpp	CPT-7	INST-23
+RULE-ID	other-rule	templates/concepts/explicit-specialization.cpp	CPT-7	TR-12
+RULE-ID	other-rule	templates/concepts/placeholder-constant-parameter-no-candidate.cpp	CPT-21 CNS-12	DED-35
+RULE-ID	other-rule	templates/concepts/placeholder-structured-binding.cpp	CPT-37	SB-15
+RULE-ID	other-rule	templates/concepts/placeholder-without-auto.cpp	CPT-18	TR-12
+RULE-ID	other-rule	templates/concepts/requirement-deleted-function-independent.cpp	CPT-27	DEL-1
+RULE-ID	other-rule	templates/concepts/requirement-independent-in-template.cpp	CPT-27	PFX-11
+RULE-ID	other-rule	templates/concepts/requirement-independent-with-parameters.cpp	CPT-27	PFX-11
+RULE-ID	other-rule	templates/concepts/requires-expression-outside-template.cpp	CPT-27	NAM-8
+RULE-ID	other-rule	templates/concepts/trailing-clause-before-return-member.cpp	CPT-12	CPT-10
+RULE-ID	other-rule	templates/concepts/trailing-clause-before-return.cpp	CPT-12	CPT-10
+RULE-ID	other-rule	templates/concepts/trailing-clause-new-type.cpp	CPT-13	TR-12
+RULE-ID	other-rule	templates/concepts/type-requirement-independent-constraints.cpp	CPT-27 CPT-32	CNS-13
+RULE-ID	other-rule	templates/constraints/atomic-not-bool-nondependent-clause.cpp	CNS-39	CNS-9
+RULE-ID	other-rule	templates/constraints/atomic-not-bool-nondependent-concept.cpp	CNS-39	CNS-9
+RULE-ID	other-rule	templates/constraints/atomic-not-bool-skipped.cpp	CNS-39	CNS-9
+RULE-ID	other-rule	templates/constraints/default-argument-before-constraints.cpp	CNS-11 CNS-33	SA-1
+RULE-ID	other-rule	templates/constraints/instantiation-error-class.cpp	CNS-33	SA-1
+RULE-ID	other-rule	templates/constraints/instantiation-error-return-type.cpp	CNS-33	SA-1
+RULE-ID	other-rule	templates/constraints/order-constant-placeholder-after-type.cpp	CNS-1 CNS-33	SA-1
+RULE-ID	other-rule	templates/constraints/redeclare-placeholder-unconstrained.cpp	CNS-40 CNS-27	OVL-36
+RULE-ID	other-rule	templates/constraints/redeclare-placeholder.cpp	CNS-40 CNS-27	OVL-36
+RULE-ID	other-rule	templates/declarations/alias-template-self.cpp	TPL-31	TR-12
+RULE-ID	other-rule	templates/declarations/block-scope.cpp	TPL-2	FN-9
+RULE-ID	other-rule	templates/declarations/constant-parameter-address.cpp	TPL-10	UN-9
+RULE-ID	other-rule	templates/declarations/constant-parameter-assign.cpp	TPL-10	ASN-2
+RULE-ID	other-rule	templates/declarations/default-greater.cpp	TPL-39	TR-12
+RULE-ID	other-rule	templates/declarations/main-template-constant.cpp	TPL-29	TR-3
+RULE-ID	other-rule	templates/declarations/main-template.cpp	TPL-29	TR-3
+RULE-ID	other-rule	templates/declarations/member-outside-pack.cpp	TPL-43	PACK-8
+RULE-ID	other-rule	templates/deduction/address-deduced-result-body-instantiated.cpp	DED-29	NAM-8
+RULE-ID	other-rule	templates/deduction/address-deduced-result-body-static-cast.cpp	DED-29	NAM-8
+RULE-ID	other-rule	templates/deduction/substitution-deduced-result-body.cpp	DED-29	PFX-11
+RULE-ID	other-rule	templates/deduction/substitution-default-before-check.cpp	DED-28 DED-29	NAM-16
+RULE-ID	other-rule	templates/deduction/substitution-hard-error.cpp	DED-29	NAM-16
+RULE-ID	other-rule	templates/deduction/substitution-noexcept-later.cpp	DED-27 DED-29	NAM-16
+RULE-ID	other-rule	templates/dependent-names/current-instantiation-constant-member.cpp	DEP-15 DEP-19	DEP-29
+RULE-ID	other-rule	templates/dependent-names/dependent-base-type-not-found.cpp	DEP-12	NAM-8
+RULE-ID	other-rule	templates/dependent-names/dependent-error-at-instantiation.cpp	DEP-28 INST-6	NAM-16
+RULE-ID	other-rule	templates/dependent-names/independent-error-unused-conversion.cpp	DEP-30	INIT-7
+RULE-ID	other-rule	templates/dependent-names/independent-type-not-declared.cpp	DEP-6	TR-12
+RULE-ID	other-rule	templates/dependent-names/operator-ordinary-lookup-later.cpp	DEP-10	ADD-3
+RULE-ID	other-rule	templates/dependent-names/ordinary-lookup-later-class.cpp	DEP-10	NAM-8 NAM-30
+RULE-ID	other-rule	templates/dependent-names/ordinary-lookup-later-fundamental.cpp	DEP-10	NAM-8 NAM-30
+RULE-ID	other-rule	templates/dependent-names/other-specialization-needs-typename.cpp	DEP-15 DEP-19	DEP-29
+RULE-ID	other-rule	templates/dependent-names/partial-primary-form-needs-typename.cpp	DEP-15 DEP-19	DEP-29
+RULE-ID	other-rule	templates/dependent-names/syntax-error-unused.cpp	DEP-29	TR-12
+RULE-ID	other-rule	templates/dependent-names/template-keyword-in-declarator-class.cpp	DEP-27	TYN-7
+RULE-ID	other-rule	templates/dependent-names/template-keyword-needed-member.cpp	DEP-24	TR-12
+RULE-ID	other-rule	templates/dependent-names/template-keyword-not-template.cpp	DEP-26	TR-12
+RULE-ID	other-rule	templates/dependent-names/typename-finds-data-member.cpp	DEP-22	NAM-9
+RULE-ID	other-rule	templates/dependent-names/typename-finds-nothing.cpp	DEP-22	NAM-9
+RULE-ID	other-rule	templates/dependent-names/typename-finds-value.cpp	DEP-22	NAM-9
+RULE-ID	other-rule	templates/dependent-names/typename-needed-block.cpp	DEP-19	TR-12
+RULE-ID	other-rule	templates/instantiation/class-base-conversion.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-call-passes-by-value.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-call-return.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-declared-not-defined.cpp	INST-4	TYN-7
+RULE-ID	other-rule	templates/instantiation/class-decltype-call-argument-instantiated.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-decltype-member-access-instantiated.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-deduction-from-derived-error.cpp	INST-1 INST-6 DED-15	SA-1
+RULE-ID	other-rule	templates/instantiation/class-delete.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-function-definition-parameter.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-function-definition-return.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-member-access.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-member-declaration-fails.cpp	INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/class-object.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-overload-two-candidates.cpp	INST-3	SA-1
+RULE-ID	other-rule	templates/instantiation/class-overload-void-pointer.cpp	INST-3	SA-1
+RULE-ID	other-rule	templates/instantiation/class-qualified-name.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-sizeof.cpp	INST-1 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/class-static-const-member-initializer-made.cpp	INST-5 INST-6	NAM-9
+RULE-ID	other-rule	templates/instantiation/class-unscoped-enumeration.cpp	INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/default-argument-explicit-specialization.cpp	INST-9 INST-6	PFX-5
+RULE-ID	other-rule	templates/instantiation/default-argument-used.cpp	INST-9 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/default-member-initializer-aggregate-left-out.cpp	INST-10 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/default-member-initializer-used.cpp	INST-10 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/explicit-class-key-mismatch.cpp	INST-23	TSP-32
+RULE-ID	other-rule	templates/instantiation/explicit-class-members.cpp	INST-17 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/explicit-declaration-inline-still-made.cpp	INST-27 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/explicit-member-class.cpp	INST-17 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/friend-body-made-at-call.cpp	INST-7 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/friend-defined-twice.cpp	INST-13	FN-14
+RULE-ID	other-rule	templates/instantiation/function-address.cpp	INST-7 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/function-called.cpp	INST-7 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/function-deduced-return.cpp	INST-7 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/function-point-constant.cpp	INST-32 INST-31	NAM-8 NAM-30
+RULE-ID	other-rule	templates/instantiation/function-unevaluated-braced-untaken.cpp	INST-7 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/function-unevaluated-braced.cpp	INST-7 INST-6	SA-1
+RULE-ID	other-rule	templates/instantiation/local-class-member-initializer.cpp	INST-12 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/local-class-member.cpp	INST-12 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/local-enumeration.cpp	INST-12 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/member-function-called.cpp	INST-7 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/static-member-used.cpp	INST-8 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/variable-template-used.cpp	INST-8 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/virtual-called-through-pointer.cpp	INST-7 INST-6	NAM-16
+RULE-ID	other-rule	templates/instantiation/virtual-new-expression.cpp	INST-11	NAM-16
+RULE-ID	other-rule	templates/instantiation/virtual-object.cpp	INST-11	NAM-16
+RULE-ID	other-rule	templates/instantiation/virtual-temporary.cpp	INST-11	NAM-16
+RULE-ID	other-rule	templates/ordering/constraints-conversion-results-differ.cpp	ORD-13 ORD-15	ICS-8 CVF-12
+RULE-ID	other-rule	templates/ordering/conversion-results-top-level-const.cpp	ORD-2 ORD-8 ORD-15	ICS-8 CVF-12
+RULE-ID	other-rule	templates/ordering/reference-kind-and-qualifiers.cpp	ORD-11 ORD-15 ORD-8	ICS-8 CVF-12
+RULE-ID	other-rule	templates/specialization/alias-explicit.cpp	TSP-7	NS-16
+RULE-ID	other-rule	templates/specialization/alias-partial.cpp	TSP-7	NS-16
+RULE-ID	other-rule	templates/specialization/class-explicit-declared-only-member.cpp	TSP-20	NAM-9
+RULE-ID	other-rule	templates/specialization/explicit-enum-after-use.cpp	TSP-6 TSP-30	TYN-7
+RULE-ID	other-rule	templates/specialization/partial-pack-not-expanded.cpp	TSP-11	PACK-8

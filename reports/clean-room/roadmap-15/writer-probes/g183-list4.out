@@ -1,0 +1,36 @@
+| | compile |
+|---|---|
+| ToIn (converts only to In): takes the member whole | accept |
+| Both (to In and to int): takes the member whole | accept |
+| Both (to In and to int): braces elided | reject |
+| Any (template): takes the member whole | accept |
+| Any (template): braces elided | reject |
+| Any, Any: takes the member whole | accept |
+| Any, Any, Any (three values for two members) | reject |
+| DIn (derived from In): takes the member whole | accept |
+| control: In object takes the member whole | accept |
+| control: int values fill the member by elision | accept |
+Both (to In and to int): braces elided / compile / clang-18: /tidal/build/probes/g183-list4/0002-both-to-in-and-to-int-braces-elided--compile.cpp:13:15: error: static assertion failed due to requirement 'o.in.a == 1'
+Both (to In and to int): braces elided / compile / clang-22: /tidal/build/probes/g183-list4/0002-both-to-in-and-to-int-braces-elided--compile.cpp:13:15: error: static assertion failed due to requirement 'o.in.a == 1'
+Both (to In and to int): braces elided / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/g183-list4/0002-both-to-in-and-to-int-braces-elided--compile.cpp:13:15: error: static assertion failed due to requirement 'o.in.a == 1'
+Both (to In and to int): braces elided / compile / edg-7.0: le.cpp", line 13: error: static assertion failed
+Both (to In and to int): braces elided / compile / edg-7.0-ilp32: le.cpp", line 13: error: static assertion failed
+Both (to In and to int): braces elided / compile / gcc-14: /tidal/build/probes/g183-list4/0002-both-to-in-and-to-int-braces-elided--compile.cpp:13:22: error: static assertion failed
+Both (to In and to int): braces elided / compile / gcc-16: /tidal/build/probes/g183-list4/0002-both-to-in-and-to-int-braces-elided--compile.cpp:13:22: error: static assertion failed
+Both (to In and to int): braces elided / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/g183-list4/0002-both-to-in-and-to-int-braces-elided--compile.cpp:13:22: error: static assertion failed
+Any (template): braces elided / compile / clang-18: /tidal/build/probes/g183-list4/0004-any-template-braces-elided--compile.cpp:13:15: error: static assertion failed due to requirement 'o.in.a == 1'
+Any (template): braces elided / compile / clang-22: /tidal/build/probes/g183-list4/0004-any-template-braces-elided--compile.cpp:13:15: error: static assertion failed due to requirement 'o.in.a == 1'
+Any (template): braces elided / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/g183-list4/0004-any-template-braces-elided--compile.cpp:13:15: error: static assertion failed due to requirement 'o.in.a == 1'
+Any (template): braces elided / compile / edg-7.0: line 13: error: static assertion failed
+Any (template): braces elided / compile / edg-7.0-ilp32: line 13: error: static assertion failed
+Any (template): braces elided / compile / gcc-14: /tidal/build/probes/g183-list4/0004-any-template-braces-elided--compile.cpp:13:22: error: static assertion failed
+Any (template): braces elided / compile / gcc-16: /tidal/build/probes/g183-list4/0004-any-template-braces-elided--compile.cpp:13:22: error: static assertion failed
+Any (template): braces elided / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/g183-list4/0004-any-template-braces-elided--compile.cpp:13:22: error: static assertion failed
+Any, Any, Any (three values for two members) / compile / clang-18: /tidal/build/probes/g183-list4/0006-any-any-any-three-values-for-two-members--compile.cpp:12:31: error: excess elements in struct initializer
+Any, Any, Any (three values for two members) / compile / clang-22: /tidal/build/probes/g183-list4/0006-any-any-any-three-values-for-two-members--compile.cpp:12:31: error: excess elements in struct initializer
+Any, Any, Any (three values for two members) / compile / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/clang-host/probes/g183-list4/0006-any-any-any-three-values-for-two-members--compile.cpp:12:31: error: excess elements in struct initializer
+Any, Any, Any (three values for two members) / compile / edg-7.0: compile.cpp", line 12: error: too many initializer values
+Any, Any, Any (three values for two members) / compile / edg-7.0-ilp32: compile.cpp", line 12: error: too many initializer values
+Any, Any, Any (three values for two members) / compile / gcc-14: /tidal/build/probes/g183-list4/0006-any-any-any-three-values-for-two-members--compile.cpp:12:36: error: too many initializers for 'const Out'
+Any, Any, Any (three values for two members) / compile / gcc-16: /tidal/build/probes/g183-list4/0006-any-any-any-three-values-for-two-members--compile.cpp:12:36: error: too many initializers for 'const Out'
+Any, Any, Any (three values for two members) / compile / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/fe28c/build/gcc-host/probes/g183-list4/0006-any-any-any-three-values-for-two-members--compile.cpp:12:36: error: too many initializers for ‘const Out’

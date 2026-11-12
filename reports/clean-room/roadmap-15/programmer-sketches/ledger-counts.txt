@@ -1,0 +1,4 @@
+ledger.md 1164 {'commit': 1054, 'text': 54, 'out of scope': 3, 'question': 40, 'open': 13}
+  open: X26-1 X26-2 X26-3 X26-4 X26-5 X26-6 RV11-R-1 RV11-R-2 RV11-R-3 RV11-R-5 RV11-R-7 RV11-R-8 F7-2
+rust-frontend/ledger.md 183 {'commit': 172, 'text': 4, 'out of scope': 4, 'question': 1, 'open': 2}
+  open: G182 G183
