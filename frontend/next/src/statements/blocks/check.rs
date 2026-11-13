@@ -167,6 +167,24 @@ fn nodiscard(cx: &mut Check, e: &Expr) {
 /// `[[assume(e)]];` (ATTR-9, ATTR-13): the expression converts to
 /// `bool`; at run time it must hold (ATTR-10).
 pub fn assume(cx: &mut Check, args: &Node) -> Stmt {
-    cx.unsupported(args.span, "the expression of an assumption (its tokens are not parsed as an expression)");
-    Stmt::new(SK::Unsupported("an assumption".into()), args.span)
+    let span = args.span;
+    let Some(c) = first_node(args).filter(|c| c.prod != "balanced_token") else {
+        cx.unsupported(span, "the expression of an assumption (its tokens are not parsed as an expression)");
+        return Stmt::new(SK::Unsupported("an assumption".into()), span);
+    };
+    let e = expr(cx, c);
+    if e.ty.is_error() {
+        return Stmt::new(SK::Null, span);
+    }
+    // The operand is a conditional expression, so a comma needs
+    // parentheses.
+    if matches!(e.k, EK::Comma(..)) && !e.paren {
+        cx.error(span, "ATTR-13", "the expression of an assumption is a comma expression");
+        return Stmt::new(SK::Null, span);
+    }
+    let b = crate::foundations::conversions::check::contextual_bool(cx, e, "ATTR-9");
+    if b.ty.is_error() {
+        return Stmt::new(SK::Null, span);
+    }
+    Stmt::new(SK::Expr(Expr::new(EK::Assume(Box::new(b)), crate::sem::types::QType::void(), crate::sem::tree::Cat::PR, span)), span)
 }

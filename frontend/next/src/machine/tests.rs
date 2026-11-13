@@ -543,3 +543,17 @@ fn noexcept_specifiers_and_operator() {
     assert_eq!(rule("constexpr int f() { return 1; } static_assert(!noexcept(f()));"), None);
     assert_eq!(run("int c = 0; int g() { return ++c; } int main() { bool b = noexcept(g()); return c * 10 + b; }"), RunOutcome::Result(0));
 }
+
+#[test]
+fn assumptions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        _ => None,
+    };
+    assert_eq!(rule("void f(int a, int b) { [[assume(a, b)]]; }"), Some("ATTR-13"));
+    assert_eq!(rule("void f(int a, int b) { [[assume((a, b))]]; }"), None);
+    assert_eq!(rule("constexpr int f(int v) { [[assume(v > 0)]]; return v; } static_assert(f(-1) == -1);"), Some("ATTR-10"));
+    assert_eq!(rule("constexpr int f(int v) { [[assume(v > 0)]]; return v; } static_assert(f(1) == 1);"), None);
+    assert_eq!(run("int main() { int i = 1; [[assume(++i > 0)]]; return i; }"), RunOutcome::Result(1));
+    assert!(matches!(run("int main() { int i = 1; [[assume(i > 5)]]; return 0; }"), RunOutcome::Undefined("ATTR-10", ..)));
+}

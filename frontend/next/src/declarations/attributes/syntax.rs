@@ -40,18 +40,36 @@ fn attr_name(p: &mut Parser) -> PResult<Kid> {
     }
 }
 
-/// `attribute: [identifier "::"] identifier [attribute_args]`.
+/// `attribute: [identifier "::"] identifier [attribute_args]`. The
+/// arguments of `assume` are an expression where they parse as one.
 pub fn attribute(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
+    let assume = p.at("assume") && p.ahead(1) == "(";
     let mut kids = vec![attr_name(p)?];
     if p.at("::") {
         kids.push(p.bump());
         kids.push(attr_name(p)?);
     }
+    if assume && p.at("(") {
+        if let Ok(a) = p.attempt(assume_args) {
+            kids.push(Kid::Node(a));
+            return Ok(p.node("attribute", sp, kids));
+        }
+    }
     if p.at("(") {
         kids.push(Kid::Node(attribute_args(p)?));
     }
     Ok(p.node("attribute", sp, kids))
+}
+
+/// The `attribute_args` of `assume` where its tokens form one
+/// expression in parentheses (ATTR-9).
+fn assume_args(p: &mut Parser) -> PResult<Node> {
+    let sp = p.span();
+    let open = p.expect("(")?;
+    let e = crate::expressions::comma::syntax::expression(p)?;
+    let close = p.expect(")")?;
+    Ok(p.node("attribute_args", sp, vec![open, Kid::Node(e), close]))
 }
 
 /// `attribute_args: "(" {balanced_token} ")"`.
