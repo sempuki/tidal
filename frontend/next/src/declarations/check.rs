@@ -242,6 +242,10 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
             type_names::check::typedef_name(cx, &declared);
             continue;
         }
+        if declarators::check::qualified_func(&declared.ty) {
+            cx.error(declared.span, "DCL-21", "a function that is not a member has a cv-qualifier or a ref-qualifier");
+            continue;
+        }
         if declared.ty.is_func() {
             functions::definitions::check::declare_function(cx, &specs, &declared, None);
             continue;

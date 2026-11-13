@@ -72,6 +72,9 @@ pub struct FnType {
     pub params: Vec<QType>,
     pub variadic: bool,
     pub noexcept: bool,
+    /// A cv-qualifier or a ref-qualifier after the parameters, which only
+    /// an alias or a typedef can name (DCL-15, DCL-16).
+    pub qualified: bool,
 }
 
 impl IntK {

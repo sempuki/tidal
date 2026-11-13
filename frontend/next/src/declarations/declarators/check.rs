@@ -68,7 +68,9 @@ pub fn declarator(cx: &mut Check, specs: &Specs, n: &Node) -> Declared {
             QType::error()
         }
     };
+    let saved = std::mem::replace(&mut cx.naming_type, specs.typedef);
     let t = apply(cx, base, n, &mut d, true);
+    cx.naming_type = saved;
     d.ty = t;
     d
 }
@@ -235,6 +237,11 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
 }
 
 /// `ptr_part`: a pointer with its cv-qualifiers, or a reference.
+/// A function type with a cv-qualifier or a ref-qualifier (DCL-16).
+pub fn qualified_func(t: &QType) -> bool {
+    matches!(&t.t, Type::Func(f) if f.qualified)
+}
+
 fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
     let words = cx.words(n);
     if n.child("nested_name").is_some() {
@@ -249,6 +256,9 @@ fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
     }
     if c > 1 || v > 1 {
         duplicate_cv(cx, n.span);
+    }
+    if qualified_func(&t) && matches!(words.first().copied(), Some("*" | "&" | "&&")) {
+        return cx.error(n.span, "DCL-16", "a pointer or a reference to a function type with a cv-qualifier or a ref-qualifier");
     }
     match words.first().copied() {
         Some("*") => {
@@ -311,10 +321,12 @@ fn array_suffix(cx: &mut Check, t: QType, n: &Node) -> QType {
 /// specification, and a trailing return type (DCL-21, DCL-22).
 fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: bool) -> QType {
     let mut ret = ret;
-    if n.children("cv").next().is_some() {
+    // DCL-15: an alias or a typedef can name a qualified function type.
+    let qualified = cx.naming_type && (n.children("cv").next().is_some() || n.child("ref_qualifier").is_some());
+    if !qualified && n.children("cv").next().is_some() {
         cx.error(n.span, "DCL-21", "a function that is not a member has a cv-qualifier");
     }
-    if n.child("ref_qualifier").is_some() {
+    if !qualified && n.child("ref_qualifier").is_some() {
         cx.error(n.span, "DCL-21", "a function that is not a member has a ref-qualifier");
     }
     let mut noexcept = false;
@@ -338,7 +350,7 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
     } else if ret.is_func() {
         cx.error(n.span, "DCL-21", "a function returns a function");
     }
-    let f = FnType { ret, params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept };
+    let f = FnType { ret, params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept, qualified };
     if top {
         d.params = params;
     }
@@ -397,6 +409,10 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             } else {
                 cx.error(p.span, "DCL-22", "void in a parameter list in a form other than (void)");
             }
+            t = QType::error();
+        }
+        if qualified_func(&t) {
+            cx.error(p.span, "DCL-16", "a parameter of a function type with a cv-qualifier or a ref-qualifier");
             t = QType::error();
         }
         t = adjust_parameter(t);

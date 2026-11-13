@@ -104,11 +104,14 @@ pub struct Check<'a> {
     pub parser_names: std::collections::HashSet<String>,
     /// The entities with C language linkage, by name (LSP-4).
     pub c_names: HashMap<Rc<str>, EntityId>,
+    /// The declarator being checked names a type (an alias or a
+    /// typedef), where a function type can carry qualifiers (DCL-15).
+    pub naming_type: bool,
 }
 
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
-        Check { u, toks, scope: 0, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, parser_names: Default::default(), c_names: HashMap::new() }
+        Check { u, toks, scope: 0, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false }
     }
 
     // -----------------------------------------------------------------

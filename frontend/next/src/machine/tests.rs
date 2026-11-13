@@ -124,3 +124,16 @@ fn a_c_function_in_two_namespaces_is_one_candidate() {
     assert_eq!(rule(&unit("5", "7", "f()")), Some("OVL-38"));
     assert_eq!(rule(&unit("5", "2 + 3", "f()")), Some("OVL-38"));
 }
+
+#[test]
+fn an_alias_names_a_qualified_function_type() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("using F = void() const; typedef int G() &&;"), None);
+    assert_eq!(rule("using F = void() const; F* p;"), Some("DCL-16"));
+    assert_eq!(rule("using F = void() &; void take(F& f);"), Some("DCL-16"));
+    assert_eq!(rule("using F = void() const; F f;"), Some("DCL-21"));
+    assert_eq!(rule("void f() const;"), Some("DCL-21"));
+}
