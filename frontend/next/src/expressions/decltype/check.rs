@@ -14,6 +14,17 @@ pub fn decltype_of(e: &Expr) -> QType {
     decltype_with(e, None)
 }
 
+/// The type `decltype` gives for a typed expression, with the declared
+/// type of an unparenthesized name of a variable or a function (DTY-1).
+pub fn decltype_of_named(cx: &Check, e: &Expr) -> QType {
+    let declared = match &e.k {
+        EK::Var(id) => cx.u.var(*id).map(|v| v.ty.clone()),
+        EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
+        _ => None,
+    };
+    decltype_with(e, declared)
+}
+
 fn decltype_with(e: &Expr, declared: Option<QType>) -> QType {
     if let Some(t) = declared {
         if !e.paren {

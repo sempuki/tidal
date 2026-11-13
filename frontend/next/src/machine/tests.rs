@@ -468,3 +468,21 @@ fn literal_and_unevaluated_warnings() {
     assert_eq!(rule("int i = 0; decltype(i = 1) j = i;"), Some("UNEV-4"));
     assert_eq!(rule("int i = 0; auto n = sizeof(i + 1);"), None);
 }
+
+#[test]
+fn declaration_types() {
+    let rule = |src: &str, m32: bool| match crate::check_source(src, Path::new("t.cpp"), &crate::Options { m32, ..Default::default() }).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("int a[3] = {1, 2, 3}; decltype(auto) b = a;", false), Some("AUTO-15"));
+    assert_eq!(rule("int a[3] = {1, 2, 3}; decltype(auto) b = (a);", false), None);
+    assert_eq!(rule("void g(); decltype(auto) f = g;", false), Some("AUTO-11"));
+    assert_eq!(rule("int i = 0; decltype(auto) j = i;", false), None);
+    assert_eq!(rule("char big[1ull << 32];", true), Some("DCL-19"));
+    assert_eq!(rule("char big[1ull << 32];", false), None);
+    assert_eq!(rule("int big[1ull << 31];", true), Some("DCL-19"));
+    assert_eq!(rule("char t[(decltype(sizeof 0))-1][2];", false), Some("DCL-19"));
+    assert_eq!(rule("void q() noexcept {} void (&c)(){q};", false), Some("REF-11"));
+    assert_eq!(rule("void q() {} void (&c)(){q};", false), None);
+}

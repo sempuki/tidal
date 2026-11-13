@@ -109,6 +109,12 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
         if crate::expressions::primary::check::unresolved_set(&e) {
             return bind(cx, e, ty, "INIT-7").map(Init::Ref);
         }
+        if inner.is_func() && !e.ty.is_error() && e.ty.nonref().t != inner.t {
+            // A function type has no temporary, so the element must
+            // have the referenced function type, also as to noexcept.
+            cx.error(init.span, "REF-11", "the braced element does not have the referenced function type, and a function type has no temporary");
+            return None;
+        }
         let rv = crate::foundations::values::check::rvalue(cx, e.clone());
         if conv::is_narrowing(cx, &rv, &inner) && e.ty.unqual().t != inner.unqual().t {
             cx.error(init.span, "REF-11", "a narrowing conversion in the braces of a reference");

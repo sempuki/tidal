@@ -43,7 +43,12 @@ pub fn deduce(cx: &mut Check, p: &Placeholder, declarator: &Node, init: &Expr) -
             cx.error(p.span, "AUTO-11", "decltype(auto) combined with a cv-qualifier, '*', or '&'");
             return None;
         }
-        return Some(crate::expressions::decltype::check::decltype_of(init));
+        let t = crate::expressions::decltype::check::decltype_of_named(cx, init);
+        if t.is_func() {
+            cx.error(init.span, "AUTO-11", format!("decltype(auto) deduces the function type {}", t.show()));
+            return None;
+        }
+        return Some(t);
     }
     let ptrs: Vec<&str> = declarator.children("ptr_part").map(|pp| cx.first_word(pp)).collect();
     if declarator.child("ptr_part").is_some() && declarator.child("declarator").and_then(|d| d.child("ptr_part")).is_some() {

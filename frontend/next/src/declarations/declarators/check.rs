@@ -332,6 +332,15 @@ fn array_suffix(cx: &mut Check, t: QType, n: &Node) -> QType {
             None => return QType::error(),
         },
     };
+    // DCL-19, STG-1: the bound and the size of the array in bytes fit in
+    // std::size_t.
+    if let Some(b) = bound {
+        let max = cx.u.target.int_max(cx.u.target.size_t()) as u128;
+        let bytes = cx.u.target.size_of(&cx.u, &t).map(|s| s as u128 * b as u128);
+        if b as u128 > max || bytes.is_some_and(|s| s > max) {
+            return cx.error(n.span, "DCL-19", "the size of the array does not fit in std::size_t");
+        }
+    }
     QType::new(Type::Array(Rc::new(t), bound))
 }
 
