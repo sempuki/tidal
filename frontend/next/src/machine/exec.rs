@@ -72,7 +72,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
         }
     }
     match &s.k {
-        SK::Null => Ok(Flow::Normal),
+        SK::Null | SK::Fallthrough => Ok(Flow::Normal),
         SK::Expr(e) => {
             let t = m.temps.len();
             eval_discard(m, e)?;

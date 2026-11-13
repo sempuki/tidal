@@ -385,6 +385,9 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     }
     let _ = errors_before;
     flow_off_end_warning(cx, id);
+    if let Some(b) = cx.u.func(id).and_then(|f| f.body.clone()) {
+        crate::declarations::attributes::check::fallthrough_checks(cx, &b);
+    }
 }
 
 /// Each `return` or the end of the body: nothing to check here beyond
@@ -406,6 +409,13 @@ fn flow_off_end_warning(cx: &mut Check, id: EntityId) {
     }
 }
 
+/// Whether control can reach the end of a statement (the analysis of
+/// FN-7, which ATTR-7 shares).
+pub fn can_complete(cx: &Check, s: &Stmt) -> bool {
+    let mut paths = Paths::default();
+    paths.completes(cx, s) || paths.unsupported
+}
+
 /// The exits that FN-7's check collects while it walks a body.
 #[derive(Default)]
 struct Paths {
@@ -425,7 +435,7 @@ impl Paths {
             Cond::Decl(..) => None,
         };
         match &s.k {
-            SK::Null | SK::Decl(_) | SK::RangeArray { .. } => true,
+            SK::Null | SK::Fallthrough | SK::Decl(_) | SK::RangeArray { .. } => true,
             SK::Expr(e) => !ends_path(cx, e),
             SK::Block(items) => {
                 let mut reachable = true;

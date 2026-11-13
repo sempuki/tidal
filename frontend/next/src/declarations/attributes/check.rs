@@ -92,6 +92,9 @@ pub fn attribute_spec(cx: &mut Check, n: &Node, a: &mut Attrs) {
 /// ATTR-2: `noreturn` applies only to functions, `nodiscard` not to a
 /// variable.
 pub fn on_variable(cx: &mut Check, a: &Attrs) {
+    if a.fallthrough {
+        cx.error(a.span, "ATTR-2", "'fallthrough' applies only to a null statement");
+    }
     if a.noreturn {
         cx.error(a.span, "ATTR-2", "'noreturn' applies only to functions");
     }
@@ -145,5 +148,104 @@ pub fn unused_variable(cx: &mut Check, span: Span, name: &str) {
 pub fn falls_through(cx: &mut Check, span: Span) {
     if cx.wflag(&["-Wimplicit-fallthrough", "-Wextra"]) {
         cx.warning(span, "ATTR-7", "control falls through to the next case label");
+    }
+}
+
+/// What comes after a statement, for ATTR-2's check of `fallthrough`.
+#[derive(Clone, Copy, PartialEq)]
+enum Next {
+    /// A `case` or `default` label of this switch.
+    Case(crate::sem::tree::StmtId),
+    /// Another statement, or the end of a switch or of the function.
+    Other,
+    /// The end of a loop body.
+    LoopEnd,
+}
+
+/// ATTR-2 and ATTR-7 over a function body: each `[[fallthrough]];` must
+/// be followed by a `case` or `default` label of its own switch; and
+/// (-Wimplicit-fallthrough) control that falls from the statements after
+/// one label into the next label warns, unless they end with
+/// `[[fallthrough]];`.
+pub fn fallthrough_checks(cx: &mut Check, body: &crate::sem::tree::Stmt) {
+    let mut bad = Vec::new();
+    placement(body, Next::Other, None, &mut bad);
+    for span in bad {
+        cx.error(span, "ATTR-2", "'fallthrough' is not followed by a case label of its switch");
+    }
+    if cx.wflag(&["-Wextra", "-Wimplicit-fallthrough"]) {
+        let mut warn = Vec::new();
+        falls(cx, body, &mut warn);
+        for span in warn {
+            cx.warning(span, "ATTR-7", "control falls through to the next case label");
+        }
+    }
+}
+
+fn placement(s: &crate::sem::tree::Stmt, next: Next, sw: Option<crate::sem::tree::StmtId>, bad: &mut Vec<Span>) {
+    use crate::sem::tree::SK;
+    match &s.k {
+        SK::Fallthrough => {
+            if sw.is_none() || next != Next::Case(sw.unwrap()) {
+                bad.push(s.span);
+            }
+        }
+        SK::Block(items) => {
+            for (i, it) in items.iter().enumerate() {
+                let after = match items.get(i + 1).map(|x| &x.k) {
+                    Some(SK::Case(id, _, _)) => Next::Case(*id),
+                    Some(_) => Next::Other,
+                    None => next,
+                };
+                placement(it, after, sw, bad);
+            }
+        }
+        SK::If { then, els, .. } => {
+            placement(then, next, sw, bad);
+            if let Some(e) = els {
+                placement(e, next, sw, bad);
+            }
+        }
+        SK::Chosen(Some(x)) | SK::Case(_, _, x) | SK::Label(_, x) => placement(x, next, sw, bad),
+        SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => placement(body, Next::LoopEnd, sw, bad),
+        SK::Switch { id, body, .. } => placement(body, Next::Other, Some(*id), bad),
+        _ => {}
+    }
+}
+
+/// The spans of the labels that control falls into without
+/// `[[fallthrough]];`.
+fn falls(cx: &Check, s: &crate::sem::tree::Stmt, warn: &mut Vec<Span>) {
+    use crate::sem::tree::{Stmt, SK};
+    match &s.k {
+        SK::Switch { body, .. } => {
+            if let SK::Block(items) = &body.k {
+                let mut start: Option<usize> = None;
+                for (i, it) in items.iter().enumerate() {
+                    if matches!(it.k, SK::Case(..)) {
+                        if let Some(st) = start {
+                            let seg: Vec<Stmt> = items[st..i].to_vec();
+                            let last_fall = matches!(seg.last().map(|x| &x.k), Some(SK::Fallthrough)) || matches!(seg.last().map(|x| &x.k), Some(SK::Case(_, _, inner)) if matches!(inner.k, SK::Fallthrough));
+                            let seg = Stmt::new(SK::Block(seg), it.span);
+                            if !last_fall && crate::declarations::functions::definitions::check::can_complete(cx, &seg) {
+                                warn.push(it.span);
+                            }
+                        }
+                        start = Some(i);
+                    }
+                }
+            }
+            falls(cx, body, warn);
+        }
+        SK::Block(items) => items.iter().for_each(|x| falls(cx, x, warn)),
+        SK::If { then, els, .. } => {
+            falls(cx, then, warn);
+            if let Some(e) = els {
+                falls(cx, e, warn);
+            }
+        }
+        SK::Chosen(Some(x)) | SK::Case(_, _, x) | SK::Label(_, x) => falls(cx, x, warn),
+        SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => falls(cx, body, warn),
+        _ => {}
     }
 }

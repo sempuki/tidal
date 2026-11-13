@@ -330,3 +330,23 @@ fn namespaces_inline_aliases_and_qualified_definitions() {
     assert_eq!(rule("namespace N {} int N::x = 7;"), Some("NS-15"));
     assert_eq!(rule("namespace N { inline namespace V { extern int x; } } int N::x = 7;"), None);
 }
+
+#[test]
+fn fallthrough_placement_and_warning() {
+    let rule = |src: &str| {
+        let o = crate::Options { werror: true, wflags: vec!["-Wimplicit-fallthrough".into()], ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    let sw = |body: &str| format!("int f(int k, bool w) {{ int r = 0; switch (k) {{ {body} }} return r; }}");
+    assert_eq!(rule(&sw("case 0: r = 1; case 1: r = 2; break;")), Some("ATTR-7"));
+    assert_eq!(rule(&sw("case 0: r = 1; [[fallthrough]]; case 1: r = 2; break;")), None);
+    assert_eq!(rule(&sw("case 0: if (w) { r = 1; break; } case 1: r = 2; break;")), Some("ATTR-7"));
+    assert_eq!(rule(&sw("case 0: case 1: r = 2; break;")), None);
+    assert_eq!(rule(&sw("case 0: [[fallthrough]]; r = 1; case 1: break;")), Some("ATTR-2"));
+    assert_eq!(rule(&sw("case 0: for (int i = 0; i < 2; ++i) { [[fallthrough]]; } case 1: break;")), Some("ATTR-2"));
+    assert_eq!(rule("void f() { [[fallthrough]]; }"), Some("ATTR-2"));
+    assert_eq!(rule("[[fallthrough]] int x;"), Some("ATTR-2"));
+}

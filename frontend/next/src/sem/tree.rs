@@ -272,6 +272,8 @@ pub enum SK {
     /// A return of a reference: the glvalue.
     ReturnRef(Expr),
     Goto(Rc<str>),
+    /// `[[fallthrough]];`, which does nothing when it runs (ATTR-2).
+    Fallthrough,
     /// A statement the machine does not run (unsupported at run time).
     Unsupported(String),
 }

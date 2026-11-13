@@ -33,6 +33,11 @@ pub fn statement(cx: &mut Check, n: &Node) -> Stmt {
         }
     }
     let Some(c) = inner else { return Stmt::new(SK::Null, n.span) };
+    // ATTR-2: `fallthrough` is a null statement of its own.
+    let null = c.prod == "plain_stmt" && first_node(c).is_some_and(|x| x.prod == "null_stmt");
+    if attrs.fallthrough && !null {
+        cx.error(n.span, "ATTR-2", "'fallthrough' applies only to a null statement");
+    }
     // The labels of a chain mark a loop or switch only if it follows.
     let marks_target = c.prod == "labeled_stmt"
         || (c.prod == "plain_stmt" && first_node(c).is_some_and(|x| matches!(x.prod, "while_stmt" | "do_stmt" | "for_stmt" | "range_for_stmt" | "switch_stmt")));
@@ -84,6 +89,9 @@ pub fn plain_stmt(cx: &mut Check, n: &Node, attrs: &crate::declarations::attribu
         "null_stmt" => {
             if let Some(a) = &attrs.assume {
                 return blocks::check::assume(cx, a);
+            }
+            if attrs.fallthrough {
+                return Stmt::new(SK::Fallthrough, c.span);
             }
             Stmt::new(SK::Null, c.span)
         }
