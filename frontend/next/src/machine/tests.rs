@@ -193,3 +193,20 @@ fn deduced_return_types() {
     assert_eq!(rule("auto& f() {}"), Some("RET-3"));
     assert_eq!(rule("auto& f() { static int x; return x; }"), Some("unsupported"));
 }
+
+#[test]
+fn flowing_off_the_end_of_a_function() {
+    let warns = |src: &str| {
+        let o = crate::Options { werror: true, wflags: vec!["-Wreturn-type".into()], ..Default::default() };
+        matches!(crate::check_source(src, Path::new("t.cpp"), &o).0, Outcome::Reject(ds) if ds[0].rule == Some("FN-7"))
+    };
+    assert!(warns("int f(bool b) { if (b) return 1; }"));
+    assert!(!warns("int f(bool b) { if (b) return 1; else return 2; }"));
+    assert!(!warns("int f() { while (true) {} }"));
+    assert!(warns("extern bool d; int f() { while (true) { if (d) break; } }"));
+    assert!(!warns("extern bool d; int f() { while (true) { for (;;) { break; } } }"));
+    assert!(warns("int f(int n) { switch (n) { case 0: return 1; } }"));
+    assert!(!warns("int f(int n) { switch (n) { case 0: return 1; default: return 2; } }"));
+    assert!(!warns("[[noreturn]] void stop(); int f() { stop(); }"));
+    assert!(!warns("int main() {}"));
+}

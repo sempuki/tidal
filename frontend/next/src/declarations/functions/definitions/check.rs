@@ -370,7 +370,153 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
 
 /// Each `return` or the end of the body: nothing to check here beyond
 /// FN-3, which the machine reports.
-fn flow_off_end_warning(_cx: &mut Check, _id: EntityId) {}
+/// FN-7: an implementation should warn if control can reach the end of
+/// a function that returns a value, other than `main`.
+fn flow_off_end_warning(cx: &mut Check, id: EntityId) {
+    let Some(f) = cx.u.func(id) else { return };
+    let Some(body) = f.body.clone() else { return };
+    if f.ty.ret.is_void() || f.ty.ret.is_error() || f.unsupported.is_some() || cx.u.main() == Some(id) || &*cx.u.entities[id].name == "main" {
+        return;
+    }
+    if !cx.wflag(&["-Wall", "-Wreturn-type"]) {
+        return;
+    }
+    let mut paths = Paths::default();
+    if paths.completes(cx, &body) && !paths.unsupported {
+        cx.warning(cx.u.entities[id].span, "FN-7", format!("control can reach the end of '{}', which returns a value", cx.u.entities[id].name));
+    }
+}
+
+/// The exits that FN-7's check collects while it walks a body.
+#[derive(Default)]
+struct Paths {
+    /// The statements that a reachable `break` leaves.
+    breaks: Vec<crate::sem::tree::StmtId>,
+    /// The labels that a reachable `goto` names.
+    gotos: Vec<Rc<str>>,
+    unsupported: bool,
+}
+
+impl Paths {
+    /// Whether control can reach the end of `s` from its start.
+    fn completes(&mut self, cx: &Check, s: &Stmt) -> bool {
+        use crate::sem::tree::Cond;
+        let constant = |c: &Cond| match c {
+            Cond::Expr(e) => constant_bool(e),
+            Cond::Decl(..) => None,
+        };
+        match &s.k {
+            SK::Null | SK::Decl(_) | SK::RangeArray { .. } => true,
+            SK::Expr(e) => !ends_path(cx, e),
+            SK::Block(items) => {
+                let mut reachable = true;
+                for it in items {
+                    if matches!(it.k, SK::Label(..) | SK::Case(..)) {
+                        reachable = true;
+                    }
+                    if reachable {
+                        reachable = self.completes(cx, it);
+                    }
+                }
+                reachable
+            }
+            SK::If { cond, then, els, .. } => match constant(cond) {
+                Some(true) => self.completes(cx, then),
+                Some(false) => els.as_ref().map_or(true, |e| self.completes(cx, e)),
+                None => {
+                    let a = self.completes(cx, then);
+                    let b = els.as_ref().map_or(true, |e| self.completes(cx, e));
+                    a || b
+                }
+            },
+            SK::Chosen(c) => c.as_ref().map_or(true, |c| self.completes(cx, c)),
+            SK::While { id, cond, body } => self.forever(cx, *id, body, constant(cond) == Some(true)),
+            SK::For { id, cond, body, .. } => self.forever(cx, *id, body, cond.as_ref().map_or(true, |c| constant(c) == Some(true))),
+            SK::Do { id, body, cond } => self.forever(cx, *id, body, constant_bool(cond) == Some(true)),
+            SK::Switch { id, body, .. } => {
+                // A switch without a default label can complete,
+                // whatever its cases are.
+                let mut has_default = false;
+                walk(body, &mut |x| has_default |= matches!(x.k, SK::Case(sid, None, _) if sid == *id));
+                let inner = self.completes(cx, body);
+                !has_default || inner || self.breaks.contains(id)
+            }
+            SK::Case(_, _, inner) | SK::Label(_, inner) => self.completes(cx, inner),
+            SK::Break(id) => {
+                self.breaks.push(*id);
+                false
+            }
+            SK::Goto(l) => {
+                self.gotos.push(l.clone());
+                false
+            }
+            SK::Continue(_) | SK::Return(_) | SK::ReturnRef(_) => false,
+            SK::Unsupported(_) => {
+                self.unsupported = true;
+                true
+            }
+        }
+    }
+
+    /// A loop: it ends the path when its condition is a constant `true`,
+    /// unless a `break` of it or a `goto` to a label outside it leaves
+    /// it.
+    fn forever(&mut self, cx: &Check, id: crate::sem::tree::StmtId, body: &Stmt, always: bool) -> bool {
+        let gotos = self.gotos.len();
+        self.completes(cx, body);
+        if !always {
+            return true;
+        }
+        let mut inside: Vec<Rc<str>> = Vec::new();
+        walk(body, &mut |x| {
+            if let SK::Label(l, _) = &x.k {
+                inside.push(l.clone());
+            }
+        });
+        self.breaks.contains(&id) || self.gotos[gotos..].iter().any(|l| !inside.contains(l))
+    }
+}
+
+/// A condition whose value is a literal constant.
+fn constant_bool(e: &Expr) -> Option<bool> {
+    match &e.k {
+        crate::sem::tree::EK::Int(v) => Some(*v != 0),
+        crate::sem::tree::EK::Conv(_, x) => constant_bool(x),
+        _ => None,
+    }
+}
+
+/// An expression statement that ends a path: a call of a function
+/// declared `[[noreturn]]`.
+fn ends_path(cx: &Check, e: &Expr) -> bool {
+    use crate::sem::tree::EK;
+    match &e.k {
+        EK::Conv(_, x) => ends_path(cx, x),
+        EK::Call(f, _) => matches!(&f.k, EK::Func(id) if cx.u.func(*id).is_some_and(|x| x.noreturn)),
+        _ => false,
+    }
+}
+
+/// Each statement of `s`, `s` first.
+fn walk(s: &Stmt, f: &mut impl FnMut(&Stmt)) {
+    f(s);
+    match &s.k {
+        SK::Block(items) => items.iter().for_each(|x| walk(x, f)),
+        SK::If { init, then, els, .. } => {
+            init.iter().for_each(|x| walk(x, f));
+            walk(then, f);
+            els.iter().for_each(|x| walk(x, f));
+        }
+        SK::Chosen(c) => c.iter().for_each(|x| walk(x, f)),
+        SK::While { body, .. } | SK::Do { body, .. } => walk(body, f),
+        SK::For { init, body, .. } | SK::RangeArray { init, body, .. } | SK::Switch { init, body, .. } => {
+            init.iter().for_each(|x| walk(x, f));
+            walk(body, f);
+        }
+        SK::Case(_, _, x) | SK::Label(_, x) => walk(x, f),
+        _ => {}
+    }
+}
 
 /// FN-4: a program must not call `main`.
 pub fn called(cx: &mut Check, f: EntityId, span: Span) {
