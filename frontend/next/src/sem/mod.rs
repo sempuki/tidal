@@ -85,6 +85,8 @@ pub struct Func {
     pub pending_return: bool,
     /// Declared with a placeholder return type (RET-4).
     pub placeholder: bool,
+    /// Named by an expression somewhere in the unit (ODR-9).
+    pub used: bool,
     pub defined: bool,
     /// The body could not be checked in full, so the function does not
     /// run.

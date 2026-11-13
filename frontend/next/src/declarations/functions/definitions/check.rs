@@ -201,6 +201,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 c_linkage: cx.lang_c,
                 pending_return: deduce,
                 placeholder: deduce,
+                used: false,
                 defined: deleted,
                 unsupported: if deduce { Some("a deduced return type that no definition gave".into()) } else { None },
             };
@@ -326,6 +327,7 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     let mut params = Vec::new();
     for (k, p) in d.params.iter().enumerate() {
         let ty = fty.params.get(k).cloned().unwrap_or_else(QType::error);
+        let ty = if p.cv.0 || p.cv.1 { ty.with_cv(p.cv.0 || ty.c, p.cv.1 || ty.v) } else { ty };
         if ty.is_incomplete() && !ty.is_void() {
             cx.error(p.span, "FN-12", "a function definition with a parameter of incomplete type");
         }
@@ -622,6 +624,12 @@ pub fn address_taken(cx: &mut Check, f: EntityId, span: Span) {
 
 /// A use of a function by name: DEL-1 for a deleted function.
 pub fn note_use(cx: &mut Check, f: EntityId, span: Span) {
+    // An unevaluated operand does not use the function (ODR-9).
+    if cx.unevaluated == 0 {
+        if let Some(x) = cx.u.func_mut(f) {
+            x.used = true;
+        }
+    }
     if cx.u.func(f).is_some_and(|x| x.deleted) {
         cx.error(span, "DEL-1", format!("'{}' is deleted", cx.u.entities[f].name));
     }
@@ -637,7 +645,18 @@ pub fn func_name_outside(cx: &mut Check, span: Span) {
 }
 
 /// The checks at the end of the unit: none yet in build step 3.
-pub fn end_of_unit(_cx: &mut Check) {}
+pub fn end_of_unit(cx: &mut Check) {
+    // ODR-9: a function with internal linkage that the unit uses is
+    // defined in the unit. No diagnostic is required; the front end
+    // gives one.
+    let missing: Vec<(Span, Rc<str>)> = cx.u.entities.iter().filter_map(|e| match &e.kind {
+        EntKind::Func(f) if f.used && !f.defined && !f.deleted && f.unsupported.is_none() && e.linkage == Linkage::Internal => Some((e.span, e.name.clone())),
+        _ => None,
+    }).collect();
+    for (span, name) in missing {
+        cx.error(span, "ODR-9", format!("the function '{}' has internal linkage and is used, but the unit does not define it", name));
+    }
+}
 
 /// The `__func__` variable of a function body (FN-11): a static array
 /// of `const char` with the function's name.

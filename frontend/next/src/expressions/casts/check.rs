@@ -62,6 +62,9 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
     let target = to.unqual();
     match k {
         Kind::Const => {
+            if target.pointee().is_some_and(|p| p.is_func()) {
+                return Err(("CAST-4", format!("const_cast to {}, a pointer to a function", to.show())));
+            }
             if !target.is_ptr() {
                 return Err(("CAST-4", format!("const_cast to {}, which is not a pointer or reference", to.show())));
             }

@@ -238,6 +238,12 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
             }
             continue;
         }
+        // ALN-2: alignas applies to a variable or a non-bit-field data
+        // member, not to a typedef or a function.
+        if !aligns.is_empty() && (specs.typedef || declared.ty.is_func()) {
+            cx.error(d.span, "ALN-2", "alignas on a typedef or a function");
+            continue;
+        }
         if specs.typedef {
             if specs.inline {
                 crate::declarations::inline::check::misplaced(cx, d.span, "on a typedef");

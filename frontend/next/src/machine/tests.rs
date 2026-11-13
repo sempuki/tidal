@@ -410,3 +410,21 @@ fn overload_sets_need_a_target() {
     assert_eq!(rule("void g(void (*)(int)); void u() { g(&f); }"), None);
     assert_eq!(rule("void (*q)(int) = (void (*)(int))f;"), None);
 }
+
+#[test]
+fn small_declaration_checks() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("alignas(16) void f();"), Some("ALN-2"));
+    assert_eq!(rule("alignas(16) typedef int I;"), Some("ALN-2"));
+    assert_eq!(rule("alignas(16) int x;"), None);
+    assert_eq!(rule("int main = 0;"), Some("TR-3"));
+    assert_eq!(rule("namespace n { int main = 0; }"), None);
+    assert_eq!(rule("void f(int a, int a);"), Some("FN-13"));
+    assert_eq!(rule("void g(); void (*p)() = const_cast<void (*)()>(&g);"), Some("CAST-4"));
+    assert_eq!(rule("void f(const int i) { i++; }"), Some("CV-4"));
+    assert_eq!(rule("static int h(); int main() { return h(); }"), Some("ODR-9"));
+    assert_eq!(rule("static int h(); int main() { return sizeof(h()) == 4 ? 0 : 1; }"), None);
+}

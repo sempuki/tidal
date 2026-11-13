@@ -235,8 +235,8 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     if s.inline && local {
         crate::declarations::inline::check::misplaced(cx, d.span, "on a variable in a block");
     }
-    if name.as_ref() == "main" && cx.lang_c {
-        cx.error(span, "TR-3", "a variable named main with C language linkage");
+    if name.as_ref() == "main" && (cx.lang_c || (cx.scope == 0 && d.qual == names::Qual::None)) {
+        cx.error(span, "TR-3", "a variable named main in the global namespace or with C language linkage");
     }
     storage_linkage::check::variable_specifiers(cx, s);
     if s.consteval {
