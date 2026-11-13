@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-4, `tests/templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp`, `tests/templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp`
 **Source:** the I6 report (`reports/clean-room/I6/report.md`, I6-6), the round 11 writer probe `reports/clean-room/roadmap-11/writer-probes/i6-instantiation-checks.json`.
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); a use of DEP-P2
 
 ## Context
 
@@ -44,6 +44,8 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the 
 Rule text on 2026-11-11 (decision 0062, item RV7): DEP-4 names `typeid` with `sizeof`, `alignof`, and `noexcept`, as the review reads (RV7-B-12). No test checks `typeid`, which stays referenced. DEP-P2 is unchanged.
 
 Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses DEP-P2 on the question and reaches option 1 by its model (RV12-15), so DEP-P2 passes step 3 of the principle test, and the wait for a use ends. The review supports the answer with a doubt on DEP-P2's reason, so the question does not settle. EDG 7.0 alone differs. The **Waits for:** line names a review (doubt), was a use of DEP-P2. Ledger row RV12-15 plans the repair of DEP-P2's reason in part 2 of item RV12. A change to DEP-P2 then gives no answer until a reader or a review uses DEP-P2 again (decision 0055).
+
+Principle text on 2026-11-12 (decision 0066, item RV12): DEP-P2 gives a table of what decides the result of `sizeof`, `alignof`, `noexcept`, and `typeid`, as the review reads (RV12-15). The value of `noexcept` depends on the operations that the operand performs and whether each one can throw, and these are fixed once the operand is not type-dependent. DEP-P2 still rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055). The **Waits for:** line names a review (doubt); a use of DEP-P2, was a review (doubt).
 
 ## Opinions
 

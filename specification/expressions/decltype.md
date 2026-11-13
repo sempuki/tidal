@@ -75,8 +75,9 @@ The result of the expression is dropped, and only its effects matter.
 - A class prvalue becomes a temporary, which ends when its full
   expression ends, as every temporary does ({rule}`VC-6`).
 - A glvalue is not copied.
-- A volatile object named by the expression is read, because the read
-  is an effect.
+- A volatile object that the expression refers to by a name, a
+  subscript, a member access, or a similar form is read, because the
+  read is an effect.
 
 A cast to `void` says the discard is intended. An expression with no
 effect in that position is probably a mistake, and an implementation
@@ -100,8 +101,11 @@ these:
 
 - the expression of an expression statement,
 - the iteration expression of a `for` statement ({rule}`LOOP-3`),
-- the left operand of `,`,
+- the left operand of the built-in `,` operator ({rule}`COMMA-1`),
 - the operand of a cast to `void`.
+
+The left operand of an overloaded `,` is an argument of a call
+({rule}`COMMA-7`).
 
 ## Constraints
 
@@ -206,17 +210,19 @@ The operands of UNEV-1 still have these requirements:
 
 :::{rule} UNEV-6
 :kind: reject
-:tests: expressions/decltype/discarded-volatile-read.cpp expressions/decltype/discarded-volatile-operand-read.cpp
+:tests: expressions/decltype/discarded-volatile-read.cpp expressions/decltype/discarded-volatile-operand-read.cpp expressions/decltype/discarded-volatile-conditional-read.cpp expressions/decltype/discarded-volatile-comma-read.cpp expressions/decltype/discarded-volatile-parenthesized-member-read.cpp
 
-{term}`Constant evaluation <constant evaluation>` rejects both reads of a volatile object that UNEV-2
-gives (CE-12).
+{term}`Constant evaluation <constant evaluation>` rejects a read of a
+volatile object in a discarded-value expression (CE-12). The read can
+come from a form that UNEV-2 lists, or from an operator that uses the
+value of a volatile operand.
 :::
 
 ## Runtime Behavior
 
 :::{rule} UNEV-2
 :kind: required
-:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp expressions/decltype/void-cast-temporary-lives-to-full-expression-constant.cpp statements/loops/for-iteration-temporary-constant.cpp
+:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp expressions/decltype/void-cast-temporary-lives-to-full-expression-constant.cpp statements/loops/for-iteration-temporary-constant.cpp expressions/decltype/discarded-volatile-conditional-read.cpp expressions/decltype/discarded-volatile-comma-read.cpp expressions/decltype/discarded-volatile-parenthesized-member-read.cpp
 
 A {term}`discarded-value expression` is evaluated, and its value is not
 used. A prvalue of class type creates a {term}`temporary object`, which
@@ -225,15 +231,18 @@ copied. A cast to `void` makes any
 expression a discarded-value expression and stops warnings about an
 unused result. Constant evaluation follows these rules.
 
-If the expression is one of these and refers to a volatile object, the
-program reads that object:
+If the expression has one of these forms and refers to a volatile
+object, the program reads that object:
 
 - a name,
-- a member access,
 - a subscript,
-- an indirection.
-
-A volatile operand of an operator is read too.
+- a member access,
+- an indirection,
+- a pointer-to-member access,
+- one of these forms in parentheses,
+- a conditional expression whose second and third operands both have
+  one of these forms,
+- a comma expression whose right operand has one of these forms.
 :::
 
 ## Recommended Practice
@@ -347,8 +356,8 @@ int run(int a) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 56
-of 62 tests. The UNEV-4 tests turn the warning into an error, so EDG
+The results are in `tests/RESULTS.md`. All eight compilers agree on 59
+of 65 tests. The UNEV-4 tests turn the warning into an error, so EDG
 skips them.
 
 ### Divergences
@@ -388,6 +397,16 @@ skips them.
   (`void-cast-temporary-lives-to-full-expression-constant.cpp`). Every
   compiler ends a class prvalue of a `for` iteration expression before
   the condition runs again (`for-iteration-temporary-constant.cpp`).
+- UNEV-2, UNEV-6: the gap review of the phase 18 text reads the C++23
+  text as reading a volatile object in a discarded value only for a
+  closed set of forms (RV12-1). UNEV-2 lists them. Every compiler
+  rejects the read in constant evaluation for a conditional expression,
+  a comma expression, and a pointer-to-member access in parentheses
+  (`discarded-volatile-conditional-read.cpp`,
+  `discarded-volatile-comma-read.cpp`,
+  `discarded-volatile-parenthesized-member-read.cpp`). An operator that
+  uses the value of a volatile operand reads the operand in any
+  evaluation (`discarded-volatile-operand-read.cpp`).
 - UNEV-3, COMMA-5, STMT-4: the round 15 writer grid
   `reports/clean-room/roadmap-15/writer-probes/x26-warnings.json` tries
   30 forms under `-Wunused-value -Werror`, each as an expression

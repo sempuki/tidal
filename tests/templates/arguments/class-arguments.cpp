@@ -1,6 +1,6 @@
 // tidal-rules: TARG-16
 // tidal-expect: accept
-// tidal-note: The argument initializes the parameter object, also from a braced list or a value of another type.
+// tidal-note: The argument initializes the parameter object, also from a braced list or a value of another type. Q-0456 holds the braced form, which every compiler accepts.
 struct Point { int x; int y; };
 struct Size { int w; constexpr Size(int v) : w(v) {} };
 template <Point P> struct At { static constexpr int sum = P.x + P.y; };

@@ -59,6 +59,8 @@ gives the answer. CTAD-P3 says that the guides compete as the
 constructors of a class would, and it does not say whether the limit on
 the first parameter reaches them, so both options fit CTAD-P3's model.
 
+Rule text on 2026-11-12 (decision 0066, item RV12): CTAD-17's item on the limit to a standard sequence, the CTAD-17 Note, the Divergences list, the split test table, and the note of `copy-init-guide-user-conversion.cpp` name this question in place of Q-0020 (RV12-18). The `pending.md` row 4 item is now "CTAD-17, Q-0457". The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)

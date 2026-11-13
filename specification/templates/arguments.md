@@ -411,7 +411,8 @@ of class type, at any depth.
 The argument for a floating-point parameter is a constant of the
 parameter's own floating-point type ({rule}`TARG-13`). The argument for a parameter of class type
 initializes the parameter's object by {term}`copy-initialization`,
-also from a braced list or a value of another type. So a string literal
+also from a braced list ({question}`Q-0456`) or a value of another
+type. So a string literal
 is a valid argument for a class with a constructor that takes a pointer
 to `const char`. A braced list for a parameter of scalar type holds one
 value, which converts as TARG-13 says, or no value, which gives zero.
@@ -600,6 +601,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   `int()` is a type or a value for a constant parameter. It is a type,
   so the argument is rejected, as Clang and GCC say. EDG reads the
   value `0`.
+- {question}`Q-0456` (TARG-16; open): whether a braced list can be a
+  template argument. It can, as every compiler says. The gap reviews of
+  the phase 17 and phase 18 text give a template argument no braced
+  form.
 - {question}`Q-0454` (TARG-13,
   TARG-16; open): whether a braced integer constant is a valid argument
   for a floating-point parameter. It is not, because the value converts
@@ -650,7 +655,9 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   (`reports/clean-room/roadmap-14/writer-probes/rv10-review.json`). So
   TARG-16, the `braced_init` arm of `template_arg`,
   `class-arguments.cpp`, and `same-specialization-class.cpp` keep the
-  compilers' answer, and `pending.md` row 4 holds the item "TARG-16".
+  compilers' answer. The gap review of the phase 18 text reads the
+  scalar case the same way (RV12-10). {question}`Q-0456` holds the
+  braced form and waits in `pending.md` row 4.
 - TARG-13, TARG-16: every compiler accepts `{3}` and `{}` for an `int`
   parameter, and `{nullptr}` and `{}` for a pointer parameter
   (`braced-scalar-arguments.cpp`, RV11-R-7). Every compiler rejects
@@ -659,7 +666,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   and every compiler rejects `1` there
   (`braced-integer-for-floating.cpp`,
   {question}`Q-0454`). The scalar case
-  joins the row 4 item "TARG-16".
+  joins {question}`Q-0456`.
 - TARG-22: every compiler treats an alias template that changes its
   argument as a template of its own (`alias-template-changes-argument.cpp`).
 - TARG-17: all compilers accept a placeholder parameter on either side

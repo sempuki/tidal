@@ -1,6 +1,6 @@
 // tidal-rules: TARG-19
 // tidal-expect: accept
-// tidal-note: Class arguments are the same when each member is the same.
+// tidal-note: Class arguments are the same when each member is the same. Q-0456 holds the braced form At<{1, 2}>, which every compiler accepts.
 template <class T, class U> constexpr bool same = false;
 template <class T> constexpr bool same<T, T> = true;
 struct Point { int x; int y; };

@@ -480,8 +480,8 @@ chooses one as {rule}`OVL-14` gives. These points apply:
   guide's own deduced arguments before the choice
   ({question}`Q-0437`).
 - The limit of OVL-14 and {rule}`ICS-10` to a standard sequence does
-  not apply to the guides. The limit applies to the constructors that
-  step 5 chooses.
+  not apply to the guides ({question}`Q-0457`). The limit applies to
+  the constructors that step 5 chooses.
 - All guides are accessible, whatever the access of their constructor.
 :::
 
@@ -831,12 +831,13 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   parameter that the base does not use lets an inherited guide succeed.
   It does, as GCC and EDG say. Clang finds no viable guide, as the gap
   review of 2026-11-05 reads.
-- {question}`Q-0020` (CTAD-17; open): how a test records a compiler
-  that does not implement a feature yet. Clang 18 applies the limit of
-  OVL-14 to a guide in copy initialization, and Clang 22 does not
-  (`copy-init-guide-user-conversion.cpp`). The gap review of the phase
-  15 text reads the C++23 text as Clang 18 does, and `pending.md` row 4
-  holds CTAD-17's answer as a rule item.
+- {question}`Q-0457` (CTAD-17; open): whether a guide is viable in copy
+  initialization when its parameter needs a user-defined conversion of
+  the argument. It is, as Clang 22, GCC, and EDG say. Clang 18 applies
+  the limit of OVL-14 to the guide
+  (`copy-init-guide-user-conversion.cpp`). The gap reviews of the phase
+  15 and phase 18 text read the C++23 text as Clang 18 does, and the
+  question waits in `pending.md` row 4.
 - {question}`Q-0439` (CTAD-2; open):
   whether a `static` data member can have a deduced class template type
   with no initializer. It cannot, also when `inline`, as Clang and EDG
@@ -874,7 +875,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 | `alias-template-unreachable.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | |
 | `alias-template.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
 | `conditional-explicit-dropped-before-choice.cpp` | CTAD-17, CTAD-5 | accept | accept | reject | accept | {question}`Q-0437` |
-| `copy-init-guide-user-conversion.cpp` | CTAD-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
+| `copy-init-guide-user-conversion.cpp` | CTAD-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0457` |
 | `dependent-qualifier-template-keyword.cpp` | CTAD-1 | accept | reject | accept | accept | {question}`Q-0243` |
 | `expressions/casts/functional-cast-alias-template-deduced.cpp` | CTAD-1, CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
 | `guide-not-deducible-constant.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
@@ -974,8 +975,8 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   RV8-B-5) reads the C++23 text as Clang 18 does. The guides act as constructors, and the text states no exception for
   them from the limit on the first parameter. The review notes that the
   choice of a guide runs no conversion. CTAD-17 keeps the answer of
-  Clang 22, GCC, and EDG, and `pending.md` row 4 holds the case
-  ({question}`Q-0020` holds Clang 18's override).
+  Clang 22, GCC, and EDG. {question}`Q-0457` holds the case and Clang
+  18's override, and waits in `pending.md` row 4 (RV12-18).
 - CTAD-1, CTAD-2: the same review (RV8-B-4) reads an `inline` static
   data member with no initializer as a definition that default-initializes
   the member, so deduction runs with no arguments, as GCC does. Clang

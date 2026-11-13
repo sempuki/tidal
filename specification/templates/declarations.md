@@ -210,7 +210,7 @@ must not have C language linkage ({rule}`LSP-1`).
 
 :::{rule} TPL-4
 :kind: reject
-:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp templates/declarations/two-template-heads-in-class.cpp templates/declarations/friend-two-heads-member-template.cpp templates/declarations/friend-two-heads-fixed-qualifier.cpp
+:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp templates/declarations/two-template-heads-in-class.cpp templates/declarations/friend-two-heads-member-template.cpp templates/declarations/friend-two-heads-fixed-qualifier.cpp templates/declarations/friend-two-heads-pointer-pattern.cpp
 
 The declaration after a template head must declare exactly one named
 entity. These declarations are not valid after a template head:
@@ -227,7 +227,8 @@ template heads if both of these hold:
 
 - the friend is a member template of a class template,
 - the qualifier of the friend's name gives the parameters of the first
-  head as the arguments of that class template.
+  head as the arguments of that class template
+  ({question}`Q-0458`).
 :::
 
 :::{rule} TPL-22
@@ -845,7 +846,7 @@ template <class U> int pick(Host);                // rejected: the same template
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 133
-of 145 tests.
+of 146 tests.
 
 ### Divergences
 
@@ -884,6 +885,10 @@ Q-0198 to the EDG project waits on the maintainer too.
 - {question}`Q-0200` (TPL-46; open): whether two uses of one alias
   template specialization with a lambda give one closure type. They do,
   as GCC and EDG say. Clang gives two closure types.
+- {question}`Q-0458` (TPL-4; open): whether a
+  friend with two template heads can name a member of `Shelf<T*>`,
+  where the qualifier gives a pattern of the first head's parameter.
+  It cannot, as GCC and EDG say. Clang accepts the friend.
 
 ### Split tests
 
@@ -894,6 +899,7 @@ Q-0198 to the EDG project waits on the maintainer too.
 | `default-friend-declared-before.cpp` | TPL-38 | reject | accept | accept | reject | {question}`Q-0197` |
 | `default-friend-redeclared.cpp` | TPL-38 | reject | accept | accept | reject | {question}`Q-0197` |
 | `defaults-merge-gap.cpp` | TPL-14 | reject | reject | accept | reject | {question}`Q-0296` |
+| `friend-two-heads-pointer-pattern.cpp` | TPL-4 | reject | accept | reject | reject | {question}`Q-0458` |
 | `member-enum-outside-unscoped.cpp` | TPL-42 | accept | accept | reject | accept | {question}`Q-0199` |
 | `member-enum-outside.cpp` | TPL-42 | accept | accept | reject | accept | {question}`Q-0199` |
 | `member-outside-clause-missing.cpp` | TPL-23, CNS-26 | reject | reject | reject | accept | {question}`Q-0385` |
@@ -912,6 +918,14 @@ Q-0198 to the EDG project waits on the maintainer too.
   (`friend-two-heads-member-template.cpp`, RV11-R-1). Every compiler
   rejects the friend when the qualifier is `Shelf<int>`, which does not
   use the first head's parameter (`friend-two-heads-fixed-qualifier.cpp`).
+  The gap review of the phase 18 text reads the C++23 text as asking
+  only that the first head's parameters can be deduced from the
+  template-id, as from `Shelf<T*>` (RV12-4). Clang accepts that friend
+  and lets the member of `Shelf<int*>` read the private member. GCC and
+  EDG reject the declaration (`friend-two-heads-pointer-pattern.cpp`,
+  {question}`Q-0458`). TPL-4 keeps the answer
+  of GCC and EDG, and the question waits in `pending.md` row 4. TPL-2
+  forbids a friend template in a local class, also with two heads.
 - TPL-2: Clang 18 gives a parse error for a template in a block, and the
   other compilers say that a template is not allowed there.
 - TPL-4: Clang names the single-entity condition. GCC and EDG reject a

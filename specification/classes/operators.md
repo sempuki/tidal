@@ -61,9 +61,18 @@ A literal with a suffix is a call to the literal operator for that
 suffix, and the form of the literal picks the parameter list. A
 numeric literal can also pass its characters to a template, one
 template argument per character. A string literal can pass itself to a
-template whose one parameter is a constant of class type. The
-literal supplies every argument, so a literal operator has no default
-arguments, as for the other operator functions. Literal
+template whose one parameter is a constant of class type. A template
+with any other head is not a literal operator. When forms compete for
+one suffix, these results hold:
+
+| Forms that exist for the suffix | A numeric literal with the suffix |
+|---|---|
+| the numeric form of the literal's kind, with the `const char*` form or the template or both | calls the numeric form |
+| the `const char*` form and the template, and no numeric form of the literal's kind | is not valid, because the call is ambiguous |
+| one of the `const char*` form and the template | calls that form |
+
+The literal supplies every argument, so a literal operator has no
+default arguments, as for the other operator functions. Literal
 operators live at namespace scope, where lookup by suffix finds them.
 Suffixes without a leading underscore belong to the language, and
 suffixes with two underscores in a row belong to the implementation. A

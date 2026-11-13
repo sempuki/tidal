@@ -76,9 +76,18 @@ Some forms have a fixed type whatever their operands: `sizeof`,
 `sizeof...` ({rule}`PACK-19`), `alignof`, `noexcept`, a literal, and a
 cast to an independent type. A call with such an argument is not dependent on that argument, and
 the implementation chooses its function at the definition (DEP-3).
-`sizeof`, `alignof`, and `noexcept` also have a value that only the
-type of the operand decides, so a value-dependent operand does not make
-them value-dependent (DEP-4).
+A value-dependent operand does not make `sizeof`, `alignof`,
+`noexcept`, or `typeid` value-dependent (DEP-4), because the operand's
+value takes no part in the result:
+
+| Form | The result depends on |
+|---|---|
+| `sizeof`, `alignof` | the type of the operand |
+| `noexcept` | the operations that the operand performs, and whether each one can throw |
+| `typeid` | the type of the operand |
+
+The type and the operations are fixed once the operand is not
+type-dependent.
 :::
 
 :::{principle} DEP-P3

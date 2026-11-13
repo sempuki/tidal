@@ -494,6 +494,7 @@ status, and the first sentence of its answer section.
 | [Q-0455](Q-0455-deleted-default-constructor-on-chain.md) | Does an assignment through a chain of member accesses make a union member active when the member's class has a deleted default constructor? | provisional | The member becomes active, and the evaluation is constant |
 | [Q-0456](Q-0456-braced-template-argument.md) | Can a braced list be a template argument? | provisional | A braced list is a template argument |
 | [Q-0457](Q-0457-guide-user-conversion-copy-init.md) | In copy initialization, is a deduction guide viable when its parameter needs a user-defined conversion of the argument? | provisional | The guide is viable |
+| [Q-0458](Q-0458-friend-two-heads-pattern.md) | Can a friend with two template heads name a member of a class template specialization whose arguments are a pattern of the first head's parameters? | provisional | The friend is not valid |
 
 ## Status values
 

@@ -49,6 +49,8 @@ Evidence on 2026-11-11 (decision 0063, item RV8): the CTAD divergence line for t
 
 Named on 2026-11-12 (decision 0066, item RV12). Part B of the gap review of the phase 18 text reads Clang 18's answer in `copy-init-guide-user-conversion.cpp` as the conforming one, so a missing feature is the wrong record for its override (RV12-18). {question}`Q-0457` now holds the case. Ledger row RV12-18 plans the change of the test's note and the CTAD lines in part 2 of item RV12. The answer and the **Waits for:** line do not change.
 
+Evidence on 2026-11-12 (decision 0066, item RV12): the note of `copy-init-guide-user-conversion.cpp` and the CTAD lines now name Q-0457 for Clang 18's override, and no longer name this question (RV12-18). The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

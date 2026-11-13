@@ -272,11 +272,12 @@ discarded-value expression
 
   - the expression of an expression statement,
   - the iteration expression of a `for` statement,
-  - the left operand of `,`,
+  - the left operand of the built-in `,` operator,
   - the operand of a cast to `void`.
 
-  A class prvalue there becomes a temporary, and a volatile object that
-  the expression names is read ({doc}`/expressions/decltype`).
+  A class prvalue there becomes a temporary. A volatile object that the
+  expression refers to by one of the forms of UNEV-2 is read
+  ({doc}`/expressions/decltype`).
 
 dynamic initialization
   The initialization at run time of a namespace-scope variable that is

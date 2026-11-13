@@ -64,6 +64,8 @@ constant expression that converts to the parameter's type, and it does
 not say whether a braced list is such an argument, so both options fit
 TARG-P2's model.
 
+Rule text on 2026-11-12 (decision 0066, item RV12): TARG-16, the TARG Notes, and the Divergences list name this question, and so do the notes of the three tests in **Affects** (RV12-16). The `pending.md` row 4 item is now "TARG-16, Q-0456". The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 17 text)

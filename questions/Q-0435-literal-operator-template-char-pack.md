@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** OPR-8, OPR-10, OPR-16, `tests/classes/operators/literal-operator-template-char-pack.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/classes/operators/literal-operator-template-head-not-char-pack.cpp`, `tests/classes/operators/literal-operator-template-numeric-form-wins.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form.cpp`, `tests/classes/operators/literal-operator-template-string-literal.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form-declared.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
 **Source:** the round 12 programmer report (`reports/clean-room/roadmap-12/programmer.md`, sections 1.5 and 6), reduction `literal_operator_template.cpp`, and the programmer's sketch `bigint_second_try.cpp`.
-**Waits for:** a principle (OPR-P3)
+**Waits for:** a use of OPR-P3
 
 ## Context
 
@@ -77,6 +77,8 @@ Rule text on 2026-11-11 (decision 0063, item RV8): OPR-8 gives a second kind of 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The read of the RV8 repair diff finds that the repairs of RV8-A-3 and RV8-A-4 agree with the reference, and it leaves no doubt on this question. GCC 16 alone differs, in `literal-operator-template-and-raw-form-declared.cpp`. OPR-P3 says that a numeric literal can pass its characters to a template, which rules out option 2. Item F5 wrote that sentence and item RV8 widened OPR-P3 in phase 15, so OPR-P3 gives no answer until a reader or a review uses it (decision 0055). The read names OPR-P3 and not the question's program, so the read is no use.
 
 Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses OPR-P3 on the question (RV12-15) and supports the answer with no doubt, so the wait for a use ends. OPR-P3 rules out option 2 and gives the first part of option 1, which literals call the template. The other parts of option 1 turn on details that only OPR-8, OPR-10, and OPR-16 state: the numeric form wins when it exists, the raw form and the template for one suffix make a call that is not valid, and other heads are not valid. So OPR-P3 fails step 3 of the principle test for those parts. GCC 16 alone differs, in `literal-operator-template-and-raw-form-declared.cpp`. The **Waits for:** line names a principle (OPR-P3), was a use of OPR-P3. Ledger row RV12-15 plans to widen OPR-P3 in part 2 of item RV12.
+
+Principle text on 2026-11-12 (decision 0066, item RV12): OPR-P3 says that a template with any other head is not a literal operator, and gives a table of the forms that compete for one suffix (RV12-15). The numeric form of the literal's kind wins. The `const char*` form and the template with no numeric form make a numeric literal not valid. OPR-P3 now rules out option 2 and gives each part of option 1. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055). The **Waits for:** line names a use of OPR-P3, was a principle (OPR-P3).
 
 ## Opinions
 
