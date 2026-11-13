@@ -59,6 +59,11 @@ pub fn end_life(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
 /// names.
 pub fn no_value(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
     let name = m.objs.get(p.obj).map(|o| o.name.to_string()).unwrap_or_default();
+    // A member of a class object, read before its initialization.
+    let class_member = m.objs.get(p.obj).is_some_and(|o| o.ty.base_elem().is_class()) && !p.path.is_empty();
+    if class_member {
+        return ub("OBJ-2", format!("a read of a member of {} before it has a value", name));
+    }
     crate::declarations::initialization::forms::run::read_no_value(&name)
 }
 

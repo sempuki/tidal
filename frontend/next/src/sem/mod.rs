@@ -94,6 +94,9 @@ pub struct Func {
     /// The class of a member function, and for a non-static one the
     /// cv-qualifiers of its object.
     pub class: Option<types::ClassId>,
+    /// A constructor or a destructor.
+    pub special: Special,
+    pub explicit: bool,
     pub member_static: bool,
     pub obj_cv: (bool, bool),
 }
@@ -151,6 +154,24 @@ pub struct Scope {
     pub using: Vec<ScopeId>,
     pub inline: bool,
     pub name: Rc<str>,
+}
+
+/// The kind of a special member function.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum Special {
+    #[default]
+    None,
+    Ctor,
+    Dtor,
+}
+
+/// What a constructor does before its body (CTOR-5, CTOR-6): an
+/// initializer for each data member in order, or a call of another
+/// constructor of the class.
+#[derive(Clone, Debug)]
+pub enum MemInits {
+    Fields(Vec<Init>),
+    Delegate(Init),
 }
 
 /// `class`, `struct`, or `union`.
@@ -233,6 +254,11 @@ pub struct Unit {
     pub links: HashMap<EntityId, EntityId>,
     /// The access of each member that is not a data member.
     pub access: HashMap<EntityId, Access>,
+    /// The member initializers of each constructor with a body.
+    pub mem_inits: HashMap<EntityId, MemInits>,
+    /// The constructors defaulted on their first declaration, which act
+    /// as the implicit ones (CTOR-2).
+    pub defaulted: std::collections::HashSet<EntityId>,
 }
 
 impl Default for Unit {
@@ -250,6 +276,8 @@ impl Default for Unit {
             first_entity: 0,
             links: HashMap::new(),
             access: HashMap::new(),
+            mem_inits: HashMap::new(),
+            defaulted: Default::default(),
         }
     }
 }

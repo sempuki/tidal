@@ -432,7 +432,11 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     frame.blocks.push(made);
     m.frames.push(frame);
     m.depth += 1;
-    let r = super::exec::exec(m, &body);
+    // CTOR-6: a constructor initializes the members before its body.
+    let r = match m.u.mem_inits.get(&id) {
+        Some(mi) => crate::declarations::initialization::forms::run::mem_inits(m, id, mi).and_then(|_| super::exec::exec(m, &body)),
+        None => super::exec::exec(m, &body),
+    };
     m.depth -= 1;
     let mut frame = m.frames.pop().unwrap_or_default();
     for b in frame.blocks.drain(..) {

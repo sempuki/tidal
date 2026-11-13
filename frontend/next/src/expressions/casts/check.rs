@@ -166,6 +166,11 @@ pub fn named_cast(cx: &mut Check, n: &Node) -> Expr {
     if to.is_error() || e.ty.is_error() {
         return bad(span);
     }
+    // CAST rules: static_cast to a class is a direct-initialization.
+    if kw == "static_cast" && to.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) && e.ty.nonref().unqual().t != to.unqual().t {
+        let Some(i) = crate::classes::constructors::check::construct_init(cx, &to, vec![e], false, false, span) else { return bad(span) };
+        return Expr::new(EK::List(Box::new(i)), to.unqual(), Cat::PR, span);
+    }
     let k = match kw {
         "static_cast" => Kind::Static,
         "const_cast" => Kind::Const,
@@ -264,6 +269,38 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
         return e;
     }
     let args: Vec<&Node> = n.child("expression_list").map(|l| l.children("argument").collect()).unwrap_or_default();
+    // NAM-40: a function or variable of the class's name hides the class,
+    // so the form is a call, which the parser read as a cast.
+    if let Some(c) = to.class() {
+        let name = cx.u.classes[c].name.clone();
+        if cx.source(ct) == *name && crate::foundations::names::check::lookup(cx, &name).iter().any(|&e| !matches!(cx.u.entities[e].kind, crate::sem::EntKind::Class(_))) {
+            let t = cx.unsupported(span, "a name that a function or variable hides a class of (build step 4)");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        }
+    }
+    // A class with constructors: one of them makes the object (CTOR-25).
+    if to.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        let mut es = Vec::new();
+        for a in &args {
+            let Some(c) = first_node(a) else { return bad(span) };
+            if c.prod == "braced_init" {
+                let t = cx.unsupported(span, "a braced list as a constructor argument (build step 4)");
+                return Expr::new(EK::Int(0), t, Cat::PR, span);
+            }
+            let e = expr(cx, c);
+            if e.ty.is_error() {
+                return bad(span);
+            }
+            es.push(e);
+        }
+        if es.len() == 1 && es[0].ty.nonref().unqual().t == to.unqual().t {
+            let mut x = rvalue(cx, es.remove(0));
+            x.span = span;
+            return x;
+        }
+        let Some(i) = crate::classes::constructors::check::construct_init(cx, &to, es, false, false, span) else { return bad(span) };
+        return Expr::new(EK::List(Box::new(i)), to.unqual(), Cat::PR, span);
+    }
     // A class: `T()` value-initializes, `T(x)` copies a T; any other
     // form needs a constructor.
     if to.is_class() && args.len() <= 1 {

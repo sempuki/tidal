@@ -24,6 +24,18 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
     if e.ty.is_error() || to.is_error() {
         return None;
     }
+    // CTOR-10: a converting constructor makes the object.
+    if let Some(c) = to.class().filter(|&c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        if e.ty.nonref().unqual().t != Type::Class(c) {
+            let span = e.span;
+            if e.ty.nonref().class().is_some() {
+                cx.unsupported(span, "a conversion between classes by a constructor (build step 4)");
+                return None;
+            }
+            let i = crate::classes::constructors::check::construct_init(cx, to, vec![e], false, true, span)?;
+            return Some(Expr::new(EK::List(Box::new(i)), to.unqual(), crate::sem::tree::Cat::PR, span));
+        }
+    }
     if to.is_array() {
         if let (EK::Str(_), Type::Array(..)) = (&e.k, &to.t) {
             return Some(e);
@@ -112,6 +124,50 @@ fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<In
     let ns = nodes(init);
     if ty.is_ref() {
         return references::check::initializer(cx, ty, init);
+    }
+    // A class with constructors (CTOR-25): a parenthesized or braced list
+    // chooses a constructor; `= e` copies a value of the class or
+    // converts by a converting constructor.
+    if ty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
+            let items: Vec<&Node> = b.children("init_clause").collect();
+            let mut args = Vec::new();
+            for it in items {
+                let c = first_node(it)?;
+                if c.prod == "braced_init" || c.prod == "designator" {
+                    cx.unsupported(c.span, "a braced list as a constructor argument (build step 4)");
+                    return None;
+                }
+                let e = expr(cx, c);
+                if e.ty.is_error() {
+                    return None;
+                }
+                args.push(e);
+            }
+            return crate::classes::constructors::check::construct_init(cx, ty, args, true, words.first() == Some(&"="), init.span);
+        }
+        if words.first() == Some(&"(") {
+            let list: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
+            let mut args = Vec::new();
+            for a in list {
+                let c = first_node(a)?;
+                if c.prod == "braced_init" {
+                    cx.unsupported(c.span, "a braced list as a constructor argument (build step 4)");
+                    return None;
+                }
+                let e = expr(cx, c);
+                if e.ty.is_error() {
+                    return None;
+                }
+                args.push(e);
+            }
+            if args.len() == 1 && args[0].ty.nonref().unqual().t == ty.unqual().t {
+                return copy_init(cx, args.remove(0), ty, "INIT-7").map(Init::Expr);
+            }
+            return crate::classes::constructors::check::construct_init(cx, ty, args, false, false, init.span);
+        }
+        let e = expr(cx, ns.first()?);
+        return copy_init(cx, e, ty, "INIT-7").map(Init::Expr);
     }
     if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
         let r = list::check::list_init(cx, b, ty, name);
@@ -467,7 +523,13 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 return None;
             }
             // A class gets the default member initializers of its members.
-            if ty.base_elem().is_class() {
+            if ty.base_elem().class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+                if s.thread_local {
+                    cx.unsupported(span, "a thread_local object of a class with constructors (build step 4)");
+                    return None;
+                }
+                crate::classes::constructors::check::default_init(cx, &ty, span)?
+            } else if ty.base_elem().is_class() {
                 if !crate::classes::members::check::check_default_init(cx, &ty, span) {
                     return None;
                 }
@@ -485,6 +547,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         Init::Zero => true,
         Init::List(items) => items.iter().all(|i| constant_part(cx, i, ty.base_elem().is_class())),
         Init::Default => storage != Storage::Automatic,
+        Init::Ctor(..) => ce::is_constant(cx, &Expr::new(EK::List(Box::new(init_value.clone())), ty.unqual(), crate::sem::tree::Cat::PR, span)),
     };
     if let Some(v) = cx.u.var_mut(id) {
         // A later declaration without an initializer, such as `extern`
@@ -526,6 +589,7 @@ fn constant_part(cx: &Check, i: &Init, class: bool) -> bool {
         Init::Default => !class,
         Init::List(xs) => xs.iter().all(|x| constant_part(cx, x, class)),
         Init::Ref(_) => false,
+        Init::Ctor(..) => false,
     }
 }
 
@@ -540,6 +604,18 @@ fn has_default_part(i: &Init) -> bool {
 }
 
 fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'static str, static_storage: bool) {
+    // A constructor call: the value it gives has a value in each part
+    // (CE-21).
+    if let Init::Ctor(f, _) = init {
+        let Some(c) = cx.u.func(*f).and_then(|x| x.class) else { return };
+        let e = Expr::new(EK::List(Box::new(init.clone())), QType::new(Type::Class(c)), crate::sem::tree::Cat::PR, span);
+        match ce::evaluate(cx, &e) {
+            Ok(v) if v.has_empty_part() => ce::report(cx, span, rule, ("CE-21", "a part of the value has no value".into())),
+            Ok(_) => {}
+            Err(why) => ce::report(cx, span, rule, why),
+        }
+        return;
+    }
     if let Init::List(_) = init {
         if has_default_part(init) {
             ce::report(cx, span, rule, ("CE-21", "a part of the value has no value".into()));

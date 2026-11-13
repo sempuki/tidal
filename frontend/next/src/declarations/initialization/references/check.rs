@@ -69,6 +69,10 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
         cx.error(span, "REF-10", "an rvalue reference bound to an lvalue");
         return None;
     }
+    if inner.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        let v = crate::declarations::initialization::forms::check::copy_init(cx, e, &inner.unqual(), rule)?;
+        return Some(v.conv(Conv::Materialize, inner, Cat::L));
+    }
     let v = match conv::implicit(cx, e, &inner.unqual(), false) {
         Ok(v) => v,
         Err(m) => {

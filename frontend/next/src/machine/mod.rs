@@ -97,6 +97,14 @@ pub enum Val {
 }
 
 impl Val {
+    /// A part of the value has no value.
+    pub fn has_empty_part(&self) -> bool {
+        match self {
+            Val::Uninit => true,
+            Val::Agg(xs) => xs.iter().any(|x| x.has_empty_part()),
+            _ => false,
+        }
+    }
     pub fn int(&self) -> Option<i128> {
         match self {
             Val::Int(v) => Some(*v),
@@ -196,6 +204,9 @@ pub struct Machine<'a> {
     /// address (CAST-16, `foundations::storage::run`).
     pub addrs: HashMap<usize, u64>,
     pub next_addr: u64,
+    /// The objects whose constructors run, which are not const or
+    /// volatile yet (VOL-2, CTOR-11).
+    pub constructing: Vec<usize>,
 }
 
 /// One read or write of a place while unsequenced operands run, with the
@@ -232,6 +243,7 @@ impl<'a> Machine<'a> {
             seq_watch: Vec::new(),
             addrs: HashMap::new(),
             next_addr: 0x1_0000,
+            constructing: Vec::new(),
         }
     }
 

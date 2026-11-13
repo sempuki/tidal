@@ -59,7 +59,9 @@ pub fn braced_value(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> 
 /// expression that converts without narrowing.
 pub fn scalar_list(cx: &mut Check, b: &Node, to: &QType, rule: &'static str) -> Option<Expr> {
     if to.base_elem().is_class() && !to.is_array() {
-        let i = aggregate(cx, b, to)?;
+        // A functional cast `T{...}` is direct-list-initialization; the
+        // other places of a braced list here copy (CTOR-9).
+        let i = aggregate_with(cx, b, to, rule != "CAST-11")?;
         return Some(Expr::new(EK::List(Box::new(i)), to.unqual(), Cat::PR, b.span));
     }
     let its = items(b);
@@ -144,7 +146,50 @@ pub fn list_init(cx: &mut Check, b: &Node, ty: &QType, name: &str) -> Option<Ini
 /// left out (brace elision). A list for a class that is not an aggregate
 /// waits for constructors.
 pub fn aggregate(cx: &mut Check, b: &Node, ty: &QType) -> Option<Init> {
+    aggregate_with(cx, b, ty, false)
+}
+
+/// `aggregate`, for copy-list-initialization when `copy` is set.
+pub fn aggregate_with(cx: &mut Check, b: &Node, ty: &QType, copy: bool) -> Option<Init> {
     let its = items(b);
+    // A class with constructors: list-initialization by a constructor.
+    if let Some(c) = ty.class().filter(|&c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        let _ = c;
+        let mut args = Vec::new();
+        for it in &its {
+            let x = first_node(it)?;
+            if x.prod == "braced_init" || x.prod == "designator" {
+                cx.unsupported(x.span, "a braced list as a constructor argument (build step 4)");
+                return None;
+            }
+            let e = expr(cx, x);
+            if e.ty.is_error() {
+                return None;
+            }
+            args.push(e);
+        }
+        return crate::classes::constructors::check::construct_init(cx, ty, args, true, copy, b.span);
+    }
+    // LIST-10: one value of the class itself copies it.
+    if let (Some(c), [it]) = (ty.class(), its.as_slice()) {
+        if let Some(x) = first_node(it).filter(|x| !matches!(x.prod, "braced_init" | "designator")) {
+            let e = expr(cx, x);
+            if e.ty.is_error() {
+                return None;
+            }
+            if e.ty.nonref().class() == Some(c) {
+                return crate::declarations::initialization::forms::check::copy_init(cx, e, ty, "INIT-7").map(Init::Expr);
+            }
+            let mut cache: Vec<Option<Expr>> = vec![Some(e)];
+            let mut pos = 0;
+            let (init, _) = aggregate_from(cx, ty, &its, &mut cache, &mut pos, true)?;
+            if pos < its.len() {
+                cx.error(its[pos].span, "LIST-12", "the list has more values than the aggregate has members");
+                return None;
+            }
+            return Some(init);
+        }
+    }
     if let Some(c) = ty.class() {
         if its.is_empty() {
             return Some(crate::classes::members::check::value_init(cx, ty));
@@ -181,6 +226,11 @@ fn members(cx: &Check, ty: &QType, left: usize, top: bool) -> Option<Vec<(QType,
     }
 }
 
+/// The span of a list, for a diagnostic about a member it omits.
+fn b_span(its: &[&Node]) -> Span {
+    its.last().map(|n| n.span).unwrap_or_default()
+}
+
 /// The value of a list item, evaluated once.
 fn item_value(cx: &mut Check, its: &[&Node], cache: &mut [Option<Expr>], k: usize) -> Option<Expr> {
     if cache[k].is_none() {
@@ -202,7 +252,14 @@ fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option
             if ty.is_array() && matches!(ty.t, Type::Array(_, None)) {
                 break;
             }
-            out.push(dmi.unwrap_or_else(|| crate::classes::members::check::value_init(cx, &mty)));
+            let v = dmi.unwrap_or_else(|| crate::classes::members::check::value_init(cx, &mty));
+            if let Init::Ctor(f, _) = &v {
+                if cx.u.func(*f).is_some_and(|x| x.explicit) {
+                    cx.error(b_span(its), "LIST-16", "an omitted member is copy-initialized from an empty list, and its default constructor is explicit");
+                    return None;
+                }
+            }
+            out.push(v);
             continue;
         }
         let c = first_node(its[*pos])?;
@@ -216,6 +273,13 @@ fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option
             let e = item_value(cx, its, cache, *pos)?;
             if e.ty.is_error() {
                 return None;
+            }
+            // A member of a class with constructors takes the value by
+            // copy-initialization, with no brace elision.
+            if mty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+                *pos += 1;
+                out.push(Init::Expr(crate::declarations::initialization::forms::check::copy_init(cx, e, &mty, "INIT-7")?));
+                continue;
             }
             // A value of the member's class, or a string for a character
             // array, initializes the member itself.
@@ -290,10 +354,29 @@ fn designated(cx: &mut Check, b: &Node, c: crate::sem::types::ClassId) -> Option
         };
         given[k] = Some(v);
     }
-    Some(Init::List(fields.iter().zip(given).map(|(&f, g)| {
+    let list = Init::List(fields.iter().zip(given).map(|(&f, g)| {
         let x = cx.u.field(f).unwrap();
         g.or_else(|| x.init.clone()).unwrap_or_else(|| crate::classes::members::check::value_init(cx, &x.ty))
-    }).collect()))
+    }).collect::<Vec<_>>());
+    list.map_explicit(cx, b.span)
+}
+
+/// LIST-16 for a list with designators: an omitted member whose default
+/// constructor is explicit.
+trait MapExplicit {
+    fn map_explicit(self, cx: &mut Check, span: Span) -> Option<Init>;
+}
+
+impl MapExplicit for Init {
+    fn map_explicit(self, cx: &mut Check, span: Span) -> Option<Init> {
+        if let Init::List(xs) = &self {
+            if xs.iter().any(|x| matches!(x, Init::Ctor(f, a) if a.is_empty() && cx.u.func(*f).is_some_and(|y| y.explicit))) {
+                cx.error(span, "LIST-16", "an omitted member is copy-initialized from an empty list, and its default constructor is explicit");
+                return None;
+            }
+        }
+        Some(self)
+    }
 }
 
 /// An array from a braced list (LIST-3, LIST-5, DCL-19): at most one

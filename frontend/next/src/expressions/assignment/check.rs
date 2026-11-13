@@ -91,6 +91,14 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
         return bad(span);
     }
     crate::declarations::volatile::check::assignment(cx, &l.ty, span);
+    if op == "=" && l.ty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        // CPY rules: the implicit copy assignment takes a value that a
+        // converting constructor makes.
+        let lt = l.ty.unqual();
+        let Some(r) = crate::declarations::initialization::forms::check::copy_init(cx, r, &lt, "ASN-12") else { return bad(span) };
+        let t = l.ty.clone();
+        return Expr::new(EK::Assign(Box::new(l), Box::new(r)), t, Cat::L, span);
+    }
     if op == "=" {
         let r = match conv::implicit(cx, r, &l.ty, false) {
             Ok(r) => r,

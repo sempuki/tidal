@@ -252,15 +252,28 @@ pub enum Init {
     /// An array from a list: one initializer per element, the rest
     /// value-initialized.
     List(Vec<Init>),
+    /// A call of a constructor on the object, with its arguments
+    /// (`classes/constructors`).
+    Ctor(crate::sem::EntityId, Vec<Arg>),
 }
 
 impl Init {
     /// Whether `f` holds for an expression of the initializer, at any
     /// depth (Expr::any).
+    /// An initializer that runs a constructor somewhere in it.
+    pub fn constructs(&self) -> bool {
+        match self {
+            Init::Ctor(..) => true,
+            Init::List(xs) => xs.iter().any(|x| x.constructs()),
+            Init::Expr(e) => matches!(&e.k, EK::List(i) if i.constructs()),
+            _ => false,
+        }
+    }
     pub fn any(&self, f: &dyn Fn(&Expr) -> bool) -> bool {
         match self {
             Init::Expr(e) | Init::Ref(e) => e.any(f),
             Init::List(xs) => xs.iter().any(|x| x.any(f)),
+            Init::Ctor(_, args) => args.iter().any(|a| a.e.any(f)),
             Init::Default | Init::Zero => false,
         }
     }

@@ -908,8 +908,8 @@ fn classes_with_data_members() {
     // A class and a variable of one name in one scope: the variable hides
     // the class.
     assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
-    // Constructors wait for a later part.
-    assert_eq!(rule("struct S { S(); };"), Some("unsupported"));
+    // Destructors wait for a later part.
+    assert_eq!(rule("struct S { ~S(); };"), Some("unsupported"));
     // The bytes of a class, with padding.
     assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
 }
@@ -937,4 +937,32 @@ fn member_functions() {
     // class.
     assert_eq!(rule("struct C { static int f(int); }; int (*p)(int) = C::f;"), None);
     assert_eq!(rule("struct S { static int n; };"), Some("unsupported"));
+}
+
+#[test]
+fn constructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // Member initializers, delegation, explicit, converting constructors.
+    let p = "struct P { int a; int b; P() : a(1), b{2} {} P(int x) : P() { a = x; } explicit P(int x, int y) : a(x), b(y) {} int sum() const { return a + b; } };\n";
+    assert_eq!(run(&format!("{}P g(5);\nint main() {{ P p; P q(3); P r{{4, 5}}; P s = 6; P t = P(7, 8); return p.sum() + q.sum() * 10 + r.sum() * 100 + s.sum() * 1000 + g.a * 10000 + t.sum(); }}", p)), RunOutcome::Result(58968));
+    assert_eq!(rule(&format!("{}P p = {{1, 2}};", p)), Some("CTOR-9"));
+    // The object is constructed in its place, so `this` is its address.
+    assert_eq!(run("struct S { S* self; S() : self(this) {} }; int main() { S s; return s.self == &s; }"), RunOutcome::Result(1));
+    // Checks.
+    assert_eq!(rule("struct M { M(int); }; struct S { M m; }; S s;"), Some("CTOR-20"));
+    assert_eq!(rule("struct S { S(int); }; S s;"), Some("CTOR-19"));
+    assert_eq!(rule("struct S { S(int) : S('a') {} S(char) : S(1) {} };"), Some("CTOR-14"));
+    assert_eq!(rule("struct S { int a; S() : b(1) {} };"), Some("CTOR-15"));
+    assert_eq!(rule("struct S { S(); S(); };"), Some("CTOR-1"));
+    assert_eq!(rule("struct S { S() {} S(S) {} };"), Some("CPY-15"));
+    assert_eq!(rule("struct A { A(int) {} }; struct B { B(A) {} }; B b = 1;"), Some("CTOR-22"));
+    assert_eq!(rule("void nothing(); struct S { S() { return nothing(); } };"), Some("JMP-12"));
+    assert_eq!(rule("struct S { S(int) = delete; }; S s(1);"), Some("DEL-1"));
+    // A constant initializer through a constexpr constructor.
+    assert_eq!(rule("struct P { int x; constexpr P(int v) : x(v) {} }; constexpr P p(3); static_assert(p.x == 3);"), None);
+    assert_eq!(rule("struct P { int f; int s; constexpr P() : f(1) {} }; constinit P p;"), Some("CINIT-1"));
 }

@@ -390,10 +390,16 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     }
     let ty = v.ty.clone();
     let t = m.temps.len();
-    let val = init_value(m, &ty, init)?;
     let o = m.frames.last().unwrap().vars[&id];
-    m.objs[o].val = val;
-    m.objs[o].alive = true;
+    if crate::declarations::initialization::forms::run::constructs(init) {
+        m.objs[o].val = m.uninit(&ty);
+        m.objs[o].alive = true;
+        crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init)?;
+    } else {
+        let val = init_value(m, &ty, init)?;
+        m.objs[o].val = val;
+        m.objs[o].alive = true;
+    }
     m.objs[o].konst = ty.is_const();
     end_temps(m, t);
     Ok(())
@@ -419,9 +425,15 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     }
     m.check_size(&ty)?;
     let t = m.temps.len();
-    let val = init_value(m, &ty, init)?;
+    let o = if crate::declarations::initialization::forms::run::constructs(init) {
+        let o = m.new_obj(&ty, m.uninit(&ty), &m.u.entities[id].name.clone());
+        crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init)?;
+        o
+    } else {
+        let val = init_value(m, &ty, init)?;
+        m.new_obj(&ty, val, &m.u.entities[id].name.clone())
+    };
     end_temps(m, t);
-    let o = m.new_obj(&ty, val, &m.u.entities[id].name.clone());
     m.objs[o].konst = ty.is_const();
     if let Some(f) = m.frames.last_mut() {
         f.vars.insert(id, o);
@@ -474,6 +486,15 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
             m.temps.clear();
             m.global_refs.insert(id, p.clone());
             return Ok(p);
+        }
+        if crate::declarations::initialization::forms::run::constructs(&init) {
+            let o = m.new_obj(&v.ty, m.zero(&v.ty), &name);
+            m.objs[o].is_static = true;
+            m.objs[o].own = false;
+            m.globals.insert(id, o);
+            crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &v.ty, &init)?;
+            end_temps(m, 0);
+            return Ok(Ptr::whole(o));
         }
         let val = init_value(m, &v.ty, &init)?;
         let val = m.fill_zero(&v.ty, val);

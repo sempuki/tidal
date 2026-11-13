@@ -89,6 +89,12 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
             return mk(c, a, b, t, Cat::PR);
         }
     }
+    let converts = |cx: &Check, t: &QType| t.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c));
+    if converts(cx, &a.ty) || converts(cx, &b.ty) {
+        // COND-16: a conversion by a constructor between the operands.
+        let t = cx.unsupported(span, "a conditional operator whose operands convert by a constructor (build step 4)");
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    }
     cx.error(span, "COND-5", format!("the operands of types {} and {} have no common type", a.ty.show(), b.ty.show()));
     bad(span)
 }

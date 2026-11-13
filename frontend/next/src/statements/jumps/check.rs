@@ -67,6 +67,11 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
         };
     }
     let value = e.map(|c| expr(cx, c));
+    // JMP-12: a return in a constructor has no operand.
+    if value.is_some() && ctx.id.and_then(|f| cx.u.func(f)).is_some_and(|f| f.special != crate::sem::Special::None) {
+        cx.error(span, "JMP-12", "a return with an operand in a constructor");
+        return Stmt::new(SK::Null, span);
+    }
     if ctx.deduce && ctx.discarded > 0 {
         // RET-1: a return in a discarded statement deduces nothing.
         return Stmt::new(SK::Null, span);

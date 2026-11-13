@@ -30,6 +30,8 @@ pub struct Specs {
     pub mutable: bool,
     pub register: bool,
     pub constexpr: bool,
+    /// `explicit` on a constructor (CTOR-9).
+    pub explicit: bool,
     pub consteval: bool,
     pub constinit: bool,
     pub inline: bool,
@@ -139,6 +141,7 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
             ("consteval", _) => s.consteval = true,
             ("constinit", _) => s.constinit = true,
             ("inline", _) => s.inline = true,
+            ("explicit", _) if cx.member_of.is_some() && !cx.has_word(d, "(") => s.explicit = true,
             ("friend" | "virtual" | "explicit", _) => {
                 s.unsupported = true;
                 cx.unsupported(d.span, format!("the specifier '{}'", word));
@@ -146,6 +149,8 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
             _ => {
                 if let Some(Kid::Node(x)) = d.kids.first() {
                     match x.prod {
+                        // CTOR-9: `explicit` on a constructor.
+                        "explicit_spec" if cx.member_of.is_some() && !cx.has_word(x, "(") => s.explicit = true,
                         "storage_class" if cx.first_word(x) == "register" => s.register = true,
                         "storage_class" => {
                             let w = cx.first_word(x);

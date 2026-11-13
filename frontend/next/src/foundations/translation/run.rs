@@ -151,6 +151,13 @@ pub fn run_program(u: &Unit) -> RunOutcome {
         for (id, o) in dynamic {
             let v = u.var(id).unwrap();
             if let Some(init) = &v.init {
+                if crate::declarations::initialization::forms::run::constructs(init) {
+                    crate::declarations::initialization::forms::run::construct(&mut m, &crate::machine::Ptr::whole(o), &v.ty, init)?;
+                    for t in m.temps.drain(..) {
+                        m.objs[t].alive = false;
+                    }
+                    continue;
+                }
                 let val = crate::machine::eval::init_value(&mut m, &v.ty, init)?;
                 let val = m.fill_zero(&v.ty, val);
                 m.objs[o].val = val;

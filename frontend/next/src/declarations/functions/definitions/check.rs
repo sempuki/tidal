@@ -211,6 +211,8 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 defined: deleted,
                 unsupported: if deduce { Some("a deduced return type that no definition gave".into()) } else { None },
                 class: cx.member_of,
+                special: crate::sem::Special::None,
+                explicit: false,
                 member_static: cx.member_of.is_some() && s.is_static,
                 obj_cv: d.obj_cv,
             };
@@ -255,6 +257,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
                 match i {
                     Init::Expr(e) | Init::Ref(e) => local_in(cx, e),
                     Init::List(xs) => xs.iter().find_map(|x| init(cx, x)),
+                    Init::Ctor(_, args) => args.iter().find_map(|a| local_in(cx, &a.e)),
                     Init::Default | Init::Zero => None,
                 }
             }
@@ -291,6 +294,9 @@ fn default_arguments(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
 pub fn function_definition(cx: &mut Check, n: &Node) {
     if cx.in_function() {
         cx.error(n.span, "FN-9", "a function definition inside a function body");
+        return;
+    }
+    if n.child("decl_specifiers").is_none() && crate::classes::constructors::check::out_of_class(cx, n) {
         return;
     }
     let (attrs, _) = crate::declarations::check::leading_attrs(cx, n);
@@ -338,7 +344,13 @@ fn mark_unsupported(cx: &mut Check, id: EntityId, why: &str) {
 
 /// Check a function body with the parameters declared (FN-1, FN-12,
 /// FN-13), and record it.
-fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
+pub fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
+    define_with(cx, id, d, cs, None)
+}
+
+/// `define`, with the member initializer list of a constructor, which
+/// sees the parameters (CTOR-5).
+pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_init: Option<&Node>) {
     let saved_scope = cx.scope;
     let decl_scope = cx.u.entities[id].scope;
     cx.scope = decl_scope;
@@ -415,6 +427,12 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     let saved = cx.func.replace(ctx);
     let errors_before = cx.errors();
     let unsup_before = cx.u.diags.iter().filter(|d| d.sev == crate::diag::Severity::Unsupported).count();
+    if cx.u.func(id).is_some_and(|f| f.special == crate::sem::Special::Ctor) {
+        let mi = crate::classes::constructors::check::mem_inits(cx, id, ctor_init);
+        if let Some(mi) = mi {
+            cx.u.mem_inits.insert(id, mi);
+        }
+    }
     let body = crate::statements::check::function_body(cx, cs);
     let ctx = cx.func.take().unwrap_or_default();
     cx.func = saved;
@@ -487,7 +505,7 @@ fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
         }
     };
     let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().enumerate().skip(cx.u.first_entity).filter_map(|(id, e)| match &e.kind {
-        EntKind::Var(v) if !v.param && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) && !crate::declarations::initialization::forms::check::is_read(cx, id) => Some((e.span, e.name.clone())),
+        EntKind::Var(v) if !v.param && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) && !crate::declarations::initialization::forms::check::is_read(cx, id) && !v.init.as_ref().is_some_and(|i| i.constructs()) => Some((e.span, e.name.clone())),
         _ => None,
     }).collect();
     for (span, name) in found {

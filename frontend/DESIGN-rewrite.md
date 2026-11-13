@@ -487,15 +487,20 @@ non-static data members and member functions has its layout, aggregate
 initialization with brace elision and designators, member access,
 copies, and its bytes. Member functions, defined in the class or out of
 it, and static member functions have `this`, calls with the implicit
-object parameter in overload resolution, and access control. The
+object parameter in overload resolution, and access control.
+Constructors have member initializer lists, delegation, `= default`,
+`= delete`, and `explicit`, and the machine constructs each object in
+its place, so `this` in a constructor is the object's address. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. A static data member, a constructor or destructor, an
-operator function, a base, a union, a bit-field, a pointer to member, a
-member function of a local or nested class, and a member function with
-a default argument or a noexcept operand are unsupported, so a unit that
-has one gives no verdict.
+another entity. A static data member, a destructor, a user-declared
+copy or move constructor, an operator function, a base, a union, a
+bit-field, a pointer to member, a member function of a local or nested
+class, a member function with a default argument or a noexcept
+operand, and a user-defined conversion in overload resolution with
+several candidates are unsupported, so a unit that has one gives no
+verdict.
 
 Model sections 1, 2, and 5 come first because section 2 needs the marks
 of section 1, and section 5 needs both. Section 3 needs the marks for

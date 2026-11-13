@@ -107,10 +107,11 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     let mut access = if key == ClassKey::Class { Access::Private } else { Access::Public };
     let mut inits: Vec<(EntityId, &Node)> = Vec::new();
     let mut bodies: Vec<&Node> = Vec::new();
+    let mut ctor_bodies: Vec<(EntityId, &Node)> = Vec::new();
     let mut ok = true;
     let outer = cx.member_of.replace(id);
     for m in n.children("member_decl") {
-        if !member(cx, id, m, &mut access, &mut inits, &mut bodies) {
+        if !member(cx, id, m, &mut access, &mut inits, &mut bodies, &mut ctor_bodies) {
             ok = false;
             break;
         }
@@ -151,6 +152,10 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             for b in bodies {
                 crate::declarations::functions::definitions::check::function_definition(cx, b);
             }
+            for (f, b) in ctor_bodies {
+                crate::classes::constructors::check::define(cx, f, b);
+            }
+            crate::classes::constructors::check::end_of_class(cx, id, head.span);
         }
     }
     cx.member_of = outer;
@@ -160,8 +165,37 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
 
 /// One `member_decl`. False after an unsupported member. A member
 /// function's body waits in `bodies` for the complete class.
-fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>) -> bool {
+#[allow(clippy::too_many_arguments)]
+fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>, ctor_bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
     let Some(first) = first_node(m) else { return true };
+    // A constructor or destructor: a declarator with the class's name.
+    if first.prod == "member_declarator" {
+        return match first.child("declarator") {
+            Some(dn) if crate::classes::constructors::check::special_name(cx, id, dn).is_some() => crate::classes::constructors::check::member(cx, id, None, dn, None, *access, ctor_bodies),
+            _ => {
+                cx.unsupported(m.span, "a member declaration of this form (build step 4)");
+                false
+            }
+        };
+    }
+    if first.prod == "function_definition" {
+        if let Some(dn) = first.child("declarator").filter(|dn| crate::classes::constructors::check::special_name(cx, id, dn).is_some()) {
+            let specs = match first.child("decl_specifiers") {
+                Some(ds) => {
+                    let s = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+                    if s.ty.is_some() {
+                        None
+                    } else {
+                        Some(s)
+                    }
+                }
+                None => Some(Default::default()),
+            };
+            if let Some(specs) = specs {
+                return crate::classes::constructors::check::member(cx, id, Some(&specs), dn, Some(first), *access, ctor_bodies);
+            }
+        }
+    }
     match first.prod {
         "access_label" => {
             *access = match first.find("access_specifier").map(|a| cx.first_word(a)) {
@@ -228,6 +262,10 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 cx.unsupported(m.span, "a member of this kind (a typedef or a nested type; build step 4)");
                 return false;
             }
+            if specs.explicit && specs.ty.is_some() {
+                cx.error(m.span, "CTOR-9", "explicit on a member that is not a constructor");
+                return true;
+            }
             // CLS-9: no `mutable` with `const`.
             if specs.mutable && specs.ty.as_ref().is_some_and(|t| t.c) {
                 cx.error_cause(m.span, "CLS-9", Some("STO-6"), "a mutable data member that is const");
@@ -238,6 +276,12 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     cx.unsupported(md.span, "a bit-field (build step 4)");
                     return false;
                 };
+                if specs.ty.is_none() && crate::classes::constructors::check::special_name(cx, id, dn).is_some() {
+                    if !crate::classes::constructors::check::member(cx, id, Some(&specs), dn, None, *access, ctor_bodies) {
+                        return false;
+                    }
+                    continue;
+                }
                 if md.kids.len() > 1 && md.child("member_init").is_none() {
                     cx.unsupported(md.span, "a member declarator of this form (build step 4)");
                     return false;
@@ -427,6 +471,15 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
             continue;
         }
         let base = x.ty.base_elem();
+        // CTOR-3: a member whose class has no usable default constructor.
+        if let Some(d) = base.class().filter(|&d| crate::classes::constructors::check::has_ctors(cx, d)) {
+            let ok = crate::classes::constructors::check::ctors(cx, d).into_iter().any(|g| cx.u.func(g).is_some_and(|y| y.ty.params.is_empty() && !y.deleted) && accessible_from(cx, g, c));
+            if !ok {
+                cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the member '{}' has no usable default constructor", cx.u.entities[f].name));
+                return false;
+            }
+            continue;
+        }
         if base.c && (base.is_scalar() || base.class().is_some_and(|d| !const_default_ok(cx, d))) {
             cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the const member '{}' has no initializer", cx.u.entities[f].name));
             return false;
@@ -442,13 +495,16 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
 /// 4 part a has no constructors, bases, or virtual functions (LIST
 /// rules).
 pub fn is_aggregate(cx: &Check, c: ClassId) -> bool {
-    cx.u.classes[c].fields.iter().all(|&f| cx.u.field(f).is_some_and(|x| x.access == Access::Public))
+    !crate::classes::constructors::check::has_ctors(cx, c) && cx.u.classes[c].fields.iter().all(|&f| cx.u.field(f).is_some_and(|x| x.access == Access::Public))
 }
 
 /// Default-initialization of an object of type `ty`: each data member
 /// gets its default member initializer or its own default-initialization
 /// (INIT rules).
 pub fn default_init(cx: &Check, ty: &QType) -> Init {
+    if ty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        return value_init(cx, ty);
+    }
     match &ty.t {
         Type::Class(c) => Init::List(cx.u.classes[*c].fields.iter().map(|&f| {
             let x = cx.u.field(f).unwrap();
@@ -462,6 +518,15 @@ pub fn default_init(cx: &Check, ty: &QType) -> Init {
 /// Value-initialization of an object of type `ty`: each data member gets
 /// its default member initializer or its own value-initialization.
 pub fn value_init(cx: &Check, ty: &QType) -> Init {
+    if let Some(c) = ty.class().filter(|&c| crate::classes::constructors::check::has_ctors(cx, c)) {
+        // The default constructor (CTOR-19 reports a missing one where
+        // the class is initialized).
+        let d = crate::classes::constructors::check::ctors(cx, c).into_iter().find(|&f| cx.u.func(f).is_some_and(|x| x.ty.params.is_empty() && !x.deleted));
+        return match d {
+            Some(f) => Init::Ctor(f, Vec::new()),
+            None => Init::Default,
+        };
+    }
     match &ty.t {
         Type::Class(c) => Init::List(cx.u.classes[*c].fields.iter().map(|&f| {
             let x = cx.u.field(f).unwrap();
@@ -522,6 +587,11 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
         }
         _ => cx_unsupported(cx, span, "a member function named outside a call, or a member of this kind"),
     }
+}
+
+/// The access of a member from the members of another class: public.
+fn accessible_from(cx: &Check, f: EntityId, _from: ClassId) -> bool {
+    cx.u.access.get(&f).copied().unwrap_or(Access::Public) == Access::Public
 }
 
 /// The access of a member (ACC-2): public, or named inside a member

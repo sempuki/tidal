@@ -100,6 +100,19 @@ fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
 
 /// Overload resolution with the object of a member call, if any.
 pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
+    // A conversion by a converting constructor is a user-defined
+    // conversion sequence, which a later piece models (ICS-4).
+    if cands.len() > 1 {
+        let udc = cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| {
+            f.ty.params.iter().zip(args).any(|(p, a)| {
+                p.nonref().class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c) && a.ty.nonref().class() != Some(c))
+            })
+        });
+        if udc {
+            cx.unsupported(span, "a user-defined conversion by a constructor in overload resolution (build step 4)");
+            return None;
+        }
+    }
     let (merged, differ) = merge_c_functions(cx, cands, args.len());
     let cands = &merged[..];
     let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
@@ -121,7 +134,7 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
         }
         let mut seqs = Vec::new();
         let mut ok = true;
-        let member = func.class.is_some() && !func.member_static;
+        let member = func.class.is_some() && !func.member_static && func.special == crate::sem::Special::None;
         match object {
             Some(o) => match object_sequence(cx, f, o) {
                 Some(s) => seqs.push(s),
