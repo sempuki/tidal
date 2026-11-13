@@ -315,3 +315,18 @@ fn default_arguments_belong_to_function_declarations() {
     assert_eq!(rule("void g() { int local = 1; int f(int v = local); }"), Some("DEFARG-4"));
     assert_eq!(rule("void g() { int local = 1; int f(int v = sizeof(local)); }"), None);
 }
+
+#[test]
+fn namespaces_inline_aliases_and_qualified_definitions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("namespace a { int x; } namespace b = a; namespace b { int y; }"), Some("NS-14"));
+    assert_eq!(rule("namespace A { inline namespace B { int x; } int x; } int y = A::x;"), Some("NAM-26"));
+    assert_eq!(rule("namespace A { inline namespace B { int x; } } int y = A::x;"), None);
+    assert_eq!(rule("namespace s { int f(); } namespace g { using namespace s; } int g::f() { return 0; }"), Some("NS-15"));
+    assert_eq!(rule("namespace g { namespace { int f(); } } int g::f() { return 0; }"), Some("NS-15"));
+    assert_eq!(rule("namespace N {} int N::x = 7;"), Some("NS-15"));
+    assert_eq!(rule("namespace N { inline namespace V { extern int x; } } int N::x = 7;"), None);
+}

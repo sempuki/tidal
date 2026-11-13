@@ -281,7 +281,13 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     }
     // A qualified name defines a variable that its scope declared.
     let scope = match d.qual {
-        names::Qual::Scope(sc) => sc,
+        names::Qual::Scope(sc) => match crate::declarations::namespaces::check::member_home(cx, sc, &name, |k| matches!(k, EntKind::Var(_))) {
+            Some(home) => home,
+            None => {
+                crate::declarations::namespaces::check::member_not_declared(cx, span, &name);
+                return None;
+            }
+        },
         names::Qual::None => cx.scope,
         _ => return None,
     };

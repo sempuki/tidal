@@ -10,6 +10,11 @@ use crate::syntax::{Kid, Node};
 fn open(cx: &mut Check, name: &str, inline: bool, span: crate::source::Span) -> Option<ScopeId> {
     for e in names::declared_here(cx, cx.scope, name) {
         match cx.u.entities[e].kind {
+            EntKind::Namespace(s) if &*cx.u.scopes[s].name != name || cx.u.scopes[s].parent != Some(cx.scope) => {
+                // NS-14: a namespace alias does not reopen its namespace.
+                cx.error(span, "NS-14", format!("'{}' is a namespace alias, which a namespace definition cannot reopen", name));
+                return None;
+            }
             EntKind::Namespace(s) => {
                 // NS-12: `inline` only on the first definition, and a
                 // namespace first defined without it stays without it.
@@ -212,4 +217,23 @@ pub fn qualified_place(cx: &mut Check, member_scope: ScopeId, span: crate::sourc
         s = cx.u.scopes[x].parent;
     }
     cx.error(span, "NS-15", format!("the definition of '{}' is not in a namespace that encloses its namespace", name));
+}
+
+/// NS-15: the namespace that declares the member `name` of `ns` that a
+/// qualified definition defines: `ns` itself or one of its inline
+/// namespaces. A declaration that a using-directive or an unnamed
+/// namespace makes visible does not count.
+pub fn member_home(cx: &Check, ns: ScopeId, name: &str, keep: impl Fn(&crate::sem::EntKind) -> bool) -> Option<ScopeId> {
+    let mut work = vec![ns];
+    while let Some(s) = work.pop() {
+        if crate::foundations::names::check::declared_here(cx, s, name).iter().any(|&e| keep(&cx.u.entities[e].kind)) {
+            return Some(s);
+        }
+        for (i, sc) in cx.u.scopes.iter().enumerate() {
+            if sc.parent == Some(s) && sc.inline && !sc.name.is_empty() {
+                work.push(i);
+            }
+        }
+    }
+    None
 }

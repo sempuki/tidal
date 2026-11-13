@@ -46,7 +46,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     let (name, span) = d.name.clone()?;
     let scope = match d.qual {
         // A member of an inline namespace of the named one (NS-15).
-        names::Qual::Scope(sc) => names::lookup_in(cx, sc, &name).iter().find(|&&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).map(|&e| cx.u.entities[e].scope).unwrap_or(sc),
+        names::Qual::Scope(sc) => crate::declarations::namespaces::check::member_home(cx, sc, &name, |k| matches!(k, EntKind::Func(_))).unwrap_or(sc),
         names::Qual::None => cx.scope,
         _ => return None,
     };

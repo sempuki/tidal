@@ -97,10 +97,26 @@ pub fn lookup(cx: &Check, name: &str) -> Vec<EntityId> {
 /// own declarations first, then the namespaces that its using-directives
 /// and inline or unnamed namespaces name.
 pub fn lookup_in(cx: &Check, s: ScopeId, name: &str) -> Vec<EntityId> {
-    if let Some(own) = cx.u.scopes[s].names.get(name) {
-        if !own.is_empty() {
-            return own.clone();
+    // NS-12: a namespace and its inline namespaces count as one, so a
+    // name declared in both is found twice.
+    let mut found: Vec<EntityId> = Vec::new();
+    let mut work = vec![s];
+    while let Some(x) = work.pop() {
+        for &e in cx.u.scopes[x].names.get(name).map(|v| v.as_slice()).unwrap_or(&[]) {
+            if !found.contains(&e) {
+                found.push(e);
+            }
         }
+        if cx.u.scopes[x].kind == ScopeKind::Namespace {
+            for (i, sc) in cx.u.scopes.iter().enumerate() {
+                if sc.parent == Some(x) && sc.inline && !sc.name.is_empty() && sc.kind == ScopeKind::Namespace {
+                    work.push(i);
+                }
+            }
+        }
+    }
+    if !found.is_empty() {
+        return found;
     }
     in_scope(cx, s, name, &mut Vec::new())
 }
