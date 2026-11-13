@@ -428,3 +428,22 @@ fn small_declaration_checks() {
     assert_eq!(rule("static int h(); int main() { return h(); }"), Some("ODR-9"));
     assert_eq!(rule("static int h(); int main() { return sizeof(h()) == 4 ? 0 : 1; }"), None);
 }
+
+#[test]
+fn jumps_into_statements() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("void f() { goto in; if constexpr (true) { in:; } }"), Some("IF-17"));
+    assert_eq!(rule("void f(int k) { switch (k) { case 0: if constexpr (true) { case 1:; } } }"), Some("IF-17"));
+    assert_eq!(rule("void f() { if constexpr (true) { goto in; in:; } }"), None);
+    assert_eq!(rule("void f(int k) { if constexpr (true) { switch (k) { case 1:; } } }"), None);
+    assert_eq!(rule("int a[2]; int f() { goto in; for (int x : a) { in: return x; } return 0; }"), Some("JMP-6"));
+    assert_eq!(rule("int a[2]; int f() { for (int x : a) { goto in; in: return x; } return 0; }"), None);
+    assert_eq!(rule("int g(); int f() { goto in; while (int v = g()) { in: return v; } return 0; }"), Some("JMP-6"));
+    assert_eq!(rule("int g(); int f() { while (int v = g()) { goto in; in: return v; } return 0; }"), None);
+    assert_eq!(rule("int& keep(int v) { return v; }"), Some("REF-9"));
+    assert_eq!(rule("int& keep(int& v) { return v; }"), None);
+    assert_eq!(rule("int&& keep(int v) { return v; }"), None);
+}

@@ -97,12 +97,18 @@ pub fn range_for_stmt(cx: &mut Check, n: &Node) -> Stmt {
         };
         let vs = cx.enter(ScopeKind::Block);
         let var = names::declare_in(cx, vs, &name, EntKind::Var(local_var(ty, None)), span, Linkage::None);
+        // JMP-6: a jump into the body skips the initialization of the
+        // range and of the loop variable.
         if let Some(f) = cx.func.as_mut() {
             f.pending_labels = labels.clone();
+            f.live.extend([range_id, var]);
         }
         let id = push_target(cx, true);
         let body = n.child("statement").map(|b| sub_statement(cx, b, Some((vs, "RFOR-6"))));
         pop_target(cx);
+        if let Some(f) = cx.func.as_mut() {
+            f.live.truncate(f.live.len() - 2);
+        }
         let Some(body) = body else { return Stmt::new(SK::Null, n.span) };
         Stmt::new(SK::RangeArray { id, init, range: range_id, range_init, var, bound, body: Box::new(body) }, n.span)
     })();

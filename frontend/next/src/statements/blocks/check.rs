@@ -131,7 +131,8 @@ fn wrap(cx: &mut Check, l: &Node, case: Option<Stmt>, s: Stmt, live: Vec<usize>)
         if f.labels.contains_key(&name) {
             cx.error(l.span, "JMP-14", format!("the label '{}' is defined twice in the function", name));
         } else {
-            f.labels.insert(name.clone(), (l.span, live));
+            let ifs = f.constexpr_ifs.clone();
+            f.labels.insert(name.clone(), (l.span, live, ifs));
         }
     }
     Stmt::new(SK::Label(name, Box::new(s)), l.span)

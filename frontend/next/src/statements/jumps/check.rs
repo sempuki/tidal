@@ -37,7 +37,8 @@ pub fn jump_stmt(cx: &mut Check, n: &Node) -> Stmt {
             let Some(name) = n.kids.get(1).map(|k| Rc::<str>::from(cx.text(k))) else { return Stmt::new(SK::Null, span) };
             let live = cx.func.as_ref().map(|f| f.live.clone()).unwrap_or_default();
             if let Some(f) = cx.func.as_mut() {
-                f.gotos.push((name.clone(), span, live));
+                let ifs = f.constexpr_ifs.clone();
+                f.gotos.push((name.clone(), span, live, ifs));
             }
             Stmt::new(SK::Goto(name), span)
         }
@@ -128,10 +129,16 @@ fn finish(cx: &mut Check, value: Option<crate::sem::tree::Expr>, ret: &QType, sp
             }
             let _ = ctx;
             // JMP-10: a local variable or parameter named in a return is
-            // an xvalue where the return type is an rvalue reference.
+            // an xvalue, so it does not bind to an lvalue reference
+            // return type (JMP-15).
             let mut v = v;
-            if let (crate::sem::types::Type::Ref(_, true), crate::sem::tree::EK::Var(id)) = (&ret.t, &v.k) {
-                if cx.u.var(*id).is_some_and(|x| x.storage == crate::sem::Storage::Automatic && (!x.ty.is_ref() || matches!(x.ty.t, crate::sem::types::Type::Ref(_, true)))) {
+            if let (true, crate::sem::tree::EK::Var(id)) = (ret.is_ref(), &v.k) {
+                let movable = |x: &crate::sem::Var| match &x.ty.t {
+                    crate::sem::types::Type::Ref(t, true) => !t.is_volatile(),
+                    crate::sem::types::Type::Ref(_, false) => false,
+                    _ => !x.ty.is_volatile(),
+                };
+                if cx.u.var(*id).is_some_and(|x| x.storage == crate::sem::Storage::Automatic && movable(x)) {
                     v.cat = crate::sem::tree::Cat::X;
                 }
             }
@@ -150,16 +157,20 @@ fn finish(cx: &mut Check, value: Option<crate::sem::tree::Expr>, ret: &QType, sp
 }
 
 /// At the end of a function: each `goto` names a label of the function
-/// (JMP-14) and skips no initialization (JMP-6).
+/// (JMP-14), skips no initialization (JMP-6), and enters no branch of
+/// `if constexpr` (IF-17).
 pub fn end_of_function(cx: &mut Check, ctx: &FnCtx) {
-    for (name, span, live) in &ctx.gotos {
+    for (name, span, live, ifs) in &ctx.gotos {
         match ctx.labels.get(name) {
             None => {
                 cx.error(*span, "JMP-14", format!("the label '{}' is not defined in the function", name));
             }
-            Some((_, at)) => {
+            Some((_, at, at_ifs)) => {
                 if at.iter().any(|v| !live.contains(v)) {
                     cx.error(*span, "JMP-6", format!("the jump to '{}' skips the initialization of a variable", name));
+                }
+                if at_ifs.iter().any(|i| !ifs.contains(i)) {
+                    cx.error(*span, "IF-17", format!("the jump to '{}' enters a branch of 'if constexpr'", name));
                 }
             }
         }

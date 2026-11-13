@@ -57,6 +57,8 @@ pub struct SwitchCtx {
     pub cases: Vec<i128>,
     pub default: bool,
     pub live_at_start: usize,
+    /// How many `if constexpr` statements were open at its start (IF-17).
+    pub ifs_at_start: usize,
 }
 
 /// The function whose body is being checked.
@@ -75,9 +77,13 @@ pub struct FnCtx {
     /// The labels that the next statement carries (a chain of labels).
     pub pending_labels: Vec<Rc<str>>,
     /// The labels defined in the function, and the `goto` statements,
-    /// each with the variables with an initializer in scope there (JMP-6).
-    pub labels: HashMap<Rc<str>, (Span, Vec<EntityId>)>,
-    pub gotos: Vec<(Rc<str>, Span, Vec<EntityId>)>,
+    /// each with the variables with an initializer in scope there (JMP-6)
+    /// and the `if constexpr` statements that enclose it (IF-17).
+    pub labels: HashMap<Rc<str>, (Span, Vec<EntityId>, Vec<StmtId>)>,
+    pub gotos: Vec<(Rc<str>, Span, Vec<EntityId>, Vec<StmtId>)>,
+    /// The `if constexpr` statements that enclose the statement being
+    /// checked, innermost last.
+    pub constexpr_ifs: Vec<StmtId>,
     /// The automatic variables with an initializer in scope.
     pub live: Vec<EntityId>,
     /// The switches that enclose the statement, innermost last.

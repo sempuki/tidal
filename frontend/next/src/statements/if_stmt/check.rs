@@ -56,6 +56,10 @@ pub fn condition(cx: &mut Check, n: &Node, rule: &'static str, as_bool: bool) ->
         if let Some(v) = cx.u.var_mut(id) {
             v.used = true;
         }
+        // JMP-6: a jump into the body skips the initialization.
+        if let Some(f) = cx.func.as_mut() {
+            f.live.push(id);
+        }
         let ty = cx.u.var(id)?.ty.clone();
         let (name, span) = d.name.clone()?;
         let mut e = crate::sem::tree::Expr::new(crate::sem::tree::EK::Var(id), ty.nonref(), crate::sem::tree::Cat::L, span);
@@ -123,6 +127,12 @@ pub fn if_stmt(cx: &mut Check, n: &Node) -> Stmt {
         }
     };
     let (skip_then, skip_else) = (constexpr && chosen == Some(false), constexpr && chosen == Some(true));
+    if constexpr {
+        let id = cx.next_stmt_id();
+        if let Some(f) = cx.func.as_mut() {
+            f.constexpr_ifs.push(id);
+        }
+    }
     discard(cx, skip_then, 1);
     let then = branches.first().map(|b| sub_statement(cx, b, Some((cs, "IF-10"))));
     discard(cx, skip_then, -1);
@@ -130,6 +140,9 @@ pub fn if_stmt(cx: &mut Check, n: &Node) -> Stmt {
     let els = branches.get(1).map(|b| sub_statement(cx, b, Some((cs, "IF-10"))));
     discard(cx, skip_else, -1);
     if let Some(f) = cx.func.as_mut() {
+        if constexpr {
+            f.constexpr_ifs.pop();
+        }
         f.live.truncate(live);
     }
     cx.scope = saved;

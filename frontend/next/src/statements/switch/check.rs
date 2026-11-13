@@ -43,8 +43,9 @@ pub fn switch_stmt(cx: &mut Check, n: &Node) -> Stmt {
     }
     let id = push_target(cx, false);
     let start = cx.func.as_ref().map_or(0, |f| f.live.len());
+    let ifs = cx.func.as_ref().map_or(0, |f| f.constexpr_ifs.len());
     if let Some(f) = cx.func.as_mut() {
-        f.switches.push(SwitchCtx { id, ty, cases: Vec::new(), default: false, live_at_start: start });
+        f.switches.push(SwitchCtx { id, ty, cases: Vec::new(), default: false, live_at_start: start, ifs_at_start: ifs });
     }
     let body = n.child("statement").map(|b| sub_statement(cx, b, Some((cs, "SW-6"))));
     let sw = cx.func.as_mut().and_then(|f| f.switches.pop());
@@ -78,6 +79,10 @@ pub fn label_prefix(cx: &mut Check, l: &Node) -> Option<Stmt> {
     let live = cx.func.as_ref().map(|f| f.live.len()).unwrap_or(0);
     if live > sw.live_at_start {
         cx.error(l.span, "SW-5", format!("the jump to the '{}' label skips the initialization of a variable", w));
+    }
+    let ifs = cx.func.as_ref().map_or(0, |f| f.constexpr_ifs.len());
+    if ifs > sw.ifs_at_start {
+        cx.error(l.span, "IF-17", format!("the jump to the '{}' label enters a branch of 'if constexpr'", w));
     }
     if w == "default" {
         if sw.default {
