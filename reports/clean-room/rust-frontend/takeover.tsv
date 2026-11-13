@@ -1553,3 +1553,17 @@ statements/blocks/unused-value-warns.cpp	3	5abc3623
 statements/loops/jump-into-for-body-past-initialized-declaration.cpp	3	5abc3623
 statements/switch/case-value-not-enumerator-warns.cpp	3	5abc3623
 statements/switch/enum-missing-case-warns.cpp	3	5abc3623
+declarations/storage-linkage/register-parameter.cpp	3	58b79848
+declarations/storage-linkage/register.cpp	3	58b79848
+statements/if/condition-declaration-no-init.cpp	3	58b79848
+statements/if/condition-declaration-two.cpp	3	58b79848
+statements/if/consteval-else-requires-braces.cpp	3	58b79848
+statements/if/consteval-no-condition.cpp	3	58b79848
+statements/if/consteval-requires-braces.cpp	3	58b79848
+statements/if/init-static-assert.cpp	3	58b79848
+statements/if/init-using-declaration.cpp	3	58b79848
+statements/if/init-using-directive.cpp	3	58b79848
+statements/if/not-constexpr.cpp	3	58b79848
+statements/loops/do-condition-declaration-bool.cpp	3	58b79848
+statements/loops/do-condition-declaration.cpp	3	58b79848
+statements/loops/for-init-static-assert.cpp	3	58b79848
