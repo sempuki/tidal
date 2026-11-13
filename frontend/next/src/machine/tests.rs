@@ -936,7 +936,7 @@ fn member_functions() {
     // A static member function has no object, and the linkage of its
     // class.
     assert_eq!(rule("struct C { static int f(int); }; int (*p)(int) = C::f;"), None);
-    assert_eq!(rule("struct S { static int n; };"), Some("unsupported"));
+    assert_eq!(rule("struct S { static int n; };"), None);
 }
 
 #[test]
@@ -1020,4 +1020,25 @@ fn lambdas() {
     assert_eq!(rule("void f() { int x = 1; auto a = [x] { return x; }; auto b = a; b = a; }"), Some("LAM-26"));
     assert_eq!(rule("auto g = [](bool b) { if (b) return 1; return 2.0; };"), Some("LAM-22"));
     assert_eq!(rule("int f() { auto g = [=]() static { return 1; }; return g(); }"), Some("LAM-27"));
+}
+
+#[test]
+fn static_data_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct S { static int count; S() { ++count; } }; int S::count = 1; int main() { S a, b; return S::count; }"), RunOutcome::Result(3));
+    assert_eq!(run("struct S { static const int k = 3; static constexpr int c = 4; inline static int i = 5; int f() { return k + c + i; } }; int main() { S s; return s.f() + s.k; }"), RunOutcome::Result(15));
+    assert_eq!(run("struct S { int v = 3; static S self; }; S S::self; int main() { return S::self.v; }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct S { static int n = 4; };"), Some("CLS-23"));
+    assert_eq!(rule("int n = 1; struct S { static const int k = n; };"), Some("CLS-20"));
+    assert_eq!(rule("void f() { struct S { static int n; }; }"), Some("CLS-28"));
+    assert_eq!(rule("struct { static int n; } x;"), Some("CLS-9"));
+    assert_eq!(rule("struct S { static auto n = 1; };"), Some("AUTO-17"));
+    assert_eq!(rule("struct B { static int c; }; int B::c = 0; int B::c = 1;"), Some("ODR-1"));
+    assert_eq!(rule("struct S { static int n; }; using S::n;"), Some("NS-9"));
+    assert_eq!(rule("struct L { static constexpr int top = 9; }; constexpr int L::top; const int* p = &L::top;"), None);
+    assert_eq!(rule("struct C { static constexpr int v = 1; }; static_assert(C::C::v == 1);"), None);
 }

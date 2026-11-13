@@ -174,6 +174,12 @@ pub fn using_decl(cx: &mut Check, n: &Node) {
         };
         let name = cx.toks[*t].text.clone();
         let span = cx.toks[*t].span;
+        // NS-9: a using-declaration at namespace scope names no member
+        // of a class.
+        if cx.u.scopes[scope].kind == crate::sem::ScopeKind::Class && cx.u.scopes[cx.scope].kind == crate::sem::ScopeKind::Namespace {
+            cx.error(span, "NS-9", format!("a using-declaration at namespace scope names the class member '{}'", name));
+            continue;
+        }
         let found = names::lookup_in(cx, scope, &name);
         if found.is_empty() {
             cx.error(span, "NAM-14", format!("'{}' is not a member of the named scope", name));

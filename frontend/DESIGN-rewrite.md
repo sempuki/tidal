@@ -498,12 +498,13 @@ reference extends them, members after the destructor's body, and static
 objects after `main`. A lambda expression makes a closure type with a
 data member for each capture and a call operator; a capture by
 reference is a member that points to the variable. A closure without
-captures converts to a pointer to function. The
+captures converts to a pointer to function. A static data member is a
+variable of the class's scope; its declaration in the class is a
+definition when it is inline or constexpr or has an initializer. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. A static data member, an explicit destructor call on a
-class, a user-declared copy or move constructor, an operator function, a base, a union, a
+another entity. An explicit destructor call on a class, a user-declared copy or move constructor, an operator function, a base, a union, a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with

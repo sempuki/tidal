@@ -201,6 +201,11 @@ pub fn nested_name(cx: &mut Check, n: &Node) -> Qual {
     let mut cur: Option<ScopeId> = if global { Some(0) } else { None };
     for (name, span) in parts {
         let keep = |k: &EntKind| matches!(k, EntKind::Namespace(_) | EntKind::Enum(_) | EntKind::Class(_) | EntKind::Typedef(_) | EntKind::Unsupported(_));
+        // NAM-33: a class's name inside its scope names the class.
+        if let Some(s) = cur.filter(|&s| cx.u.scopes[s].kind == ScopeKind::Class && &*cx.u.scopes[s].name == name) {
+            cur = Some(s);
+            continue;
+        }
         let found: Vec<EntityId> = match cur {
             None => lookup_where(cx, name, keep),
             Some(s) => lookup_in(cx, s, name),

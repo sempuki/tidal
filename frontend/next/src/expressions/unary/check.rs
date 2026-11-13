@@ -50,7 +50,7 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
                 _ => None,
             }).zip(member).is_some_and(|(s, m)| {
                 let found = crate::foundations::names::check::declared_here(cx, s, &m);
-                !found.is_empty() && found.iter().all(|&e| cx.u.func(e).is_some_and(|f| f.member_static))
+                !found.is_empty() && found.iter().all(|&e| cx.u.func(e).is_some_and(|f| f.member_static) || cx.u.var(e).is_some())
             });
             if !classes.is_empty() && !all_static {
                 let t = cx.unsupported(span, "the address of a member, a pointer to member (build step 4)");

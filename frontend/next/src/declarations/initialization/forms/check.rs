@@ -306,6 +306,14 @@ pub fn declare_variable(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&N
         }
     }
     if let (names::Qual::Scope(sc), Some((name, span))) = (d2.qual, &d.name) {
+        // ODR-15: a redeclaration outside its class of a constexpr static
+        // data member, without an initializer, declares it again.
+        if s.constexpr && init.is_none() && cx.u.scopes[sc].kind == crate::sem::ScopeKind::Class {
+            if let Some(&e) = names::declared_here(cx, sc, name).iter().find(|&&e| cx.u.var(e).is_some_and(|v| v.constexpr && v.defined)) {
+                let i = cx.u.var(e).and_then(|v| v.init.clone()).unwrap_or(Init::Default);
+                return Some((e, i));
+            }
+        }
         crate::declarations::namespaces::check::qualified_place(cx, sc, *span, name);
         cx.scope = sc;
     }
@@ -523,7 +531,10 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 return None;
             }
             // A class gets the default member initializers of its members.
-            if ty.base_elem().class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+            // A declaration that is not a definition initializes nothing.
+            if !defined {
+                Init::Default
+            } else if ty.base_elem().class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
                 if s.thread_local {
                     cx.unsupported(span, "a thread_local object of a class with constructors (build step 4)");
                     return None;
@@ -576,6 +587,9 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
             v.constexpr = constexpr;
         }
         v.defined = v.defined || init.is_some() || !s.is_extern;
+        if init.is_some() || !s.is_extern {
+            v.is_extern = false;
+        }
     }
     if !local && ((cx.lang_c && !s.is_static) || (scope == cx.u.root && !cx.lang_c)) {
         crate::declarations::linkage_specifications::check::c_name(cx, id, cx.lang_c, span);
@@ -699,7 +713,7 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
                 }
                 let old_def = v.defined && (!v.is_extern);
                 let new_def = has_init || !s.is_extern;
-                if old_def && new_def && !qualified {
+                if old_def && new_def && (!qualified || has_init) {
                     if v.inline && s.inline {
                         cx.error(span, "ODR-1", format!("'{}' is defined twice", name));
                     } else {

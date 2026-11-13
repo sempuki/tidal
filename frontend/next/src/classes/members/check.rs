@@ -307,9 +307,10 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     continue;
                 }
                 if specs.is_static {
-                    let _ = static_member;
-                    cx.unsupported(md.span, "a static data member (build step 4)");
-                    return false;
+                    if !static_member(cx, id, &specs, &d, md.child("member_init"), *access) {
+                        return false;
+                    }
+                    continue;
                 }
                 if specs.constexpr || specs.inline {
                     cx.unsupported(md.span, "constexpr or inline on a non-static data member (build step 4)");
@@ -399,23 +400,67 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
 /// Without `inline` or `constexpr` the declaration in the class is not a
 /// definition, unless it is a const integral member with an initializer
 /// that the program does not take the address of.
-fn static_member(cx: &mut Check, specs: &crate::declarations::check::Specs, d: &crate::declarations::declarators::check::Declared, init: Option<&Node>, access: Access) -> bool {
+fn static_member(cx: &mut Check, class: ClassId, specs: &crate::declarations::check::Specs, d: &crate::declarations::declarators::check::Declared, init: Option<&Node>, access: Access) -> bool {
+    let Some((name, span)) = d.name.clone() else { return true };
+    // CLS-9: no `mutable` on a static member.
     if specs.mutable {
-        cx.unsupported(d.span, "a mutable static data member");
-        return false;
+        cx.error_cause(span, "CLS-9", Some("STO-6"), "a mutable static data member");
+        return true;
     }
-    let mut first = None;
-    let Some((id, _)) = crate::declarations::initialization::forms::check::declare_variable(cx, specs, d, init, &[], &mut first) else { return true };
-    cx.u.access.insert(id, access);
+    // CLS-28: a local class has no static data member.
+    let parent = cx.u.scopes[cx.u.classes[class].scope].parent.unwrap_or(0);
+    if cx.u.is_local(parent) {
+        cx.error(span, "CLS-28", format!("the local class has the static data member '{}'", name));
+        return true;
+    }
+    // CLS-9: not in a class with no name or nested in one, and not with
+    // the name of the class.
+    let mut s = Some(cx.u.classes[class].scope);
+    while let Some(x) = s {
+        if cx.u.scopes[x].kind == ScopeKind::Class && cx.u.scopes[x].name.is_empty() {
+            cx.error(span, "CLS-9", format!("the static data member '{}' is in a class with no name", name));
+            return true;
+        }
+        s = cx.u.scopes[x].parent;
+    }
+    if *name == *cx.u.classes[class].name {
+        cx.error(span, "CLS-9", format!("the static data member '{}' has the name of its class", name));
+        return true;
+    }
     let definition = specs.inline || specs.constexpr;
-    if let Some(v) = cx.u.var_mut(id) {
-        if !definition {
-            v.is_extern = init.is_none();
-            v.defined = init.is_some();
+    // AUTO-17: a placeholder needs an initializer and inline, constexpr,
+    // or const (AUTO-14).
+    if let Some(p) = &specs.placeholder {
+        if init.is_none() || !(definition || p.c || d.ty.c) {
+            cx.error(span, "AUTO-17", format!("the static data member '{}' has a placeholder type without an initializer and inline, constexpr, or const", name));
+            return true;
         }
     }
+    // CLS-23: only a const static member of integer or enumeration type
+    // that is not volatile has an initializer in the class without
+    // inline or constexpr (CLS-3).
+    let integral = |t: &QType| t.c && !t.v && (t.is_integral() || t.is_enum());
+    if init.is_some() && !definition && specs.placeholder.is_none() && !integral(&d.ty) {
+        cx.error(span, "CLS-23", format!("the static data member '{}' has an initializer in the class", name));
+        return true;
+    }
+    // A declaration in the class that is not a definition acts as an
+    // extern declaration: its type can be incomplete, and the definition
+    // outside the class gives the object (CLS-3).
+    let mut specs = specs.clone();
+    specs.is_static = false;
+    // A constexpr static data member is inline.
+    specs.inline |= specs.constexpr;
     if !definition && init.is_none() {
-        cx.u.statics.retain(|&x| x != id);
+        specs.is_extern = true;
+    }
+    let mut first = None;
+    let Some((id, _)) = crate::declarations::initialization::forms::check::declare_variable(cx, &specs, d, init, &[], &mut first) else { return true };
+    cx.u.access.insert(id, access);
+    // CLS-20: the initializer of a const integral member is a constant.
+    if init.is_some() && !definition && cx.u.var(id).is_some_and(|v| integral(&v.ty) && !v.const_init) {
+        cx.error(span, "CLS-20", format!("the initializer of the static data member '{}' is not a constant expression", name));
+        return true;
     }
     true
 }
@@ -588,7 +633,13 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
                 cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
                 return bad(span);
             }
-            crate::expressions::primary::check::entity_expr(cx, &[f], &name, span)
+            let v = crate::expressions::primary::check::entity_expr(cx, &[f], &name, span);
+            // PFX-10: the object expression is evaluated.
+            if obj.any(&|x| matches!(x.k, EK::Call(..) | EK::Assign(..) | EK::Compound(..) | EK::IncDec(..))) {
+                let (ty, cat) = (v.ty.clone(), v.cat);
+                return Expr::new(EK::Comma(Box::new(obj), Box::new(v)), ty, cat, span);
+            }
+            v
         }
         _ => cx_unsupported(cx, span, "a member function named outside a call, or a member of this kind"),
     }
