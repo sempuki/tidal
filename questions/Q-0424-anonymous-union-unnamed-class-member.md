@@ -1,9 +1,8 @@
 # Q-0424: Does a member of an anonymous union whose type is an unnamed class defined in its own declaration count as a nested type?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** UNI-9, UNI-P3, `tests/classes/unions/anonymous-union-unnamed-struct-member.cpp`, `tests/classes/unions/anonymous-union-nested-anonymous-union.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), probe `anonymous_struct_member_in_anonymous_union.cpp`.
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -38,7 +37,7 @@ an override.
    UNI-9 rejects the program (Clang under `-pedantic-errors`, EDG).
 2. Only a named nested type counts, and the program is valid (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; the program is rejected (option 1). EDG rejects it, and Clang
 marks it as an extension that strict mode rejects.
@@ -56,6 +55,8 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review uses UNI-P3 o
 Principle text on 2026-11-11 (decision 0062, item RV7): UNI-P3 says that the anonymous union is itself a type with no name, that no declaration inside it can introduce another type, and that it can hold static assertions. UNI-P3 still rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055).
 
 Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses UNI-P3 on the question (RV12-15). It names UNI-P3 and the question's program and reaches option 1 by UNI-P3's model, so UNI-P3 passes step 3 of the principle test. The review supports the answer with no doubt, and it closes the doubt of RV7-A-3. GCC 16 alone differs. The question meets decision 0054's settling rule. A commit cannot name its own hash, and the settlements table needs one, so the next commit settles the question and names this commit in its row. Until then the **Waits for:** line names newest families that agree, was a review (doubt); a use of UNI-P3.
+
+Settled on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses UNI-P3 on the question and supports the answer with no doubt (RV12-15), and GCC 16 alone differs. UNI-P3 gives the answer. The anonymous union is itself a type with no name, and no declaration inside it can introduce another type, so a member whose declaration defines an unnamed class is not valid. The model rules out option 2. UNI-P3 last changed in phase 14 (decision 0062, item RV7), and the review is the use that decision 0055 asks for. Tidal records GCC 16's result as a deviation, and both tests keep their override for GCC.
 
 ## Opinions
 

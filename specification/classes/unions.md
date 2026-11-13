@@ -848,7 +848,7 @@ that still differs.
   constructor. It does, because the deleted constructor is trivial, as
   Clang and EDG say. GCC rejects the constant evaluation. A review reads
   the form as not valid, and the question waits on the maintainer.
-- {question}`Q-0424` (UNI-9; open):
+- {question}`Q-0424` (UNI-9; settled on UNI-P3):
   whether a member whose type is an unnamed class defined in its own
   declaration counts as a nested type of an anonymous union. It does,
   as EDG and Clang under `-pedantic-errors` say. GCC accepts the

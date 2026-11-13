@@ -1,9 +1,8 @@
 # Q-0427: Does a member template named after `.` need `template` when the object's type is the current instantiation?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`, `tests/templates/dependent-names/member-template-non-dependent-base.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), reduction `member_template_through_current_instantiation_object.cpp`.
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -41,7 +40,7 @@ gives each form.
    says now. The `<` is then a less-than operator, and the program is
    rejected.
 
-## Provisional answer
+## Answer
 
 No; the program runs without `template` (option 1). Every compiler
 accepts the form, and DEP-39 already treats an object of the current
@@ -61,6 +60,8 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the 
 Principle text on 2026-11-11 (decision 0062, item RV7): the DEP-P5 sentence on the middle column now says that a row whose middle column says "not valid" reports an error at the definition (RV7-B-10). The row for this question is unchanged.
 
 Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses DEP-P5 on the question (RV12-15). It names DEP-P5 and the question's program and reaches option 1 by DEP-P5's rows for a member access, so DEP-P5 passes step 3 of the principle test. The review supports the answer with no doubt, and every compiler agrees. The question meets decision 0054's settling rule. A commit cannot name its own hash, and the settlements table needs one, so the next commit settles the question and names this commit in its row. Until then the **Waits for:** line names newest families that agree, was a use of DEP-P5.
+
+Settled on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses DEP-P5 on the question and supports the answer with no doubt (RV12-15), and every compiler agrees. DEP-P5 gives the answer. Its row for `x.name<...>`, where `x` has the type of the current instantiation and the class or a base that is not dependent declares the member template, gives a template-id, so no `template` is needed. The model rules out option 2. DEP-P5 last changed in phase 14 (decision 0062, item RV7), and the review is the use that decision 0055 asks for.
 
 ## Opinions
 

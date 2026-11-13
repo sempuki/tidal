@@ -972,7 +972,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   does, with no diagnostic required. Every compiler accepts the program
   and uses the other member.
 - {question}`Q-0427` (DEP-24,
-  DEP-39; open): whether a member template named after `.` needs
+  DEP-39; settled on DEP-P5): whether a member template named after `.` needs
   `template` when the object's type is the current instantiation. It
   does not when lookup at the definition finds the member template in
   the class. No family differs.
