@@ -10,7 +10,7 @@ use crate::declarations::check::Specs;
 use crate::expressions::check::{expr, first_node};
 use crate::foundations::names::check as names;
 use crate::sem::check::Check;
-use crate::sem::tree::{Expr, Init};
+use crate::sem::tree::{Cat, Expr, Init};
 use crate::sem::types::{ClassId, QType, Type};
 use crate::sem::{EntityId, MemInits, Special};
 use crate::source::Span;
@@ -100,10 +100,7 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         x.special = Special::Ctor;
         x.explicit = specs.explicit;
     }
-    if copy_or_move(cx, c, f) {
-        cx.unsupported(dn.span, "a user-declared copy or move constructor (build step 4)");
-        return false;
-    }
+    let _ = copy_or_move;
     if let Some(def) = def {
         let body = def.child("function_body");
         let words = body.map(|b| cx.words(b)).unwrap_or_default();
@@ -115,6 +112,17 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
             return true;
         }
         if words.contains(&"default") {
+            // CPY-14: a defaulted copy or move constructor is the
+            // implicit one.
+            if crate::classes::copy_move::check::copy_or_move(cx, c, f).is_some() {
+                cx.u.defaulted.insert(f);
+                if let Some(x) = cx.u.func_mut(f) {
+                    x.inline = true;
+                    x.defined = true;
+                }
+                crate::classes::copy_move::check::defaulted_in_class(cx, c, f);
+                return true;
+            }
             // CTOR-2: `= default` gives the implicit default constructor.
             if !d.params.is_empty() {
                 cx.unsupported(dn.span, "a defaulted constructor that is not the default constructor (build step 4)");
@@ -263,6 +271,16 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
     }
     if cx.words(body).contains(&"default") {
         let c = cx.u.func(f).and_then(|x| x.class).unwrap();
+        // CPY-14: a copy or move constructor defaulted outside its class
+        // is the implicit one.
+        if crate::classes::copy_move::check::copy_or_move(cx, c, f).is_some() {
+            cx.u.defaulted.insert(f);
+            if let Some(x) = cx.u.func_mut(f) {
+                x.defined = true;
+            }
+            crate::classes::copy_move::check::defaulted_out_of_class(cx, c, f, def.span);
+            return;
+        }
         let fields = cx.u.classes[c].fields.clone();
         let mut inits = Vec::new();
         for fid in fields {
@@ -508,6 +526,22 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     if copy && !list {
         cands.retain(|&f| !cx.u.func(f).unwrap().explicit);
     }
+    if cands.is_empty() {
+        cx.error(span, "CTOR-25", format!("no constructor of '{}' takes these arguments", cx.u.classes[c].name));
+        return None;
+    }
+    // CPY-9, CPY-10: an object of the class itself is copied or moved,
+    // and a prvalue initializes the object directly.
+    if args.len() == 1 && args[0].ty.nonref().class() == Some(c) {
+        let a = crate::foundations::values::check::deref_ref(args[0].clone());
+        if a.cat == Cat::PR {
+            return Some(Init::Expr(a));
+        }
+        return crate::classes::copy_move::check::copy(cx, a, copy && !list, span).map(Init::Expr);
+    }
+    // The copy and move constructors take no other argument here: their
+    // parameter takes no user-defined conversion.
+    cands.retain(|&f| crate::classes::copy_move::check::copy_or_move(cx, c, f).is_none());
     if cands.is_empty() {
         cx.error(span, "CTOR-25", format!("no constructor of '{}' takes these arguments", cx.u.classes[c].name));
         return None;

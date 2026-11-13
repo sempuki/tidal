@@ -22,7 +22,7 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
             cx.unevaluated -= 1;
             let Some(e) = e.filter(|e| !e.ty.is_error()) else { return bad(span) };
             crate::expressions::decltype::check::unevaluated_effect_warning(cx, &e);
-            let v = !crate::declarations::exception_specifications::check::can_throw(&e);
+            let v = !crate::declarations::exception_specifications::check::can_throw(cx, &e);
             return Expr::int(v as i128, QType::bool(), span);
         }
         "new" | "delete" | "::" | "co_await" => {

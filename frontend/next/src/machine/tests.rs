@@ -1042,3 +1042,26 @@ fn static_data_members() {
     assert_eq!(rule("struct L { static constexpr int top = 9; }; constexpr int L::top; const int* p = &L::top;"), None);
     assert_eq!(rule("struct C { static constexpr int v = 1; }; static_assert(C::C::v == 1);"), None);
 }
+
+#[test]
+fn copy_and_move_constructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let m = "int copies = 0; int moves = 0; struct M { M() {} M(const M&) { ++copies; } M(M&&) { ++moves; } };\n";
+    // An lvalue is copied, an xvalue moved; a returned local is moved
+    // and a prvalue initializes its object directly.
+    assert_eq!(run(&format!("{}M make() {{ M x; return x; }} int main() {{ M a; M b(a); M c = static_cast<M&&>(a); M d = make(); M e = M(); return copies * 10 + moves; }}", m)), RunOutcome::Result(12));
+    // The implicit copy copies each member; a user-declared destructor
+    // removes the implicit move.
+    assert_eq!(run(&format!("{}struct S {{ M m; int k = 1; }}; struct D {{ M m; ~D() {{}} }}; int main() {{ S a; S b = a; S c = static_cast<S&&>(a); D d; D e = static_cast<D&&>(d); return copies * 10 + moves; }}", m)), RunOutcome::Result(21));
+    assert_eq!(run("struct C { int v; C(int x) : v(x) {} }; int main() { C a(4); C b(a); return b.v; }"), RunOutcome::Result(4));
+    assert_eq!(rule("struct C { C() {} C(C&&) {} }; void f() { C a; C b = a; }"), Some("CPY-21"));
+    assert_eq!(rule("struct C { C() {} C(C&) {} }; void f(const C& a) { C b = a; }"), Some("CPY-20"));
+    assert_eq!(rule("struct C { C() {} C(const C&) = delete; }; void f() { C a; C b = a; }"), Some("DEL-1"));
+    assert_eq!(rule("struct C { C() {} explicit C(const C&) {} }; void f() { C a; C b = a; }"), Some("CPY-24"));
+    assert_eq!(rule("struct S { S() {} S(const volatile S&) = default; }; S a; S b(a);"), Some("CPY-26"));
+    assert_eq!(rule("struct M { M() {} M(const M&) = delete; }; struct S { M m; S() {} S(const S&); }; S::S(const S&) = default;"), Some("CPY-17"));
+}

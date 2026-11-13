@@ -23,6 +23,9 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
             cx.error(span, "VOL-11", "an assignment to a volatile object of a class");
             return false;
         }
+        if !crate::classes::copy_move::check::assignable(cx, c, span) {
+            return false;
+        }
         // LAM-26: a closure type with captures has no copy assignment.
         if crate::expressions::lambdas::check::has_captures(cx, c) {
             cx.error(span, "LAM-26", "the copy assignment of a closure type with captures is deleted");

@@ -45,10 +45,16 @@ pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
             cx.error(e.span, "UN-6", "a read of an object of an incomplete class");
             return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
         }
+        // CPY-9: a copy or move constructor that runs code.
+        if crate::classes::copy_move::check::needs_copy_function(cx, c) {
+            let span = e.span;
+            return crate::classes::copy_move::check::copy(cx, e, true, span).unwrap_or_else(|| Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, span));
+        }
         if e.ty.v {
             cx.error(e.span, "VOL-11", "a copy of a volatile object of a class");
             return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
         }
+
     }
     let t = e.ty.unqual();
     e.conv(Conv::LToR, t, Cat::PR)

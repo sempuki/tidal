@@ -92,6 +92,14 @@ pub fn range_for_stmt(cx: &mut Check, n: &Node) -> Stmt {
         if !fits {
             return unsupported(cx, n, "a loop variable whose type converts from the element type");
         }
+        // CPY-9: a loop variable of a class whose copy runs code.
+        if !ty.is_ref() && el.class().is_some_and(|c| crate::classes::copy_move::check::needs_copy_function(cx, c)) {
+            let probe = Expr::new(EK::Int(0), (*el).clone(), elem.cat, range.span);
+            if crate::classes::copy_move::check::copy(cx, probe, true, n.span).is_none() {
+                return Stmt::new(SK::Null, n.span);
+            }
+            return unsupported(cx, n, "a loop variable of a class whose copy constructor runs code");
+        }
         let Some((name, span)) = d.name.clone() else { return Stmt::new(SK::Null, n.span) };
         let range_ty = QType::lref(range.ty.clone());
         let range_id = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(local_var(range_ty.clone(), None)), span: n.span, scope: cs, linkage: Linkage::None, deprecated: None });

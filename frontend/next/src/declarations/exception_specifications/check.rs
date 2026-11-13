@@ -64,8 +64,23 @@ fn operand(cx: &mut Check, n: &Node) -> bool {
 /// UN-13: whether an operand of the `noexcept` operator can throw. In
 /// build step 3 only a call of a function whose type is not
 /// non-throwing can (EXS-4).
-pub fn can_throw(e: &Expr) -> bool {
+pub fn can_throw(cx: &Check, e: &Expr) -> bool {
+    // A constructor that the initialization runs (EXS-4).
+    fn ctor_throws(cx: &Check, i: &crate::sem::tree::Init) -> bool {
+        use crate::sem::tree::Init;
+        match i {
+            // A defaulted constructor throws what its members' do.
+            Init::Ctor(f, _) if cx.u.defaulted.contains(f) => match cx.u.mem_inits.get(f) {
+                Some(crate::sem::MemInits::Fields(xs)) => xs.iter().any(|x| ctor_throws(cx, x)),
+                _ => false,
+            },
+            Init::Ctor(f, _) => !cx.u.func(*f).is_some_and(|x| x.ty.noexcept),
+            Init::List(xs) => xs.iter().any(|x| ctor_throws(cx, x)),
+            _ => false,
+        }
+    }
     e.any(&|x| match &x.k {
+        EK::List(i) => ctor_throws(cx, i),
         EK::Call(f, _) => {
             let t = f.ty.nonref();
             let t = match &t.t {

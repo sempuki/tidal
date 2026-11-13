@@ -147,7 +147,7 @@ fn finish(cx: &mut Check, value: Option<crate::sem::tree::Expr>, ret: &QType, sp
             // an xvalue, so it does not bind to an lvalue reference
             // return type (JMP-15).
             let mut v = v;
-            if ret.is_ref() && move_eligible(cx, &v) {
+            if (ret.is_ref() || ret.is_class()) && move_eligible(cx, &v) {
                 v.cat = crate::sem::tree::Cat::X;
             }
             if ret.is_ref() {

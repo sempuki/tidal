@@ -126,6 +126,11 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         }
         // REF-2, REF-3: a temporary, for a const lvalue reference or an
         // rvalue reference, from a value of another type.
+        // A class object makes no temporary of its own class here: the
+        // reference binds it directly or not at all.
+        if at.is_class() && at.unqual().t == inner.unqual().t {
+            return None;
+        }
         if (*rv || (inner.c && !inner.v)) && !(compatible && lvalue && *rv) {
             let from = crate::declarations::auto::check::decay(&at);
             let (rank, qual) = rank_of(cx, &from, inner, null)?;
