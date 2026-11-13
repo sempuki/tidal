@@ -175,3 +175,21 @@ fn comparison_warnings() {
     assert_eq!(rule("bool f(unsigned b) { return 0 < b; }", &["-Wsign-compare"]), None);
     assert_eq!(rule("enum E { a }; bool f(double d) { return a < d; }", &[]), Some("CMP-21"));
 }
+
+#[test]
+fn deduced_return_types() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("auto f(bool c) { if (c) return 1; return 2; } int x = f(true);"), None);
+    assert_eq!(rule("auto f(bool c) { if (c) return 1; return 2.0; }"), Some("RET-7"));
+    assert_eq!(rule("auto f() { if constexpr (false) { return 1.5; } else { return 2; } } int (*p)() = f;"), None);
+    assert_eq!(rule("auto f();\nint x = f();\nauto f() { return 1; }"), Some("RET-3"));
+    assert_eq!(rule("auto f(int n) { if (n > 0) return f(n - 1); return 0; }"), Some("RET-3"));
+    assert_eq!(rule("auto f(int n) { if (n == 0) return 0; return f(n - 1); }"), None);
+    assert_eq!(rule("auto f();\nint f();"), Some("RET-4"));
+    assert_eq!(rule("auto& f() {}"), Some("RET-3"));
+    assert_eq!(rule("auto& f() { static int x; return x; }"), Some("unsupported"));
+}

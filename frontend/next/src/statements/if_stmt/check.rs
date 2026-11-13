@@ -117,8 +117,18 @@ pub fn if_stmt(cx: &mut Check, n: &Node) -> Stmt {
         cond_node.and_then(|c| condition(cx, c, "IF-4", true))
     };
     let branches: Vec<&Node> = n.children("branch").collect();
+    let discard = |cx: &mut Check, on: bool, d: i32| {
+        if let Some(f) = cx.func.as_mut().filter(|_| on) {
+            f.discarded = (f.discarded as i32 + d) as u32;
+        }
+    };
+    let (skip_then, skip_else) = (constexpr && chosen == Some(false), constexpr && chosen == Some(true));
+    discard(cx, skip_then, 1);
     let then = branches.first().map(|b| sub_statement(cx, b, Some((cs, "IF-10"))));
+    discard(cx, skip_then, -1);
+    discard(cx, skip_else, 1);
     let els = branches.get(1).map(|b| sub_statement(cx, b, Some((cs, "IF-10"))));
+    discard(cx, skip_else, -1);
     if let Some(f) = cx.func.as_mut() {
         f.live.truncate(live);
     }

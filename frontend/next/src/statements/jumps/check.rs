@@ -66,6 +66,10 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
         };
     }
     let value = e.map(|c| expr(cx, c));
+    if ctx.deduce && ctx.discarded > 0 {
+        // RET-1: a return in a discarded statement deduces nothing.
+        return Stmt::new(SK::Null, span);
+    }
     if ctx.deduce {
         let t = match &value {
             Some(v) if v.ty.is_error() => return Stmt::new(SK::Null, span),
@@ -86,6 +90,7 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
                         let mut ft = (*fm.ty).clone();
                         ft.ret = t.clone();
                         fm.ty = Rc::new(ft);
+                        fm.pending_return = false;
                     }
                 }
             }

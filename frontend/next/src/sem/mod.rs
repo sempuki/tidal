@@ -80,6 +80,11 @@ pub struct Func {
     pub nodiscard: bool,
     /// `extern "C"`.
     pub c_linkage: bool,
+    /// The return type is a placeholder that no return statement has
+    /// deduced yet (RET-3).
+    pub pending_return: bool,
+    /// Declared with a placeholder return type (RET-4).
+    pub placeholder: bool,
     pub defined: bool,
     /// The body could not be checked in full, so the function does not
     /// run.

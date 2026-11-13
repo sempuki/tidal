@@ -84,6 +84,9 @@ pub struct FnCtx {
     pub switches: Vec<SwitchCtx>,
     /// The function body has a statement the machine does not run.
     pub unsupported: Option<String>,
+    /// Depth of discarded statements of `if constexpr`, whose returns
+    /// deduce nothing (RET-1).
+    pub discarded: u32,
 }
 
 pub struct Check<'a> {

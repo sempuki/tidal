@@ -69,11 +69,13 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         crate::declarations::namespaces::check::qualified_place(cx, scope, span, &name);
     }
     let Some(fty) = d.ty.func().cloned() else { return None };
-    if fty.is_error_free() == false {
+    let deduce = d.placeholder.is_some();
+    // A deduced return type is the error type until a return gives it.
+    let known = if deduce { fty.params.iter().all(|p| !p.is_error()) } else { fty.is_error_free() };
+    if !known {
         names::declare_unsupported(cx, &name, span);
         return None;
     }
-    let deduce = d.placeholder.is_some();
     // Default arguments (DEFARG-8, DEFARG-10): checked at the declaration.
     let defaults = default_arguments(cx, &d.params);
     let linkage = if s.is_static { Linkage::Internal } else { stl::linkage(cx, s, false, false, false) };
@@ -96,6 +98,10 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                         return None;
                     }
                     continue;
+                }
+                if f.placeholder != deduce {
+                    cx.error(span, "RET-4", format!("the declarations of '{}' differ in using a placeholder for the return type", name));
+                    return None;
                 }
                 if !deduce && f.ty.ret != fty.ret {
                     cx.error(span, "FN-14", format!("the declarations of '{}' have different return types", name));
@@ -170,6 +176,8 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 noreturn: s.attrs.noreturn,
                 nodiscard: s.attrs.nodiscard,
                 c_linkage: cx.lang_c,
+                pending_return: deduce,
+                placeholder: deduce,
                 defined: deleted,
                 unsupported: if deduce { Some("a deduced return type that no definition gave".into()) } else { None },
             };
@@ -328,12 +336,27 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     cx.func = saved;
     cx.scope = saved_scope;
     crate::statements::jumps::check::end_of_function(cx, &ctx);
+    if d.placeholder.as_ref().is_some_and(|p| p.decltype) && ctx.ret.is_some() {
+        // decltype(auto) deduces by AUTO-10, which return deduction does
+        // not apply yet.
+        cx.unsupported(cx.u.entities[id].span, "a decltype(auto) return type");
+    }
+    if deduce && (ret.is_ref() || ret.is_ptr()) {
+        if ctx.ret.is_none() {
+            cx.error(cx.u.entities[id].span, "RET-3", "a reference or pointer placeholder return type needs a return statement with a value");
+        } else {
+            // Return deduction does not apply the declarator yet, so the
+            // deduced type is not trusted and the unit is unsupported.
+            cx.unsupported(cx.u.entities[id].span, "a deduced return type with a reference or pointer declarator");
+        }
+    }
     if deduce {
         let r = ctx.ret.clone().unwrap_or_else(QType::void);
         let fm = cx.u.func_mut(id).unwrap();
         let mut t = (*fm.ty).clone();
         t.ret = r;
         fm.ty = Rc::new(t);
+        fm.pending_return = false;
     }
     let unsup_after = cx.u.diags.iter().filter(|d| d.sev == crate::diag::Severity::Unsupported).count();
     let fm = cx.u.func_mut(id).unwrap();
@@ -370,6 +393,10 @@ pub fn address_taken(cx: &mut Check, f: EntityId, span: Span) {
 pub fn note_use(cx: &mut Check, f: EntityId, span: Span) {
     if cx.u.func(f).is_some_and(|x| x.deleted) {
         cx.error(span, "DEL-1", format!("'{}' is deleted", cx.u.entities[f].name));
+    }
+    // RET-3: no use before a return statement gives the type.
+    if cx.u.func(f).is_some_and(|x| x.pending_return) {
+        cx.error(span, "RET-3", format!("'{}' is used before its return type is deduced", cx.u.entities[f].name));
     }
 }
 
