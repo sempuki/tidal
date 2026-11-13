@@ -3,7 +3,7 @@
 use crate::sem::check::Check;
 use crate::syntax::{Kid, Node};
 
-/// `linkage_spec` (LSP-1, LSP-2): the declarations inside get the
+/// `linkage_spec` (LSP-1, LSP-2, LSP-5): the declarations inside get the
 /// language linkage of the string.
 pub fn linkage_spec(cx: &mut Check, n: &Node) {
     let lang = n.kids.get(1).and_then(|k| cx.token(k)).and_then(|t| match &t.lit {
@@ -11,7 +11,9 @@ pub fn linkage_spec(cx: &mut Check, n: &Node) {
         _ => None,
     });
     if !matches!(lang.as_deref(), Some("C") | Some("C++")) {
-        cx.unsupported(n.span, "a language linkage other than C and C++");
+        // LSP-5: the implementations in the matrix link with no other
+        // language.
+        cx.error(n.span, "LSP-5", format!("the language linkage \"{}\" is not supported", lang.unwrap_or_default()));
         return;
     }
     let c = lang.as_deref() == Some("C");

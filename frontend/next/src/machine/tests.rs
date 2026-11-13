@@ -408,6 +408,8 @@ fn specifier_agreement_and_c_names() {
     assert_eq!(rule("namespace n { extern \"C\" int c; } int c;"), Some("LSP-7"));
     assert_eq!(rule("int c; namespace n { extern \"C\" int c; }"), Some("LSP-7"));
     assert_eq!(rule("int g(int); extern \"C\" int g(int);"), Some("LSP-7"));
+    assert_eq!(rule("extern \"Fortran\" void f();"), Some("LSP-5"));
+    assert_eq!(rule("extern \"Pascal\" { int g(); }"), Some("LSP-5"));
     assert_eq!(rule("extern \"C\" int g(int); int g(int);"), None);
 }
 
