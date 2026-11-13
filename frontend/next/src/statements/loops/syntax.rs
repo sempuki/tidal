@@ -34,6 +34,10 @@ pub fn do_stmt(p: &mut Parser) -> PResult<Node> {
     kids.extend(scoped(p, |p| Ok(vec![Kid::Node(statement(p)?)]))?);
     kids.push(p.expect("while")?);
     kids.push(p.expect("(")?);
+    // LOOP-6: the condition of `do` is an expression.
+    if p.attempt(crate::statements::if_stmt::syntax::cond_decl).is_ok() {
+        return Err(p.fail_rule("LOOP-6", "the condition of a do statement is an expression, not a declaration"));
+    }
     kids.push(Kid::Node(p.bracketed(expression)?));
     kids.push(p.expect(")")?);
     kids.push(p.expect(";")?);
@@ -46,6 +50,7 @@ pub fn for_stmt(p: &mut Parser) -> PResult<Node> {
     let kids = scoped(p, |p| {
         let mut kids = vec![p.expect("for")?, p.expect("(")?];
         p.bracketed(|p| -> PResult<()> {
+            crate::statements::if_stmt::syntax::other_declaration(p, "LOOP-7")?;
             kids.push(Kid::Node(init_stmt(p)?));
             if !p.at(";") {
                 kids.push(Kid::Node(condition(p)?));

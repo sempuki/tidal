@@ -721,3 +721,25 @@ fn long_double_values() {
     assert_eq!(run("int main() { long double a = 0.1L; long double s = 0; for (int i = 0; i < 10; ++i) s += a; return s > 0.99L && s < 1.01L; }"), RunOutcome::Result(1));
     assert!(matches!(run("int main() { long double b = 0x1p16000L; int x = (int)b; return x; }"), RunOutcome::Undefined(..)));
 }
+
+#[test]
+fn rules_for_forms_the_grammar_does_not_derive() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("void f() { register int x = 1; (void)x; }"), Some("STO-5"));
+    assert_eq!(rule("int f(register int x) { return x; }"), Some("STO-5"));
+    assert_eq!(rule("constexpr int f() { if consteval return 1; return 2; }"), Some("IF-20"));
+    assert_eq!(rule("constexpr int f() { if consteval { return 1; } else return 2; }"), Some("IF-20"));
+    assert_eq!(rule("void f() { if !constexpr (true) {} }"), Some("IF-20"));
+    assert_eq!(rule("void f(int v) { if (static_assert(true); v) {} }"), Some("IF-21"));
+    assert_eq!(rule("namespace n { int x; } void f(int v) { if (using namespace n; v) {} }"), Some("IF-21"));
+    assert_eq!(rule("namespace n { int x; } void f(int v) { if (using I = int; v) {} }"), None);
+    assert_eq!(rule("void f() { if (int x) {} }"), Some("IF-6"));
+    assert_eq!(rule("void f() { if (int a = 1, b = 2) {} }"), Some("IF-6"));
+    assert_eq!(rule("void f() { if (int a = 1; a) {} }"), None);
+    assert_eq!(rule("void f() { do {} while (int x = 0); }"), Some("LOOP-6"));
+    assert_eq!(rule("void f() { for (static_assert(true); ;) break; }"), Some("LOOP-7"));
+}

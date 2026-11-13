@@ -18,6 +18,10 @@ use crate::syntax::{Kid, Node, PResult, Parser};
 pub fn if_stmt(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = vec![p.expect("if")?];
+    // IF-20: `!` goes only before `consteval`.
+    if p.at("!") && p.ahead(1) != "consteval" {
+        return Err(p.fail_rule("IF-20", "'!' after 'if' needs 'consteval'"));
+    }
     if p.at("consteval") || (p.at("!") && p.ahead(1) == "consteval") {
         if p.at("!") {
             kids.push(p.bump());
@@ -52,6 +56,7 @@ pub fn if_stmt(p: &mut Parser) -> PResult<Node> {
 pub fn head(p: &mut Parser) -> PResult<Vec<Kid>> {
     let mut kids = vec![p.expect("(")?];
     p.bracketed(|p| -> PResult<()> {
+        other_declaration(p, "IF-21")?;
         if let Ok(i) = p.attempt(|p| {
             let i = init_stmt(p)?;
             if p.at(")") {
@@ -67,6 +72,15 @@ pub fn head(p: &mut Parser) -> PResult<Vec<Kid>> {
     })?;
     kids.push(p.expect(")")?);
     Ok(kids)
+}
+
+/// A declaration that is not an init-statement: `static_assert`, a
+/// using-declaration, or a using-directive, which `rule` rejects.
+pub fn other_declaration(p: &mut Parser, rule: &'static str) -> PResult<()> {
+    if p.at("static_assert") || (p.at("using") && (p.ahead(1) == "namespace" || p.ahead(2) != "=")) {
+        return Err(p.fail_rule(rule, "a static_assert, a using-declaration, or a using-directive is not an init-statement"));
+    }
+    Ok(())
 }
 
 /// `init_stmt: expression_stmt | null_stmt | simple_decl | sb_decl | alias_decl`.
@@ -108,6 +122,9 @@ pub fn cond_decl(p: &mut Parser) -> PResult<Node> {
     }
     let specs = decl_specifiers(p)?;
     let d = declarator(p)?;
+    if p.at(")") {
+        return Err(p.fail_rule("IF-6", "a condition declaration needs an initializer"));
+    }
     if !(p.at("=") || p.at("{")) {
         return Err(p.fail("'=' or '{'"));
     }
@@ -119,6 +136,22 @@ pub fn cond_decl(p: &mut Parser) -> PResult<Node> {
     } else {
         kids.push(p.bump());
         kids.push(Kid::Node(if p.at("{") { braced_init(p)? } else { assignment_expr(p)? }));
+    }
+    if p.at(",") {
+        // IF-6: one declarator. The rule's stop goes at the `)` that ends
+        // the condition, where the reading as an init-statement stops.
+        let m = p.mark();
+        let mut depth = 0;
+        while !p.at_eof() && !(depth == 0 && p.at(")")) {
+            if p.at("(") {
+                depth += 1;
+            } else if p.at(")") {
+                depth -= 1;
+            }
+            p.bump();
+        }
+        p.fail_rule("IF-6", "a condition declaration declares one variable");
+        p.reset(m);
     }
     Ok(p.node("cond_decl", sp, kids))
 }
@@ -135,6 +168,9 @@ pub fn branch(p: &mut Parser) -> PResult<Node> {
 /// `block: compound_stmt`.
 pub fn block(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
+    if !p.at("{") {
+        return Err(p.fail_rule("IF-20", "the branches of 'if consteval' are compound statements"));
+    }
     let c = compound_stmt(p)?;
     Ok(p.node("block", sp, vec![Kid::Node(c)]))
 }

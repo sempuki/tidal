@@ -151,6 +151,10 @@ pub struct Deferred {
 pub struct Stop {
     pub tok: usize,
     pub want: &'static str,
+    /// The rule of a form that the grammar does not derive, when a page's
+    /// syntax part recognizes the form (`Parser::fail_rule`); `want` is
+    /// then the message. Otherwise the stop is TR-12.
+    pub rule: Option<&'static str>,
 }
 
 pub struct Parser<'a> {
@@ -181,6 +185,7 @@ pub struct Parser<'a> {
     pub done: Vec<Option<Node>>,
     far: usize,
     far_want: &'static str,
+    far_rule: Option<&'static str>,
     /// A failure inside a deferred body, which no outer alternative can
     /// repair.
     pub stop: Option<Stop>,
@@ -210,6 +215,7 @@ impl<'a> Parser<'a> {
             done: Vec::new(),
             far: 0,
             far_want: "a declaration",
+            far_rule: None,
             stop: None,
             recover: false,
             stops: Vec::new(),
@@ -309,11 +315,23 @@ impl<'a> Parser<'a> {
         if self.pos > self.far || (self.pos == self.far && self.far_want.is_empty()) {
             self.far = self.pos;
             self.far_want = want;
+            self.far_rule = None;
+        }
+        Fail
+    }
+    /// Record a failure here at a form that the grammar does not derive
+    /// and that a page's rule names: the stop reports `rule` with the
+    /// message `msg` unless another alternative gets further.
+    pub fn fail_rule(&mut self, rule: &'static str, msg: &'static str) -> Fail {
+        if self.pos >= self.far {
+            self.far = self.pos;
+            self.far_want = msg;
+            self.far_rule = Some(rule);
         }
         Fail
     }
     pub fn furthest(&self) -> Stop {
-        self.stop.clone().unwrap_or(Stop { tok: self.far, want: self.far_want })
+        self.stop.clone().unwrap_or(Stop { tok: self.far, want: self.far_want, rule: self.far_rule })
     }
     /// Try `f`; on failure, go back to where it started.
     pub fn attempt<T>(&mut self, f: impl FnOnce(&mut Self) -> PResult<T>) -> PResult<T> {
@@ -373,19 +391,21 @@ impl<'a> Parser<'a> {
             return f(self).map(Some);
         }
         let start = self.pos;
-        let (far, want) = (self.far, self.far_want);
+        let (far, want, rule) = (self.far, self.far_want, self.far_rule);
         self.far = start;
         self.far_want = "";
+        self.far_rule = None;
         let r = self.attempt(f);
-        let reached = (self.far, self.far_want);
+        let reached = (self.far, self.far_want, self.far_rule);
         if far > self.far {
             self.far = far;
             self.far_want = want;
+            self.far_rule = rule;
         }
         match r {
             Ok(v) => Ok(Some(v)),
             Err(_) => {
-                let s = self.stop.take().unwrap_or(Stop { tok: reached.0, want: if reached.1.is_empty() { "a declaration" } else { reached.1 } });
+                let s = self.stop.take().unwrap_or(Stop { tok: reached.0, want: if reached.1.is_empty() { "a declaration" } else { reached.1 }, rule: reached.2 });
                 self.stops.push(s.clone());
                 self.skip_form(s.tok);
                 if self.pos == start {
@@ -555,7 +575,7 @@ impl<'a> Parser<'a> {
                 self.sub = 0;
                 self.class_depth = 0;
                 self.names.set_stack(scopes);
-                let (far, want) = (self.far, self.far_want);
+                let (far, want, rule) = (self.far, self.far_want, self.far_rule);
                 self.far = start;
                 let r = self.with(true, false, |p| body(p, &decl, qual));
                 self.class_depth = depth;
@@ -568,10 +588,11 @@ impl<'a> Parser<'a> {
                         self.sub = sub;
                         self.far = far;
                         self.far_want = want;
+                        self.far_rule = rule;
                     }
                     Err(f) => {
                         if self.stop.is_none() {
-                            self.stop = Some(Stop { tok: self.far, want: self.far_want });
+                            self.stop = Some(Stop { tok: self.far, want: self.far_want, rule: self.far_rule });
                         }
                         self.pos = pos;
                         self.sub = sub;
@@ -643,6 +664,9 @@ pub fn stop_message(toks: &[Token], s: &Stop) -> String {
         TK::Ident | TK::Punct => format!("'{}'", t.text),
         _ => "a literal".to_string(),
     };
+    if s.rule.is_some() {
+        return s.want.to_string();
+    }
     format!("the grammar derives no declaration here: expected {}, found {}", s.want, found)
 }
 

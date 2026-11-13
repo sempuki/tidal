@@ -68,7 +68,7 @@ fn check_diags(p: &Parsed) -> Vec<diag::Diag> {
     let mut all = p.diags.list.clone();
     if let Err(s) = &p.trees {
         let span = p.lexed.toks[s.tok.min(p.lexed.toks.len() - 1)].span;
-        all.push(diag::Diag { sev: Severity::Error, rule: Some("TR-12"), cause: None, msg: syntax::stop_message(&p.lexed.toks, s), span });
+        all.push(diag::Diag { sev: Severity::Error, rule: Some(s.rule.unwrap_or("TR-12")), cause: None, msg: syntax::stop_message(&p.lexed.toks, s), span });
     }
     all
 }

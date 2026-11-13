@@ -143,10 +143,10 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
                 s.unsupported = true;
                 cx.unsupported(d.span, format!("the specifier '{}'", word));
             }
-            ("register", _) => s.register = true,
             _ => {
                 if let Some(Kid::Node(x)) = d.kids.first() {
                     match x.prod {
+                        "storage_class" if cx.first_word(x) == "register" => s.register = true,
                         "storage_class" => {
                             let w = cx.first_word(x);
                             if seen.contains(&w) || (!seen.is_empty() && !(seen == ["thread_local"] || w == "thread_local")) {
