@@ -59,6 +59,20 @@ pub fn immediate_call(cx: &mut Check, f: crate::sem::EntityId, call: crate::sem:
         return call;
     }
     if let Err(why) = crate::foundations::constant_evaluation::check::evaluate(cx, &call) {
+        // The call operator of a lambda that is not consteval becomes an
+        // immediate function instead (CEV rules).
+        if crate::expressions::lambdas::check::in_lambda_body(cx) {
+            if let Some(op) = cx.func.as_ref().and_then(|c| c.id) {
+                if let Some(f) = cx.u.func_mut(op) {
+                    f.consteval = true;
+                    f.constexpr = false;
+                }
+            }
+            if let Some(c) = cx.func.as_mut() {
+                c.consteval = true;
+            }
+            return call;
+        }
         let rule = if cx.func.as_ref().is_some_and(|c| c.runtime > 0) { "IF-24" } else { "CEV-1" };
         crate::foundations::constant_evaluation::check::report(cx, call.span, rule, why);
     }

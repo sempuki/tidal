@@ -70,6 +70,11 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
         "*" => indirection(cx, e, span),
         "++" | "--" => inc_dec(cx, e, true, op == "++", span, "UN-11"),
         "+" | "-" => {
+            // LAM-10: `+` on a closure applies to the converted pointer.
+            let e = match crate::expressions::lambdas::check::to_pointer(cx, &e, None) {
+                Some(Ok(p)) if op == "+" => p,
+                _ => e,
+            };
             let e = rvalue(cx, e);
             if let Type::Enum(en) = e.ty.t {
                 if cx.u.enums[en].scoped {
@@ -173,6 +178,10 @@ pub fn inc_dec(cx: &mut Check, e: Expr, prefix: bool, inc: bool, span: Span, rul
     }
     if e.cat != Cat::L {
         cx.error(span, rule, format!("'{}' needs an lvalue", sp));
+        return bad(span);
+    }
+    if t.c && crate::expressions::lambdas::check::copy_capture(cx, &e) {
+        cx.error_cause(span, "LAM-23", Some(rule), format!("'{}' on a capture by copy in a lambda that is not mutable", sp));
         return bad(span);
     }
     if t.c {

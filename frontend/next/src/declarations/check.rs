@@ -266,8 +266,19 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
             if let Some(c) = declared.ty.class().filter(|&c| cx.u.classes[c].name.is_empty()) {
                 let scope = cx.u.classes[c].scope;
                 let functions = cx.u.scopes[scope].names.values().flatten().any(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Func(_)));
-                if functions || cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
-                    cx.error(d.span, "TYN-9", "a class named by a typedef for linkage has a member function or a default member initializer");
+                // A lambda expression anywhere in the class.
+                let lambda = cx.u.closures.keys().any(|&k| {
+                    let mut s = cx.u.scopes[cx.u.classes[k].scope].parent;
+                    while let Some(x) = s {
+                        if x == scope {
+                            return true;
+                        }
+                        s = cx.u.scopes[x].parent;
+                    }
+                    false
+                });
+                if functions || lambda || cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
+                    cx.error(d.span, "TYN-9", "a class named by a typedef for linkage has a member function, a default member initializer, or a lambda");
                     continue;
                 }
             }

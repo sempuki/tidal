@@ -266,7 +266,14 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     }
 }
 
-fn default_arguments(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
+pub fn default_arguments(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
+    let saved = std::mem::replace(&mut cx.default_arg, true);
+    let out = default_arguments_in(cx, params);
+    cx.default_arg = saved;
+    out
+}
+
+fn default_arguments_in(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
     let mut out = Vec::new();
     let mut seen = false;
     for p in params {

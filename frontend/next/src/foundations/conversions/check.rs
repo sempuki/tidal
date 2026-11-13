@@ -169,6 +169,12 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
         return Ok(Expr::new(e.k, to.clone(), Cat::PR, e.span));
     }
     let null = is_null_constant(&e);
+    // LAM-10, LAM-25: a closure converts to a pointer to function.
+    if to.is_ptr() {
+        if let Some(r) = crate::expressions::lambdas::check::to_pointer(cx, &e, Some(to)) {
+            return r;
+        }
+    }
     let e = rvalue(cx, e);
     let target = to.unqual();
     if e.ty.t == target.t {
@@ -233,7 +239,7 @@ pub fn rule_of(msg: &str) -> Option<&'static str> {
 /// cause, beside the rule of the context or of `rule_of`: the last rule
 /// in parentheses.
 pub fn cause_of(msg: &str) -> Option<&'static str> {
-    const CAUSES: [&str; 8] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10"];
+    const CAUSES: [&str; 9] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25"];
     CAUSES.iter().copied().filter(|r| msg.contains(&format!("{})", r))).max_by_key(|r| msg.rfind(&format!("{})", r)))
 }
 

@@ -20,6 +20,10 @@ pub fn primary(cx: &mut Check, n: &Node) -> Expr {
             "id_expression" => id_expression(cx, c),
             _ => expr(cx, c),
         },
+        [k @ Kid::Tok(_)] if cx.text(k) == "this" && crate::expressions::lambdas::check::in_lambda_body(cx) => {
+            let t = cx.unsupported(n.span, "'this' in a lambda body (a capture of this, build step 4)");
+            Expr::new(EK::Int(0), t, Cat::PR, n.span)
+        }
         [k @ Kid::Tok(_)] if cx.text(k) == "this" => match cx.func.as_ref().and_then(|f| f.this.clone()) {
             Some(t) => Expr::new(EK::This, t, Cat::PR, n.span),
             None => {
@@ -265,8 +269,10 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
     match cx.u.entities[pick].kind.clone() {
         EntKind::Var(v) => {
             crate::declarations::initialization::forms::check::note_use(cx, pick, span);
-            if let Some(Err(())) = crate::expressions::lambdas::check::capture_check(cx, pick, span) {
-                return bad(span);
+            match crate::expressions::lambdas::check::capture_check(cx, pick, span) {
+                Some(Ok(e)) => return e,
+                Some(Err(())) => return bad(span),
+                None => {}
             }
             let (ty, cat) = match &v.ty.t {
                 Type::Ref(inner, _) => ((**inner).clone(), Cat::L),
@@ -295,6 +301,10 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
         // A data member of the class of a member function is `this->m`.
+        EntKind::Field(_) if crate::expressions::lambdas::check::in_lambda_body(cx) && cx.unevaluated == 0 => {
+            let t = cx.unsupported(span, "a data member named in a lambda body (a capture of this, build step 4)");
+            Expr::new(EK::Int(0), t, Cat::PR, span)
+        }
         EntKind::Field(x) => match cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()) == Some(x.class)) {
             Some(t) => {
                 let obj = Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, span))), t.pointee().unwrap().clone(), Cat::L, span);

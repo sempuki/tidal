@@ -988,3 +988,36 @@ fn destructors() {
     assert_eq!(rule("struct S { int ~S(); };"), Some("DTOR-1"));
     assert_eq!(rule("struct S { int v; ~S() {} }; constexpr S s{1};"), Some("CX-1"));
 }
+
+#[test]
+fn lambdas() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A capture by copy copies at the lambda expression; one by
+    // reference sees later changes.
+    assert_eq!(run("int main() { int n = 1; auto g = [n] { return n; }; auto h = [&n] { return n; }; n = 5; return g() * 10 + h(); }"), RunOutcome::Result(15));
+    // Capture defaults, mutable state in a copy, and nested captures.
+    assert_eq!(run("int main() { int a = 2, b = 3; auto f = [=, &b] { b = a + b; return b; }; f(); return b; }"), RunOutcome::Result(5));
+    assert_eq!(run("int main() { auto c = [k = 0]() mutable { return ++k; }; c(); auto d = c; d(); return c() * 10 + d(); }"), RunOutcome::Result(23));
+    assert_eq!(run("int main() { int a = 4; auto outer = [&] { return [=] { return a + 1; }(); }; return outer(); }"), RunOutcome::Result(5));
+    // An array is copied element by element; a constant read needs no
+    // capture.
+    assert_eq!(run("int main() { int a[2] = {1, 2}; auto f = [a]() mutable { a[0] = 9; return a[0] + a[1]; }; return f() + a[0]; }"), RunOutcome::Result(12));
+    assert_eq!(run("int main() { const int k = 7; constexpr int t[] = {1, 2}; return [] { return k + t[1]; }(); }"), RunOutcome::Result(9));
+    // A lambda without captures converts to a pointer to function.
+    assert_eq!(run("int main() { int (*p)(int) = [](int x) { return x + 1; }; auto q = +[](int x) { return x * 3; }; return p(1) + q(2); }"), RunOutcome::Result(8));
+    assert_eq!(rule("constexpr auto sq = [](int v) { return v * v; }; static_assert(sq(4) == 16);"), None);
+    assert_eq!(rule("void f() { int n = 0; int (*p)() = [n] { return n; }; }"), Some("INIT-7"));
+    assert_eq!(rule("void f() { int a = 1; [] { return a; }; }"), Some("LAM-9"));
+    assert_eq!(rule("void f() { int a = 1; [=, a] { return a; }; }"), Some("LAM-6"));
+    assert_eq!(rule("void f() { int a = 1; [a, a] { return a; }; }"), Some("LAM-6"));
+    assert_eq!(rule("auto g = [=] { return 1; };"), Some("LAM-6"));
+    assert_eq!(rule("void f() { int n = 0; [n] { ++n; }; }"), Some("LAM-23"));
+    assert_eq!(rule("void f() { const int c = 4; [] { const int* p = &c; return *p; }; }"), Some("LAM-17"));
+    assert_eq!(rule("void f() { int x = 1; auto a = [x] { return x; }; auto b = a; b = a; }"), Some("LAM-26"));
+    assert_eq!(rule("auto g = [](bool b) { if (b) return 1; return 2.0; };"), Some("LAM-22"));
+    assert_eq!(rule("int f() { auto g = [=]() static { return 1; }; return g(); }"), Some("LAM-27"));
+}

@@ -112,6 +112,13 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
             cx.unsupported(span, "a user-defined conversion by a constructor in overload resolution (build step 4)");
             return None;
         }
+        let closure = cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| {
+            f.ty.params.iter().zip(args).any(|(p, a)| p.is_ptr() && a.ty.nonref().class().is_some_and(|c| cx.u.closures.contains_key(&c)))
+        });
+        if closure {
+            cx.unsupported(span, "a conversion of a closure to a pointer to function in overload resolution");
+            return None;
+        }
     }
     let (merged, differ) = merge_c_functions(cx, cands, args.len());
     let cands = &merged[..];

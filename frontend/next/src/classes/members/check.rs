@@ -465,6 +465,11 @@ pub fn has_const_member(cx: &Check, c: ClassId) -> bool {
 /// default member initializer deletes. True when the use is valid.
 pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
     let Some(c) = ty.base_elem().class() else { return true };
+    // LAM-26: a closure type with captures has no default constructor.
+    if crate::expressions::lambdas::check::has_captures(cx, c) {
+        cx.error(span, "LAM-26", "the closure type of a lambda with captures has no default constructor");
+        return false;
+    }
     for f in cx.u.classes[c].fields.clone() {
         let x = cx.u.field(f).unwrap().clone();
         if x.init.is_some() {

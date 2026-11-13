@@ -201,6 +201,14 @@ pub struct ClassInfo {
     pub complete: bool,
 }
 
+/// The closure type of a lambda expression (`expressions/lambdas`): its
+/// call operator and the number of its captures.
+#[derive(Clone, Debug)]
+pub struct Closure {
+    pub op: EntityId,
+    pub captures: usize,
+}
+
 /// A non-static data member: its type, its class, its position among
 /// the class's data members, its default member initializer, and its
 /// access.
@@ -259,6 +267,8 @@ pub struct Unit {
     /// The constructors defaulted on their first declaration, which act
     /// as the implicit ones (CTOR-2).
     pub defaulted: std::collections::HashSet<EntityId>,
+    /// The closure types, by class.
+    pub closures: HashMap<types::ClassId, Closure>,
 }
 
 impl Default for Unit {
@@ -278,6 +288,7 @@ impl Default for Unit {
             access: HashMap::new(),
             mem_inits: HashMap::new(),
             defaulted: Default::default(),
+            closures: HashMap::new(),
         }
     }
 }

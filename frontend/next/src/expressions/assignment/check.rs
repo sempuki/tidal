@@ -23,6 +23,11 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
             cx.error(span, "VOL-11", "an assignment to a volatile object of a class");
             return false;
         }
+        // LAM-26: a closure type with captures has no copy assignment.
+        if crate::expressions::lambdas::check::has_captures(cx, c) {
+            cx.error(span, "LAM-26", "the copy assignment of a closure type with captures is deleted");
+            return false;
+        }
         if crate::classes::members::check::has_const_member(cx, c) {
             cx.error(span, "CPY-23", "the copy assignment of a class with a const member is deleted");
             return false;
@@ -42,6 +47,10 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
     }
     if l.ty.is_func() {
         cx.error(span, "ASN-2", "an assignment to a function");
+        return false;
+    }
+    if l.ty.c && crate::expressions::lambdas::check::copy_capture(cx, l) {
+        cx.error_cause(span, "LAM-23", Some("ASN-2"), "an assignment to a capture by copy in a lambda that is not mutable");
         return false;
     }
     if l.ty.c {

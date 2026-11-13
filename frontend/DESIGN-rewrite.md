@@ -474,13 +474,14 @@ cause in the front end's round report.
 
 Step 3 is in place in part (items RW2 and RW3, `reports/clean-room/rust-frontend/report-rw3.md`
 and the commits of item RW3). The new front end passes the check of
-1819 of the 1903 step 3 plain tests (1813 of them tests that the old
-front end passes too), and it owns 1725 of them. Of the 84 plain tests
-that it does not pass, 74 are unsupported, 68 of them for a lambda, and
-10 have the status EDG-AGREES where the old front end has EDG-ONLY.
-These parts are not in it yet: lambdas (their closure is a class), the
-exploration of choice points, extended floating-point literals, and an
-array with more elements than the machine holds.
+1885 of the 1903 step 3 plain tests (1878 of them tests that the old
+front end passes too), and it owns 1725 of them. Of the 18 plain tests
+that it does not pass, 8 are unsupported, and 10 have the status
+EDG-AGREES where the old front end has EDG-ONLY. These parts are not in
+it yet: generic lambdas (their call operator is a template), the
+exploration of choice points, extended floating-point literals, named
+character escapes, and an array with more elements than the machine
+holds.
 
 Step 4 part a is in place in part (item RW3). A class whose members are
 non-static data members and member functions has its layout, aggregate
@@ -494,7 +495,10 @@ its place, so `this` in a constructor is the object's address.
 Destructors run when objects end: block objects and temporaries in
 reverse order, temporaries at the end of their full expression unless a
 reference extends them, members after the destructor's body, and static
-objects after `main`. The
+objects after `main`. A lambda expression makes a closure type with a
+data member for each capture and a call operator; a capture by
+reference is a member that points to the variable. A closure without
+captures converts to a pointer to function. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

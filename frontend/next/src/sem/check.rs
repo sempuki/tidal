@@ -109,6 +109,25 @@ pub struct FnCtx {
     pub discarded: u32,
 }
 
+/// A lambda expression whose body is being checked: its closure type,
+/// its capture default (true for `&`), whether it is `mutable`, and its
+/// captures so far. Each capture is the captured variable, whether it is
+/// by reference, and the data member that holds it; `inits` has the
+/// initializer of each data member in order. `init_vars` are the
+/// variables that init captures declare. `constants` are the uses of
+/// constants of an enclosing function that no capture holds, which a
+/// read of their value resolves.
+#[derive(Clone, Debug)]
+pub struct LambdaCtx {
+    pub class: crate::sem::types::ClassId,
+    pub default: Option<bool>,
+    pub mutable: bool,
+    pub caps: Vec<(EntityId, bool, EntityId)>,
+    pub init_vars: Vec<(EntityId, bool, EntityId)>,
+    pub inits: Vec<super::tree::Init>,
+    pub constants: Vec<(EntityId, Span)>,
+}
+
 pub struct Check<'a> {
     pub u: Unit,
     pub toks: &'a [Token],
@@ -154,12 +173,17 @@ pub struct Check<'a> {
     pub assigned: HashMap<EntityId, u32>,
     /// The names of structured bindings (SB-4).
     pub bindings: std::collections::HashSet<EntityId>,
+    /// The lambda expressions whose bodies enclose the point of the
+    /// check, innermost last.
+    pub lambdas: Vec<LambdaCtx>,
+    /// A default argument is being checked.
+    pub default_arg: bool,
 }
 
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default() }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

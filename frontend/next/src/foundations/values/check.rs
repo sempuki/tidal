@@ -31,6 +31,13 @@ pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
         return e;
     }
     crate::declarations::volatile::check::assignment_value_used(cx, &e);
+    // LAM-9: a constant of an enclosing function read in a lambda body.
+    if !e.ty.is_class() {
+        crate::expressions::lambdas::check::read(cx, &e);
+    }
+    if let Some(x) = crate::expressions::lambdas::check::empty_copy(cx, &e) {
+        return x;
+    }
     if let Some(c) = e.ty.class() {
         // UN-6: no value of an incomplete class. VOL-11: the implicit copy
         // of a class does not take a volatile object.

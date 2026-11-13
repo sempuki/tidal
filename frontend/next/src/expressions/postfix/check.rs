@@ -279,6 +279,15 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         return bad(span);
     }
     let f = deref_ref(f);
+    // LAM-1: a call of a closure object calls its call operator.
+    if let Some(op) = crate::expressions::lambdas::check::call_operator(cx, &f) {
+        let Some(op) = ovl::resolve_with(cx, &[op], Some(&f), &args, span, "operator()") else { return bad(span) };
+        let func = cx.u.func(op).unwrap().clone();
+        let fty = QType::new(Type::Func(func.ty.clone()));
+        let callee = Expr::new(EK::Func(op), fty, Cat::L, f.span);
+        let object = if func.member_static { None } else { Some(f) };
+        return finish_call(cx, callee, Some(op), args, span, object);
+    }
     let target = match &f.k {
         EK::Func(id) => Some(*id),
         _ => None,

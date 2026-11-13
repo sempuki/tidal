@@ -152,6 +152,8 @@ pub fn expression_stmt(cx: &mut Check, n: &Node) -> Stmt {
         return Stmt::new(SK::Null, n.span);
     }
     crate::expressions::decltype::check::no_effect_warning(cx, &e, "STMT-4", "the expression statement");
+    // ODR-3: the value is discarded.
+    crate::expressions::lambdas::check::read(cx, &e);
     Stmt::new(SK::Expr(e), n.span)
 }
 

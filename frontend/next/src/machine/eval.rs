@@ -426,7 +426,10 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     let mut made = Vec::new();
     // The object of a non-static member function comes first.
     let mut args = args;
-    if func.class.is_some() && !func.member_static {
+    // LAM-10: a call through the pointer that a closure converts to has
+    // no object.
+    let through_pointer = func.class.is_some_and(|c| m.u.closures.contains_key(&c)) && args.len() == params.len();
+    if func.class.is_some() && !func.member_static && !through_pointer {
         if args.is_empty() {
             return unsup("a member function called without its object");
         }

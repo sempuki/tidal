@@ -97,7 +97,8 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
         };
         match &ctx.ret {
             Some(old) if *old != t => {
-                cx.error(span, "RET-7", format!("the returns give different types, {} and {}", old.show(), t.show()));
+                let (rule, cause) = crate::expressions::lambdas::check::return_rule(cx);
+                cx.error_cause(span, rule, cause, format!("the returns give different types, {} and {}", old.show(), t.show()));
                 return Stmt::new(SK::Null, span);
             }
             None => {
