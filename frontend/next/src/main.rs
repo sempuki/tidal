@@ -119,8 +119,24 @@ pub fn check_source(src: &str, path: &Path, o: &Options) -> (Outcome, Option<sem
         d.span.line = p.lexed.map.unit_line(d.span);
         d.span.file = source::FileId(0);
     }
-    let errors: Vec<_> = all.iter().filter(|d| d.sev == Severity::Error).cloned().collect();
+    // An error after the first construct the front end does not model can
+    // rest on that construct, so it gives no verdict (decision 0066): the
+    // unit is then unsupported. On the construct's own line, an error
+    // reported before it still counts.
     let unsup: Vec<_> = all.iter().filter(|d| d.sev == Severity::Unsupported).cloned().collect();
+    let first_unsup = all
+        .iter()
+        .enumerate()
+        .filter(|(_, d)| d.sev == Severity::Unsupported)
+        .map(|(i, d)| (d.span.line, i))
+        .min()
+        .unwrap_or((u32::MAX, usize::MAX));
+    let errors: Vec<_> = all
+        .iter()
+        .enumerate()
+        .filter(|(i, d)| d.sev == Severity::Error && (d.span.line, *i) < first_unsup)
+        .map(|(_, d)| d.clone())
+        .collect();
     let out = if !errors.is_empty() {
         Outcome::Reject(errors)
     } else if !unsup.is_empty() {

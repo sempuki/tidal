@@ -157,7 +157,11 @@ innermost loop. Section 7 uses this.
 A check does not fire on it, so one error does not give a cascade. A
 construct the front end does not model gives `Stmt::Unsupported` or an
 unsupported entity, and the outcome is `unsupported` (decision 0060
-keeps that result). A declaration whose type is unknown for any other
+keeps that result). An error that the front end reports after the
+first unmodelled construct of a unit can rest on that construct, so it
+gives no verdict, and the unit is `unsupported` (decision 0066). An
+error reported earlier, also on the construct's own line, still makes
+the unit a reject. A declaration whose type is unknown for any other
 reason is a fault of the front end and shows as one.
 
 ### How each stage differs from the old front end

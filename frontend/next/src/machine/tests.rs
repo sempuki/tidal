@@ -61,3 +61,11 @@ fn constant_evaluation_reports_its_limits() {
     assert_eq!((d.rule, d.cause), (Some("SA-7"), Some("CE-3")));
     unit("constexpr int sq(int x) { return x * x; } static_assert(sq(4) == 16); const int k = 5; int a[k];");
 }
+
+#[test]
+fn an_error_after_an_unmodelled_construct_gives_no_verdict() {
+    let outcome = |src: &str| crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0;
+    assert!(matches!(outcome("struct S { int a; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
+    assert!(matches!(outcome("static_assert(1 == 2);\nstruct S { int a; };"), Outcome::Reject(_)));
+    assert!(matches!(outcome("int int::* pm;"), Outcome::Reject(_)));
+}
