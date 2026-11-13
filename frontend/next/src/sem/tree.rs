@@ -178,6 +178,8 @@ pub enum EK {
     Unevaluated(Box<Expr>),
     /// `[[assume(e)]]`: the condition, which must hold (`declarations/attributes`).
     Assume(Box<Expr>),
+    /// An array prvalue from a braced list (`declarations/initialization/list`).
+    List(Box<Init>),
 }
 
 /// An argument as the parameter receives it: a value for a parameter
@@ -213,6 +215,7 @@ impl Expr {
             EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => a.any(f) || b.any(f),
             EK::Cond(c, a, b) => c.any(f) || a.any(f) || b.any(f),
             EK::Call(c, args) => c.any(f) || args.iter().any(|a| a.e.any(f)),
+            EK::List(i) => i.any(f),
             _ => false,
         }
     }
@@ -240,6 +243,18 @@ pub enum Init {
     /// An array from a list: one initializer per element, the rest
     /// value-initialized.
     List(Vec<Init>),
+}
+
+impl Init {
+    /// Whether `f` holds for an expression of the initializer, at any
+    /// depth (Expr::any).
+    pub fn any(&self, f: &dyn Fn(&Expr) -> bool) -> bool {
+        match self {
+            Init::Expr(e) | Init::Ref(e) => e.any(f),
+            Init::List(xs) => xs.iter().any(|x| x.any(f)),
+            Init::Default | Init::Zero => false,
+        }
+    }
 }
 
 pub type StmtId = u32;

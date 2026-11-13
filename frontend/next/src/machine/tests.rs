@@ -557,3 +557,21 @@ fn assumptions() {
     assert_eq!(run("int main() { int i = 1; [[assume(++i > 0)]]; return i; }"), RunOutcome::Result(1));
     assert!(matches!(run("int main() { int i = 1; [[assume(i > 5)]]; return 0; }"), RunOutcome::Undefined("ATTR-10", ..)));
 }
+
+#[test]
+fn braced_lists_for_arrays() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("const int f[2] = {1, 2}; int (&r)[2]{f};"), Some("REF-8"));
+    assert_eq!(rule("int s[2]; int (&&r)[2]{s};"), Some("REF-10"));
+    assert_eq!(rule("int s[2]; int (&r)[]{s};"), None);
+    assert_eq!(rule("const int (&r)[2]{1, 2, 3};"), Some("REF-11"));
+    assert_eq!(rule("int (&&r)[]{};"), Some("REF-11"));
+    assert_eq!(rule("int (&r)[2]{1, 2};"), Some("REF-9"));
+    assert_eq!(rule("constexpr const char (&r)[4]{\"ab\"}; static_assert(r[2] == 0 && r[3] == 0);"), None);
+    assert_eq!(rule("using A = int[]; static_assert(sizeof(A{1, 2, 3}) == 3 * sizeof(int));"), None);
+    assert_eq!(run("const int (&t)[3]{1, 2}; int (&&u)[]{3, 4}; int main() { u[0] += 1; return t[0] + t[2] * 10 + u[0] * 100 + u[1] * 1000; }"), RunOutcome::Result(4401));
+    assert_eq!(run("using A = int[3]; int main() { return A{1, 2, 3}[1]; }"), RunOutcome::Result(2));
+}

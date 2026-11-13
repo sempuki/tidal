@@ -110,7 +110,7 @@ pub fn static_var(m: &mut Machine, id: EntityId, v: &Var) -> R<Ptr> {
         // CE-3: a temporary that the reference extends is usable in
         // constant expressions only if its type is const. Another
         // evaluation can neither read nor change it.
-        if m.temps[temps.min(m.temps.len())..].contains(&p.obj) && !v.ty.nonref().c {
+        if m.temps[temps.min(m.temps.len())..].contains(&p.obj) && !v.ty.nonref().is_const() {
             let o = &mut m.objs[p.obj];
             o.usable = false;
             o.own = false;

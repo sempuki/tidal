@@ -240,6 +240,17 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
         EK::Call(f, args) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
+        EK::List(i) => {
+            fn init(cx: &Check, i: &crate::sem::tree::Init) -> Option<EntityId> {
+                use crate::sem::tree::Init;
+                match i {
+                    Init::Expr(e) | Init::Ref(e) => local_in(cx, e),
+                    Init::List(xs) => xs.iter().find_map(|x| init(cx, x)),
+                    Init::Default | Init::Zero => None,
+                }
+            }
+            init(cx, i)
+        }
     }
 }
 

@@ -93,6 +93,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         },
         EK::Closure(id) => Ok(Val::Fn(*id)),
         EK::Unevaluated(_) => Ok(Val::Void),
+        EK::List(i) => init_value(m, &e.ty, i),
         // ATTR-15: the expression is not evaluated. An expression with
         // no side effect is, so that a false one is found (ATTR-10).
         EK::Assume(c) => {

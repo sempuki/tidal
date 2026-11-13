@@ -89,6 +89,61 @@ fn related(e: &QType, r: &QType) -> (bool, bool) {
     }
 }
 
+/// A braced list for a reference to an array. A list of one array
+/// that the reference can name binds directly (REF-6). Any other list
+/// makes a temporary array of the referenced type (REF-14), with one
+/// element for each value where the bound is unknown. REF-11 rejects
+/// more values than the bound, and an empty list for an unknown bound.
+fn array_reference(cx: &mut Check, ty: &QType, b: &Node) -> Option<Expr> {
+    use crate::declarations::initialization::list::check as list;
+    let Type::Ref(inner, rv) = &ty.t else { return None };
+    let (inner, rv) = ((**inner).clone(), *rv);
+    let Type::Array(el, bound) = inner.t.clone() else { return None };
+    let its = list::items(b);
+    let with_bound = |n: u64| QType { t: Type::Array(el.clone(), Some(n)), c: inner.c, v: inner.v };
+    let single = (its.len() == 1).then(|| first_node(its[0])).flatten().filter(|c| !matches!(c.prod, "braced_init" | "designator"));
+    let (arr, init) = match single {
+        Some(c) => {
+            let e = expr(cx, c);
+            if e.ty.is_error() {
+                return None;
+            }
+            if related(&e.ty.nonref(), &inner).0 {
+                return bind(cx, e, ty, "INIT-7");
+            }
+            if let (crate::sem::tree::EK::Str(units), true) = (&e.k, el.is_integral()) {
+                let arr = with_bound(bound.unwrap_or(units.len() as u64));
+                let init = list::string_init(cx, e, &arr)?;
+                (arr, init)
+            } else {
+                let arr = with_bound(bound.unwrap_or(1));
+                let x = list::braced_value(cx, e, &el, "LIST-2")?;
+                (arr, Init::List(vec![Init::Expr(x)]))
+            }
+        }
+        None => {
+            if its.is_empty() && bound.is_none() {
+                cx.error(b.span, "REF-11", "an empty braced list for a reference to an array of unknown bound");
+                return None;
+            }
+            if bound.is_some_and(|n| its.len() as u64 > n) {
+                cx.error(b.span, "REF-11", format!("{} values in the braces for a reference to an array of {}", its.len(), bound.unwrap_or(0)));
+                return None;
+            }
+            let arr = with_bound(bound.unwrap_or(its.len() as u64));
+            let init = list::list_init(cx, b, &arr, "")?;
+            (arr, init)
+        }
+    };
+    // REF-14: the temporary binds as REF-2 and REF-3 give.
+    if !rv && !(inner.is_const() && !inner.is_volatile()) {
+        cx.error(b.span, "REF-9", "a non-const lvalue reference bound to a temporary array from a braced list");
+        return None;
+    }
+    let temp = Expr::new(crate::sem::tree::EK::List(Box::new(init)), arr.clone(), Cat::PR, b.span);
+    Some(temp.conv(Conv::Materialize, arr, Cat::L))
+}
+
 /// The initializer of a reference variable (REF-11).
 pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
     let ns = nodes(init);
@@ -96,8 +151,7 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
     let one = if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
         let its: Vec<&Node> = b.children("init_clause").collect();
         if ty.nonref().is_array() {
-            cx.unsupported(init.span, "a braced list bound to a reference to an array");
-            return None;
+            return array_reference(cx, ty, b).map(Init::Ref);
         }
         if its.len() != 1 {
             cx.error(init.span, "REF-11", "a braced list for a reference must hold one value");

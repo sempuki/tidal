@@ -63,7 +63,10 @@ pub fn scalar_list(cx: &mut Check, b: &Node, to: &QType, rule: &'static str) -> 
     if to.is_error() {
         return None;
     }
-    if to.is_array() || to.is_void() {
+    if to.is_array() {
+        return array_prvalue(cx, b, to);
+    }
+    if to.is_void() {
         cx.unsupported(span, "a braced list for this type here");
         return None;
     }
@@ -83,6 +86,24 @@ pub fn scalar_list(cx: &mut Check, b: &Node, to: &QType, rule: &'static str) -> 
             None
         }
     }
+}
+
+/// An array prvalue from a braced list (LIST-3, CAST-18). An array of
+/// unknown bound takes one element for each value.
+pub fn array_prvalue(cx: &mut Check, b: &Node, to: &QType) -> Option<Expr> {
+    let ty = match &to.t {
+        Type::Array(el, None) => {
+            let n = items(b).len() as u64;
+            if n == 0 {
+                cx.error(b.span, "DCL-19", "an array of unknown bound with an empty initializer");
+                return None;
+            }
+            QType { t: Type::Array(el.clone(), Some(n)), c: to.c, v: to.v }
+        }
+        _ => to.clone(),
+    };
+    let init = list_init(cx, b, &ty, "")?;
+    Some(Expr::new(EK::List(Box::new(init)), ty, Cat::PR, b.span))
 }
 
 /// The zero value of a scalar type.
