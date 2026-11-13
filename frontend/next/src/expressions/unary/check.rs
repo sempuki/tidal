@@ -148,7 +148,7 @@ pub fn inc_dec(cx: &mut Check, e: Expr, prefix: bool, inc: bool, span: Span, rul
         return bad(span);
     }
     if t.is_enum() {
-        cx.error(span, rule, format!("'{}' on an enumeration", sp));
+        cx.error_cause(span, rule, Some("ENUM-16"), format!("'{}' on an enumeration", sp));
         return bad(span);
     }
     if e.cat != Cat::L {
@@ -156,7 +156,7 @@ pub fn inc_dec(cx: &mut Check, e: Expr, prefix: bool, inc: bool, span: Span, rul
         return bad(span);
     }
     if t.c {
-        crate::declarations::declarators::check::modify_const(cx, span, &format!("'{}'", sp));
+        crate::declarations::declarators::check::modify_const(cx, span, &format!("'{}'", sp), rule);
         return bad(span);
     }
     match &t.t {

@@ -15,7 +15,8 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
     if l.cat != Cat::L {
         // VC-12: a prvalue of a type that is not a class is not assigned
         // to.
-        let cause = (l.cat == Cat::PR).then_some("VC-12");
+        let mul = matches!(l.k, EK::Binary(crate::sem::tree::BOp::Mul | crate::sem::tree::BOp::Div | crate::sem::tree::BOp::Rem, ..));
+        let cause = (l.cat == Cat::PR).then_some(if mul { "MUL-19" } else { "VC-12" });
         cx.error_cause(span, "ASN-2", cause, "an assignment to an rvalue");
         return false;
     }
@@ -28,7 +29,9 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
         return false;
     }
     if l.ty.c {
-        crate::declarations::declarators::check::modify_const(cx, span, "an assignment");
+        // CX-1: a constexpr variable is const.
+        let constexpr = matches!(&l.k, EK::Var(id) if cx.u.var(*id).is_some_and(|v| v.constexpr));
+        crate::declarations::declarators::check::modify_const(cx, span, "an assignment", if constexpr { "CX-1" } else { "ASN-2" });
         return false;
     }
     true

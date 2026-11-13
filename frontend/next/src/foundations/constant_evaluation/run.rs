@@ -23,7 +23,10 @@ pub fn too_deep<T>() -> R<T> {
 pub fn check_read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     let Some(o) = m.objs.get(p.obj) else { return Ok(()) };
     if !o.usable {
-        return limit("CE-3", format!("{} is not usable in constant expressions", o.name));
+        // CV-11: a const object whose initializer is not constant, or a
+        // volatile object.
+        let rule = if o.ty.is_volatile() || o.ty.is_const() { "CV-11" } else { "CE-3" };
+        return limit(rule, format!("{} is not usable in constant expressions", o.name));
     }
     if ty.v || o.ty.v {
         return limit("CE-12", format!("a read of the volatile object {}", o.name));
@@ -96,7 +99,7 @@ pub fn static_var(m: &mut Machine, id: EntityId, v: &Var) -> R<Ptr> {
         return limit("CE-30", format!("the parameter '{}' of the enclosing function", name));
     }
     if v.storage == crate::sem::Storage::Automatic && !usable {
-        return limit("CE-3", format!("'{}' is not usable in constant expressions", name));
+        return limit(not_usable_rule(v), format!("'{}' is not usable in constant expressions", name));
     }
     if v.ty.is_ref() {
         let (true, Some(crate::sem::tree::Init::Ref(e))) = (usable, &v.init) else {
@@ -147,6 +150,16 @@ pub fn static_var(m: &mut Machine, id: EntityId, v: &Var) -> R<Ptr> {
     m.objs[o].is_static = v.storage != crate::sem::Storage::Automatic;
     m.globals.insert(id, o);
     Ok(Ptr::whole(o))
+}
+
+/// CE-3, or CV-11 for a `const` variable whose initializer is not
+/// constant and for a `volatile` variable.
+pub fn not_usable_rule(v: &Var) -> &'static str {
+    if v.ty.is_volatile() || (v.ty.is_const() && !v.constexpr && !v.ty.is_ref()) {
+        "CV-11"
+    } else {
+        "CE-3"
+    }
 }
 
 /// CE-17: the evaluation reaches the declaration of a static or thread

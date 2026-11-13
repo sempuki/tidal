@@ -57,7 +57,10 @@ pub fn address_of_non_lvalue(cx: &mut Check, e: &Expr) -> QType {
     if e.cat == Cat::X {
         cx.error(e.span, "VC-13", "the address of an xvalue")
     } else {
-        cx.error(e.span, "VC-12", "the address of a prvalue")
+        // UN-9 for `&`, and MUL-19 for the result of `*`, `/`, `%`.
+        let cause = if matches!(e.k, crate::sem::tree::EK::Binary(crate::sem::tree::BOp::Mul | crate::sem::tree::BOp::Div | crate::sem::tree::BOp::Rem, ..)) { "MUL-19" } else { "UN-9" };
+        cx.error_cause(e.span, "VC-12", Some(cause), "the address of a prvalue");
+        QType::error()
     }
 }
 

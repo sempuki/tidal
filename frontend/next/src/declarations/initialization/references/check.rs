@@ -29,7 +29,8 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
             return None;
         }
         if !cv_ok {
-            cx.error(span, "REF-8", format!("the reference to {} drops a cv-qualifier of {}", inner.show(), e.ty.show()));
+            let vol = (e.ty.v && !inner.v).then_some("VOL-10");
+            cx.error_cause(span, "REF-8", vol, format!("the reference to {} drops a cv-qualifier of {}", inner.show(), e.ty.show()));
             return None;
         }
         return Some(e.conv(Conv::NoOp, inner, Cat::L));
@@ -44,10 +45,12 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     // A temporary: a const lvalue reference that is not volatile, or an
     // rvalue reference.
     if !rv && !(inner.c && !inner.v) {
+        // VOL-10: a reference to volatile binds no temporary.
+        let vol = (inner.v || e.ty.v).then_some("VOL-10");
         if e.cat == Cat::L {
-            cx.error(span, "REF-8", format!("a reference to {} bound to an lvalue of type {}", inner.show(), e.ty.show()));
+            cx.error_cause(span, "REF-8", vol, format!("a reference to {} bound to an lvalue of type {}", inner.show(), e.ty.show()));
         } else {
-            cx.error(span, "REF-9", "a non-const lvalue reference bound to an rvalue");
+            cx.error_cause(span, "REF-9", vol, "a non-const lvalue reference bound to an rvalue");
         }
         return None;
     }

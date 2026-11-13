@@ -640,7 +640,7 @@ fn reinterpret_references_and_decay_copies() {
     };
     assert_eq!(run("int main() { int x = 5; unsigned& u = reinterpret_cast<unsigned&>(x); u = 7; return x; }"), RunOutcome::Result(7));
     assert_eq!(run("int main() { int x = -1; return reinterpret_cast<unsigned&>(x) == 4294967295u; }"), RunOutcome::Result(1));
-    assert_eq!(rule("const int c = 1; int& r = reinterpret_cast<int&>(c);"), Some("CAST-7"));
+    assert!(matches!(crate::check_source("const int c = 1; int& r = reinterpret_cast<int&>(c);", Path::new("t.cpp"), &crate::Options::default()).0, Outcome::Reject(ds) if ds[0].rule == Some("CAST-7")));
     assert_eq!(rule("constexpr int f() { int x = 1; return reinterpret_cast<unsigned&>(x); } static_assert(f() == 1);"), Some("CE-4"));
     assert_eq!(run("int main() { int v = 3; auto c = auto(v); c = 9; int a[2] = {1, 2}; auto p = auto{a}; return v * 10 + (p == a); }"), RunOutcome::Result(31));
     assert_eq!(rule("const int c = 2; auto a = auto(c); int* p = &a;"), None);

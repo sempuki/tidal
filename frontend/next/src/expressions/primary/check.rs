@@ -133,7 +133,10 @@ pub fn literal(cx: &mut Check, n: &Node) -> Expr {
             // step 4.
             let declared = cx.toks.windows(2).any(|w| w[0].text == "operator" && matches!(w[1].lit, Some(Lit::Str { .. } | Lit::UserDefined { .. })));
             if !declared {
-                cx.error(span, "PRIM-16", format!("no literal operator has the suffix '{}'", suffix));
+                // PRIM-26: a number runs over a sign after an exponent
+                // letter, so the sign and what follows join the suffix.
+                let over = suffix.contains('+') || suffix.contains('-');
+                cx.error_cause(span, "PRIM-16", over.then_some("PRIM-26"), format!("no literal operator has the suffix '{}'", suffix));
                 return bad(span);
             }
             let t = cx.unsupported(span, "a user-defined literal (classes and operators come with build step 4)");

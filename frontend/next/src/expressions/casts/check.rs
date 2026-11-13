@@ -181,7 +181,8 @@ pub fn named_cast(cx: &mut Check, n: &Node) -> Expr {
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
         Err((rule, m)) => {
-            cx.error(span, rule, m);
+            // CAST-19: no cast of the named kind applies.
+            cx.error_cause(span, rule, (rule != "CAST-19").then_some("CAST-19"), m);
             bad(span)
         }
     }

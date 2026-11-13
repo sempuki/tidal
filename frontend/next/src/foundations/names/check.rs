@@ -148,7 +148,15 @@ pub fn check_ambiguous(cx: &mut Check, found: &[EntityId], name: &str, span: Spa
         // NS-17: the names come from namespaces that using-directives
         // bring in.
         let scopes: std::collections::HashSet<_> = others.iter().map(|&&e| cx.u.entities[e].scope).collect();
-        cx.error_cause(span, "NAM-26", (scopes.len() > 1).then_some("NS-17"), format!("'{}' is ambiguous", name));
+        // NS-12 for an inline namespace, and NS-13 for an unnamed one.
+        let cause = if scopes.iter().any(|&s| cx.u.scopes[s].inline) {
+            Some("NS-12")
+        } else if scopes.iter().any(|&s| cx.u.scopes[s].kind == ScopeKind::Namespace && cx.u.scopes[s].name.is_empty() && cx.u.scopes[s].parent.is_some()) {
+            Some("NS-13")
+        } else {
+            (scopes.len() > 1).then_some("NS-17")
+        };
+        cx.error_cause(span, "NAM-26", cause, format!("'{}' is ambiguous", name));
         return true;
     }
     false

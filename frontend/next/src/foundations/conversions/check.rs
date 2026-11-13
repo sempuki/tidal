@@ -187,7 +187,7 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
         }
         (Type::Enum(en), _) if cx.u.enums[*en].scoped => Err(format!("the scoped enumeration {} does not convert implicitly", from.show())),
         (f, Type::Int(IntK::Bool)) if matches!(f, Type::Int(_) | Type::Float(_) | Type::Enum(_) | Type::Ptr(_)) => Ok(e.conv(Conv::ToBool, target, Cat::PR)),
-        (_, Type::Enum(_)) => Err(format!("no implicit conversion from {} to an enumeration", from.show())),
+        (_, Type::Enum(_)) => Err(format!("no implicit conversion from {} to an enumeration (ENUM-15)", from.show())),
         (Type::Int(_) | Type::Float(_) | Type::Enum(_), Type::Int(_) | Type::Float(_)) => Ok(e.conv(Conv::Arith, target, Cat::PR)),
         (_, Type::Ptr(tp)) => {
             if null {
@@ -199,6 +199,8 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
                 // CONV-9: a qualification conversion that is not valid.
                 Type::Ptr(fp) if fp.is_void() || tp.is_void() => Err(format!("no implicit conversion from {} to {} (CONV-9)", from.show(), to.show())),
                 Type::Ptr(fp) if similar(fp, tp) => Err(format!("no implicit conversion from {} to {} (CV-10, CONV-9)", from.show(), to.show())),
+                // CONV-10: a function pointer gains no `noexcept`.
+                Type::Ptr(fp) if fp.is_func() && tp.is_func() => Err(format!("no implicit conversion from {} to {} (CONV-10)", from.show(), to.show())),
                 Type::Ptr(_) => Err(format!("no implicit conversion from {} to {}", from.show(), to.show())),
                 _ => Err(format!("no implicit conversion from {} to a pointer (CONV-8)", from.show())),
             }
@@ -218,23 +220,15 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
 /// The rule that names a failed implicit conversion's reason, when the
 /// reason is one of this page's rules.
 pub fn rule_of(msg: &str) -> Option<&'static str> {
-    if msg.contains("(CV-10, CONV-9)") {
-        Some("CV-10")
-    } else if msg.contains("CONV-12") {
-        Some("CONV-12")
-    } else if msg.contains("CONV-18") {
-        Some("CONV-18")
-    } else if msg.contains("CONV-8") {
-        Some("CONV-8")
-    } else {
-        None
-    }
+    msg.contains("(CV-10, CONV-9)").then_some("CV-10")
 }
 
 /// The rule that a failed implicit conversion's reason names as its
-/// cause, beside the rule of the context or of `rule_of`.
+/// cause, beside the rule of the context or of `rule_of`: the last rule
+/// in parentheses.
 pub fn cause_of(msg: &str) -> Option<&'static str> {
-    msg.contains("CONV-9)").then_some("CONV-9")
+    const CAUSES: [&str; 6] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15"];
+    CAUSES.iter().copied().filter(|r| msg.contains(&format!("{})", r))).max_by_key(|r| msg.rfind(&format!("{})", r)))
 }
 
 /// CONV-21: the conversion of `e` to `to` is narrowing. A constant whose

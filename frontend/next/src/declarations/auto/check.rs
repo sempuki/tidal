@@ -28,7 +28,11 @@ pub fn placeholder(cx: &mut Check, n: &Node) -> Placeholder {
 /// declarator node, applied again to the deduced type by the caller.
 pub fn deduce(cx: &mut Check, p: &Placeholder, declarator: &Node, init: &Expr) -> Option<QType> {
     if crate::expressions::primary::check::unresolved_set(init) {
-        crate::expressions::primary::check::no_target(cx, init, "AUTO-8");
+        if p.decltype {
+            cx.error_cause(init.span, "DTY-4", Some("AUTO-11"), "an overload set with no target type that chooses one function");
+        } else {
+            crate::expressions::primary::check::no_target(cx, init, "AUTO-8");
+        }
         return None;
     }
     if init.ty.is_error() {
@@ -67,7 +71,7 @@ pub fn deduce_with(cx: &mut Check, p: &Placeholder, op: Option<&str>, init: &Exp
         None => decay(&t).unqual_top(),
         Some("&") => {
             // AUTO-18: `auto&` binds to an lvalue unless the type is const.
-            if init.cat == Cat::PR && !(p.c || t.c) {
+            if init.cat != Cat::L && !(p.c || t.c) {
                 cx.error(init.span, "AUTO-18", "'auto&' with an initializer that is not an lvalue");
                 return None;
             }

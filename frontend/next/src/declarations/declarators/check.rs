@@ -495,9 +495,10 @@ pub fn reference_needs_init(cx: &mut Check, span: Span, name: &str) {
     cx.error(span, "DCL-18", format!("the reference '{}' has no initializer", name));
 }
 
-/// CV-4: a modification through an lvalue of `const` type.
-pub fn modify_const(cx: &mut Check, span: Span, what: &str) {
-    cx.error(span, "CV-4", format!("{} of a const object", what));
+/// CV-4: a modification through an lvalue of `const` type. `context`
+/// is the rule of the operator, given as the cause.
+pub fn modify_const(cx: &mut Check, span: Span, what: &str, context: &'static str) {
+    cx.error_cause(span, "CV-4", Some(context), format!("{} of a const object", what));
 }
 
 impl QType {

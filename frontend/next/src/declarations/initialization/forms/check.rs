@@ -199,22 +199,30 @@ fn init_expr(cx: &mut Check, init: &Node, p: &auto::check::Placeholder) -> Optio
             return None;
         }
         if items.len() != 1 {
-            auto::check::one_expression(cx, init.span);
+            one_expression(cx, init.span, p);
             return None;
         }
         first_node(items[0])?
     } else if words.first() == Some(&"(") {
         let args: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
         if args.len() != 1 || first_node(args[0]).is_some_and(|c| c.prod == "braced_init") {
-            auto::check::one_expression(cx, init.span);
+            one_expression(cx, init.span, p);
             return None;
         }
         args[0]
     } else {
         ns.first()?
     };
-    let _ = p;
     Some(expr(cx, one))
+}
+
+/// AUTO-20, with AUTO-11 for `decltype(auto)`.
+fn one_expression(cx: &mut Check, span: Span, p: &auto::check::Placeholder) {
+    if p.decltype {
+        cx.error_cause(span, "AUTO-20", Some("AUTO-11"), "a placeholder needs exactly one expression in its initializer");
+    } else {
+        auto::check::one_expression(cx, span);
+    }
 }
 
 /// Declare a variable of a simple declaration, with its initializer.
@@ -272,6 +280,13 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
             return None;
         };
         // AUTO-8: the variable is not visible in its own initializer.
+        let mut toks = Vec::new();
+        i.tokens(&mut toks);
+        let own = toks.iter().enumerate().any(|(k, &t)| cx.toks[t].text == *name && (k == 0 || !matches!(cx.toks[toks[k - 1]].text.as_str(), "." | "->" | "::")));
+        if own {
+            auto::check::used_in_own_initializer(cx, span, &name);
+            return None;
+        }
         let e = init_expr(cx, i, p)?;
         let dn = d_node_hint(cx, d);
         let base = auto::check::deduce(cx, p, &dn, &e)?;
@@ -523,7 +538,7 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
                     return None;
                 }
                 if v.param && local {
-                    cx.error(span, "NAM-3", format!("'{}' redeclares a parameter", name));
+                    cx.error_cause(span, "NAM-3", Some("FN-13"), format!("'{}' redeclares a parameter", name));
                     return None;
                 }
                 if local && !(v.is_extern && s.is_extern) {
