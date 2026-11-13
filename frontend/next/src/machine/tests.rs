@@ -660,3 +660,20 @@ fn literal_suffixes_without_operators() {
     assert_eq!(rule("auto s = \"a\"_q;"), Some("PRIM-16"));
     assert_eq!(rule("int operator\"\"_k(unsigned long long); int x = 1_k;"), Some("unsupported"));
 }
+
+#[test]
+fn references_in_constant_evaluation() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // AUTO-4: `auto&&` from an lvalue collapses to an lvalue reference.
+    assert_eq!(rule("int t = 1; auto&& v = t; int& w = v; int a[2]; auto&& z = a; int q = z[0];"), None);
+    assert_eq!(run("int main() { int t = 1; auto&& v = t; v = 4; return t; }"), RunOutcome::Result(4));
+    assert_eq!(rule("static constexpr int t[] = {1, 2}; auto&& v = t; constexpr int s = v[1]; static_assert(s == 2);"), None);
+    // CE-14: a reference to a local is not a constant initializer.
+    assert_eq!(rule("int f() { constexpr int k = 3; const int& r = k; constexpr int s = r; return s; }"), Some("CE-3"));
+    assert_eq!(rule("int f() { constexpr int k = 3; constexpr int s = k; return s; }"), None);
+    assert_eq!(rule("void p(int) {} void (&c)(int) = p; void (&&d)(int){p}; static_assert(&c == &p && &d == &p);"), None);
+}

@@ -142,7 +142,9 @@ pub fn static_var(m: &mut Machine, id: EntityId, v: &Var) -> R<Ptr> {
     let val = val?;
     let o = m.new_obj(&v.ty, val, &format!("'{}'", name));
     m.objs[o].own = false;
-    m.objs[o].is_static = true;
+    // A usable local keeps automatic storage, so a reference or a
+    // pointer to it is not a constant expression (CE-14).
+    m.objs[o].is_static = v.storage != crate::sem::Storage::Automatic;
     m.globals.insert(id, o);
     Ok(Ptr::whole(o))
 }

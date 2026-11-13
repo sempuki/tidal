@@ -271,7 +271,9 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         let e = init_expr(cx, i, p)?;
         let dn = d_node_hint(cx, d);
         let base = auto::check::deduce(cx, p, &dn, &e)?;
-        ty = crate::declarations::declarators::check::with_base(cx, base.clone(), &dn);
+        // A forwarding reference already deduced the lvalue reference
+        // that collapsing gives (AUTO-4).
+        ty = if base.is_ref() { base.clone() } else { crate::declarations::declarators::check::with_base(cx, base.clone(), &dn) };
         if let Some(prev) = first_auto {
             if *prev != base {
                 auto::check::differs(cx, d.span);

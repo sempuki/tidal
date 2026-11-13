@@ -83,6 +83,15 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         },
         EK::AddrOf(x) => match &x.k {
             EK::Func(id) => Ok(Val::Fn(*id)),
+            // A reference to a function refers to a place that holds the
+            // function.
+            _ if x.ty.is_func() => {
+                let p = place(m, x)?;
+                match m.slot(&p) {
+                    Some(Val::Fn(f)) => Ok(Val::Fn(*f)),
+                    _ => unsup("the address of a function through this expression"),
+                }
+            }
             // `&a[n]` may form the pointer one past the end (PFX-4).
             EK::Index(p, i) => {
                 let pv = eval(m, p)?;
