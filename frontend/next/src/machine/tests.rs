@@ -690,3 +690,15 @@ fn library_types_the_language_needs() {
     assert_eq!(rule("auto r = 1 <=> 2;"), Some("LSUP-2"));
     assert_eq!(rule("namespace std { class strong_ordering; } auto r = 1 <=> 2;"), Some("unsupported"));
 }
+
+#[test]
+fn default_new_alignment() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 16);"), None);
+    assert_eq!(rule("static_assert(sizeof(__STDCPP_DEFAULT_NEW_ALIGNMENT__) == sizeof(sizeof(0)));"), None);
+    assert_eq!(rule("static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 8);"), Some("SA-1"));
+}

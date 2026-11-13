@@ -202,6 +202,14 @@ pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
     };
     if found.is_empty() {
         if !rule.is_empty() {
+            if name == "__STDCPP_DEFAULT_NEW_ALIGNMENT__" && rule == "NAM-8" {
+                // NEW-27: the default new alignment, 16 on the targets of
+                // the matrix for GCC and EDG. The name is a predefined
+                // macro, which the rewrite models as a constant at its
+                // uses only.
+                let size_t = QType::new(Type::Int(cx.u.target.size_t()));
+                return Expr::int(16, size_t, span);
+            }
             if name == "__func__" {
                 crate::declarations::functions::definitions::check::func_name_outside(cx, span);
             } else {
