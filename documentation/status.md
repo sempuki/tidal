@@ -194,11 +194,14 @@ forward-progress rule belongs with threads, which are out of scope.
 the rewrite is done in part. Phase 18 (decision 0066) is next:
 
 1. Items TK, T7, F8, GR2, DQ, R12, and E, which can run together. TK
-   makes every check hold the 1327 owned tests on the new front end. F8
+   makes every check hold the owned tests on the new front end. F8
    answers the 13 open exercise rows, RV11-R-1 first.
 2. The rest of build step 3 (item RW3) after TK, `unsupported` first,
    then build step 4 part a. Front-end round 29 (item FE) on the old code
-   after T7, with F8's tests as they arrive.
+   after T7, with F8's tests as they arrive. The new front end owns 1725
+   tests and passes the check of 1819 of the 1903 step 3 plain tests.
+   Of build step 3, lambdas remain, which come with the closures of
+   build step 4 part a (`frontend/DESIGN-rewrite.md`, section 5).
 3. The RV12 gap review after F8 and GR2, ending with a recorded read of
    its repair diff.
 
