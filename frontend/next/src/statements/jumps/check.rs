@@ -78,6 +78,15 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
                 return Stmt::new(SK::Null, span);
             }
             Some(v) if v.ty.is_error() => return Stmt::new(SK::Null, span),
+            Some(v) if !v.ty.is_void() && ctx.placeholder.as_ref().is_some_and(|(p, op)| p.decltype || op.is_some()) => match placeholder_return(cx, v, &ctx) {
+                Some(t) => t,
+                None => {
+                    if let Some(f) = cx.func.as_mut() {
+                        f.failed_return = true;
+                    }
+                    return Stmt::new(SK::Null, span);
+                }
+            },
             Some(v) => crate::declarations::auto::check::decay(&v.ty).unqual_top(),
             None => QType::void(),
         };
@@ -132,15 +141,8 @@ fn finish(cx: &mut Check, value: Option<crate::sem::tree::Expr>, ret: &QType, sp
             // an xvalue, so it does not bind to an lvalue reference
             // return type (JMP-15).
             let mut v = v;
-            if let (true, crate::sem::tree::EK::Var(id)) = (ret.is_ref(), &v.k) {
-                let movable = |x: &crate::sem::Var| match &x.ty.t {
-                    crate::sem::types::Type::Ref(t, true) => !t.is_volatile(),
-                    crate::sem::types::Type::Ref(_, false) => false,
-                    _ => !x.ty.is_volatile(),
-                };
-                if cx.u.var(*id).is_some_and(|x| x.storage == crate::sem::Storage::Automatic && movable(x)) {
-                    v.cat = crate::sem::tree::Cat::X;
-                }
+            if ret.is_ref() && move_eligible(cx, &v) {
+                v.cat = crate::sem::tree::Cat::X;
             }
             if ret.is_ref() {
                 return match crate::declarations::initialization::references::check::bind(cx, v, ret, "INIT-7") {
@@ -154,6 +156,46 @@ fn finish(cx: &mut Check, value: Option<crate::sem::tree::Expr>, ret: &QType, sp
             }
         }
     }
+}
+
+/// JMP-10: a name in a return that is an xvalue, a local variable or
+/// parameter of automatic storage that is not `volatile`, or a local
+/// rvalue reference. A structured binding stays an lvalue.
+fn move_eligible(cx: &Check, v: &crate::sem::tree::Expr) -> bool {
+    let crate::sem::tree::EK::Var(id) = &v.k else { return false };
+    if cx.bindings.contains(id) {
+        return false;
+    }
+    let movable = |x: &crate::sem::Var| match &x.ty.t {
+        crate::sem::types::Type::Ref(t, true) => !t.is_volatile(),
+        crate::sem::types::Type::Ref(_, false) => false,
+        _ => !x.ty.is_volatile(),
+    };
+    cx.u.var(*id).is_some_and(|x| x.storage == crate::sem::Storage::Automatic && movable(x))
+}
+
+/// The return type that a return deduces for `decltype(auto)`, `auto&`,
+/// `auto&&`, or `auto*` (RET-2): the placeholder deduces as for a
+/// variable, from the operand as JMP-10 makes it, and the declarator
+/// operator applies to the result. `auto&` from a local variable is
+/// RET-3.
+fn placeholder_return(cx: &mut Check, v: &crate::sem::tree::Expr, ctx: &FnCtx) -> Option<QType> {
+    let (p, op) = ctx.placeholder.clone()?;
+    let mut v = v.clone();
+    if move_eligible(cx, &v) {
+        v.cat = crate::sem::tree::Cat::X;
+        if op == Some("&") && !(p.c || v.ty.is_const()) {
+            cx.error(v.span, "RET-3", "'auto&' deduced from a local variable, which a return makes an xvalue");
+            return None;
+        }
+    }
+    let t = crate::declarations::auto::check::deduce_with(cx, &p, op, &v)?;
+    Some(match op {
+        Some("&") => QType::lref(t),
+        Some("&&") if !t.is_ref() => QType::new(crate::sem::types::Type::Ref(Rc::new(t), true)),
+        Some("*") => QType::ptr_to(t),
+        _ => t,
+    })
 }
 
 /// At the end of a function: each `goto` names a label of the function

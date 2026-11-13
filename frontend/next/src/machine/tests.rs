@@ -191,7 +191,25 @@ fn deduced_return_types() {
     assert_eq!(rule("auto f(int n) { if (n == 0) return 0; return f(n - 1); }"), None);
     assert_eq!(rule("auto f();\nint f();"), Some("RET-4"));
     assert_eq!(rule("auto& f() {}"), Some("RET-3"));
-    assert_eq!(rule("auto& f() { static int x; return x; }"), Some("unsupported"));
+}
+
+#[test]
+fn placeholder_return_types() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("auto& f() { static int x; return x; } int& r = f();"), None);
+    assert_eq!(rule("auto& f() { int x = 1; return x; }"), Some("RET-3"));
+    assert_eq!(rule("const auto& f() { int x = 1; return x; }"), None);
+    assert_eq!(rule("int g; auto* f(bool c) { if (c) return &g; return nullptr; }"), Some("AUTO-19"));
+    assert_eq!(rule("int g; auto* f() { return &g; } int* p = f();"), None);
+    assert_eq!(rule("int g; decltype(auto) f() { return (g); } int& r = f();"), None);
+    assert_eq!(rule("decltype(auto) f() { int x = 1; return (x); } int&& r = f();"), None);
+    assert_eq!(rule("decltype(auto) f() { int x = 1; return (x); } int& r = f();"), Some("REF-9"));
+    assert_eq!(rule("int g; auto&& f() { return g; } int& r = f();"), None);
+    assert_eq!(rule("constexpr decltype(auto) f() { int x = 1; return (x); } static_assert(f() == 1);"), Some("SA-7"));
 }
 
 #[test]

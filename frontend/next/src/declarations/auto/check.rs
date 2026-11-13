@@ -38,8 +38,20 @@ pub fn deduce(cx: &mut Check, p: &Placeholder, declarator: &Node, init: &Expr) -
         cx.error(init.span, "AUTO-8", "a variable declared with 'auto' has an initializer of type void");
         return None;
     }
+    let ptrs: Vec<&str> = declarator.children("ptr_part").map(|pp| cx.first_word(pp)).collect();
+    if declarator.child("ptr_part").is_some() && declarator.child("declarator").and_then(|d| d.child("ptr_part")).is_some() {
+        cx.unsupported(declarator.span, "a placeholder under two declarator operators");
+        return None;
+    }
+    deduce_with(cx, p, ptrs.first().copied(), init)
+}
+
+/// The deduction of [`deduce`] for a declarator whose one operator is
+/// `op` (`&`, `&&`, `*`, or none), which a deduced return type shares
+/// (RET-2).
+pub fn deduce_with(cx: &mut Check, p: &Placeholder, op: Option<&str>, init: &Expr) -> Option<QType> {
     if p.decltype {
-        if p.c || p.v || declarator.child("ptr_part").is_some() {
+        if p.c || p.v || op.is_some() {
             cx.error(p.span, "AUTO-11", "decltype(auto) combined with a cv-qualifier, '*', or '&'");
             return None;
         }
@@ -50,13 +62,8 @@ pub fn deduce(cx: &mut Check, p: &Placeholder, declarator: &Node, init: &Expr) -
         }
         return Some(t);
     }
-    let ptrs: Vec<&str> = declarator.children("ptr_part").map(|pp| cx.first_word(pp)).collect();
-    if declarator.child("ptr_part").is_some() && declarator.child("declarator").and_then(|d| d.child("ptr_part")).is_some() {
-        cx.unsupported(declarator.span, "a placeholder under two declarator operators");
-        return None;
-    }
     let t = init.ty.clone();
-    let deduced = match ptrs.first().copied() {
+    let deduced = match op {
         None => decay(&t).unqual_top(),
         Some("&") => {
             // AUTO-18: `auto&` binds to an lvalue unless the type is const.

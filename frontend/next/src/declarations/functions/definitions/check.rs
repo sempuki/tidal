@@ -376,6 +376,15 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
         id: Some(id),
         ret: if deduce { None } else { Some(ret.clone()) },
         deduce,
+        placeholder: d.placeholder.clone().map(|p| {
+            let op = match &ret.t {
+                Type::Ref(_, false) => Some("&"),
+                Type::Ref(_, true) => Some("&&"),
+                Type::Ptr(_) => Some("*"),
+                _ => None,
+            };
+            (p, op)
+        }),
         constexpr: f.constexpr,
         consteval: f.consteval,
         is_main: cx.u.main() == Some(id) || (&*cx.u.entities[id].name == "main" && decl_scope == 0),
@@ -394,19 +403,8 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     cx.func = saved;
     cx.scope = saved_scope;
     crate::statements::jumps::check::end_of_function(cx, &ctx);
-    if d.placeholder.as_ref().is_some_and(|p| p.decltype) && ctx.ret.is_some() {
-        // decltype(auto) deduces by AUTO-10, which return deduction does
-        // not apply yet.
-        cx.unsupported(cx.u.entities[id].span, "a decltype(auto) return type");
-    }
-    if deduce && (ret.is_ref() || ret.is_ptr()) {
-        if ctx.ret.is_none() {
-            cx.error(cx.u.entities[id].span, "RET-3", "a reference or pointer placeholder return type needs a return statement with a value");
-        } else {
-            // Return deduction does not apply the declarator yet, so the
-            // deduced type is not trusted and the unit is unsupported.
-            cx.unsupported(cx.u.entities[id].span, "a deduced return type with a reference or pointer declarator");
-        }
+    if deduce && (ret.is_ref() || ret.is_ptr()) && ctx.ret.is_none() && !ctx.failed_return {
+        cx.error(cx.u.entities[id].span, "RET-3", "a reference or pointer placeholder return type needs a return statement with a value");
     }
     if deduce {
         let r = ctx.ret.clone().unwrap_or_else(QType::void);

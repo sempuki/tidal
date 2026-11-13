@@ -68,6 +68,12 @@ pub struct FnCtx {
     pub ret: Option<QType>,
     /// The return type is a placeholder that the first return deduces.
     pub deduce: bool,
+    /// The placeholder of a deduced return type and the one declarator
+    /// operator around it (`&`, `&&`, `*`, or none).
+    /// A return failed to deduce the type, so the missing type is
+    /// already reported.
+    pub failed_return: bool,
+    pub placeholder: Option<(crate::declarations::auto::check::Placeholder, Option<&'static str>)>,
     pub constexpr: bool,
     pub consteval: bool,
     pub is_main: bool,
