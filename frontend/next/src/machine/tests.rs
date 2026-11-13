@@ -647,3 +647,16 @@ fn reinterpret_references_and_decay_copies() {
     assert_eq!(rule("auto b = auto{1, 2};"), Some("AUTO-20"));
     assert_eq!(rule("auto b = auto{{1}};"), Some("AUTO-20"));
 }
+
+#[test]
+fn literal_suffixes_without_operators() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("auto x = 1lul;"), Some("PRIM-16"));
+    assert_eq!(rule("int x = 1u7;"), Some("PRIM-16"));
+    assert_eq!(rule("auto s = \"a\"_q;"), Some("PRIM-16"));
+    assert_eq!(rule("int operator\"\"_k(unsigned long long); int x = 1_k;"), Some("unsupported"));
+}

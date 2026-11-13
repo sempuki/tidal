@@ -111,7 +111,15 @@ pub fn literal(cx: &mut Check, n: &Node) -> Expr {
             Expr::int(*value, QType::new(Type::Int(k)), span)
         }
         Some(Lit::Str { .. }) => string(cx, &toks, span),
-        Some(Lit::UserDefined { .. }) => {
+        Some(Lit::UserDefined { suffix, .. }) => {
+            // PRIM-16: a suffix that no literal operator of the unit has.
+            // A unit that declares a literal operator waits for build
+            // step 4.
+            let declared = cx.toks.windows(2).any(|w| w[0].text == "operator" && matches!(w[1].lit, Some(Lit::Str { .. } | Lit::UserDefined { .. })));
+            if !declared {
+                cx.error(span, "PRIM-16", format!("no literal operator has the suffix '{}'", suffix));
+                return bad(span);
+            }
             let t = cx.unsupported(span, "a user-defined literal (classes and operators come with build step 4)");
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
