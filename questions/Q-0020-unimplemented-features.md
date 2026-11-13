@@ -72,3 +72,7 @@ The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-
 ### Gap review, 2026-11-12 (phase 18 text)
 
 The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) names the question in Part B, on RV8-B-5 at CTAD-17 (RV12-18). The override of `copy-init-guide-user-conversion.cpp` for Clang 18 names this question as a missing feature. The review reads Clang 18's rejection as the reference's answer, so that record does not fit, and the review asks for a question of its own. The review gives no reading of the question of the test format.
+
+### Read of the RV12 repair diff, 2026-11-12
+
+The source-reader read of the RV12 repair diff (`reports/review/2026-11-12-read-of-rv12-repair-diff.md`) names the question where the CTAD lines now name Q-0457 in place of it (RV12-18). The read finds that change correct and gives no reading of the question of the test format.

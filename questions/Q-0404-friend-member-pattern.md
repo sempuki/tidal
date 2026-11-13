@@ -42,3 +42,7 @@ family follows the review.
 ### Gap review, 2026-11-05 (phase 10 text)
 
 The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) names the question in its section on ACC-20. The reference reads against the answer that Tidal keeps: the member of a specialization outside the qualifier's pattern is not a friend. The question stays in `pending.md` row 4.
+
+### Read of the RV12 repair diff, 2026-11-12
+
+The source-reader read of the RV12 repair diff (`reports/review/2026-11-12-read-of-rv12-repair-diff.md`) names the question in its first reading of Q-0458. ACC-20 lets a friend with one template head name a member through a pointer pattern of its parameter, and the reference states one rule for one head and for two. The read gives no new reading of this question's answer.

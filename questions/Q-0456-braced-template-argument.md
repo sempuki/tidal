@@ -75,3 +75,7 @@ The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-ga
 ### Gap review, 2026-11-12 (phase 18 text)
 
 The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads TARG-16's sentence on a parameter of scalar type, the arguments paragraph, and `braced-scalar-arguments.cpp` against the C++23 text (option 2, RV12-10), as RV10-6 found for the class case. In Part B the review answers yes to a question for RV10-6. A whole grammar arm and several tests rest on the point, Q-0454 can then cite its premise, and a later change to the language may add the form, which `pending.md` row 7 keeps out of scope.
+
+### Read of the RV12 repair diff, 2026-11-12
+
+The source-reader read of the RV12 repair diff (`reports/review/2026-11-12-read-of-rv12-repair-diff.md`) reads the TARG lines and the three test notes that name the question (RV12-16): agrees as a record. TARG-16 and the braced arm of `template_arg` still read against the reference, which gives a template argument no braced form, and the lines state that correctly. The read gives no new reading of the question's answer.

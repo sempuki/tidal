@@ -27,6 +27,14 @@ static_assert(Shelf<int*>{}.peek('a') == 7);
 | the friend `Shelf<T>::peek` (`friend-two-heads-member-template.cpp`) | accepts | accepts | accepts |
 | the friend `Shelf<int>::peek` (`friend-two-heads-fixed-qualifier.cpp`) | rejects | rejects | rejects |
 
+ACC-20 accepts the same pattern for a friend with one template head,
+as `template <class T> friend int A<T*>::f();`, and its tests hold
+that form with a partial specialization `A<T*>`. Every newest family
+accepts that form. {question}`Q-0404` holds a further split there, on
+the member of a specialization that does not match the pattern. Under
+this question's answer, TPL-4 rejects the pattern for a member
+template that ACC-20 accepts for a member function.
+
 ## Evidence
 
 The test in **Affects** expects the rejection and records Clang as an
@@ -53,8 +61,14 @@ writer's test splits the newest families. TPL-P6 names TPL-4 in
 `:exceptions:` and says nothing of a friend with two heads, so no
 principle gives the answer.
 
+Kept in `pending.md` row 4 on 2026-11-12 (decision 0066, item RV12). The read of the RV12 repair diff gives the first reading of the question and reads against the answer (RV12-R-1). Clang 22 alone gives the read's result, and GCC 16 and EDG 7.0 keep the matrix's answer, so the question stays in row 4b under decision 0054. The row 4 item names the read. The **Context** now names ACC-20's one-head form, as the read asks. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-12 (phase 18 text)
 
 The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads TPL-4's second condition with a doubt (RV12-4). The reference lets a friend template name a member of a dependent specialization when the qualifier ends in a template-id that names a class template, and the friend's own template parameters can be deduced from that template-id. So the template-id may give a pattern of the parameters, such as a pointer to the parameter, and the friend then covers the specializations that match the pattern. TPL-4 asks for the parameters themselves as the arguments, which leaves out these patterns.
+
+### Read of the RV12 repair diff, 2026-11-12
+
+The source-reader read of the RV12 repair diff (`reports/review/2026-11-12-read-of-rv12-repair-diff.md`) gives the first reading of the question: reads against (option 2, RV12-R-1). A friend template can name a member of a dependent specialization when the qualifier ends in a template-id of a class template and the friend's parameters can be deduced from that template-id. The member of a specialization is then a friend when deduction against that specialization succeeds and the declaration, with the deduced arguments, matches the member. No partial specialization for the pattern needs to exist, and GCC's message suggests that GCC looks for one. In the test, deduction against `Shelf<int*>` gives `int`, the member template matches, and the member can read the private member, so Clang's acceptance conforms. The rule applies to the first head's parameters only, and the second head's parameters need not be deducible from the qualifier. The read also points to ACC-20, which accepts a pointer pattern for a friend with one head. The reference states one rule for one head and for two, so under the provisional answer Tidal accepts the pattern for a member function and rejects it for a member template with no ground in the reference.

@@ -80,6 +80,8 @@ Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap 
 
 Principle text on 2026-11-12 (decision 0066, item RV12): OPR-P3 says that a template with any other head is not a literal operator, and gives a table of the forms that compete for one suffix (RV12-15). The numeric form of the literal's kind wins. The `const char*` form and the template with no numeric form make a numeric literal not valid. OPR-P3 now rules out option 2 and gives each part of option 1. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055). The **Waits for:** line names a use of OPR-P3, was a principle (OPR-P3).
 
+Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The read of the RV12 repair diff finds that OPR-P3 now covers the whole of option 1, with a small doubt on its wording (RV12-R-3). The read names OPR-P3 and the question's option 1, and it does not take the question's program through OPR-P3's model, so the read is no use of OPR-P3. The **Waits for:** line does not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
@@ -93,3 +95,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-12 (phase 18 text)
 
 The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses OPR-P3 on the question: supports, and OPR-P3 answers the question in part (RV12-15). An integer or floating literal with a suffix can call a literal operator template whose head is one pack of `char`, and the source characters before the suffix become the arguments. A string literal calls only the template with one constant parameter of class type. OPR-P3 says this, so it rules out option 2 and answers which literals call the template. OPR-P3 does not give the rest of option 1: the choice of the numeric form when it exists, the call that is not valid when the raw form and the template both exist, and the rejection of other heads. The reference decides all three as option 1 says, and OPR-8, OPR-10, and OPR-16 state them. So the principle answers the first part of the question, and the rules answer the second.
+
+### Read of the RV12 repair diff, 2026-11-12
+
+The source-reader read of the RV12 repair diff (`reports/review/2026-11-12-read-of-rv12-repair-diff.md`) reads OPR-P3's new sentence and table: agrees with a small doubt (RV12-R-3). OPR-P3 now states the choice of the numeric form, the call that is not valid when the raw form and the template both exist, and the other heads, so the principle covers the whole of option 1. The doubt is on wording. "Is not a literal operator" also allows a reading where a declaration with another head is valid and lookup skips it, and OPR-10 makes the declaration not valid. The table has no row for a suffix where lookup finds only forms of the wrong kind, which OPR-16 states. The read gives no new reading of the question's answer.

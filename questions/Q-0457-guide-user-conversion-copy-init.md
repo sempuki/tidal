@@ -70,3 +70,7 @@ The source-reader gap review of the phase 15 text on expressions, overloading, a
 ### Gap review, 2026-11-12 (phase 18 text)
 
 The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) answers yes to a question for RV8-B-5 in Part B. Clang 18 differs from the newer compilers, and the earlier review reads the C++23 text as Clang 18 does. Q-0020 holds Clang 18's override as a missing feature, and that record does not fit a compiler whose answer the review reads as conforming.
+
+### Read of the RV12 repair diff, 2026-11-12
+
+The source-reader read of the RV12 repair diff (`reports/review/2026-11-12-read-of-rv12-repair-diff.md`) reads the CTAD lines, the split row, and the test note that name the question in place of Q-0020 (RV12-18): agrees as a record. CTAD-17's item on the limit still reads against: in copy initialization from an object of another class, a user-defined conversion cannot reach the first parameter of a guide, so Clang 18's rejection is the reference's result. The read gives no new reading of the question's answer.
