@@ -146,3 +146,15 @@ fn lookup_in_enumerations_arguments_and_qualified_declarators() {
     assert!(!accepts("namespace n { int twice(int x) { return x; } } int r() { return twice(1); }"));
     assert!(accepts("namespace N { constexpr int k = 2; extern int a[k]; } int N::a[k];"));
 }
+
+#[test]
+fn attributes_on_using_directives_and_qualified_reference_bindings() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("namespace t { int c; } [[]] using namespace t; int f() { [[]] using namespace t; return c; }"), None);
+    assert_eq!(rule("namespace t { int c; } [[deprecated]] using namespace t;"), Some("ATTR-2"));
+    assert_eq!(rule("int* m(); int p(int* const&); int p(const int* const&); int r = p(m());"), None);
+}

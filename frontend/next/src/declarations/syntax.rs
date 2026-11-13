@@ -148,7 +148,8 @@ fn decl_or_definition(p: &mut Parser) -> PResult<Node> {
 /// binding and the opaque enumeration, which need a whole-form try.
 fn block_decl_keyword(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
-    let k = if p.at("using") || p.at("static_assert") || p.at("namespace") {
+    let a = after_attrs(p);
+    let k = if p.at("using") || p.at("static_assert") || p.at("namespace") || (a > 0 && p.ahead(a) == "using" && p.ahead(a + 1) == "namespace") {
         return block_decl(p);
     } else if p.at("enum") {
         enum_opaque(p)?

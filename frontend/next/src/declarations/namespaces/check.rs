@@ -121,6 +121,11 @@ fn named_namespace(cx: &mut Check, n: &Node, rule: &'static str) -> Option<Scope
 
 /// `using_directive` (NS-8, NS-17).
 pub fn using_directive(cx: &mut Check, n: &Node) {
+    let mut attrs = crate::declarations::attributes::check::Attrs::default();
+    for a in n.children("attribute_spec") {
+        crate::declarations::attributes::check::attribute_spec(cx, a, &mut attrs);
+    }
+    crate::declarations::attributes::check::on_using_directive(cx, &attrs);
     if let Some(s) = named_namespace(cx, n, "NS-17") {
         let here = cx.scope;
         if !cx.u.scopes[here].using.contains(&s) {

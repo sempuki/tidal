@@ -100,6 +100,26 @@ pub fn on_variable(cx: &mut Check, a: &Attrs) {
     }
 }
 
+/// ATTR-2, ATTR-19: an attribute before a using-directive applies to the
+/// directive, and no standard attribute that build step 3 reads applies
+/// to one.
+pub fn on_using_directive(cx: &mut Check, a: &Attrs) {
+    let names = [
+        (a.deprecated.is_some(), "deprecated"),
+        (a.nodiscard, "nodiscard"),
+        (a.noreturn, "noreturn"),
+        (a.maybe_unused, "maybe_unused"),
+        (a.fallthrough, "fallthrough"),
+        (a.likely || a.unlikely, "likely or unlikely"),
+        (a.assume.is_some(), "assume"),
+    ];
+    for (on, name) in names {
+        if on {
+            cx.error(a.span, "ATTR-2", format!("'{}' does not apply to a using-directive", name));
+        }
+    }
+}
+
 /// ATTR-4: a use of a deprecated entity warns.
 pub fn use_entity(cx: &mut Check, e: EntityId, span: Span) {
     if let Some(msg) = cx.u.entities[e].deprecated.clone() {

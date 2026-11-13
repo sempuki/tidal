@@ -141,7 +141,24 @@ pub fn better(a: &Ics, b: &Ics) -> bool {
             if ac < bc && (!at.c || bt.c) && (!at.v || bt.v) {
                 return true;
             }
+        } else if adjusts(at, bt) {
+            // ICS-46: `int* const&` over `const int* const&`, and an
+            // array of known bound over one of unknown bound.
+            return true;
         }
     }
     false
+}
+
+/// Whether `a` converts to `b` by a qualification adjustment below the
+/// top level: cv-qualifiers added under a pointer, or the bound of an
+/// array dropped (ICS-46).
+fn adjusts(a: &QType, b: &QType) -> bool {
+    match (&a.t, &b.t) {
+        (Type::Ptr(x), Type::Ptr(y)) => {
+            (!x.c || y.c) && (!x.v || y.v) && (x.unqual().t == y.unqual().t && (x.c != y.c || x.v != y.v) || adjusts(x, y) && y.c)
+        }
+        (Type::Array(x, Some(_)), Type::Array(y, None)) => x == y,
+        _ => false,
+    }
 }
