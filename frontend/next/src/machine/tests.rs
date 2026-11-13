@@ -793,3 +793,16 @@ fn first_errors_name_the_specific_rule() {
     assert_eq!(named("void f() { int l = 1; constexpr int* p = &l; }"), (Some("CX-2"), Some("CE-3")));
     assert_eq!(named("int val(); void f() { val() = 1; }"), (Some("ASN-2"), Some("VC-12")));
 }
+
+#[test]
+fn pointer_reference_binding_and_indeterminate_bytes() {
+    let src = "int x = 0; int* p = &x; int* make() { return &x; }\nint f(const int* const&) { return 1; } int f(const int*&&) { return 2; }\n";
+    assert_eq!(run(&format!("{}int main() {{ const int* const& r = p; return &r == &p; }}", src)), RunOutcome::Result(1));
+    assert_eq!(run(&format!("{}int main() {{ return f(p); }}", src)), RunOutcome::Result(1));
+    assert_eq!(run(&format!("{}int main() {{ return f(make()); }}", src)), RunOutcome::Result(2));
+    assert_eq!(run("int main() { unsigned char a; unsigned char b = a; (void)b; return 0; }"), RunOutcome::Result(0));
+    assert_eq!(run("int main() { unsigned char a; unsigned char b; b = true ? a : a; (void)b; return 3; }"), RunOutcome::Result(3));
+    assert!(matches!(run("int main() { unsigned char a; unsigned char b = a; return b; }"), RunOutcome::Undefined(..)));
+    assert!(matches!(run("int main() { unsigned char a; int b = a; return b; }"), RunOutcome::Undefined(..)));
+    assert_eq!(run("int main() { int a; (void)a; return 4; }"), RunOutcome::Result(4));
+}

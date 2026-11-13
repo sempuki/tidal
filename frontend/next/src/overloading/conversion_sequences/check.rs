@@ -112,11 +112,14 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         let lvalue = arg.cat == Cat::L;
         let at = arg.ty.clone();
         // REF-1: a direct binding to an lvalue of a reference-compatible
-        // type.
-        let compatible = at.unqual().t == inner.unqual().t && (!at.c || inner.c) && (!at.v || inner.v);
+        // type, which a qualification conversion of the inner levels of
+        // a pointer type can reach. A prvalue of another pointer type is
+        // converted, and the reference binds the temporary (ICS-11).
+        let same = at.unqual().t == inner.unqual().t || (lvalue && at.is_ptr() && inner.is_ptr() && conv::pointer_convertible(&at.unqual(), inner));
+        let compatible = same && (!at.c || inner.c) && (!at.v || inner.v);
         if compatible && ((lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)))) {
-            let qual = (inner.c && !at.c) || (inner.v && !at.v);
-            return Some(Ics { rank: Rank::Exact, qual, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false });
+            // ICS-11: a direct binding is the identity.
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false });
         }
         if at.is_func() && inner.t == at.t {
             return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, false, (**inner).clone())), ellipsis: false });
@@ -125,8 +128,10 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         // rvalue reference, from a value of another type.
         if (*rv || (inner.c && !inner.v)) && !(compatible && lvalue && *rv) {
             let from = crate::declarations::auto::check::decay(&at);
-            let (rank, _) = rank_of(cx, &from, inner, null)?;
-            return Some(Ics { rank, qual: false, binds: Some((*rv, true, (**inner).clone())), ellipsis: false });
+            let (rank, qual) = rank_of(cx, &from, inner, null)?;
+            // ICS-11: the sequence of the temporary, whose qualification
+            // conversion loses to a direct binding's identity.
+            return Some(Ics { rank, qual, binds: Some((*rv, true, (**inner).clone())), ellipsis: false });
         }
         return None;
     }
@@ -143,7 +148,7 @@ pub fn better(a: &Ics, b: &Ics) -> bool {
     if a.rank != b.rank {
         return a.rank < b.rank;
     }
-    if a.qual != b.qual && a.binds.is_none() && b.binds.is_none() {
+    if a.qual != b.qual {
         return !a.qual;
     }
     if let (Some((arv, arvalue, at)), Some((brv, brvalue, bt))) = (&a.binds, &b.binds) {

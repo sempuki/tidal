@@ -65,6 +65,11 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
             _ => Err(("CAST-19", format!("no {:?} cast from {} to {}", k, e.ty.show(), to.show()))),
         };
     }
+    // A cast to void discards the operand, which is not read unless it
+    // is volatile (UNEV rules, eval_discard).
+    if to.is_void() && matches!(k, Kind::Static) && e.cat != Cat::PR && !e.ty.is_array() && !e.ty.is_func() {
+        return Ok(Expr::new(EK::Conv(Conv::ToVoid, Box::new(deref_ref(e))), to.unqual(), Cat::PR, span));
+    }
     let null = conv::is_null_constant(&e);
     let e = rvalue(cx, e);
     let from = e.ty.clone();

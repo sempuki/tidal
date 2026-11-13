@@ -173,7 +173,10 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
         }
         EK::Assign(l, r) => {
             // The right operand is sequenced before the left (ASN rules).
-            let v = eval(m, r)?;
+            let v = match crate::declarations::initialization::forms::run::indeterminate_copy(m, &l.ty, r) {
+                Some(v) => v?,
+                None => eval(m, r)?,
+            };
             let p = place(m, l)?;
             write(m, &p, &l.ty, v)?;
             Ok(p)
