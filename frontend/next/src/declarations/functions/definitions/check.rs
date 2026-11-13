@@ -204,6 +204,21 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
 }
 
 /// The default arguments of a declaration's parameters.
+/// DEFARG-4: a local variable of an enclosing function, or a parameter,
+/// that an evaluated part of a default argument names.
+fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
+    use crate::sem::tree::EK;
+    let sub = |x: &Expr| local_in(cx, x);
+    match &e.k {
+        EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
+        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::Str(_) | EK::Func(_) | EK::Closure(_) => None,
+        EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) => sub(x),
+        EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
+        EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
+        EK::Call(f, args) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
+    }
+}
+
 fn default_arguments(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
     let mut out = Vec::new();
     let mut seen = false;
@@ -212,6 +227,10 @@ fn default_arguments(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
             Some(n) => {
                 seen = true;
                 let e = crate::expressions::check::expr(cx, n);
+                if let Some(v) = local_in(cx, &e) {
+                    let name = cx.u.entities[v].name.clone();
+                    cx.error(e.span, "DEFARG-4", format!("the default argument uses the local variable '{}'", name));
+                }
                 if p.ty.is_ref() {
                     out.push(crate::declarations::initialization::references::check::bind(cx, e, &p.ty, "DEFARG-10"));
                 } else {

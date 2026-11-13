@@ -358,6 +358,12 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
     }
     let (params, variadic) = parameters(cx, n.child("parameters"));
     crate::declarations::volatile::check::top_level(cx, &ret, n.span, "return type");
+    // DEFARG-5: only the declaration of a function has default
+    // arguments, not a function type that an alias names, nor a pointer
+    // or a reference to a function.
+    if (!top || cx.naming_type) && params.iter().any(|p| p.default.is_some()) {
+        cx.error(n.span, "DEFARG-5", "a default argument outside the declaration of a function");
+    }
     if ret.is_array() {
         cx.error(n.span, "DCL-21", "a function returns an array");
     } else if ret.is_func() {

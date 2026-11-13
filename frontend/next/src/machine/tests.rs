@@ -301,3 +301,17 @@ fn switch_and_volatile_warnings() {
     assert_eq!(rule("void g(volatile int);"), Some("CV-9"));
     assert_eq!(rule("void g(volatile int*); volatile int& h();"), None);
 }
+
+#[test]
+fn default_arguments_belong_to_function_declarations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("using S = int(int = 1);"), Some("DEFARG-5"));
+    assert_eq!(rule("typedef int S(int = 1);"), Some("DEFARG-5"));
+    assert_eq!(rule("int (*p)(int a = 1);"), Some("DEFARG-5"));
+    assert_eq!(rule("int f(int a = 1);"), None);
+    assert_eq!(rule("void g() { int local = 1; int f(int v = local); }"), Some("DEFARG-4"));
+    assert_eq!(rule("void g() { int local = 1; int f(int v = sizeof(local)); }"), None);
+}
