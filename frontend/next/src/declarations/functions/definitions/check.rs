@@ -22,7 +22,7 @@ pub fn set_c_linkage(cx: &mut Check, c: bool) -> bool {
 
 /// Whether a function named `main` is the program's `main`.
 fn is_main(cx: &Check, name: &str, scope: usize) -> bool {
-    name == "main" && scope == 0
+    name == "main" && scope == cx.u.root
 }
 
 /// FN-4, TR-3: what `main` must be.
@@ -218,7 +218,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             cx.error(d.span, "DEFARG-8", "a parameter after one with a default argument has none");
         }
     }
-    if (cx.lang_c && !s.is_static) || (scope == 0 && !cx.lang_c) {
+    if (cx.lang_c && !s.is_static) || (scope == cx.u.root && !cx.lang_c) {
         crate::declarations::linkage_specifications::check::c_name(cx, id, cx.lang_c, span);
     }
     if s.attrs.noreturn && earlier.is_some() && !cx.u.func(id).unwrap().noreturn {
@@ -387,7 +387,7 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
         }),
         constexpr: f.constexpr,
         consteval: f.consteval,
-        is_main: cx.u.main() == Some(id) || (&*cx.u.entities[id].name == "main" && decl_scope == 0),
+        is_main: cx.u.main() == Some(id) || (&*cx.u.entities[id].name == "main" && decl_scope == cx.u.root),
         ..Default::default()
     };
     if let Some(fm) = cx.u.func_mut(id) {
@@ -469,7 +469,7 @@ fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
             None => return false,
         }
     };
-    let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().enumerate().filter_map(|(id, e)| match &e.kind {
+    let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().enumerate().skip(cx.u.first_entity).filter_map(|(id, e)| match &e.kind {
         EntKind::Var(v) if !v.param && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) && !crate::declarations::initialization::forms::check::is_read(cx, id) => Some((e.span, e.name.clone())),
         _ => None,
     }).collect();
@@ -627,7 +627,7 @@ fn walk(s: &Stmt, f: &mut impl FnMut(&Stmt)) {
 
 /// FN-4: a program must not call `main`.
 pub fn called(cx: &mut Check, f: EntityId, span: Span) {
-    if cx.u.main() == Some(f) || (&*cx.u.entities[f].name == "main" && cx.u.entities[f].scope == 0) {
+    if cx.u.main() == Some(f) || (&*cx.u.entities[f].name == "main" && cx.u.entities[f].scope == cx.u.root) {
         cx.error_cause(span, "FN-4", Some("TR-3"), "main is called");
     }
     if cx.u.func(f).is_some_and(|x| x.deleted) {
@@ -670,7 +670,7 @@ pub fn end_of_unit(cx: &mut Check) {
     // ODR-9: a function with internal linkage that the unit uses is
     // defined in the unit. No diagnostic is required; the front end
     // gives one.
-    let missing: Vec<(Span, Rc<str>)> = cx.u.entities.iter().filter_map(|e| match &e.kind {
+    let missing: Vec<(Span, Rc<str>)> = cx.u.entities.iter().skip(cx.u.first_entity).filter_map(|e| match &e.kind {
         EntKind::Func(f) if f.used && !f.defined && !f.deleted && f.unsupported.is_none() && e.linkage == Linkage::Internal => Some((e.span, e.name.clone())),
         _ => None,
     }).collect();
@@ -681,7 +681,7 @@ pub fn end_of_unit(cx: &mut Check) {
     // unit. No diagnostic is required; the compilers give one for a
     // variable, and the front end does too. A missing inline function
     // fails at link time on Clang and GCC, so the front end accepts it.
-    let missing: Vec<(Span, Rc<str>)> = cx.u.entities.iter().filter_map(|e| match &e.kind {
+    let missing: Vec<(Span, Rc<str>)> = cx.u.entities.iter().skip(cx.u.first_entity).filter_map(|e| match &e.kind {
         EntKind::Var(v) if v.inline && v.used && !v.defined => Some((e.span, e.name.clone())),
         _ => None,
     }).collect();

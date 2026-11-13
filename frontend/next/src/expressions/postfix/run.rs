@@ -60,6 +60,7 @@ pub fn check_callable(m: &mut Machine, id: EntityId) -> R<()> {
 /// with C language linkage is the one of its name with C language
 /// linkage in any namespace (LSP-4).
 pub fn defining(m: &Machine, id: EntityId) -> EntityId {
+    let id = m.u.links.get(&id).copied().unwrap_or(id);
     let Some(f) = m.u.func(id) else { return id };
     if f.body.is_some() {
         return id;

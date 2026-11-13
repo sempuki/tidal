@@ -277,21 +277,10 @@ fn run_one(t: &Test, proposal: Option<&'static str>) -> Outcome2 {
         .stack_size(256 << 20)
         .spawn(move || {
             let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                let mut outs = Vec::new();
-                let mut units = Vec::new();
-                for f in &paths {
-                    let src = std::fs::read_to_string(f).unwrap_or_default();
-                    let (o, u) = crate::check_source(&src, f, &opts);
-                    outs.push(o);
-                    units.push(u);
-                }
-                let ran = if want_run && outs.iter().all(|o| matches!(o, Outcome::Accept)) {
-                    if units.len() > 1 {
-                        Some(RunOutcome::Unsupported("a program of several translation units (linking comes with a later step)".into(), 0))
-                    } else {
-                        let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| crate::foundations::translation::run::run_program(units[0].as_ref().unwrap())));
-                        Some(r.unwrap_or(RunOutcome::Unsupported("the machine crashed".into(), 0)))
-                    }
+                let (outs, unit) = crate::check_program(&paths, &opts);
+                let ran = if want_run && outs.len() == paths.len() && outs.iter().all(|o| matches!(o, Outcome::Accept)) {
+                    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| crate::foundations::translation::run::run_program(unit.as_ref().unwrap())));
+                    Some(r.unwrap_or(RunOutcome::Unsupported("the machine crashed".into(), 0)))
                 } else {
                     None
                 };

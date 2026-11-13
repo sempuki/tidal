@@ -177,6 +177,11 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
     if s.typedef && (s.is_static || s.is_extern || s.thread_local) {
         storage_linkage::check::typedef_with_storage(cx, n.span);
     }
+    // The declaration's own specifiers, and not those of its parameters.
+    if cx.implicit_extern {
+        s.is_extern = true;
+        cx.implicit_extern = false;
+    }
     constexpr::check::specifier_pairs(cx, &s);
     let (ty, ph, defines, unsup) = types::check::type_specifiers(cx, &type_specs, n.span);
     s.ty = ty;

@@ -249,7 +249,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     if s.inline && local {
         crate::declarations::inline::check::misplaced(cx, d.span, "on a variable in a block");
     }
-    if name.as_ref() == "main" && (cx.lang_c || (cx.scope == 0 && d.qual == names::Qual::None)) {
+    if name.as_ref() == "main" && (cx.lang_c || (cx.scope == cx.u.root && d.qual == names::Qual::None)) {
         cx.error_cause(span, "TR-3", Some("FN-4"), "a variable named main in the global namespace or with C language linkage");
     }
     storage_linkage::check::variable_specifiers(cx, s);
@@ -449,13 +449,18 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         Init::Default => storage != Storage::Automatic,
     };
     if let Some(v) = cx.u.var_mut(id) {
+        // A later declaration without an initializer, such as `extern`
+        // after a definition, keeps the definition's initializer.
+        let keep = init.is_none() && v.defined && !matches!(v.init, None | Some(Init::Default));
         v.ty = ty.clone();
-        v.init = Some(init_value.clone());
-        v.const_init = const_init;
+        if !keep {
+            v.init = Some(init_value.clone());
+            v.const_init = const_init;
+            v.constexpr = constexpr;
+        }
         v.defined = v.defined || init.is_some() || !s.is_extern;
-        v.constexpr = constexpr;
     }
-    if !local && ((cx.lang_c && !s.is_static) || (scope == 0 && !cx.lang_c)) {
+    if !local && ((cx.lang_c && !s.is_static) || (scope == cx.u.root && !cx.lang_c)) {
         crate::declarations::linkage_specifications::check::c_name(cx, id, cx.lang_c, span);
     }
     if constexpr || s.constinit {

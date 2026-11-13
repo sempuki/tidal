@@ -814,3 +814,33 @@ fn calls_through_indirection_and_other_declarations() {
     assert_eq!(run("namespace { extern \"C\" int code() { return 3; } } namespace b { extern \"C\" int code(); } int main() { return b::code(); }"), RunOutcome::Result(3));
     assert!(matches!(run("int main() { int (*p)() = nullptr; return (*p)(); }"), RunOutcome::Undefined(..)));
 }
+
+/// Run a program of several units, written to files in a scratch
+/// directory of the test.
+fn run_units(name: &str, units: &[&str]) -> RunOutcome {
+    let dir = std::env::temp_dir().join(format!("tidal-next-link-{}-{}", name, std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let paths: Vec<std::path::PathBuf> = units.iter().enumerate().map(|(k, src)| {
+        let p = dir.join(format!("u{}.cpp", k));
+        std::fs::write(&p, src).unwrap();
+        p
+    }).collect();
+    let (outs, u) = crate::check_program(&paths, &crate::Options::default());
+    let _ = std::fs::remove_dir_all(&dir);
+    assert!(outs.iter().all(|o| matches!(o, Outcome::Accept)), "a unit is not accepted");
+    run_program(&u.unwrap())
+}
+
+#[test]
+fn programs_of_several_units() {
+    assert_eq!(run_units("fn", &["int f(); int main() { return f(); }", "int f() { return 7; }"]), RunOutcome::Result(7));
+    assert_eq!(run_units("var", &["extern int x; int main() { return x; }", "int x = 5;"]), RunOutcome::Result(5));
+    assert_eq!(run_units("ns", &["namespace n { int f(); } int main() { return n::f(); }", "namespace n { int f() { return 2; } }"]), RunOutcome::Result(2));
+    // Internal linkage: each unit has its own x and f.
+    assert_eq!(run_units("static", &["static int x = 1; static int f() { return 10; } int g(); int main() { return x + f() + g(); }", "static int x = 2; static int f() { return 20; } int g() { return x + f(); }"]), RunOutcome::Result(33));
+    // INL-1: an inline variable and an inline function are one entity.
+    assert_eq!(run_units("inline", &["inline int v = 5; inline int t(int a) { return a; } const int* p(); int (*q())(int); int main() { return (&v == p()) + 2 * (&t == q()); }", "inline int v = 5; inline int t(int a) { return a; } const int* p() { return &v; } int (*q())(int) { return &t; }"]), RunOutcome::Result(3));
+    // LSP-8: a C variable and a global variable of another unit.
+    assert_eq!(run_units("c", &["extern \"C\" int shared; int main() { return shared; }", "int shared = 4;"]), RunOutcome::Result(4));
+    assert_eq!(run("static int x = 1; extern int x; int main() { return x; }"), RunOutcome::Result(1));
+}

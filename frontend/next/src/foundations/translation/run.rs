@@ -6,6 +6,109 @@ use crate::machine::eval::call;
 use crate::machine::{Machine, Ret, Stop, Val};
 use crate::sem::Unit;
 
+/// The global scope that holds a scope.
+fn root_of(u: &Unit, mut s: crate::sem::ScopeId) -> crate::sem::ScopeId {
+    while let Some(p) = u.scopes[s].parent {
+        s = p;
+    }
+    s
+}
+
+/// The names of the namespaces around an entity, and its own name, or
+/// None for an entity with no name or in an unnamed namespace. A
+/// declaration in a block names the entity of its enclosing namespace
+/// (LNK-9), so the blocks add no name.
+fn qualified(u: &Unit, id: crate::sem::EntityId) -> Option<String> {
+    let e = &u.entities[id];
+    if e.name.is_empty() {
+        return None;
+    }
+    let mut parts = vec![e.name.to_string()];
+    let mut s = u.enclosing_namespace(e.scope);
+    while let Some(p) = u.scopes[s].parent {
+        if u.scopes[s].kind != crate::sem::ScopeKind::Namespace || u.scopes[s].name.is_empty() {
+            return None;
+        }
+        parts.push(u.scopes[s].name.to_string());
+        s = p;
+    }
+    parts.reverse();
+    Some(parts.join("::"))
+}
+
+/// Link the units of a program: each declaration with external linkage
+/// that its unit does not define names the definition of the same name,
+/// kind, and type in another unit. A function with C language linkage
+/// matches by its name alone.
+pub fn link(u: &mut Unit) {
+    use crate::sem::{EntKind, Linkage};
+    // A type's spelling, with each enumeration by its name, since each
+    // unit has its own enumeration of a shared header (ODR-7).
+    let named = |u: &Unit, t: String| -> String {
+        let mut out = String::new();
+        let mut rest = t.as_str();
+        while let Some(i) = rest.find("enum#") {
+            out.push_str(&rest[..i]);
+            let digits: String = rest[i + 5..].chars().take_while(|c| c.is_ascii_digit()).collect();
+            let n: usize = digits.parse().unwrap_or(usize::MAX);
+            out.push_str(&u.enums.get(n).map_or(String::from("enum"), |e| format!("enum {}", e.name)));
+            rest = &rest[i + 5 + digits.len()..];
+        }
+        out.push_str(rest);
+        out
+    };
+    let sig = |u: &Unit, id: crate::sem::EntityId| -> Option<(bool, String)> {
+        match &u.entities[id].kind {
+            EntKind::Func(f) => Some((true, named(u, crate::sem::types::QType::new(crate::sem::types::Type::Func(f.ty.clone())).show()))),
+            EntKind::Var(v) => Some((false, named(u, v.ty.show()))),
+            _ => None,
+        }
+    };
+    let defined = |u: &Unit, id: crate::sem::EntityId| match &u.entities[id].kind {
+        EntKind::Func(f) => f.body.is_some(),
+        EntKind::Var(v) => v.defined && !(v.is_extern && v.init.is_none()),
+        _ => false,
+    };
+    let c_func = |u: &Unit, id: crate::sem::EntityId| u.func(id).is_some_and(|f| f.c_linkage);
+    let mut defs: std::collections::HashMap<(String, bool, String), Vec<crate::sem::EntityId>> = Default::default();
+    for id in 0..u.entities.len() {
+        if u.entities[id].linkage != Linkage::External || !defined(u, id) {
+            continue;
+        }
+        let (Some(name), Some((func, ty))) = (if c_func(u, id) { Some(u.entities[id].name.to_string()) } else { qualified(u, id) }, sig(u, id)) else { continue };
+        defs.entry((name, func, ty)).or_default().push(id);
+    }
+    let inline = |u: &Unit, id: crate::sem::EntityId| match &u.entities[id].kind {
+        EntKind::Func(f) => f.inline,
+        EntKind::Var(v) => v.inline,
+        _ => false,
+    };
+    let mut links = std::collections::HashMap::new();
+    for id in 0..u.entities.len() {
+        if u.entities[id].linkage != Linkage::External {
+            continue;
+        }
+        // INL-1: an inline function or variable that several units
+        // define is one entity, the first unit's definition.
+        if defined(u, id) && !inline(u, id) {
+            continue;
+        }
+        let (Some(name), Some((func, ty))) = (if c_func(u, id) { Some(u.entities[id].name.to_string()) } else { qualified(u, id) }, sig(u, id)) else { continue };
+        let root = root_of(u, u.entities[id].scope);
+        let found = defs.get(&(name, func, ty)).and_then(|ds| {
+            if defined(u, id) {
+                ds.first().copied().filter(|&d| d < id && root_of(u, u.entities[d].scope) != root)
+            } else {
+                ds.iter().copied().find(|&d| root_of(u, u.entities[d].scope) != root)
+            }
+        });
+        if let Some(d) = found {
+            links.insert(id, d);
+        }
+    }
+    u.links = links;
+}
+
 /// How a run ended.
 #[derive(Debug, Clone, PartialEq)]
 pub enum RunOutcome {

@@ -168,6 +168,17 @@ pub struct Unit {
     pub statics: Vec<EntityId>,
     pub diags: Vec<Diag>,
     pub target: Target,
+    /// The global scope of the translation unit being checked. A program
+    /// of several units checks them one after another in one arena, each
+    /// with its own global scope.
+    pub root: ScopeId,
+    /// The global scope of each unit checked so far.
+    pub roots: Vec<ScopeId>,
+    /// The first entity of the unit being checked.
+    pub first_entity: EntityId,
+    /// For a declaration with external linkage that its unit does not
+    /// define, the definition in another unit (LNK rules, linking).
+    pub links: HashMap<EntityId, EntityId>,
 }
 
 impl Default for Unit {
@@ -179,6 +190,10 @@ impl Default for Unit {
             statics: Vec::new(),
             diags: Vec::new(),
             target: Target::default(),
+            root: 0,
+            roots: vec![0],
+            first_entity: 0,
+            links: HashMap::new(),
         }
     }
 }
@@ -222,9 +237,20 @@ impl Unit {
             _ => None,
         }
     }
-    /// The function named `main` in the global namespace.
+    /// The function named `main` in the global namespace of a unit.
     pub fn main(&self) -> Option<EntityId> {
-        self.scopes[0].names.get("main")?.iter().copied().find(|&e| self.func(e).is_some())
+        let defined = |e: &EntityId| self.func(*e).is_some_and(|f| f.body.is_some());
+        let all: Vec<EntityId> = self.roots.iter().filter_map(|&r| self.scopes[r].names.get("main")).flatten().copied().filter(|&e| self.func(e).is_some()).collect();
+        all.iter().copied().find(defined).or_else(|| all.first().copied())
+    }
+    /// Start the next translation unit of a program in this arena: a new
+    /// global scope, and no diagnostics yet.
+    pub fn next_unit(&mut self) {
+        let root = self.new_scope(ScopeKind::Namespace, None, "");
+        self.root = root;
+        self.roots.push(root);
+        self.first_entity = self.entities.len();
+        self.diags.clear();
     }
     /// The namespace scope that holds a scope, itself included.
     pub fn enclosing_namespace(&self, mut s: ScopeId) -> ScopeId {

@@ -31,7 +31,9 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             let p = place(m, e)?;
             values::run::read(m, &p, &e.ty)
         }
-        EK::Func(id) => Ok(Val::Fn(*id)),
+        // A function of another unit's declaration is its definition
+        // (linking), so that its address compares equal.
+        EK::Func(id) => Ok(Val::Fn(postfix::run::defining(m, *id))),
         EK::Conv(c, x) => conv(m, *c, x, &e.ty),
         EK::Unary(op, x) => {
             let v = eval(m, x)?;
@@ -89,7 +91,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             Ret::Place(p) => values::run::read(m, &p, &e.ty),
         },
         EK::AddrOf(x) => match &x.k {
-            EK::Func(id) => Ok(Val::Fn(*id)),
+            EK::Func(id) => Ok(Val::Fn(postfix::run::defining(m, *id))),
             // A reference to a function refers to a place that holds the
             // function.
             _ if x.ty.is_func() => {

@@ -92,12 +92,48 @@ pub enum Outcome {
 /// Lex, parse, and analyze one unit: the outcome, and the unit when the
 /// analysis ran.
 pub fn check_source(src: &str, path: &Path, o: &Options) -> (Outcome, Option<sem::Unit>) {
+    check_unit(src, path, o, None)
+}
+
+/// Check the translation units of a program one after another in one
+/// arena, and link them (TR-1, the LNK rules). The outcome of each unit,
+/// and the program's unit when every unit was checked.
+pub fn check_program(paths: &[std::path::PathBuf], o: &Options) -> (Vec<Outcome>, Option<sem::Unit>) {
+    let mut outs = Vec::new();
+    let mut prior = None;
+    let mut all_checked = true;
+    for f in paths {
+        let src = std::fs::read_to_string(f).unwrap_or_default();
+        let (out, u) = check_unit(&src, f, o, prior.take());
+        all_checked &= u.is_some();
+        outs.push(out);
+        prior = u;
+        if prior.is_none() {
+            break;
+        }
+    }
+    let mut prior = prior.filter(|_| all_checked);
+    if let Some(u) = prior.as_mut() {
+        foundations::translation::run::link(u);
+    }
+    (outs, prior)
+}
+
+/// Check one translation unit, the next one of `prior`'s program if
+/// given.
+fn check_unit(src: &str, path: &Path, o: &Options, prior: Option<sem::Unit>) -> (Outcome, Option<sem::Unit>) {
     let alts = o.proposal.and_then(proposals::find).map(|p| p.alternatives).unwrap_or(&[]);
     let p = parse_file(src, path, alts);
     let mut all = check_diags(&p);
     let mut unit = None;
     if let Ok(trees) = &p.trees {
-        let u = sem::Unit { target: target::Target { ilp32: o.m32 }, ..Default::default() };
+        let u = match prior {
+            Some(mut u) => {
+                u.next_unit();
+                u
+            }
+            None => sem::Unit { target: target::Target { ilp32: o.m32 }, ..Default::default() },
+        };
         let mut cx = sem::check::Check::new(&p.lexed.toks, u);
         cx.werror = o.werror;
         cx.wflags = o.wflags.clone();
@@ -249,12 +285,12 @@ fn render(d: &diag::Diag, path: &str) -> String {
 fn run(args: Vec<String>) -> i32 {
     alternatives(&args);
     let fs = files(&args);
-    if fs.len() != 1 {
-        println!("unsupported at line 0: a program of several translation units (linking comes with a later step)");
-        return RUN_UNSUPPORTED;
+    let paths: Vec<std::path::PathBuf> = fs.iter().map(std::path::PathBuf::from).collect();
+    for f in &fs {
+        let _ = read(f);
     }
-    let src = read(&fs[0]);
-    let (out, unit) = check_source(&src, Path::new(&fs[0]), &options(&args));
+    let (outs, unit) = check_program(&paths, &options(&args));
+    let out = outs.into_iter().find(|o| !matches!(o, Outcome::Accept)).unwrap_or(Outcome::Accept);
     match out {
         Outcome::Reject(ds) => {
             let d = &ds[0];

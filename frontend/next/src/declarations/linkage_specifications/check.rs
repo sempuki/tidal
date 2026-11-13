@@ -28,7 +28,9 @@ pub fn linkage_spec(cx: &mut Check, n: &Node) {
                     }
                 }
             }
+            let saved = std::mem::replace(&mut cx.implicit_extern, !braces);
             crate::declarations::check::declaration(cx, d);
+            cx.implicit_extern = saved;
         }
     }
     crate::declarations::functions::definitions::check::set_c_linkage(cx, saved);
@@ -59,14 +61,14 @@ pub fn c_name(cx: &mut Check, id: crate::sem::EntityId, c: bool, span: crate::so
         others.push(e);
     }
     if c {
-        others.extend(crate::foundations::names::check::declared_here(cx, 0, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Var(_))));
+        others.extend(crate::foundations::names::check::declared_here(cx, cx.u.root, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Var(_))));
     }
     for e in others {
         if e == id {
             continue;
         }
         let Some(theirs) = kind_ty(cx, e) else { continue };
-        if !c && cx.u.entities[e].scope == 0 {
+        if !c && cx.u.entities[e].scope == cx.u.root {
             continue;
         }
         if theirs.0 != mine.0 || theirs.1.t != mine.1.t {
@@ -78,9 +80,9 @@ pub fn c_name(cx: &mut Check, id: crate::sem::EntityId, c: bool, span: crate::so
     // with C++ language linkage, in either order.
     let first_c = cx.c_names.get(&name).copied();
     let clash = if c {
-        crate::foundations::names::check::declared_here(cx, 0, &name).into_iter().any(|e| e != id && Some(e) != first_c && matches!(cx.u.entities[e].kind, EntKind::Var(_)))
+        crate::foundations::names::check::declared_here(cx, cx.u.root, &name).into_iter().any(|e| e != id && Some(e) != first_c && matches!(cx.u.entities[e].kind, EntKind::Var(_)))
     } else {
-        mine.0 && cx.u.entities[id].scope == 0 && first_c.is_some_and(|e| e != id)
+        mine.0 && cx.u.entities[id].scope == cx.u.root && first_c.is_some_and(|e| e != id)
     };
     if clash {
         cx.error(span, "LSP-7", format!("the C name '{}' has the spelling of a global variable with C++ language linkage", name));

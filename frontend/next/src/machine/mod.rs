@@ -335,6 +335,8 @@ impl<'a> Machine<'a> {
     /// The object of a variable, made when the run first needs it for a
     /// static variable.
     pub fn var_place(&mut self, id: EntityId) -> R<Ptr> {
+        // A declaration that another unit defines (linking).
+        let id = self.u.links.get(&id).copied().unwrap_or(id);
         if let Some(f) = self.frames.last() {
             if let Some(&o) = f.vars.get(&id) {
                 return Ok(Ptr::whole(o));
