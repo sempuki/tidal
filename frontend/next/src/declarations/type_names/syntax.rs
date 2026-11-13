@@ -15,6 +15,9 @@ use crate::templates::arguments::syntax::template_id;
 pub fn alias_decl(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = vec![p.expect("using")?, identifier(p)?];
+    if p.at("alignas") {
+        return Err(p.fail_rule("ALN-2", "alignas does not apply to an alias declaration"));
+    }
     while p.at_attr() {
         kids.push(Kid::Node(attribute_spec(p)?));
     }

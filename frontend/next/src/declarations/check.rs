@@ -216,7 +216,9 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     let mut vars: Vec<(EntityId, Init)> = Vec::new();
     let decls: Vec<&Node> = n.children("init_declarator").collect();
     if decls.is_empty() {
-        if !specs.defines_type && !specs.unsupported {
+        if specs.typedef && !specs.defines_type && !specs.unsupported {
+            cx.error(n.span, "TYN-2", "a typedef declaration declares no name");
+        } else if !specs.defines_type && !specs.unsupported {
             types::check::declares_nothing(cx, n.span);
         }
         return local.then(|| Stmt::new(SK::Null, n.span));

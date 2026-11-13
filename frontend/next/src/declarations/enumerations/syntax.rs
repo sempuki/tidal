@@ -77,6 +77,9 @@ pub fn enum_head(p: &mut Parser) -> PResult<Node> {
     if scoped {
         kids.push(p.bump());
     }
+    if p.at("alignas") {
+        return Err(p.fail_rule("ALN-7", "alignas does not apply to an enumeration"));
+    }
     attrs(p, &mut kids)?;
     if p.kind() == TK::Ident || p.at("::") || scoped {
         if p.at("::") || p.ahead(1) == "::" || p.ahead(1) == "<" {

@@ -199,6 +199,50 @@ pub fn looks_like_sb(p: &Parser) -> bool {
     p.ahead(k) == "["
 }
 
+/// FN-9: a function definition in a block, `T name(...) {...}`. The
+/// other readings take the body as a braced initializer and stop after
+/// it, so the rule's stop goes after the body.
+fn nested_definition(p: &mut Parser) {
+    let mut k = 0;
+    while k < 16 && !matches!(p.ahead(k), "(" | ";" | "=" | "{" | "") {
+        k += 1;
+    }
+    if p.ahead(k) != "(" || k == 0 || p.ahead_kind(k - 1) != TK::Ident {
+        return;
+    }
+    let close = |p: &Parser, mut k: usize, open: &str, shut: &str| -> Option<usize> {
+        let mut depth = 0;
+        loop {
+            match p.ahead(k) {
+                "" if p.ahead_kind(k) == TK::Eof => return None,
+                s if s == open => depth += 1,
+                s if s == shut => {
+                    depth -= 1;
+                    if depth == 0 {
+                        return Some(k + 1);
+                    }
+                }
+                _ => {}
+            }
+            k += 1;
+        }
+    };
+    let Some(mut j) = close(p, k, "(", ")") else { return };
+    while matches!(p.ahead(j), "const" | "noexcept" | "override" | "final") {
+        j += 1;
+    }
+    if p.ahead(j) != "{" {
+        return;
+    }
+    let Some(end) = close(p, j, "{", "}") else { return };
+    let m = p.mark();
+    for _ in 0..end {
+        p.bump();
+    }
+    p.fail_rule("FN-9", "a function definition in a block");
+    p.reset(m);
+}
+
 /// `block_decl: simple_decl | sb_decl | alias_decl | enum_opaque
 /// | static_assert_decl | using_decl | using_enum_decl | using_directive
 /// | namespace_alias`.
@@ -215,13 +259,26 @@ pub fn block_decl(p: &mut Parser) -> PResult<Node> {
             using_directive(p)?
         } else if p.ahead(1) == "enum" {
             using_enum_decl(p)?
-        } else if p.ahead_kind(1) == TK::Ident && (p.ahead(2) == "=" || p.ahead(2) == "[") {
+        } else if p.ahead_kind(1) == TK::Ident && matches!(p.ahead(2), "=" | "[" | "alignas") {
             alias_decl(p)?
         } else {
             using_decl(p)?
         }
     } else if p.at("static_assert") {
         static_assert_decl(p)?
+    } else if p.at("extern") && p.ahead_kind(1) == TK::Str {
+        p.bump();
+        return Err(p.fail_rule("LSP-2", "a linkage specification in a block"));
+    } else if p.at("namespace") && p.ahead(1) != "=" && p.ahead(2) != "=" {
+        // NS-10: a namespace definition in a block. The stop goes at the
+        // `{`, where the reading as an alias stops.
+        let m = p.mark();
+        while !p.at("{") && !p.at(";") && !p.at_eof() {
+            p.bump();
+        }
+        let f = p.fail_rule("NS-10", "a namespace definition in a block");
+        p.reset(m);
+        return Err(f);
     } else if p.at("namespace") {
         namespace_alias(p)?
     } else if p.at("enum") {
@@ -232,6 +289,7 @@ pub fn block_decl(p: &mut Parser) -> PResult<Node> {
     } else if looks_like_sb(p) {
         sb_decl(p)?
     } else {
+        nested_definition(p);
         simple_decl(p)?
     };
     Ok(p.node("block_decl", sp, vec![Kid::Node(k)]))
@@ -390,6 +448,19 @@ pub fn decl_specifiers(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut st = Specs::default();
     let mut kids = Vec::new();
+    crate::declarations::structured_bindings::syntax::near_miss(p);
+    let mut k = 0;
+    while matches!(p.ahead(k), "static" | "extern" | "const" | "volatile" | "constexpr" | "inline" | "thread_local") {
+        k += 1;
+    }
+    if p.ahead(k) == "auto" && crate::foundations::types::check::is_fundamental(p.ahead(k + 1)) {
+        let m = p.mark();
+        for _ in 0..=k {
+            p.bump();
+        }
+        p.fail_rule("AUTO-8", "'auto' with another type specifier");
+        p.reset(m);
+    }
     let saved = std::mem::replace(&mut p.ctor_check, true);
     while let Some(n) = p.opt(|p| decl_specifier(p, &mut st)) {
         kids.push(Kid::Node(n));

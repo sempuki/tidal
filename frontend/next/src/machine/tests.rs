@@ -743,3 +743,32 @@ fn rules_for_forms_the_grammar_does_not_derive() {
     assert_eq!(rule("void f() { do {} while (int x = 0); }"), Some("LOOP-6"));
     assert_eq!(rule("void f() { for (static_assert(true); ;) break; }"), Some("LOOP-7"));
 }
+
+#[test]
+fn rules_for_declarations_the_grammar_does_not_derive() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("int a[2]; int [x, y] = a;"), Some("SB-15"));
+    assert_eq!(rule("int a[2]; auto* [x, y] = a;"), Some("SB-15"));
+    assert_eq!(rule("auto [x, y];"), Some("SB-15"));
+    assert_eq!(rule("void f(auto [x, y]);"), Some("SB-15"));
+    assert_eq!(rule("int a[2]; auto [x, y] = a;"), None);
+    assert_eq!(rule("int a[2]; int g() { return a[0]; }"), None);
+    assert_eq!(rule("void f() { namespace N {} }"), Some("NS-10"));
+    assert_eq!(rule("namespace M {} void f() { namespace N = M; }"), None);
+    assert_eq!(rule("inline namespace A::B {}"), Some("NS-11"));
+    assert_eq!(rule("int x; using x;"), Some("NS-16"));
+    assert_eq!(rule("using I alignas(16) = int;"), Some("ALN-2"));
+    assert_eq!(rule("void f(alignas(16) int x);"), Some("ALN-2"));
+    assert_eq!(rule("enum alignas(8) E { a };"), Some("ALN-7"));
+    assert_eq!(rule("auto int a = 1;"), Some("AUTO-8"));
+    assert_eq!(rule("void outer() { void inner() {} }"), Some("FN-9"));
+    assert_eq!(rule("void outer() { void inner(); int x{}; (void)x; }"), None);
+    assert_eq!(rule("void f() { extern \"C\" void g(); }"), Some("LSP-2"));
+    assert_eq!(rule("constexpr const char* m = \"x\"; static_assert(true, m);"), Some("SA-8"));
+    assert_eq!(rule("int f(int v) { switch (v) { case 1, 2: return 1; } return 0; }"), Some("COMMA-8"));
+    assert_eq!(rule("typedef int;"), Some("TYN-2"));
+}

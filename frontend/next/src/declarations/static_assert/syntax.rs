@@ -12,6 +12,9 @@ pub fn static_assert_decl(p: &mut Parser) -> PResult<Node> {
     kids.push(Kid::Node(p.bracketed(constant_expr)?));
     if p.at(",") {
         kids.push(p.bump());
+        if p.kind() != crate::lex::TK::Str {
+            return Err(p.fail_rule("SA-8", "the message of a static_assert is a string literal"));
+        }
         kids.push(string_literal(p)?);
         while p.kind() == crate::lex::TK::Str {
             kids.push(string_literal(p)?);

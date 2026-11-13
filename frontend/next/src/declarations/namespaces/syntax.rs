@@ -26,6 +26,9 @@ pub fn namespace_def(p: &mut Parser) -> PResult<Node> {
         let path = if inline || attributed || p.ahead(1) != "::" {
             let psp = p.span();
             let id = identifier(p)?;
+            if inline && p.at("::") {
+                return Err(p.fail_rule("NS-11", "a nested namespace definition does not start with 'inline'"));
+            }
             p.node("ns_path", psp, vec![id])
         } else {
             ns_path(p)?
@@ -107,6 +110,9 @@ pub fn using_decl(p: &mut Parser) -> PResult<Node> {
     loop {
         if let Some(k) = p.eat("typename") {
             kids.push(k);
+        }
+        if p.ahead_kind(0) == crate::lex::TK::Ident && matches!(p.ahead(1), ";" | ",") {
+            return Err(p.fail_rule("NS-16", "a using-declaration names a qualified name"));
         }
         kids.push(Kid::Node(qualified_name(p)?));
         if let Some(k) = p.eat("...") {

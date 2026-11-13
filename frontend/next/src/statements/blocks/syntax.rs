@@ -79,6 +79,9 @@ pub fn label(p: &mut Parser) -> PResult<Node> {
     if p.at("case") {
         kids.push(p.bump());
         kids.push(Kid::Node(constant_expr(p)?));
+        if p.at(",") {
+            return Err(p.fail_rule("COMMA-8", "a case label's expression has no comma operator outside parentheses"));
+        }
     } else if p.at("default") {
         kids.push(p.bump());
     } else {

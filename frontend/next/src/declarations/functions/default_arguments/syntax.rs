@@ -18,6 +18,9 @@ pub fn parameter(p: &mut Parser, tparam: bool) -> PResult<Node> {
     while p.at_attr() {
         kids.push(Kid::Node(attribute_spec(p)?));
     }
+    if p.at("alignas") {
+        return Err(p.fail_rule("ALN-2", "alignas does not apply to a parameter"));
+    }
     if let Some(k) = p.eat("this") {
         kids.push(k);
     }
