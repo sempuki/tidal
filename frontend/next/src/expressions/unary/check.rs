@@ -18,14 +18,12 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
         "sizeof" | "alignof" => return size_or_align(cx, n, op == "alignof"),
         "noexcept" => {
             cx.unevaluated += 1;
-            if let Some(c) = nodes(n).first() {
-                expr(cx, c);
-            }
+            let e = nodes(n).first().map(|c| expr(cx, c));
             cx.unevaluated -= 1;
-            // No construct of build step 3 can throw except a call of a
-            // function without a non-throwing specification.
-            let t = cx.unsupported(span, "the noexcept operator");
-            return Expr::new(EK::Int(1), t, Cat::PR, span);
+            let Some(e) = e.filter(|e| !e.ty.is_error()) else { return bad(span) };
+            crate::expressions::decltype::check::unevaluated_effect_warning(cx, &e);
+            let v = !crate::declarations::exception_specifications::check::can_throw(&e);
+            return Expr::int(v as i128, QType::bool(), span);
         }
         "new" | "delete" | "::" | "co_await" => {
             let t = cx.unsupported(span, "a new or delete expression (build step 4)");

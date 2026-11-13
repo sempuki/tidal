@@ -356,9 +356,10 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
     if !qualified && n.child("ref_qualifier").is_some() {
         cx.error(n.span, "DCL-21", "a function that is not a member has a ref-qualifier");
     }
+    let (params, variadic) = parameters(cx, n.child("parameters"));
     let mut noexcept = false;
     if let Some(e) = n.child("exception_spec") {
-        noexcept = crate::declarations::exception_specifications::check::exception_spec(cx, e);
+        noexcept = crate::declarations::exception_specifications::check::exception_spec(cx, e, &params);
     }
     if let Some(tr) = n.child("type_id") {
         let rt = type_id(cx, tr);
@@ -371,7 +372,6 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
         }
         ret = rt;
     }
-    let (params, variadic) = parameters(cx, n.child("parameters"));
     crate::declarations::volatile::check::top_level(cx, &ret, n.span, "return type");
     // DEFARG-5: only the declaration of a function has default
     // arguments, not a function type that an alias names, nor a pointer

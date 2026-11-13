@@ -90,17 +90,8 @@ pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
 /// warns with no flag. An operand inside another unevaluated operand
 /// is left to the outer one.
 pub fn unevaluated_effect_warning(cx: &mut Check, e: &Expr) {
-    fn writes(e: &Expr) -> bool {
-        match &e.k {
-            EK::Assign(..) | EK::Compound(..) | EK::IncDec(..) => true,
-            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) => writes(x),
-            EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Comma(a, b) | EK::Index(a, b) => writes(a) || writes(b),
-            EK::Cond(c, a, b) => writes(c) || writes(a) || writes(b),
-            EK::Call(f, args) => writes(f) || args.iter().any(|a| writes(&a.e)),
-            _ => false,
-        }
-    }
-    if cx.unevaluated == 0 && !e.ty.is_error() && writes(e) {
+    let writes = e.any(&|x| matches!(x.k, EK::Assign(..) | EK::Compound(..) | EK::IncDec(..)));
+    if cx.unevaluated == 0 && !e.ty.is_error() && writes {
         cx.warning(e.span, "UNEV-4", "an unevaluated operand has a side effect, which does not occur");
     }
 }

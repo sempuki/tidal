@@ -525,3 +525,21 @@ fn if_consteval() {
     assert_eq!(run(&format!("{}int c = w(); int o = 0; int d = w() + o; int main() {{ return c * 10 + d; }}", w)), RunOutcome::Result(12));
     assert_eq!(run(&format!("{}int main() {{ const int k = w(); int n = w(); return k * 10 + n; }}", w)), RunOutcome::Result(12));
 }
+
+#[test]
+fn noexcept_specifiers_and_operator() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("void f() noexcept(2);"), Some("EXS-7"));
+    assert_eq!(rule("constexpr int x = 0; void f() noexcept(&x);"), Some("EXS-7"));
+    assert_eq!(rule("bool b = true; void f() noexcept(b);"), Some("EXS-7"));
+    assert_eq!(rule("void f() noexcept(1); static_assert(noexcept(f()));"), None);
+    assert_eq!(rule("void f() noexcept(nullptr); static_assert(!noexcept(f()));"), None);
+    assert_eq!(rule("void f(int x) noexcept(noexcept(x + 1)); static_assert(noexcept(f(1)));"), None);
+    assert_eq!(rule("void f(); static_assert(!noexcept(f()));"), None);
+    assert_eq!(rule("void (*p)() noexcept = nullptr; static_assert(noexcept(p()));"), None);
+    assert_eq!(rule("constexpr int f() { return 1; } static_assert(!noexcept(f()));"), None);
+    assert_eq!(run("int c = 0; int g() { return ++c; } int main() { bool b = noexcept(g()); return c * 10 + b; }"), RunOutcome::Result(0));
+}
