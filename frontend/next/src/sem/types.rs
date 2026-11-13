@@ -279,6 +279,9 @@ impl QType {
     pub fn is_const(&self) -> bool {
         self.c || self.elem().is_some_and(|e| e.is_const())
     }
+    pub fn is_volatile(&self) -> bool {
+        self.v || self.elem().is_some_and(|e| e.is_volatile())
+    }
     /// The same type up to top-level cv-qualifiers.
     pub fn same_unqual(&self, o: &QType) -> bool {
         self.t == o.t

@@ -11,6 +11,8 @@ use crate::sem::types::QType;
 /// context that needs a prvalue).
 pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
     objects::run::check_read(m, p, ty)?;
+    crate::declarations::volatile::run::check_access(m, p, ty)?;
+    m.record(p, false);
     if m.constant {
         constant_evaluation::run::check_read(m, p, ty)?;
     }

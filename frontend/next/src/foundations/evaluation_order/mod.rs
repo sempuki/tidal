@@ -2,3 +2,4 @@
 //! The page has no Syntax segment.
 
 pub mod check;
+pub mod run;

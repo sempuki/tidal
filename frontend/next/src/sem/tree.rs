@@ -66,6 +66,27 @@ impl BOp {
     pub fn is_comparison(self) -> bool {
         matches!(self, BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne)
     }
+    pub fn spelling(self) -> &'static str {
+        match self {
+            BOp::Mul => "*",
+            BOp::Div => "/",
+            BOp::Rem => "%",
+            BOp::Add => "+",
+            BOp::Sub => "-",
+            BOp::Shl => "<<",
+            BOp::Shr => ">>",
+            BOp::Lt => "<",
+            BOp::Gt => ">",
+            BOp::Le => "<=",
+            BOp::Ge => ">=",
+            BOp::Eq => "==",
+            BOp::Ne => "!=",
+            BOp::Spaceship => "<=>",
+            BOp::BitAnd => "&",
+            BOp::BitXor => "^",
+            BOp::BitOr => "|",
+        }
+    }
 }
 
 /// An implicit or explicit conversion, as the machine performs it.

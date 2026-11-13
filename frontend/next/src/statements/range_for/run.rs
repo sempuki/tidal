@@ -15,7 +15,10 @@ pub fn bind_element(m: &mut Machine, var: EntityId, elem: Ptr) -> R<()> {
         }
         return Ok(());
     }
-    let val = crate::foundations::values::run::read(m, &elem, &ty.unqual())?;
+    // The read goes through the element, so it keeps the element's
+    // qualifiers (a volatile element is read as volatile).
+    let et = m.type_at(&elem).unwrap_or_else(|| ty.unqual());
+    let val = crate::foundations::values::run::read(m, &elem, &et)?;
     let o = m.new_obj(&ty, val, &m.u.entities[var].name.clone());
     m.objs[o].konst = ty.is_const();
     if let Some(f) = m.frames.last_mut() {

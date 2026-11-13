@@ -69,3 +69,16 @@ fn an_error_after_an_unmodelled_construct_gives_no_verdict() {
     assert!(matches!(outcome("static_assert(1 == 2);\nstruct S { int a; };"), Outcome::Reject(_)));
     assert!(matches!(outcome("int int::* pm;"), Outcome::Reject(_)));
 }
+
+#[test]
+fn unsequenced_accesses_and_volatile_objects() {
+    let rule = |src: &str| match run(src) {
+        RunOutcome::Undefined(r, ..) => Some(r),
+        _ => None,
+    };
+    assert_eq!(rule("int main() { int i = 2; return i++ * i; }"), Some("SEQ-4"));
+    assert_eq!(rule("int main() { int i = 2; return i << i++; }"), None);
+    assert_eq!(rule("int f(int& i) { return ++i; } int main() { int i = 0; return f(i) + i; }"), None);
+    assert_eq!(rule("volatile int v = 3; int main() { int* p = const_cast<int*>(&v); return *p; }"), Some("VOL-6"));
+    assert_eq!(rule("volatile int a[] = {1, 2}; int main() { int s = 0; for (int x : a) s += x; return s; }"), None);
+}

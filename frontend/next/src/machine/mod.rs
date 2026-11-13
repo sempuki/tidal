@@ -164,6 +164,21 @@ pub struct Machine<'a> {
     /// The initializer being evaluated belongs to a variable with static
     /// storage, so its temporaries have static storage too (REF-4).
     pub static_temps: bool,
+    /// The reads and writes made while unsequenced operands run, and the
+    /// frame depths whose accesses are watched
+    /// (`foundations::evaluation_order::run`).
+    pub acc: Vec<Access>,
+    pub seq_watch: Vec<usize>,
+}
+
+/// One read or write of a place while unsequenced operands run, with the
+/// frame depth it was made at.
+#[derive(Clone, Debug)]
+pub struct Access {
+    pub obj: usize,
+    pub path: Vec<i64>,
+    pub write: bool,
+    pub depth: usize,
 }
 
 impl<'a> Machine<'a> {
@@ -185,11 +200,22 @@ impl<'a> Machine<'a> {
             line: 0,
             temps: Vec::new(),
             static_temps: false,
+            acc: Vec::new(),
+            seq_watch: Vec::new(),
         }
     }
 
     // -----------------------------------------------------------------
     // Objects and places
+
+    /// Record a read or a write of a place when the current frame's
+    /// accesses are watched.
+    pub fn record(&mut self, p: &Ptr, write: bool) {
+        let depth = self.frames.len();
+        if self.seq_watch.contains(&depth) {
+            self.acc.push(Access { obj: p.obj, path: p.path.clone(), write, depth });
+        }
+    }
 
     pub fn new_obj(&mut self, ty: &QType, val: Val, name: &str) -> usize {
         self.objs.push(Obj { val, ty: ty.clone(), alive: true, konst: ty.is_const(), own: true, is_static: false, string: false, usable: true, name: name.into() });

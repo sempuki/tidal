@@ -5,7 +5,7 @@
 use super::{unsup, Machine, Ptr, Ret, Val, R};
 use crate::declarations::initialization::forms::run as init_run;
 use crate::expressions::{additive, comparison, multiplicative, postfix, shift, unary};
-use crate::foundations::{conversions, objects, values};
+use crate::foundations::{conversions, evaluation_order, objects, values};
 use crate::sem::tree::{Arg, BOp, Cat, Conv, Expr, UOp, EK};
 use crate::sem::types::{QType, Type};
 
@@ -31,8 +31,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             unary::run::unary(m, *op, v, &e.ty)
         }
         EK::Binary(op, l, r) => {
-            let a = eval(m, l)?;
-            let b = eval(m, r)?;
+            let (a, b) = evaluation_order::run::operands(m, *op, l, r)?;
             binary(m, *op, a, b, &l.ty, &r.ty, &e.ty)
         }
         EK::PtrAdd(p, n, sub) => {
@@ -220,6 +219,8 @@ pub fn temp(m: &mut Machine, ty: &QType, v: Val) -> R<Ptr> {
 /// write).
 pub fn write(m: &mut Machine, p: &Ptr, ty: &QType, v: Val) -> R<()> {
     objects::run::check_write(m, p, ty)?;
+    crate::declarations::volatile::run::check_access(m, p, ty)?;
+    m.record(p, true);
     let v = match (&ty.t, v) {
         (Type::Float(k), Val::Float(f)) => Val::Float(m.round_float(f, *k)),
         (_, v) => v,
