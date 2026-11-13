@@ -124,6 +124,18 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 }
                 let old_link = cx.u.entities[e].linkage;
                 stl::redeclared_linkage(cx, span, old_link, s, &name);
+                // ATTR-2: `noreturn` and `carries_dependency` belong on the
+                // first declaration. ATTR-4: a later declaration can add
+                // `deprecated`.
+                if s.attrs.noreturn && !f.noreturn {
+                    cx.error(span, "ATTR-2", format!("'noreturn' on '{}', whose first declaration does not have it", name));
+                }
+                if s.attrs.carries_dependency {
+                    cx.error(span, "ATTR-2", format!("'carries_dependency' on a declaration of '{}' after the first", name));
+                }
+                if s.attrs.deprecated.is_some() {
+                    cx.u.entities[e].deprecated = s.attrs.deprecated.clone();
+                }
                 earlier = Some(e);
                 break;
             }
@@ -385,6 +397,8 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     }
     let _ = errors_before;
     flow_off_end_warning(cx, id);
+    noreturn_returns(cx, id);
+    unused_locals(cx, fs);
     if let Some(b) = cx.u.func(id).and_then(|f| f.body.clone()) {
         crate::declarations::attributes::check::fallthrough_checks(cx, &b);
     }
@@ -406,6 +420,36 @@ fn flow_off_end_warning(cx: &mut Check, id: EntityId) {
     let mut paths = Paths::default();
     if paths.completes(cx, &body) && !paths.unsupported {
         cx.warning(cx.u.entities[id].span, "FN-7", format!("control can reach the end of '{}', which returns a value", cx.u.entities[id].name));
+    }
+}
+
+/// ATTR-14: a function declared `noreturn` whose end control can reach.
+fn noreturn_returns(cx: &mut Check, id: EntityId) {
+    let Some(f) = cx.u.func(id) else { return };
+    let Some(body) = f.body.clone() else { return };
+    if f.noreturn && f.unsupported.is_none() && can_complete(cx, &body) {
+        cx.warning(cx.u.entities[id].span, "ATTR-14", format!("the noreturn function '{}' can return", cx.u.entities[id].name));
+    }
+}
+
+/// ATTR-6: a local variable of the function that the program never
+/// names, unless it is declared `maybe_unused`.
+fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
+    let inside = |cx: &Check, mut s: crate::sem::ScopeId| loop {
+        if s == fs {
+            return true;
+        }
+        match cx.u.scopes[s].parent {
+            Some(p) => s = p,
+            None => return false,
+        }
+    };
+    let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().filter_map(|e| match &e.kind {
+        EntKind::Var(v) if !v.param && !v.used && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) => Some((e.span, e.name.clone())),
+        _ => None,
+    }).collect();
+    for (span, name) in found {
+        crate::declarations::attributes::check::unused_variable(cx, span, &name);
     }
 }
 

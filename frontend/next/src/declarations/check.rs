@@ -133,7 +133,10 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
     for k in &n.kids {
         let Kid::Node(d) = k else { continue };
         if d.prod == "attribute_spec" {
-            attributes::check::attribute_spec(cx, d, &mut s.attrs);
+            // An attribute among the specifiers applies to the type.
+            let mut ta = attributes::check::Attrs::default();
+            attributes::check::attribute_spec(cx, d, &mut ta);
+            attributes::check::on_type(cx, &ta);
             continue;
         }
         let word = cx.first_word(d);

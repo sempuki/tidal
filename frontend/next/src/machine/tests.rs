@@ -350,3 +350,25 @@ fn fallthrough_placement_and_warning() {
     assert_eq!(rule("void f() { [[fallthrough]]; }"), Some("ATTR-2"));
     assert_eq!(rule("[[fallthrough]] int x;"), Some("ATTR-2"));
 }
+
+#[test]
+fn attribute_placement_and_warnings() {
+    let rule = |src: &str, flags: &[&str]| {
+        let o = crate::Options { werror: true, wflags: flags.iter().map(|f| f.to_string()).collect(), ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    assert_eq!(rule("[[assume(true)]] int x;", &[]), Some("ATTR-13"));
+    assert_eq!(rule("int [[maybe_unused]] c;", &[]), Some("ATTR-2"));
+    assert_eq!(rule("using S [[nodiscard]] = int;", &[]), Some("ATTR-2"));
+    assert_eq!(rule("using S [[deprecated]] = int;", &[]), None);
+    assert_eq!(rule("void s(); [[noreturn]] void s();", &[]), Some("ATTR-2"));
+    assert_eq!(rule("[[noreturn]] void s(); [[noreturn]] void s();", &[]), None);
+    assert_eq!(rule("[[noreturn]] void s(int c) { (void)c; }", &[]), Some("ATTR-14"));
+    assert_eq!(rule("void o(); [[deprecated]] void o(); void u() { o(); }", &[]), Some("ATTR-4"));
+    assert_eq!(rule("void f() { int local = 1; }", &["-Wunused"]), Some("ATTR-6"));
+    assert_eq!(rule("void f() { [[maybe_unused]] int local = 1; }", &["-Wunused"]), None);
+    assert_eq!(rule("[[using gnu: gnu::unused]] int x;", &[]), Some("ATTR-17"));
+}

@@ -47,6 +47,11 @@ pub fn alias_decl(cx: &mut Check, n: &Node) {
     let name = n.kids.iter().filter(|k| matches!(k, Kid::Tok(_))).map(|k| (cx.text(k), cx.token(k).map(|t| t.span))).nth(1);
     let Some((name, Some(span))) = name else { return };
     let Some(t) = n.child("type_id") else { return };
+    let mut attrs = crate::declarations::attributes::check::Attrs::default();
+    for a in n.children("attribute_spec") {
+        crate::declarations::attributes::check::attribute_spec(cx, a, &mut attrs);
+    }
+    crate::declarations::attributes::check::on_alias(cx, &attrs);
     let saved = std::mem::replace(&mut cx.naming_type, true);
     let ty = crate::declarations::declarators::check::type_id(cx, t);
     cx.naming_type = saved;

@@ -13,6 +13,7 @@ pub struct Attrs {
     pub nodiscard: bool,
     pub noreturn: bool,
     pub maybe_unused: bool,
+    pub carries_dependency: bool,
     pub fallthrough: bool,
     pub likely: bool,
     pub unlikely: bool,
@@ -30,6 +31,11 @@ pub fn attribute_spec(cx: &mut Check, n: &Node, a: &mut Attrs) {
     let using = cx.words(n).contains(&"using");
     for at in n.children("attribute") {
         let words = cx.words(at);
+        // ATTR-17: after a `using` prefix, an attribute name has no
+        // namespace of its own.
+        if using && words.contains(&"::") {
+            cx.error(at.span, "ATTR-17", "a qualified attribute name after a 'using' prefix");
+        }
         let scoped = words.contains(&"::") || using;
         let Some(name) = words.iter().rev().find(|w| **w != "::").copied() else { continue };
         let args = at.child("attribute_args");
@@ -78,6 +84,7 @@ pub fn attribute_spec(cx: &mut Check, n: &Node, a: &mut Attrs) {
                     _ => {}
                 }
             }
+            "carries_dependency" => a.carries_dependency = true,
             "assume" => {
                 a.assume = args.cloned();
             }
@@ -91,7 +98,25 @@ pub fn attribute_spec(cx: &mut Check, n: &Node, a: &mut Attrs) {
 
 /// ATTR-2: `noreturn` applies only to functions, `nodiscard` not to a
 /// variable.
+/// ATTR-2: a standard attribute that applies to a type, where none of
+/// those that build step 3 reads applies.
+pub fn on_type(cx: &mut Check, a: &Attrs) {
+    if a.deprecated.is_some() || a.nodiscard || a.noreturn || a.maybe_unused || a.fallthrough || a.likely || a.unlikely || a.carries_dependency || a.assume.is_some() {
+        cx.error(a.span, "ATTR-2", "a standard attribute that does not apply to a type");
+    }
+}
+
+/// ATTR-2: on a type alias, only `deprecated` and `maybe_unused` apply.
+pub fn on_alias(cx: &mut Check, a: &Attrs) {
+    if a.nodiscard || a.noreturn || a.fallthrough || a.likely || a.unlikely || a.carries_dependency || a.assume.is_some() {
+        cx.error(a.span, "ATTR-2", "a standard attribute that does not apply to a type alias");
+    }
+}
+
 pub fn on_variable(cx: &mut Check, a: &Attrs) {
+    if a.assume.is_some() {
+        cx.error(a.span, "ATTR-13", "an assumption applied to a declaration");
+    }
     if a.fallthrough {
         cx.error(a.span, "ATTR-2", "'fallthrough' applies only to a null statement");
     }
