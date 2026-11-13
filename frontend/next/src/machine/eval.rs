@@ -16,7 +16,9 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
     match &e.k {
         EK::Int(_) if e.ty.is_nullptr() || e.ty.is_ptr() => Ok(Val::Null),
         EK::Int(v) => Ok(Val::Int(*v)),
+        EK::Float(f) if e.ty.t == Type::Float(crate::sem::types::FloatK::LongDouble) => Ok(Val::Ext(crate::foundations::types::run::F80::from_f64(*f))),
         EK::Float(f) => Ok(Val::Float(*f)),
+        EK::LongDouble(x) => Ok(Val::Ext(*x)),
         EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
@@ -244,7 +246,7 @@ pub fn write(m: &mut Machine, p: &Ptr, ty: &QType, v: Val) -> R<()> {
     crate::declarations::volatile::run::check_access(m, p, ty)?;
     m.record(p, true);
     let v = match (&ty.t, v) {
-        (Type::Float(k), Val::Float(f)) => Val::Float(m.round_float(f, *k)),
+        (Type::Float(k), v @ (Val::Float(_) | Val::Ext(_))) => conversions::run::to_float(v, *k),
         (_, v) => v,
     };
     match m.slot(p) {

@@ -27,7 +27,7 @@ pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
     // after a reinterpret_cast, gives the value of the lvalue's type.
     match (&v, &ty.t) {
         (Val::Int(x), crate::sem::types::Type::Int(k)) => Ok(Val::Int(m.target.wrap(*k, *x))),
-        (Val::Float(_), crate::sem::types::Type::Int(_)) | (Val::Int(_), crate::sem::types::Type::Float(_)) => crate::machine::unsup("an object read through an lvalue of another type"),
+        (Val::Float(_) | Val::Ext(_), crate::sem::types::Type::Int(_)) | (Val::Int(_), crate::sem::types::Type::Float(_)) => crate::machine::unsup("an object read through an lvalue of another type"),
         _ => Ok(v),
     }
 }

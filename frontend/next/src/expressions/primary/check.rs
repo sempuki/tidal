@@ -87,6 +87,22 @@ pub fn literal(cx: &mut Check, n: &Node) -> Expr {
                     return Expr::new(EK::Int(0), t, Cat::PR, span);
                 }
             };
+            if k == FloatK::LongDouble {
+                // TYP-10: the literal keeps the precision and the range
+                // of the extended format.
+                return match crate::foundations::types::run::F80::parse(&t.text) {
+                    Some(x) => {
+                        if !x.is_finite() {
+                            cx.warning(span, "PRIM-13", "floating literal out of range");
+                        }
+                        Expr::new(EK::LongDouble(x), QType::new(Type::Float(k)), Cat::PR, span)
+                    }
+                    None => {
+                        let t = cx.unsupported(span, "a long double literal of this spelling");
+                        Expr::new(EK::Int(0), t, Cat::PR, span)
+                    }
+                };
+            }
             let v = if k == FloatK::Float { *value as f32 as f64 } else { *value };
             // PRIM-13: out of range; the compilers accept with a warning.
             // A long double literal keeps the range of the wider format.

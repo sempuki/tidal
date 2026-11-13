@@ -16,6 +16,7 @@ pub fn unary(m: &mut Machine, op: UOp, v: Val, ty: &QType) -> R<Val> {
             Ok(Val::Int(m.target.wrap(*k, -x)))
         }
         (UOp::Neg, Val::Float(f), _) => Ok(Val::Float(-f)),
+        (UOp::Neg, Val::Ext(x), _) => Ok(Val::Ext(x.neg())),
         (op, v, _) => crate::machine::eval::simple_unary(m, op, v, ty),
     }
 }
@@ -55,6 +56,7 @@ pub fn increment(m: &mut Machine, v: Val, inc: bool, ty: &QType) -> R<Val> {
         }
         (Val::Int(x), Type::Enum(_)) => Ok(Val::Int(x + d)),
         (Val::Float(f), Type::Float(k)) => Ok(Val::Float(m.round_float(f + d as f64, *k))),
+        (Val::Ext(x), _) => Ok(Val::Ext(x.add(crate::foundations::types::run::F80::from_int(d)))),
         (Val::Ptr(p), Type::Ptr(_)) => match crate::expressions::additive::run::moved(m, p, d) {
             Some(p) => Ok(Val::Ptr(p)),
             None => ub("UN-21", "the pointer moves outside its array"),

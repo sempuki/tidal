@@ -2,7 +2,20 @@
 //! scalar.
 
 use crate::machine::{ub, unsup, Machine, Val, R};
-use crate::sem::types::{QType, Type};
+use crate::foundations::types::run::F80;
+use crate::sem::types::{FloatK, QType, Type};
+
+/// A floating value in the format of `k`: rounded to `float` or
+/// `double`, or exact in the extended format of `long double`.
+pub fn to_float(v: Val, k: FloatK) -> Val {
+    match (v, k) {
+        (Val::Float(f), FloatK::LongDouble) => Val::Ext(F80::from_f64(f)),
+        (Val::Float(f), FloatK::Float) => Val::Float(f as f32 as f64),
+        (Val::Ext(x), FloatK::LongDouble) => Val::Ext(x),
+        (Val::Ext(x), k) => Val::Float(x.to_f64(k == FloatK::Float)),
+        (v, _) => v,
+    }
+}
 
 /// Convert a value of type `from` to type `to`.
 pub fn convert(m: &mut Machine, v: Val, from: &QType, to: &QType) -> R<Val> {
@@ -24,8 +37,13 @@ pub fn convert(m: &mut Machine, v: Val, from: &QType, to: &QType) -> R<Val> {
         // CONV-2: an integer keeps its low bits.
         (Val::Int(x), Type::Int(k)) => Ok(Val::Int(m.target.wrap(*k, x))),
         // CONV-6, CONV-7: to a floating type, rounded to the target.
+        (Val::Int(x), Type::Float(FloatK::LongDouble)) => Ok(Val::Ext(F80::from_int(x))),
         (Val::Int(x), Type::Float(k)) => Ok(Val::Float(m.round_float(x as f64, *k))),
-        (Val::Float(f), Type::Float(k)) => Ok(Val::Float(m.round_float(f, *k))),
+        (v @ (Val::Float(_) | Val::Ext(_)), Type::Float(k)) => Ok(to_float(v, *k)),
+        (Val::Ext(x), Type::Int(k)) => match x.trunc().filter(|&t| t >= m.target.int_min(*k) && t <= m.target.int_max(*k)) {
+            Some(t) => Ok(Val::Int(t)),
+            None => ub("CONV-5", format!("{} is outside the range of {}", x.to_f64(false), k.name())),
+        },
         // CONV-4, CONV-5: toward zero; undefined outside the range.
         (Val::Float(f), Type::Int(k)) => {
             let t = f.trunc();

@@ -67,6 +67,8 @@ impl Ptr {
 pub enum Val {
     Int(i128),
     Float(f64),
+    /// A `long double` value, in the extended format (TYP-10).
+    Ext(crate::foundations::types::run::F80),
     Ptr(Ptr),
     /// A null pointer of any pointer type.
     Null,
@@ -91,6 +93,7 @@ impl Val {
         match self {
             Val::Int(v) => *v != 0,
             Val::Float(f) => *f != 0.0,
+            Val::Ext(x) => !x.is_zero(),
             Val::Null => false,
             _ => true,
         }
@@ -252,6 +255,7 @@ impl<'a> Machine<'a> {
     pub fn zero(&self, ty: &QType) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(e)).collect()),
+            Type::Float(crate::sem::types::FloatK::LongDouble) => Val::Ext(crate::foundations::types::run::F80::ZERO),
             Type::Float(_) => Val::Float(0.0),
             Type::Ptr(_) | Type::NullPtr => Val::Null,
             _ => Val::Int(0),

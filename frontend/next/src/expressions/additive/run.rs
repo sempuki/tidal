@@ -8,9 +8,6 @@ use crate::sem::types::{QType, Type};
 /// `+` or `-` on two values of the common type. ADD-9: a signed result
 /// out of range; ADD-17: a finite floating result out of range.
 pub fn binary(m: &mut Machine, op: BOp, a: Val, b: Val, ty: &QType) -> R<Val> {
-    if ty.t == Type::Float(crate::sem::types::FloatK::LongDouble) {
-        return unsup("arithmetic on long double (the machine holds a double's precision)");
-    }
     match (a, b, &ty.t) {
         (Val::Int(x), Val::Int(y), Type::Int(k)) => {
             let r = if op == BOp::Add { x + y } else { x - y };
@@ -26,6 +23,13 @@ pub fn binary(m: &mut Machine, op: BOp, a: Val, b: Val, ty: &QType) -> R<Val> {
                 return ub("ADD-17", "the result is outside the range of its type");
             }
             Ok(Val::Float(r2))
+        }
+        (Val::Ext(x), Val::Ext(y), _) => {
+            let r = if op == BOp::Add { x.add(y) } else { x.sub(y) };
+            if x.is_finite() && y.is_finite() && !r.is_finite() {
+                return ub("ADD-17", "the result is outside the range of its type");
+            }
+            Ok(Val::Ext(r))
         }
         _ => unsup("an additive operator on these values"),
     }

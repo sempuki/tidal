@@ -51,15 +51,16 @@ fn flat(m: &Machine, p: &Ptr) -> Option<i64> {
 }
 
 /// A comparison of two values of the common type.
-pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, ty: &QType) -> R<Val> {
-    if ty.t == crate::sem::types::Type::Float(crate::sem::types::FloatK::LongDouble) {
-        return unsup("a comparison of long double values (the machine holds a double's precision)");
-    }
+pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, _ty: &QType) -> R<Val> {
     if op == BOp::Spaceship {
         return unsup("the three-way comparison's result type");
     }
     match (&a, &b) {
         (Val::Int(x), Val::Int(y)) => Ok(Val::Int(order(x.cmp(y), op))),
+        (Val::Ext(x), Val::Ext(y)) => match x.cmp(*y) {
+            Some(o) => Ok(Val::Int(order(o, op))),
+            None => Ok(Val::Int((op == BOp::Ne) as i128)),
+        },
         (Val::Float(x), Val::Float(y)) => match x.partial_cmp(y) {
             Some(o) => Ok(Val::Int(order(o, op))),
             None => Ok(Val::Int((op == BOp::Ne) as i128)),

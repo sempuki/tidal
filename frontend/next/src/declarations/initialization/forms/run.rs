@@ -16,7 +16,7 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
         Init::Expr(e) => {
             let v = eval_any(m, e)?;
             match (&ty.t, v) {
-                (Type::Float(k), Val::Float(f)) => Ok(Val::Float(m.round_float(f, *k))),
+                (Type::Float(k), v @ (Val::Float(_) | Val::Ext(_))) => Ok(crate::foundations::conversions::run::to_float(v, *k)),
                 (_, v) => Ok(v),
             }
         }

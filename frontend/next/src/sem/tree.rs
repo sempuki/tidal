@@ -143,6 +143,8 @@ pub struct Expr {
 pub enum EK {
     Int(i128),
     Float(f64),
+    /// A `long double` literal, in the extended format.
+    LongDouble(crate::foundations::types::run::F80),
     /// A string literal: its code units with the terminating zero.
     Str(Rc<Vec<u32>>),
     Var(EntityId),

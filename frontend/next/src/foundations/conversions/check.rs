@@ -233,6 +233,7 @@ pub fn is_narrowing(cx: &mut Check, e: &Expr, to: &QType) -> bool {
     match (&from_t, &to_t) {
         (Type::Float(_), Type::Int(_)) => true,
         (Type::Int(_), Type::Float(k)) => match value() {
+            Some(crate::machine::Val::Int(v)) if *k == FloatK::LongDouble => crate::foundations::types::run::F80::from_int(v).trunc() != Some(v),
             Some(crate::machine::Val::Int(v)) => {
                 let f = v as f64;
                 let r = if *k == FloatK::Float { f as f32 as f64 } else { f };
@@ -242,6 +243,7 @@ pub fn is_narrowing(cx: &mut Check, e: &Expr, to: &QType) -> bool {
         },
         (Type::Float(a), Type::Float(b)) if b.rank() < a.rank() => match value() {
             Some(crate::machine::Val::Float(f)) => !(f.is_nan() || f.is_infinite() || (f.abs() <= f32::MAX as f64 || *b != FloatK::Float)),
+            Some(crate::machine::Val::Ext(x)) => x.is_finite() && !x.to_f64(*b == FloatK::Float).is_finite(),
             _ => true,
         },
         (Type::Int(a), Type::Int(b)) => {

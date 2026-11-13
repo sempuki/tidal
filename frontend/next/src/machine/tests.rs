@@ -702,3 +702,22 @@ fn default_new_alignment() {
     assert_eq!(rule("static_assert(sizeof(__STDCPP_DEFAULT_NEW_ALIGNMENT__) == sizeof(sizeof(0)));"), None);
     assert_eq!(rule("static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 8);"), Some("SA-1"));
 }
+
+#[test]
+fn long_double_values() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("static_assert(9007199254740992.0L + 1.0L == 9007199254740993.0L);"), None);
+    assert_eq!(rule("static_assert(9007199254740992.0 + 1.0 == 9007199254740992.0);"), None);
+    assert_eq!(rule("constexpr long double x = 1.0L / 3; static_assert(x * 3 == 1.0L && (double)x == 1.0 / 3);"), None);
+    assert_eq!(rule("constexpr long long n = 9007199254740993LL; static_assert((long long)(long double)n == n);"), None);
+    assert_eq!(rule("static_assert(-2.5L < -2.0L && (int)-2.5L == -2 && 0.0L == -0.0L);"), None);
+    assert_eq!(rule("long double x{9007199254740993LL}; double y{1.0L};"), None);
+    assert_eq!(rule("double y{1e4000L};"), Some("LIST-2"));
+    assert_eq!(rule("constexpr long double z = 1.0L / 0.0L;"), Some("CE-28"));
+    assert_eq!(run("int main() { long double a = 0.1L; long double s = 0; for (int i = 0; i < 10; ++i) s += a; return s > 0.99L && s < 1.01L; }"), RunOutcome::Result(1));
+    assert!(matches!(run("int main() { long double b = 0x1p16000L; int x = (int)b; return x; }"), RunOutcome::Undefined(..)));
+}
