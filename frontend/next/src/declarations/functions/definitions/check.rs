@@ -353,6 +353,9 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
             cx.error(span, "FN-13", format!("the parameter name '{}' occurs twice", name));
         }
         let pid = names::declare_in(cx, fs, &name, EntKind::Var(v), span, Linkage::None);
+        if p.was_array {
+            cx.array_params.insert(pid);
+        }
         params.push(pid);
     }
     let f = cx.u.func(id).unwrap().clone();

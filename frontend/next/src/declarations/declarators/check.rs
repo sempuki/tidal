@@ -20,6 +20,9 @@ pub struct Param {
     /// The top-level cv-qualifiers as written, which the parameter keeps
     /// inside the body though the function type drops them (DCL-9).
     pub cv: (bool, bool),
+    /// The parameter is declared with an array type, which DCL-9
+    /// adjusts to a pointer (UN-19).
+    pub was_array: bool,
     pub default: Option<Node>,
     pub span: Span,
     pub maybe_unused: bool,
@@ -448,12 +451,13 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
                 cx.error(*sp, "FN-13", format!("the parameter name '{}' occurs twice", n));
             }
         }
+        let was_array = t.is_array();
         t = adjust_parameter(t);
         let default = p.kids.iter().skip_while(|k| !matches!(k, Kid::Tok(_)) || cx.text(k) != "=").nth(1).and_then(|k| match k {
             Kid::Node(e) => Some(e.clone()),
             _ => None,
         });
-        out.push(Param { name: d.name.clone(), ty: t, cv, default, span: p.span, maybe_unused: attrs.maybe_unused });
+        out.push(Param { name: d.name.clone(), ty: t, cv, was_array, default, span: p.span, maybe_unused: attrs.maybe_unused });
     }
     (out, variadic)
 }

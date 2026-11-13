@@ -447,3 +447,24 @@ fn jumps_into_statements() {
     assert_eq!(rule("int& keep(int& v) { return v; }"), None);
     assert_eq!(rule("int&& keep(int v) { return v; }"), None);
 }
+
+#[test]
+fn literal_and_unevaluated_warnings() {
+    let rule = |src: &str| {
+        let o = crate::Options { werror: true, ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    assert_eq!(rule("int c = 'ab';"), Some("PRIM-13"));
+    assert_eq!(rule("int c = 'a';"), None);
+    assert_eq!(rule("float x = 1e999f;"), Some("PRIM-13"));
+    assert_eq!(rule("float x = 1e39f;"), Some("PRIM-13"));
+    assert_eq!(rule("double x = 1e300;"), None);
+    assert_eq!(rule("unsigned long f(int a[10]) { return sizeof(a); }"), Some("UN-19"));
+    assert_eq!(rule("unsigned long f(int* a) { return sizeof(a); }"), None);
+    assert_eq!(rule("int i = 0; auto n = sizeof(i++);"), Some("UNEV-4"));
+    assert_eq!(rule("int i = 0; decltype(i = 1) j = i;"), Some("UNEV-4"));
+    assert_eq!(rule("int i = 0; auto n = sizeof(i + 1);"), None);
+}

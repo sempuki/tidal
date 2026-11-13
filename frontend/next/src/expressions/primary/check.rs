@@ -88,10 +88,16 @@ pub fn literal(cx: &mut Check, n: &Node) -> Expr {
                 }
             };
             let v = if k == FloatK::Float { *value as f32 as f64 } else { *value };
+            // PRIM-13: out of range; the compilers accept with a warning.
+            // A long double literal keeps the range of the wider format.
+            if k != FloatK::LongDouble && v.is_infinite() {
+                cx.warning(span, "PRIM-13", "floating literal out of range");
+            }
             Expr::new(EK::Float(v), QType::new(Type::Float(k)), Cat::PR, span)
         }
         Some(Lit::Char { prefix, value, multi }) => {
             let k = if *multi {
+                cx.warning(span, "PRIM-13", "multi-character literal");
                 IntK::Int
             } else {
                 match prefix {

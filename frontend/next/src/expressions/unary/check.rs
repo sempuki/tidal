@@ -193,6 +193,13 @@ fn size_or_align(cx: &mut Check, n: &Node, align: bool) -> Expr {
         cx.unevaluated += 1;
         let e = expr(cx, c);
         cx.unevaluated -= 1;
+        crate::expressions::decltype::check::unevaluated_effect_warning(cx, &e);
+        if let EK::Var(id) = &e.k {
+            if cx.array_params.contains(id) {
+                // UN-19: the parameter is a pointer (DCL-9).
+                cx.warning(e.span, "UN-19", format!("sizeof of the parameter '{}', which is declared as an array and is a pointer", cx.u.entities[*id].name));
+            }
+        }
         e.ty.clone()
     };
     if ty.is_error() {

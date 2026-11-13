@@ -41,6 +41,7 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
     cx.unevaluated += 1;
     let e = expr(cx, c);
     cx.unevaluated -= 1;
+    unevaluated_effect_warning(cx, &e);
     if crate::expressions::primary::check::unresolved_set(&e) {
         crate::expressions::primary::check::no_target(cx, &e, "DTY-4");
     }
@@ -70,6 +71,26 @@ pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
         EK::Cond(_, a, b) => has_effect(a) || has_effect(b),
         EK::Var(_) | EK::Index(..) | EK::Deref(_) => e.ty.is_volatile(),
         _ => false,
+    }
+}
+
+/// UNEV-4: warn about an unevaluated operand with an increment, a
+/// decrement, or an assignment, whose effect does not occur. Clang
+/// warns with no flag. An operand inside another unevaluated operand
+/// is left to the outer one.
+pub fn unevaluated_effect_warning(cx: &mut Check, e: &Expr) {
+    fn writes(e: &Expr) -> bool {
+        match &e.k {
+            EK::Assign(..) | EK::Compound(..) | EK::IncDec(..) => true,
+            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) => writes(x),
+            EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Comma(a, b) | EK::Index(a, b) => writes(a) || writes(b),
+            EK::Cond(c, a, b) => writes(c) || writes(a) || writes(b),
+            EK::Call(f, args) => writes(f) || args.iter().any(|a| writes(&a.e)),
+            _ => false,
+        }
+    }
+    if cx.unevaluated == 0 && !e.ty.is_error() && writes(e) {
+        cx.warning(e.span, "UNEV-4", "an unevaluated operand has a side effect, which does not occur");
     }
 }
 
