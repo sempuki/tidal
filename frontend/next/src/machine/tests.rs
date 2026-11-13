@@ -575,3 +575,22 @@ fn braced_lists_for_arrays() {
     assert_eq!(run("const int (&t)[3]{1, 2}; int (&&u)[]{3, 4}; int main() { u[0] += 1; return t[0] + t[2] * 10 + u[0] * 100 + u[1] * 1000; }"), RunOutcome::Result(4401));
     assert_eq!(run("using A = int[3]; int main() { return A{1, 2, 3}[1]; }"), RunOutcome::Result(2));
 }
+
+#[test]
+fn structured_bindings_of_arrays() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("int a[3]; auto [x, y] = a;"), Some("SB-2"));
+    assert_eq!(rule("int a[2]; auto [x, x] = a;"), Some("SB-8"));
+    assert_eq!(rule("void f() { int a[2]; auto [_, _] = a; }"), Some("SB-8"));
+    assert_eq!(rule("int a[2]; auto [x, y] = (x, a);"), Some("SB-8"));
+    assert_eq!(rule("int a[2]; auto [x, y] = a; int x;"), Some("SB-8"));
+    assert_eq!(rule("int i; auto [x] = i;"), Some("SB-13"));
+    assert_eq!(rule("int a[2] = {1, 2}; auto [p, q](a); auto [r, s]{a}; static auto [t, u] = a;"), None);
+    assert_eq!(rule("int a[2]; auto& [x, y] = a; decltype(x) i = 0; int* p = &i;"), None);
+    assert_eq!(run("int main() { int a[2] = {1, 2}; auto [x, y] = a; x = 10; a[1] = 5; return a[0] * 100 + x + y; }"), RunOutcome::Result(112));
+    assert_eq!(run("int main() { int a[2] = {1, 2}; auto& [x, y] = a; x = 10; return a[0] + (&y == &a[1]); }"), RunOutcome::Result(11));
+    assert_eq!(run("int a[2] = {3, 4}; auto [x, y] = a; int main() { return x * 10 + y; }"), RunOutcome::Result(34));
+}

@@ -110,14 +110,7 @@ pub fn block_decl(cx: &mut Check, n: &Node, local: bool) -> Option<Stmt> {
             enumerations::check::enum_opaque(cx, c);
             None
         }
-        "sb_decl" => {
-            cx.unsupported(c.span, "a structured binding declaration");
-            if local {
-                Some(Stmt::new(SK::Unsupported("a structured binding declaration".into()), c.span))
-            } else {
-                None
-            }
-        }
+        "sb_decl" => crate::declarations::structured_bindings::check::sb_decl(cx, c),
         _ => {
             cx.unsupported(c.span, format!("a declaration of the form {}", c.prod));
             None

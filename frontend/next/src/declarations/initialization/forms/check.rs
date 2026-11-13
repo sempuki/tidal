@@ -503,6 +503,10 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
         match cx.u.entities[e].kind.clone() {
             EntKind::Var(v) => {
                 let same_type = v.ty.t == ty.t || v.ty.is_error() || matches!((&v.ty.t, &ty.t), (Type::Array(a, _), Type::Array(b, _)) if a == b);
+                if cx.bindings.contains(&e) {
+                    cx.error(span, "SB-8", format!("'{}' is already declared in this scope by a structured binding", name));
+                    return None;
+                }
                 if v.param && local {
                     cx.error(span, "NAM-3", format!("'{}' redeclares a parameter", name));
                     return None;

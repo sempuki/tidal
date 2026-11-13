@@ -18,7 +18,7 @@ pub fn decltype_of(e: &Expr) -> QType {
 /// type of an unparenthesized name of a variable or a function (DTY-1).
 pub fn decltype_of_named(cx: &Check, e: &Expr) -> QType {
     let declared = match &e.k {
-        EK::Var(id) => cx.u.var(*id).map(|v| v.ty.clone()),
+        EK::Var(id) => cx.u.var(*id).map(|v| if cx.bindings.contains(id) { v.ty.nonref() } else { v.ty.clone() }),
         EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
         _ => None,
     };
@@ -60,7 +60,7 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
         return QType::error();
     }
     let declared = match &e.k {
-        EK::Var(id) => cx.u.var(*id).map(|v| v.ty.clone()),
+        EK::Var(id) => cx.u.var(*id).map(|v| if cx.bindings.contains(id) { v.ty.nonref() } else { v.ty.clone() }),
         EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
         _ => None,
     };

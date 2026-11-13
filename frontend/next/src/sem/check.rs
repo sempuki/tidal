@@ -128,11 +128,13 @@ pub struct Check<'a> {
     /// uses as the left operand of `=` (ATTR-6).
     pub uses: HashMap<EntityId, u32>,
     pub assigned: HashMap<EntityId, u32>,
+    /// The names of structured bindings (SB-4).
+    pub bindings: std::collections::HashSet<EntityId>,
 }
 
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
-        Check { u, toks, scope: 0, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new() }
+        Check { u, toks, scope: 0, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default() }
     }
 
     // -----------------------------------------------------------------
