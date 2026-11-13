@@ -55,11 +55,25 @@ pub struct Ptr {
     pub obj: usize,
     pub path: Vec<i64>,
     pub array: bool,
+    /// A pointer whose type does not match the object at its address
+    /// (`foundations::storage::run`). The path is then empty.
+    pub view: Option<View>,
+}
+
+/// The byte view of a pointer: the byte offset in its complete object,
+/// the size of its pointee, whether the pointee is a byte type, and the
+/// offset where the view began, for ADD-14.
+#[derive(Clone, Debug, PartialEq)]
+pub struct View {
+    pub off: i64,
+    pub size: i64,
+    pub bytes: bool,
+    pub origin: i64,
 }
 
 impl Ptr {
     pub fn whole(obj: usize) -> Ptr {
-        Ptr { obj, path: Vec::new(), array: false }
+        Ptr { obj, path: Vec::new(), array: false, view: None }
     }
 }
 
@@ -176,6 +190,10 @@ pub struct Machine<'a> {
     /// (`foundations::evaluation_order::run`).
     pub acc: Vec<Access>,
     pub seq_watch: Vec<usize>,
+    /// The address of each object that has needed one, and the next free
+    /// address (CAST-16, `foundations::storage::run`).
+    pub addrs: HashMap<usize, u64>,
+    pub next_addr: u64,
 }
 
 /// One read or write of a place while unsequenced operands run, with the
@@ -210,6 +228,8 @@ impl<'a> Machine<'a> {
             static_temps: false,
             acc: Vec::new(),
             seq_watch: Vec::new(),
+            addrs: HashMap::new(),
+            next_addr: 0x1_0000,
         }
     }
 
@@ -289,6 +309,9 @@ impl<'a> Machine<'a> {
     }
     /// The value slot a place names, if the place is inside its arrays.
     pub fn slot(&mut self, p: &Ptr) -> Option<&mut Val> {
+        if p.view.is_some() {
+            return None;
+        }
         let single = p.array && {
             let mut q = p.clone();
             q.path.pop();

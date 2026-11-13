@@ -5,6 +5,7 @@ pub mod keywords;
 pub mod odr;
 pub mod values;
 pub mod objects;
+pub mod storage;
 pub mod conversions;
 pub mod translation;
 pub mod names;

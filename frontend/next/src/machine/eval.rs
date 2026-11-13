@@ -253,6 +253,9 @@ pub fn temp(m: &mut Machine, ty: &QType, v: Val) -> R<Ptr> {
 /// write).
 pub fn write(m: &mut Machine, p: &Ptr, ty: &QType, v: Val) -> R<()> {
     objects::run::check_write(m, p, ty)?;
+    if p.view.is_some() {
+        return crate::foundations::storage::run::write(m, p, ty, v);
+    }
     crate::declarations::volatile::run::check_access(m, p, ty)?;
     m.record(p, true);
     let v = match (&ty.t, v) {
@@ -295,7 +298,16 @@ fn conv(m: &mut Machine, c: Conv, x: &Expr, to: &QType) -> R<Val> {
         Conv::PtrNoOp if m.constant && x.ty.pointee().is_some_and(|p| p.is_void()) && to.pointee().is_some_and(|p| !p.is_void()) => {
             crate::foundations::constant_evaluation::run::from_void_pointer()
         }
-        Conv::PtrNoOp | Conv::NoOp => eval_any(m, x),
+        // A pointer converted to another pointee type names the place of
+        // that type at its address, or a view (STG-29).
+        Conv::PtrNoOp => match eval_any(m, x)? {
+            Val::Ptr(p) => match to.pointee() {
+                Some(t) if x.ty.pointee().is_some_and(|f| f.unqual().t != t.unqual().t) => Ok(Val::Ptr(crate::foundations::storage::run::convert(m, p, t))),
+                _ => Ok(Val::Ptr(p)),
+            },
+            v => Ok(v),
+        },
+        Conv::NoOp => eval_any(m, x),
         Conv::ToVoid => {
             eval_discard(m, x)?;
             Ok(Val::Void)

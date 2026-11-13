@@ -183,14 +183,14 @@ fn main_arguments(m: &mut Machine, main: crate::sem::EntityId) -> Vec<Ret> {
     m.objs[so].is_static = true;
     let pt = QType::ptr_to(ct);
     let at = QType::new(Type::Array(std::rc::Rc::new(pt), Some(2)));
-    let first = Val::Ptr(crate::machine::Ptr { obj: so, path: vec![0], array: true });
+    let first = Val::Ptr(crate::machine::Ptr { obj: so, path: vec![0], array: true, view: None });
     let ao = m.new_obj(&at, Val::Agg(vec![first, Val::Null]), "argv");
     m.objs[ao].is_static = true;
-    let argv = Val::Ptr(crate::machine::Ptr { obj: ao, path: vec![0], array: true });
+    let argv = Val::Ptr(crate::machine::Ptr { obj: ao, path: vec![0], array: true, view: None });
     let mut out = vec![Ret::Val(Val::Int(1)), Ret::Val(argv)];
     if n > 2 {
         let eo = m.new_obj(&QType::new(Type::Array(std::rc::Rc::new(QType::ptr_to(QType::new(Type::Int(IntK::Char)))), Some(1))), Val::Agg(vec![Val::Null]), "envp");
-        out.push(Ret::Val(Val::Ptr(crate::machine::Ptr { obj: eo, path: vec![0], array: true })));
+        out.push(Ret::Val(Val::Ptr(crate::machine::Ptr { obj: eo, path: vec![0], array: true, view: None })));
     }
     out.truncate(n);
     out

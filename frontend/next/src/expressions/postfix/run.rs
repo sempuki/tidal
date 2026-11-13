@@ -31,12 +31,38 @@ pub fn increment(m: &mut Machine, v: Val, inc: bool, ty: &QType) -> R<Val> {
 }
 
 /// The function a callee value names. PFX-8: a null function pointer.
-pub fn callee(_m: &mut Machine, v: Val, _ty: &QType) -> R<EntityId> {
+pub fn callee(m: &mut Machine, v: Val, ty: &QType) -> R<EntityId> {
     match v {
-        Val::Fn(id) => Ok(id),
+        Val::Fn(id) => {
+            // PFX-19: the call's function type is the function's type,
+            // apart from `noexcept`.
+            let called = match &ty.t {
+                crate::sem::types::Type::Ptr(p) => p.func().cloned(),
+                _ => ty.func().cloned(),
+            };
+            if let (Some(c), Some(f)) = (called, m.u.func(id)) {
+                let same = |a: &QType, b: &QType| a == b || same_across_units(m, a, b);
+                let params = c.params.len() == f.ty.params.len() && c.params.iter().zip(&f.ty.params).all(|(a, b)| same(a, b));
+                if !params || !same(&c.ret, &f.ty.ret) || c.variadic != f.ty.variadic {
+                    return ub("PFX-19", format!("a call of '{}' through a pointer to another function type", m.u.entities[id].name));
+                }
+            }
+            Ok(id)
+        }
         Val::Null => ub("PFX-8", "a call through a null function pointer"),
         Val::Uninit => crate::declarations::initialization::forms::run::read_no_value("the function pointer"),
         _ => unsup("a call through this value"),
+    }
+}
+
+/// Two types that differ only in which unit's enumeration they name,
+/// for a call between units (ODR-7).
+fn same_across_units(m: &Machine, a: &QType, b: &QType) -> bool {
+    use crate::sem::types::Type;
+    match (&a.t, &b.t) {
+        (Type::Enum(x), Type::Enum(y)) => a.c == b.c && a.v == b.v && m.u.enums[*x].name == m.u.enums[*y].name,
+        (Type::Ptr(x), Type::Ptr(y)) | (Type::Ref(x, _), Type::Ref(y, _)) | (Type::Array(x, _), Type::Array(y, _)) => a.c == b.c && a.v == b.v && same_across_units(m, x, y),
+        _ => a == b,
     }
 }
 
@@ -98,6 +124,10 @@ pub fn too_deep(m: &mut Machine) -> R<Ret> {
 pub fn subscript(m: &mut Machine, p: Val, i: Val) -> R<crate::machine::Ptr> {
     let Val::Int(i) = i else { return unsup("a subscript with this value") };
     match p {
+        Val::Ptr(p) if p.view.is_some() => {
+            let q = crate::foundations::storage::run::moved(m, &p, i as i64)?;
+            Ok(q)
+        }
         Val::Ptr(p) => {
             let base = if p.array { p.clone() } else { crate::machine::Ptr { path: [p.path.clone(), vec![0]].concat(), array: true, ..p.clone() } };
             let n = m.array_len(&base).unwrap_or(1) as i128;

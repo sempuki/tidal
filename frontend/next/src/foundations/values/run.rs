@@ -11,6 +11,9 @@ use crate::sem::types::QType;
 /// context that needs a prvalue).
 pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
     objects::run::check_read(m, p, ty)?;
+    if p.view.is_some() {
+        return crate::foundations::storage::run::read(m, p, ty);
+    }
     crate::declarations::volatile::run::check_access(m, p, ty)?;
     m.record(p, false);
     if m.constant {
@@ -27,6 +30,12 @@ pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
     // after a reinterpret_cast, gives the value of the lvalue's type.
     match (&v, &ty.t) {
         (Val::Int(x), crate::sem::types::Type::Int(k)) => Ok(Val::Int(m.target.wrap(*k, *x))),
+        // ENUM-6: an object of an enumeration that got another value,
+        // such as through its bytes.
+        (Val::Int(x), crate::sem::types::Type::Enum(e)) => {
+            crate::declarations::enumerations::run::check_value(m, *e, *x)?;
+            Ok(v)
+        }
         (Val::Float(_) | Val::Ext(_), crate::sem::types::Type::Int(_)) | (Val::Int(_), crate::sem::types::Type::Float(_)) => crate::machine::unsup("an object read through an lvalue of another type"),
         _ => Ok(v),
     }

@@ -38,6 +38,9 @@ pub fn binary(m: &mut Machine, op: BOp, a: Val, b: Val, ty: &QType) -> R<Val> {
 /// A pointer moved by `d` elements, if it stays in its array or one
 /// past its end (ADD-10).
 pub fn moved(m: &Machine, p: Ptr, d: i128) -> Option<Ptr> {
+    if p.view.is_some() {
+        return crate::foundations::storage::run::moved(m, &p, d as i64).ok();
+    }
     let mut q = p;
     if !q.array {
         q.path.push(0);
@@ -60,6 +63,7 @@ pub fn ptr_add(m: &mut Machine, p: Val, n: Val, sub: bool, _ty: &QType) -> R<Val
     match p {
         Val::Null if d == 0 => Ok(Val::Null),
         Val::Null => ub("ADD-10", "arithmetic on a null pointer"),
+        Val::Ptr(p) if p.view.is_some() => crate::foundations::storage::run::moved(m, &p, d as i64).map(Val::Ptr),
         Val::Ptr(p) => match moved(m, p, d) {
             Some(q) => Ok(Val::Ptr(q)),
             None => ub("ADD-10", "the result points outside the array"),
@@ -81,6 +85,15 @@ pub fn ptr_diff(m: &mut Machine, a: Val, b: Val, ty: &QType) -> R<Val> {
     };
     match (a, b) {
         (Val::Null, Val::Null) => Ok(Val::Int(0)),
+        // STG-13: byte pointers count bytes, and a view counts its
+        // pointee's size.
+        (Val::Ptr(x), Val::Ptr(y)) if x.view.is_some() || y.view.is_some() => {
+            let size = x.view.as_ref().or(y.view.as_ref()).map_or(1, |v| v.size);
+            match crate::foundations::storage::run::offsets(m, &x, &y) {
+                Some((a, b)) => Ok(Val::Int(((a - b) / size) as i128)),
+                None => ub("ADD-11", "the pointers do not point into the same object"),
+            }
+        }
         (Val::Ptr(x), Val::Ptr(y)) => {
             let (x, y) = (norm(x), norm(y));
             if x.obj != y.obj || x.path[..x.path.len() - 1] != y.path[..y.path.len() - 1] {

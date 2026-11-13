@@ -146,6 +146,36 @@ impl F80 {
         Some(if neg { -v } else { v })
     }
 
+    /// The 80 bits of the format: the significand with its integer bit,
+    /// then 15 bits of biased exponent, then the sign.
+    pub fn to_bits(self) -> u128 {
+        let (neg, exp, mant): (bool, u128, u128) = match self {
+            F80::NaN => (false, 0x7fff, 0xC000_0000_0000_0000),
+            F80::Inf(n) => (n, 0x7fff, 0x8000_0000_0000_0000),
+            F80::Finite { neg, m: 0, .. } => (neg, 0, 0),
+            F80::Finite { neg, m, e } => {
+                if m >> 63 == 0 {
+                    (neg, 0, m as u128)
+                } else {
+                    (neg, (e + 63 + 16383) as u128, m as u128)
+                }
+            }
+        };
+        mant | exp << 64 | (neg as u128) << 79
+    }
+
+    pub fn from_bits(b: u128) -> F80 {
+        let neg = b >> 79 & 1 == 1;
+        let exp = (b >> 64 & 0x7fff) as i32;
+        let m = b as u64;
+        match exp {
+            0x7fff if m << 1 == 0 => F80::Inf(neg),
+            0x7fff => F80::NaN,
+            0 => F80::Finite { neg, m, e: EXT.min_e },
+            _ => F80::make(neg, m as u128, exp - 16383 - 63, false),
+        }
+    }
+
     pub fn is_finite(self) -> bool {
         matches!(self, F80::Finite { .. })
     }

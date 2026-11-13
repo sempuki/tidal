@@ -844,3 +844,24 @@ fn programs_of_several_units() {
     assert_eq!(run_units("c", &["extern \"C\" int shared; int main() { return shared; }", "int shared = 4;"]), RunOutcome::Result(4));
     assert_eq!(run("static int x = 1; extern int x; int main() { return x; }"), RunOutcome::Result(1));
 }
+
+#[test]
+fn the_byte_view_of_objects() {
+    // STG-26: little-endian bytes, and a pointer's bytes are its address.
+    assert_eq!(run("int main() { unsigned v = 0x04030201; const unsigned char* b = reinterpret_cast<const unsigned char*>(&v); return b[0] + 10 * b[3]; }"), RunOutcome::Result(41));
+    assert_eq!(run("int main() { int n = -1; return reinterpret_cast<unsigned char*>(&n)[2]; }"), RunOutcome::Result(255));
+    assert_eq!(run("int t; int main() { int* p = &t; auto a = reinterpret_cast<unsigned long>(p); return reinterpret_cast<int*>(a) == p; }"), RunOutcome::Result(1));
+    // STG-13: a byte pointer walks the object and ends one past it.
+    assert_eq!(run("int main() { long v = 0x0102030405060708; const unsigned char* p = reinterpret_cast<const unsigned char*>(&v); int s = 0; for (const unsigned char* e = p + sizeof v; p != e; ++p) s += *p; return s; }"), RunOutcome::Result(36));
+    assert_eq!(run("int main() { int a[3] = {}; return static_cast<const void*>(a + 3) == static_cast<const void*>(reinterpret_cast<unsigned char*>(a) + sizeof a); }"), RunOutcome::Result(1));
+    // A byte write changes the object.
+    assert_eq!(run("int main() { int x = 0; reinterpret_cast<unsigned char*>(&x)[1] = 1; return x == 256; }"), RunOutcome::Result(1));
+    // STG-23, STG-29, ADD-14.
+    assert!(matches!(run("int main() { int v = 0; *reinterpret_cast<signed char*>(&v) = 1; return v; }"), RunOutcome::Undefined("STG-23", ..)));
+    assert!(matches!(run("int main() { alignas(int) unsigned char b[4]; int* p = reinterpret_cast<int*>(b); *p = 5; return 0; }"), RunOutcome::Undefined("STG-23", ..)));
+    assert!(matches!(run("alignas(int) unsigned char pool[16]; int main() { int* f = static_cast<int*>(static_cast<void*>(pool)); int* g = f + 2; return g == f; }"), RunOutcome::Undefined("ADD-14", ..)));
+    assert_eq!(run("alignas(int) unsigned char pool[16]; int main() { int* f = static_cast<int*>(static_cast<void*>(pool)); unsigned char* n = static_cast<unsigned char*>(static_cast<void*>(f + 1)); return n - pool; }"), RunOutcome::Result(4));
+    // ENUM-6 after a copy of bytes, and PFX-19.
+    assert!(matches!(run("enum C { r, g }; int main() { C c = r; int s = 5; unsigned char* t = reinterpret_cast<unsigned char*>(&c); t[0] = reinterpret_cast<unsigned char*>(&s)[0]; C d = c; return d; }"), RunOutcome::Undefined("ENUM-6", ..)));
+    assert!(matches!(run("void f(long) {} int main() { auto p = reinterpret_cast<void (*)(int)>(&f); p(1); return 0; }"), RunOutcome::Undefined("PFX-19", ..)));
+}

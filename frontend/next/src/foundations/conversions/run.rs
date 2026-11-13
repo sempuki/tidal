@@ -63,12 +63,24 @@ pub fn reinterpret(m: &mut Machine, v: Val, _from: &QType, to: &QType) -> R<Val>
     if m.constant {
         return crate::foundations::constant_evaluation::run::reinterpret();
     }
+    use crate::foundations::storage::run as storage;
     match (v, &to.t) {
         (Val::Null, Type::Int(_)) => Ok(Val::Int(0)),
         (Val::Int(0), Type::Ptr(_)) => Ok(Val::Null),
-        (Val::Int(x), Type::Ptr(_)) => Ok(Val::Addr(x as u64)),
-        (Val::Addr(a), Type::Int(k)) => Ok(Val::Int(m.target.wrap(*k, a as i128))),
-        (v @ (Val::Ptr(_) | Val::Null | Val::Addr(_)), Type::Ptr(_)) => Ok(v),
+        // CAST-16: the address in both directions.
+        (Val::Int(x), Type::Ptr(p)) => Ok(storage::from_address(m, x as u64, p)),
+        (v @ (Val::Addr(_) | Val::Ptr(_) | Val::Fn(_)), Type::Int(k)) => match storage::address(m, &v) {
+            Some(a) => Ok(Val::Int(m.target.wrap(*k, a as i128))),
+            None => unsup("a reinterpret_cast of an address the machine does not model"),
+        },
+        (Val::Ptr(p), Type::Ptr(t)) => Ok(Val::Ptr(storage::convert(m, p, t))),
+        (Val::Fn(id), Type::Ptr(t)) if t.is_func() => Ok(Val::Fn(id)),
+        (v @ Val::Fn(_), Type::Ptr(t)) => match storage::address(m, &v) {
+            Some(a) => Ok(storage::from_address(m, a, t)),
+            None => unsup("a reinterpret_cast of an address the machine does not model"),
+        },
+        (v @ (Val::Null | Val::Addr(_)), Type::Ptr(_)) => Ok(v),
+        (Val::Addr(a), Type::Ptr(t)) => Ok(storage::from_address(m, a, t)),
         _ => unsup("a reinterpret_cast of an address the machine does not model"),
     }
 }
