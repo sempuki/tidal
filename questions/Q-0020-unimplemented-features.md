@@ -47,6 +47,8 @@ Kept open on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 1
 
 Evidence on 2026-11-11 (decision 0063, item RV8): the CTAD divergence line for this question and a CTAD-17 Note record the review's reading of the guide case. The test's override for Clang 18 still names this question.
 
+Named on 2026-11-12 (decision 0066, item RV12). Part B of the gap review of the phase 18 text reads Clang 18's answer in `copy-init-guide-user-conversion.cpp` as the conforming one, so a missing feature is the wrong record for its override (RV12-18). {question}`Q-0457` now holds the case. Ledger row RV12-18 plans the change of the test's note and the CTAD lines in part 2 of item RV12. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -64,3 +66,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Read of the RV10 repair diff, 2026-11-11
 
 The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the Q-0020 line and the split row of the enumerations page, which record Clang 18's rejection of `using-enum-alias-template.cpp`: no reference content. The read gives no new reading of the question's answer.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) names the question in Part B, on RV8-B-5 at CTAD-17 (RV12-18). The override of `copy-init-guide-user-conversion.cpp` for Clang 18 names this question as a missing feature. The review reads Clang 18's rejection as the reference's answer, so that record does not fit, and the review asks for a question of its own. The review gives no reading of the question of the test format.

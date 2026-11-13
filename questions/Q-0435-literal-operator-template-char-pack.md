@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** OPR-8, OPR-10, OPR-16, `tests/classes/operators/literal-operator-template-char-pack.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/classes/operators/literal-operator-template-head-not-char-pack.cpp`, `tests/classes/operators/literal-operator-template-numeric-form-wins.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form.cpp`, `tests/classes/operators/literal-operator-template-string-literal.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form-declared.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
 **Source:** the round 12 programmer report (`reports/clean-room/roadmap-12/programmer.md`, sections 1.5 and 6), reduction `literal_operator_template.cpp`, and the programmer's sketch `bigint_second_try.cpp`.
-**Waits for:** a use of OPR-P3
+**Waits for:** a principle (OPR-P3)
 
 ## Context
 
@@ -76,6 +76,8 @@ Rule text on 2026-11-11 (decision 0063, item RV8): OPR-8 gives a second kind of 
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The read of the RV8 repair diff finds that the repairs of RV8-A-3 and RV8-A-4 agree with the reference, and it leaves no doubt on this question. GCC 16 alone differs, in `literal-operator-template-and-raw-form-declared.cpp`. OPR-P3 says that a numeric literal can pass its characters to a template, which rules out option 2. Item F5 wrote that sentence and item RV8 widened OPR-P3 in phase 15, so OPR-P3 gives no answer until a reader or a review uses it (decision 0055). The read names OPR-P3 and not the question's program, so the read is no use.
 
+Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses OPR-P3 on the question (RV12-15) and supports the answer with no doubt, so the wait for a use ends. OPR-P3 rules out option 2 and gives the first part of option 1, which literals call the template. The other parts of option 1 turn on details that only OPR-8, OPR-10, and OPR-16 state: the numeric form wins when it exists, the raw form and the template for one suffix make a call that is not valid, and other heads are not valid. So OPR-P3 fails step 3 of the principle test for those parts. GCC 16 alone differs, in `literal-operator-template-and-raw-form-declared.cpp`. The **Waits for:** line names a principle (OPR-P3), was a use of OPR-P3. Ledger row RV12-15 plans to widen OPR-P3 in part 2 of item RV12.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
@@ -85,3 +87,7 @@ The source-reader gap review of the phase 15 text on classes, declarations, foun
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the OPR-8 and OPR-16 hunks and the Q-0435 line on the two declarations: agrees. The repairs close RV8-A-3 and RV8-A-4, the two doubts of the phase 15 review on this question. The read's one doubt on OPR-8 (RV9-R-5) is on a template with a parameter of class type, which Q-0446 holds. So the read leaves no doubt on the template whose head is one pack of `char`.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses OPR-P3 on the question: supports, and OPR-P3 answers the question in part (RV12-15). An integer or floating literal with a suffix can call a literal operator template whose head is one pack of `char`, and the source characters before the suffix become the arguments. A string literal calls only the template with one constant parameter of class type. OPR-P3 says this, so it rules out option 2 and answers which literals call the template. OPR-P3 does not give the rest of option 1: the choice of the numeric form when it exists, the call that is not valid when the raw form and the template both exist, and the rejection of other heads. The reference decides all three as option 1 says, and OPR-8, OPR-10, and OPR-16 state them. So the principle answers the first part of the question, and the rules answer the second.

@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** UNI-9, UNI-P3, `tests/classes/unions/anonymous-union-unnamed-struct-member.cpp`, `tests/classes/unions/anonymous-union-nested-anonymous-union.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), probe `anonymous_struct_member_in_anonymous_union.cpp`.
-**Waits for:** a review (doubt); a use of UNI-P3
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -55,6 +55,8 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review uses UNI-P3 o
 
 Principle text on 2026-11-11 (decision 0062, item RV7): UNI-P3 says that the anonymous union is itself a type with no name, that no declaration inside it can introduce another type, and that it can hold static assertions. UNI-P3 still rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055).
 
+Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses UNI-P3 on the question (RV12-15). It names UNI-P3 and the question's program and reaches option 1 by UNI-P3's model, so UNI-P3 passes step 3 of the principle test. The review supports the answer with no doubt, and it closes the doubt of RV7-A-3. GCC 16 alone differs. The question meets decision 0054's settling rule. A commit cannot name its own hash, and the settlements table needs one, so the next commit settles the question and names this commit in its row. Until then the **Waits for:** line names newest families that agree, was a review (doubt); a use of UNI-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
@@ -64,3 +66,7 @@ The source-reader gap review of the text phase 13 wrote on classes, declarations
 ### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV7-A-3, RV7-A-11). UNI-P3 now rules out option 2, and the reference supports option 1: nothing declared inside an anonymous union may introduce a type, and a diagnostic is required. The doubt is the reason that UNI-P3 gives. In the reference the anonymous union is itself an unnamed type with an object of that type, and the limit falls on the declarations inside it. UNI-P3 also leaves out the static assertion that UNI-9 allows.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses UNI-P3 on the question: supports with no doubt (option 1, RV12-15). The anonymous union is an unnamed type with one unnamed object. Only public data members and static assertions can appear inside it. Nested types, nested anonymous unions, and functions cannot. A member declaration that defines an unnamed class declares a nested type. UNI-P3 now says each of these points, so it rules out option 2 and gives option 1. The answer agrees with the reference, and the doubt of RV7-A-3 is closed.

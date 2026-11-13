@@ -52,8 +52,14 @@ Kept open on 2026-11-10 under decision 0054. The review's doubt is that the test
 
 Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer and the review reads it with a doubt (item RV5).
 
+Named on 2026-11-12 (decision 0066, item RV12). Part B of the gap review of the phase 18 text keeps the RV6-A-12 point on an `std::allocator` whose element type is not a literal type without a question, and names this question as the holder of the other LSUP-11 split (RV12-21). The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
 
 The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV5-A-17). The allocate member starts the life of the array and of no element, so an assignment to an element changes an object outside its lifetime, and constant evaluation stops. The doubt is that the reference's exemption for the allocator members names the library's own template, and the tests declare their own.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) names the question in Part B, on RV6-A-12 at LSUP-11 (RV12-21). Every compiler agrees on the element type that is not a literal type, no test carries an override for it, and the row 4 item "LSUP-11" records the split, so the review finds no need for a new question. This question holds the other LSUP-11 split. The review gives no new reading of this question's answer.

@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`, `tests/templates/dependent-names/member-template-non-dependent-base.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), reduction `member_template_through_current_instantiation_object.cpp`.
-**Waits for:** a use of DEP-P5
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -60,6 +60,8 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the 
 
 Principle text on 2026-11-11 (decision 0062, item RV7): the DEP-P5 sentence on the middle column now says that a row whose middle column says "not valid" reports an error at the definition (RV7-B-10). The row for this question is unchanged.
 
+Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses DEP-P5 on the question (RV12-15). It names DEP-P5 and the question's program and reaches option 1 by DEP-P5's rows for a member access, so DEP-P5 passes step 3 of the principle test. The review supports the answer with no doubt, and every compiler agrees. The question meets decision 0054's settling rule. A commit cannot name its own hash, and the settlements table needs one, so the next commit settles the question and names this commit in its row. Until then the **Waits for:** line names newest families that agree, was a use of DEP-P5.
+
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)
@@ -69,3 +71,7 @@ The source-reader gap review of the text phase 13 wrote on expressions, overload
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV7-B-9). After the dot or arrow, the name is looked up in the class of the object. When that class is the current instantiation, the lookup runs at the definition and also searches the bases that are not dependent. A member template found there makes the `<` open an argument list, so no `template` is needed (option 1). DEP-24's two bullets now say this, and the RV6 doubt is closed. A base that is the current instantiation of an enclosing class counts as a base that is not dependent.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses DEP-P5 on the question: supports with no doubt (option 1, RV12-15). The name after a dot or an arrow is looked up in the class of the object. When that class is the current instantiation, the lookup runs at the definition and also searches the bases that are not dependent, and a member template found there makes the following `<` open an argument list. When the class is dependent in any other way, no lookup runs at the definition, and the `<` is the less-than operator. DEP-P5's two rows for a member access say this. The row for the current instantiation gives a template-id, so DEP-P5 gives option 1, and the answer agrees with the reference.

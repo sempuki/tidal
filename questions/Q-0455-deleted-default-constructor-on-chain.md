@@ -57,8 +57,14 @@ assignment through the chain among the actions that make a member
 active, and does not name the default constructor, so no principle
 gives the answer.
 
+Kept in `pending.md` row 4 on 2026-11-12 (decision 0066, item RV12). The gap review of the phase 18 text reads against the answer (RV12-8), as the read of the RV10 repair diff did. GCC 16 gives the review's reading, and Clang 22 and EDG 7.0 keep the matrix's answer. The row 4 item names the review. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Read of the RV10 repair diff, 2026-11-11
 
 The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads OBJ-2's sentence on the chain and UNI-13 against this form (RV11-R-5). The chain collects a union member of class type only when its default constructor is trivial and usable, so not deleted. A default constructor deleted at its first declaration can be trivial, so OBJ-2 and UNI-13 cover one class that the C++23 text leaves out. The read calls the doubt small.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads UNI-13's new sentence, the UNI Note, and `chain-assign-deleted-default-constructor-constant.cpp`: reads against (option 2, RV12-8). An assignment through the chain makes a union member of class type active only when the class's default constructor is trivial and is not deleted. A default constructor deleted at its first declaration is not user-provided, so it can be trivial, and the second condition still keeps the member off the chain. The assignment then creates no object, the write reaches a member that is not active, and constant evaluation rejects it. So GCC's rejection conforms. UNI-13's first item and OBJ-2's item both leave out the condition that the constructor is not deleted. The review finds that this question states the split correctly.

@@ -23,6 +23,8 @@ The test in **Affects**, with an override for Clang.
 The guide succeeds with the default (option 1). Two of three families agree. `pending.md` row 4 keeps the matrix's answer where at most one
 newest family follows the review.
 
+Named on 2026-11-12 (decision 0066, item RV12). Part B of the gap review of the phase 18 text keeps the RV8-B-6 point on CTAD-16 without a question and names this question as its neighbor in `pending.md` row 4 (RV12-19). The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-05
@@ -32,3 +34,7 @@ The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-expr
 ### Gap review, 2026-11-05 (phase 10 text)
 
 The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) names the question in its section on CTAD-16. The reference reads that a default does not rescue the inherited guide, as Clang does, against the answer of GCC and EDG that Tidal keeps. The question stays in `pending.md` row 4.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) names the question in Part B, on RV8-B-6 at CTAD-16 (RV12-19). The review keeps that point in the row 4 item "CTAD-16" and names this question as the item beside it, if the maintainer wants the cases together. The review gives no new reading of this question's answer.

@@ -1,0 +1,27 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   rv12/2026-11-12-gap-review-phase-18.md:Gap review: phase 18 text and the old ga longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:Result longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:Text of item F8 (commit e4561158) longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:New tests of item F8 longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:Text of item GR2 (commit d784bf57) longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:ICS-16 and the tests of commit 3bb416e8 longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:Questions read with their principles longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-1 longest=0   overlap=0.03
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-2 longest=0   overlap=0.01
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-3 longest=0   overlap=0.01
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-4 longest=0   overlap=0.02
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-5 longest=0   overlap=0.02
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-6 longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-7 longest=0   overlap=0.00
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-8 longest=0   overlap=0.02
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-9 longest=0   overlap=0.02
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-10 longest=0   overlap=0.01
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-11 longest=0   overlap=0.02
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-12 longest=0   overlap=0.01
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-13 longest=0   overlap=0.01
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-14 longest=0   overlap=0.04
+ok   rv12/2026-11-12-gap-review-phase-18.md:RV12-15 longest=0   overlap=0.02
+ok   rv12/2026-11-12-gap-review-phase-18.md:Part B: points kept against with no ques longest=0   overlap=0.00
+
+0 flagged

@@ -492,6 +492,8 @@ status, and the first sentence of its answer section.
 | [Q-0453](Q-0453-recursive-constraint-hidden-friend-reversed-operator.md) | Is a program rejected when the constraint check of a hidden friend operator template needs its own result through a candidate whose other parameter cannot take the argument? | provisional | Yes; the program is rejected |
 | [Q-0454](Q-0454-braced-integer-floating-argument.md) | Is a braced integer constant a valid template argument for a floating-point parameter? | provisional | No; the program is rejected |
 | [Q-0455](Q-0455-deleted-default-constructor-on-chain.md) | Does an assignment through a chain of member accesses make a union member active when the member's class has a deleted default constructor? | provisional | The member becomes active, and the evaluation is constant |
+| [Q-0456](Q-0456-braced-template-argument.md) | Can a braced list be a template argument? | provisional | A braced list is a template argument |
+| [Q-0457](Q-0457-guide-user-conversion-copy-init.md) | In copy initialization, is a deduction guide viable when its parameter needs a user-defined conversion of the argument? | provisional | The guide is viable |
 
 ## Status values
 

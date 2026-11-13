@@ -68,6 +68,8 @@ Kept in `pending.md` row 4 on 2026-11-11 (decision 0065, item RV10). The gap rev
 
 Evidence on 2026-11-11 (decision 0066, item F8): the table gains the functional cast column (RV11-R-2). In the round 15 writer grid (`reports/clean-room/roadmap-15/writer-probes/rv11-rows.json`), EDG alone accepts `typename T::template Box(3)`. GCC 16 rejects the cast, although it accepts the declaration form. Every compiler accepts `typename T::Box(3)` and `typename T::template Box<int>(3)`. The casts page names the split in its Evidence. No test holds the cast column. The answer and the **Waits for:** line do not change.
 
+Kept in `pending.md` row 4 on 2026-11-12 (decision 0066, item RV12). The gap review of the phase 18 text reads the casts page's Q-0226 line against the deduced form (RV12-5), and RV10-10 stands. In the cast form EDG 7.0 alone accepts `typename T::template Box(3)`. In the declaration form Clang 22 alone follows the review. The row 4 item names the review. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -99,3 +101,7 @@ The source-reader gap review of the phase 17 text (`reports/review/2026-11-11-ga
 ### Read of the RV10 repair diff, 2026-11-11
 
 The source-reader read of the RV10 repair diff (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`) reads the Q-0226 line of the dependent-names page, the dated note, and the gap review's entry of decision 0065, item RV10: agrees as a record. The records state RV10-10 correctly, with its doubt on the deprecated keyword in a template template default, and the doubt stays. `typename_specifier` keeps the deduced form, so RV10-10 is not closed. The read gives no new reading of the question's answer.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads the Q-0226 line of the casts page: reads against the deduced form (RV12-5). The line says that `template` can come before a class template name with no argument list in a typename form. The typename form of the reference takes the keyword only before a template-id, as RV10-10 found, so the form has no place in the grammar. Only EDG accepts the cast form.

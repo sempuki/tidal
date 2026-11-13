@@ -52,8 +52,14 @@ gives ICS-25 one conversion function to compare.
 
 Kept open on 2026-11-10 under decision 0054, because the review finds the reference silent on this case.
 
+Kept open on 2026-11-12 (decision 0066, item RV12). The gap review of the phase 18 text finds the reference silent again (RV12-13). The **Waits for:** line does not change, and the question stays in row 10 of the decision packet.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) read this case as part of Q-0419 (RV5-B-8). When the elements use different functions, the reference names the worst conversion and never says which of two user-defined sequences through different functions is worse, so the choice of the first element is Tidal's own.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads ICS-16's second paragraph: reference silent (RV12-13). The reference does not say which user-defined sequence a list holds when its worst element conversion is user-defined. It compares two user-defined sequences only when they use the same conversion function. So the choice of the first element's sequence is Tidal's own, as the review of 2026-11-05 found.

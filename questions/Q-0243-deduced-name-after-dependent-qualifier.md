@@ -58,6 +58,8 @@ Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap revi
 
 Evidence on 2026-11-11 (decision 0066, item F8): the read of the RV10 repair diff reads the casts paragraph as leaving out that a dependent qualifier before a deduced name is not valid (RV11-R-2). That reading is the reading of this question for a functional cast. Every compiler accepts `typename T::Box(3)` and deduces the arguments after substitution (`reports/clean-room/roadmap-15/writer-probes/rv11-rows.json`). The casts paragraph now says so, and `functional-cast-dependent-qualifier-deduced.cpp` holds the form with no override. `pending.md` row 4 records the read for the cast. The answer and the **Waits for:** line do not change.
 
+Kept in `pending.md` row 4 on 2026-11-12 (decision 0066, item RV12). The gap review of the phase 18 text reads the cast form against the answer (RV12-5), as the read of the RV10 repair diff did. Every compiler still accepts `typename T::Box(3)`. The row 4 items Q-0243 and "casts paragraph, CTAD-1" name the review. The answer and the **Waits for:** line do not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-01
@@ -77,3 +79,7 @@ The source-reader gap review of the phase 15 text on expressions, overloading, a
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads the casts paragraph's sentence on a dependent qualifier, the Q-0243 line of the casts page, and `functional-cast-dependent-qualifier-deduced.cpp`: reads against (option 2, RV12-5). A template name with no argument list stands for a deduced class type only when its qualifier is not dependent. With a dependent qualifier the name makes no deduced type, so the cast form is not valid in the reference. Every compiler accepts the form. The review finds that the text describes the split correctly and that `pending.md` row 4 holds it.

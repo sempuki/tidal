@@ -56,6 +56,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees wi
 
 Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CTAD-P2 gives the same answer: an alias template gets the guides of its class template, and a parameter of a fixed type takes an argument that converts to it. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG. Clang 18 rejects every form.
 
+Read again on 2026-11-12 (decision 0066, item RV12). The gap review of the phase 18 text supports the alias template case of a functional cast (RV12-5). The answer stands, and `functional-cast-alias-template-deduced.cpp` keeps its override for Clang 18.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -63,3 +65,7 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of quest
 The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The guides for the alias come from the guides of the class template. A fixed argument becomes a plain parameter type in the new guide, so an argument that converts to that type is accepted.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads the casts paragraph's alias template case and `functional-cast-alias-template-deduced.cpp`: supports (option 1, RV12-5). A template name with no argument list can stand for a deduced class type when the template is a class template, or an alias template whose defining type is a template-id of a simple shape. Such a deduced type can be the type of a functional cast. So the paragraph and the test agree, and Clang 18's rejection does not conform.

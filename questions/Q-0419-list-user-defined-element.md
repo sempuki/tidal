@@ -58,8 +58,14 @@ Settled on 2026-11-10 under decision 0054. The gap review of 2026-11-05 supports
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the mixed lists as a choice the reference does not make (item RV5).
 
+Read again on 2026-11-12 (decision 0066, item RV12). The gap review of the phase 18 text reads ICS-16's second paragraph as a choice that the reference leaves open, and names this question and Q-0423 as its holders (RV12-13). The comparison of two sequences through the same conversion function supports the settled answer, which stands.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV5-B-8). When every element uses the same conversion function, the reference decides by the third parts and supports the answer, and GCC's ambiguity reads against it. When the elements use different functions, the reference names the worst conversion and never says which of two user-defined sequences through different functions is worse, so the choice of the first element is Tidal's own.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) reads ICS-16 (RV12-13). The first paragraph agrees. When the worst element conversion is user-defined, the reference does not say which user-defined sequence the list holds. It compares two user-defined sequences only when they use the same conversion function, and then by the standard conversion after the function. That comparison gives this question's answer for elements that use one conversion function. The choice for elements that use different functions is Tidal's own, and Q-0423 holds it.

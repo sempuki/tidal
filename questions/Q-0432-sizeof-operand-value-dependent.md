@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-4, `tests/templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp`, `tests/templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp`
 **Source:** the I6 report (`reports/clean-room/I6/report.md`, I6-6), the round 11 writer probe `reports/clean-room/roadmap-11/writer-probes/i6-instantiation-checks.json`.
-**Waits for:** a use of DEP-P2
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -43,8 +43,14 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the 
 
 Rule text on 2026-11-11 (decision 0062, item RV7): DEP-4 names `typeid` with `sizeof`, `alignof`, and `noexcept`, as the review reads (RV7-B-12). No test checks `typeid`, which stays referenced. DEP-P2 is unchanged.
 
+Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text uses DEP-P2 on the question and reaches option 1 by its model (RV12-15), so DEP-P2 passes step 3 of the principle test, and the wait for a use ends. The review supports the answer with a doubt on DEP-P2's reason, so the question does not settle. EDG 7.0 alone differs. The **Waits for:** line names a review (doubt), was a use of DEP-P2. Ledger row RV12-15 plans the repair of DEP-P2's reason in part 2 of item RV12. A change to DEP-P2 then gives no answer until a reader or a review uses DEP-P2 again (decision 0055).
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV7-B-12). For `sizeof` of an expression or a type, `alignof`, `noexcept`, and `typeid`, the result is value-dependent only when the type is dependent or the operand is type-dependent. A value-dependent operand alone is not enough (option 1). DEP-4 states this for three of the operators and leaves out `typeid`.
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) uses DEP-P2 on the question: supports with a doubt (option 1, RV12-15). `sizeof` of an expression or a type, `alignof`, `noexcept`, and `typeid` are value-dependent only when the operand is type-dependent or the type is dependent. DEP-P2 says that a value-dependent operand does not make `sizeof`, `alignof`, or `noexcept` value-dependent, so it rules out option 2 and gives option 1. The doubt is DEP-P2's reason, that only the type of the operand decides the value. The value of `noexcept` depends on which operations the operand performs and whether each can throw, and these are fixed once the operand is not type-dependent. DEP-P2 also does not name `typeid`, which DEP-4 names.

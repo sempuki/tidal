@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** TARG-13, TARG-16, `tests/templates/arguments/braced-integer-for-floating.cpp`
 **Source:** RV11-R-7 (`reports/review/2026-11-11-read-of-rv10-repair-diff.md`), with the round 15 writer grid `reports/clean-room/roadmap-15/writer-probes/rv11-rows.json`.
-**Waits for:** a first review
+**Waits for:** a principle (TARG-P3)
 
 ## Context
 
@@ -52,6 +52,12 @@ gap in Tidal's text (RV11-R-7) and gives a template argument no braced
 form at all (RV10-6), which `pending.md` row 4 holds as the item
 "TARG-16".
 
+Kept open on 2026-11-12 under decision 0054 (decision 0066, item RV12). The gap review of the phase 18 text gives the first reading of the question and supports the answer with no doubt (RV12-10). The rejection holds whether or not a template argument can be braced. Clang 22 alone differs. No principle gives the answer. TARG-P3 says that the conversion to the parameter's type keeps the value, and `1` keeps its value as `1.0`, so option 2 also fits TARG-P3's model. TARG-P3 also names TARG-13 in `:exceptions:`. So TARG-P3 fails step 3 of the principle test. The **Waits for:** line names a principle (TARG-P3), was a first review. The review reads the braced form itself against the C++23 text (RV10-6), and {question}`Q-0456` now holds that premise.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) gives the first reading of the question: supports with no doubt (option 1, RV12-10). The reference's template argument has no braced form, so `Rate<{1}>` is not valid on that ground alone, as RV10-6 found. Under Tidal's reading the braced value converts as the same value without braces would. The conversion of a constant template argument does not allow an integer to become a floating-point value, so that reading rejects the program too. The rejection holds under either reading, and Clang's acceptance does not conform.

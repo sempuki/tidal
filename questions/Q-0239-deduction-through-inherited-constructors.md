@@ -51,3 +51,7 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of the o
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A class template that inherits constructors from a direct base gets guides built from those of an alias template whose target is the base, with the results mapped back to the derived class. A user guide of the base takes part through the alias. The tie-breaker that prefers the class's own guides applies only when the parameter types match, so a pair whose types differ stays ambiguous, as GCC and EDG find. Clang does not implement this part of C++23.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-12 (phase 18 text)
+
+The source-reader gap review of the phase 18 text (`reports/review/2026-11-12-gap-review-phase-18.md`) names the question in Part B, on RV8-B-6 at CTAD-16 (RV12-19). Clang makes no inherited guides, as this question records, and GCC and EDG agree on the test that separates the readings of CTAD-16. No test carries an override for the point, so the review finds the row 4 item "CTAD-16" enough. The review gives no new reading of this question's answer.
