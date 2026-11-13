@@ -26,4 +26,6 @@ fn base_types() {
     assert!(sx("V<int>", base_type).unwrap().starts_with("(base_type (template_id"));
     assert!(parses("template <class T> struct B {}; struct D : B<int> { D() : B<int>() {} };"));
     assert!(parses("struct B {}; B b; struct D : decltype(b) { D() : decltype(b){} {} };"));
+    // The class template being defined, named in its own base clause.
+    assert!(parses("template <class D> struct C {}; template <class T> struct I : C<I<T>> {};"));
 }

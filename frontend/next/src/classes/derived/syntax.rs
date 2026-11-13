@@ -7,7 +7,7 @@ use crate::declarations::attributes::syntax::attribute_spec;
 use crate::expressions::decltype::syntax::decltype_expr;
 use crate::expressions::primary::syntax::nested_name;
 use crate::lex::{Token, TK};
-use crate::syntax::names::Qual;
+use crate::syntax::names::{DeclCtx, Qual};
 use crate::syntax::{Kid, Node, PResult, Parser};
 use crate::templates::arguments::syntax::template_id;
 
@@ -121,6 +121,14 @@ pub fn class_head(p: &mut Parser) -> PResult<Node> {
         }
     }
     if p.at(":") {
+        // The class name is declared from its identifier on, so the base
+        // clause can name the class, also as a template-id of the class
+        // template being defined. The declaration of the whole head
+        // follows in class_def.
+        if kids.iter().any(|k| matches!(k, Kid::Node(n) if n.prod == "class_name")) {
+            let partial = p.node("class_head", sp, kids.clone());
+            p.declared(&partial, DeclCtx { specs: None, template: p.template, param: false });
+        }
         kids.push(Kid::Node(base_clause(p)?));
     }
     Ok(p.node("class_head", sp, kids))
