@@ -2,7 +2,7 @@
 //! `reinterpret_cast`, the cast notation `(T)e`, and the functional
 //! notation `T(e)` and `T{e}`, for types that are not classes.
 
-use crate::expressions::check::{bad, expr, nodes};
+use crate::expressions::check::{bad, expr, first_node, nodes};
 use crate::foundations::conversions::check as conv;
 use crate::foundations::values::check::{deref_ref, rvalue};
 use crate::sem::check::Check;
@@ -52,7 +52,16 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
                 let e = if e.cat == Cat::PR { e.conv(Conv::Materialize, (**inner).clone(), Cat::X) } else { e };
                 Ok(Expr::new(EK::Conv(Conv::NoOp, Box::new(e)), (**inner).clone(), cat, span))
             }
-            Kind::Reinterpret if e.cat != Cat::PR => Err(("", "a reinterpret_cast to a reference of another type".into())),
+            // CAST-6: a glvalue of one object type as a reference to
+            // another is `*reinterpret_cast<T*>(&e)`.
+            Kind::Reinterpret if e.cat != Cat::PR && (e.ty.is_func() || inner.is_func()) => Err(("", "a reinterpret_cast of a function to a reference".into())),
+            Kind::Reinterpret if e.cat != Cat::PR && ((e.ty.c && !inner.c) || (e.ty.v && !inner.v)) => Err(("CAST-7", "the cast removes a cv-qualifier".into())),
+            Kind::Reinterpret if e.cat != Cat::PR => {
+                let from = QType::ptr_to(e.ty.clone());
+                let addr = Expr::new(EK::AddrOf(Box::new(e)), from, Cat::PR, span);
+                let p = addr.conv(Conv::PtrReinterpret, QType::ptr_to((**inner).clone()), Cat::PR);
+                Ok(Expr::new(EK::Deref(Box::new(p)), (**inner).clone(), cat, span))
+            }
             _ => Err(("CAST-19", format!("no {:?} cast from {} to {}", k, e.ty.show(), to.show()))),
         };
     }
@@ -237,6 +246,9 @@ fn cast_type(cx: &mut Check, n: &Node) -> QType {
 pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
     let span = n.span;
     let Some(ct) = n.child("cast_type") else { return bad(span) };
+    if ct.kids.len() == 1 && cx.words(ct) == ["auto"] {
+        return decay_copy(cx, n, span);
+    }
     let to = cast_type(cx, ct);
     if to.is_error() {
         return bad(span);
@@ -268,6 +280,40 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
             bad(span)
         }
     }
+}
+
+/// `auto(e)` and `auto{e}` (CAST-13): a prvalue copy of the one
+/// operand, with the type that `auto` deduces from it (AUTO-20).
+fn decay_copy(cx: &mut Check, n: &Node, span: Span) -> Expr {
+    let ops: Vec<&Node> = match n.child("braced_init") {
+        Some(b) => b.children("init_clause").filter_map(first_node).collect(),
+        None => n.child("expression_list").map(|l| l.children("argument").collect()).unwrap_or_default(),
+    };
+    let [op] = ops.as_slice() else {
+        crate::declarations::auto::check::one_expression(cx, span);
+        return bad(span);
+    };
+    if op.prod == "braced_init" {
+        crate::declarations::auto::check::one_expression(cx, span);
+        return bad(span);
+    };
+    let e = expr(cx, op);
+    if crate::expressions::primary::check::unresolved_set(&e) {
+        crate::expressions::primary::check::no_target(cx, &e, "AUTO-8");
+        return bad(span);
+    }
+    if e.ty.is_error() {
+        return bad(span);
+    }
+    if e.ty.is_void() {
+        cx.error(span, "AUTO-8", "'auto' deduced from an expression of type void");
+        return bad(span);
+    }
+    let to = crate::declarations::auto::check::decay(&e.ty).unqual_top();
+    let mut x = rvalue(cx, e);
+    x.ty = to;
+    x.span = span;
+    x
 }
 
 /// An overload set as the operand of a cast: the target type chooses the

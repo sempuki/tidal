@@ -630,3 +630,20 @@ fn pseudo_destructor_calls() {
     assert_eq!(rule("using I = int; constexpr int f() { int x = 1; x.~I(); return 1; } static_assert(f() == 1);"), None);
     assert!(matches!(run("using I = int; int main() { int x = 1; x.~I(); return x; }"), RunOutcome::Undefined(..)));
 }
+
+#[test]
+fn reinterpret_references_and_decay_copies() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("int main() { int x = 5; unsigned& u = reinterpret_cast<unsigned&>(x); u = 7; return x; }"), RunOutcome::Result(7));
+    assert_eq!(run("int main() { int x = -1; return reinterpret_cast<unsigned&>(x) == 4294967295u; }"), RunOutcome::Result(1));
+    assert_eq!(rule("const int c = 1; int& r = reinterpret_cast<int&>(c);"), Some("CAST-7"));
+    assert_eq!(rule("constexpr int f() { int x = 1; return reinterpret_cast<unsigned&>(x); } static_assert(f() == 1);"), Some("CE-4"));
+    assert_eq!(run("int main() { int v = 3; auto c = auto(v); c = 9; int a[2] = {1, 2}; auto p = auto{a}; return v * 10 + (p == a); }"), RunOutcome::Result(31));
+    assert_eq!(rule("const int c = 2; auto a = auto(c); int* p = &a;"), None);
+    assert_eq!(rule("auto b = auto{1, 2};"), Some("AUTO-20"));
+    assert_eq!(rule("auto b = auto{{1}};"), Some("AUTO-20"));
+}

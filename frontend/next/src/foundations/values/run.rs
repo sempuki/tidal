@@ -23,5 +23,11 @@ pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
     if v == Val::Uninit {
         return if m.constant { constant_evaluation::run::no_value(m) } else { objects::run::no_value(m, p) };
     }
-    Ok(v)
+    // An integer object read through an lvalue of another integer type,
+    // after a reinterpret_cast, gives the value of the lvalue's type.
+    match (&v, &ty.t) {
+        (Val::Int(x), crate::sem::types::Type::Int(k)) => Ok(Val::Int(m.target.wrap(*k, *x))),
+        (Val::Float(_), crate::sem::types::Type::Int(_)) | (Val::Int(_), crate::sem::types::Type::Float(_)) => crate::machine::unsup("an object read through an lvalue of another type"),
+        _ => Ok(v),
+    }
 }
