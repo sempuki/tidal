@@ -109,3 +109,18 @@ fn a_reference_keeps_only_the_temporary_it_binds() {
     assert_eq!(rule("int main() { int n = 2; const int& r = n > 1 ? 4 : 5; return r - 4; }"), None);
     assert_eq!(rule("int f(int v) { return v; } int main() { int (&g)(int) = f; return g(0); }"), None);
 }
+
+#[test]
+fn a_c_function_in_two_namespaces_is_one_candidate() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    let unit = |d1: &str, d2: &str, call: &str| {
+        format!("namespace a {{ extern \"C\" void f(int = {d1}); }} namespace b {{ extern \"C\" void f(int = {d2}); }} using a::f; using b::f; void g() {{ {call}; }}")
+    };
+    assert_eq!(rule(&unit("5", "(0x5)", "f()")), None);
+    assert_eq!(rule(&unit("5", "7", "f(1)")), None);
+    assert_eq!(rule(&unit("5", "7", "f()")), Some("OVL-38"));
+    assert_eq!(rule(&unit("5", "2 + 3", "f()")), Some("OVL-38"));
+}

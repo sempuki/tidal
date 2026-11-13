@@ -9,8 +9,78 @@ use crate::sem::tree::Expr;
 use crate::sem::EntityId;
 use crate::source::Span;
 
+/// Whether two expressions are the same (OVL-38): the same operations on
+/// the same entities and literals, whatever the spelling or the
+/// parentheses.
+fn same_expr(a: &Expr, b: &Expr) -> bool {
+    use crate::sem::tree::EK::*;
+    let same_args = |x: &[crate::sem::tree::Arg], y: &[crate::sem::tree::Arg]| {
+        x.len() == y.len() && x.iter().zip(y).all(|(p, q)| p.by_ref == q.by_ref && same_expr(&p.e, &q.e))
+    };
+    a.ty == b.ty
+        && match (&a.k, &b.k) {
+            (Int(x), Int(y)) => x == y,
+            (Float(x), Float(y)) => x == y,
+            (Str(x), Str(y)) => x == y,
+            (Var(x), Var(y)) | (Func(x), Func(y)) | (Closure(x), Closure(y)) => x == y,
+            (Conv(c, x), Conv(d, y)) => c == d && same_expr(x, y),
+            (Unary(o, x), Unary(p, y)) => o == p && same_expr(x, y),
+            (Binary(o, x1, x2), Binary(p, y1, y2)) => o == p && same_expr(x1, y1) && same_expr(x2, y2),
+            (PtrAdd(x1, x2, s), PtrAdd(y1, y2, t)) => s == t && same_expr(x1, y1) && same_expr(x2, y2),
+            (Logical(o, x1, x2), Logical(p, y1, y2)) => o == p && same_expr(x1, y1) && same_expr(x2, y2),
+            (PtrDiff(x1, x2), PtrDiff(y1, y2)) | (Assign(x1, x2), Assign(y1, y2)) | (Comma(x1, x2), Comma(y1, y2)) | (Index(x1, x2), Index(y1, y2)) => {
+                same_expr(x1, y1) && same_expr(x2, y2)
+            }
+            (Compound(o, x1, x2, _), Compound(p, y1, y2, _)) => o == p && same_expr(x1, y1) && same_expr(x2, y2),
+            (IncDec(a1, a2, x), IncDec(b1, b2, y)) => a1 == b1 && a2 == b2 && same_expr(x, y),
+            (Cond(x1, x2, x3), Cond(y1, y2, y3)) => same_expr(x1, y1) && same_expr(x2, y2) && same_expr(x3, y3),
+            (Call(f, xs), Call(g, ys)) => same_expr(f, g) && same_args(xs, ys),
+            (Deref(x), Deref(y)) | (AddrOf(x), AddrOf(y)) | (Unevaluated(x), Unevaluated(y)) | (Assume(x), Assume(y)) => same_expr(x, y),
+            _ => false,
+        }
+}
+
+/// OVL-1: the declarations of one function with C language linkage in
+/// several namespaces (LSP-4) are one candidate. The candidates come back
+/// with each such function once, and with the functions whose
+/// declarations give different default arguments that the call uses
+/// (OVL-38).
+fn merge_c_functions(cx: &Check, cands: &[EntityId], nargs: usize) -> (Vec<EntityId>, Vec<EntityId>) {
+    let mut out: Vec<EntityId> = Vec::new();
+    let mut differ: Vec<EntityId> = Vec::new();
+    for &f in cands {
+        let Some(func) = cx.u.func(f) else {
+            out.push(f);
+            continue;
+        };
+        let twin = out.iter().copied().find(|&g| {
+            cx.u.func(g).is_some_and(|h| h.c_linkage && func.c_linkage && h.ty == func.ty && cx.u.entities[g].name == cx.u.entities[f].name)
+        });
+        let Some(g) = twin else {
+            out.push(f);
+            continue;
+        };
+        let (mine, theirs) = (func.defaults.clone(), cx.u.func(g).map(|h| h.defaults.clone()).unwrap_or_default());
+        let clash = (nargs..mine.len().min(theirs.len())).any(|k| matches!((&mine[k], &theirs[k]), (Some(a), Some(b)) if !same_expr(a, b)));
+        // A default that only the later declaration gives serves the call.
+        let kept = if mine.iter().zip(theirs.iter()).any(|(a, b)| a.is_some() && b.is_none()) {
+            let pos = out.iter().position(|&h| h == g).unwrap();
+            out[pos] = f;
+            f
+        } else {
+            g
+        };
+        if clash || differ.contains(&g) {
+            differ.push(kept);
+        }
+    }
+    (out, differ)
+}
+
 /// The candidate that a call chooses, or None after an error.
 pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
+    let (merged, differ) = merge_c_functions(cx, cands, args.len());
+    let cands = &merged[..];
     let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
     for &f in cands {
         let Some(func) = cx.u.func(f) else { continue };
@@ -81,6 +151,10 @@ pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, na
             cx.error(span, "OVL-36", format!("the call of '{}' is ambiguous", name));
             return None;
         }
+    }
+    if differ.contains(&viable[best].0) {
+        cx.error(span, "OVL-38", format!("the call of '{}' uses a default argument that two scopes give differently", name));
+        return None;
     }
     Some(viable[best].0)
 }
