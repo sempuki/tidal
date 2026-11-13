@@ -114,8 +114,35 @@ impl Target {
             Type::Ref(r, _) => return self.size_of(u, r),
             Type::Array(e, Some(n)) => self.size_of(u, e)?.checked_mul(*n)?,
             Type::Enum(e) => self.int_size(u.enums.get(*e)?.underlying?),
+            Type::Class(c) => self.layout(u, *c)?.0,
             Type::Void | Type::Array(_, None) | Type::Func(_) | Type::Error => return None,
         })
+    }
+    /// The layout of a complete class (CLS rules, TYP-2): its size, its
+    /// alignment, and the offset of each data member. Each member goes
+    /// at the next multiple of its alignment, a union's members all at
+    /// 0, and the size is a multiple of the alignment, at least 1.
+    pub fn layout(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u64, u64, Vec<u64>)> {
+        let info = u.classes.get(c)?;
+        if !info.complete {
+            return None;
+        }
+        let union = info.key == crate::sem::ClassKey::Union;
+        let (mut size, mut align, mut offs) = (0u64, 1u64, Vec::new());
+        for t in u.field_types(c) {
+            let (s, a) = (self.size_of(u, &t)?, self.align_of(u, &t)?);
+            align = align.max(a);
+            if union {
+                offs.push(0);
+                size = size.max(s);
+            } else {
+                let at = size.div_ceil(a).checked_mul(a)?;
+                offs.push(at);
+                size = at.checked_add(s)?;
+            }
+        }
+        let size = size.div_ceil(align).max(1).checked_mul(align)?;
+        Some((size.max(1), align, offs))
     }
     pub fn align_of(self, u: &Unit, q: &QType) -> Option<u64> {
         Some(match &q.t {
@@ -123,6 +150,7 @@ impl Target {
             Type::Float(FloatK::Double | FloatK::LongDouble) if self.ilp32 => 4,
             Type::Array(e, _) => return self.align_of(u, e),
             Type::Ref(r, _) => return self.align_of(u, r),
+            Type::Class(c) => self.layout(u, *c)?.1,
             _ => self.size_of(u, q)?,
         })
     }

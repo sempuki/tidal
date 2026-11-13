@@ -24,7 +24,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             Val::Fn(id) => Ok(Val::Fn(id)),
             v => unary::run::indirection(m, v, &e.ty).and_then(|_| unsup("indirection through this value")),
         },
-        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) => {
+        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
             // an array or function that decays.
@@ -172,6 +172,17 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
         EK::Deref(x) => {
             let v = eval(m, x)?;
             unary::run::indirection(m, v, &e.ty)
+        }
+        // PFX-10: the member of the object, by its position.
+        EK::Member(x, i) => {
+            let mut p = place(m, x)?;
+            if p.view.is_some() {
+                // STG-23: no object of the class is at the address.
+                return crate::machine::ub("STG-23", format!("an access through a member of {}, where no object of that class is", x.ty.show()));
+            }
+            p.path.push(*i as i64);
+            p.array = false;
+            Ok(p)
         }
         EK::Index(p, i) => {
             let pv = eval(m, p)?;

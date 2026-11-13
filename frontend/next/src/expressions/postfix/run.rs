@@ -61,6 +61,7 @@ fn same_across_units(m: &Machine, a: &QType, b: &QType) -> bool {
     use crate::sem::types::Type;
     match (&a.t, &b.t) {
         (Type::Enum(x), Type::Enum(y)) => a.c == b.c && a.v == b.v && m.u.enums[*x].name == m.u.enums[*y].name,
+        (Type::Class(x), Type::Class(y)) => a.c == b.c && a.v == b.v && m.u.classes[*x].name == m.u.classes[*y].name,
         (Type::Ptr(x), Type::Ptr(y)) | (Type::Ref(x, _), Type::Ref(y, _)) | (Type::Array(x, _), Type::Array(y, _)) => a.c == b.c && a.v == b.v && same_across_units(m, x, y),
         _ => a == b,
     }

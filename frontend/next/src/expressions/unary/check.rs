@@ -161,7 +161,7 @@ pub fn inc_dec(cx: &mut Check, e: Expr, prefix: bool, inc: bool, span: Span, rul
     }
     match &t.t {
         Type::Int(_) | Type::Float(_) => {}
-        Type::Ptr(p) if !p.is_void() && !p.is_func() && !p.is_incomplete() => {}
+        Type::Ptr(p) if !p.is_void() && !p.is_func() && !cx.u.is_incomplete(p) => {}
         _ => {
             cx.error(span, rule, format!("'{}' on {}", sp, t.show()));
             return bad(span);
@@ -206,7 +206,7 @@ fn size_or_align(cx: &mut Check, n: &Node, align: bool) -> Expr {
     let rule = if align { "UN-17" } else { "UN-14" };
     let what = if align { "alignof" } else { "sizeof" };
     let t = ty.nonref();
-    if t.is_func() || t.is_void() || (t.is_incomplete() && !(align && matches!(t.t, Type::Array(_, None)))) {
+    if t.is_func() || t.is_void() || (cx.u.is_incomplete(&t) && !(align && matches!(t.t, Type::Array(_, None)))) {
         cx.error(span, rule, format!("{} of {}", what, ty.show()));
         return bad(span);
     }

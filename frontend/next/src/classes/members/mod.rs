@@ -2,6 +2,7 @@
 //! Build step 2 holds its Syntax segment in `syntax.rs`; the check and
 //! run parts come with later steps.
 
+pub mod check;
 pub mod syntax;
 
 #[cfg(test)]

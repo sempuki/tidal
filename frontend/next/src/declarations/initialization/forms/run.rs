@@ -71,6 +71,17 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
             let p = place(m, e)?;
             Ok(Val::Ptr(p))
         }
+        Init::List(items) if ty.is_class() => {
+            let tys = m.u.field_types(ty.class().unwrap());
+            let mut out = Vec::new();
+            for (k, t) in tys.iter().enumerate() {
+                out.push(match items.get(k) {
+                    Some(i) => value(m, t, i)?,
+                    None => m.zero(t),
+                });
+            }
+            Ok(Val::Agg(out))
+        }
         Init::List(items) => {
             let (Type::Array(et, Some(n))) = &ty.t else { return crate::machine::unsup("a list for a type that is not an array") };
             let mut out = Vec::new();

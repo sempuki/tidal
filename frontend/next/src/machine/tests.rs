@@ -65,8 +65,8 @@ fn constant_evaluation_reports_its_limits() {
 #[test]
 fn an_error_after_an_unmodelled_construct_gives_no_verdict() {
     let outcome = |src: &str| crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0;
-    assert!(matches!(outcome("struct S { int a; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
-    assert!(matches!(outcome("static_assert(1 == 2);\nstruct S { int a; };"), Outcome::Reject(_)));
+    assert!(matches!(outcome("template <class T> struct S { T a; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
+    assert!(matches!(outcome("static_assert(1 == 2);\ntemplate <class T> struct S { T a; };"), Outcome::Reject(_)));
     assert!(matches!(outcome("int int::* pm;"), Outcome::Reject(_)));
 }
 
@@ -879,4 +879,37 @@ fn the_byte_view_of_objects() {
     // ENUM-6 after a copy of bytes, and PFX-19.
     assert!(matches!(run("enum C { r, g }; int main() { C c = r; int s = 5; unsigned char* t = reinterpret_cast<unsigned char*>(&c); t[0] = reinterpret_cast<unsigned char*>(&s)[0]; C d = c; return d; }"), RunOutcome::Undefined("ENUM-6", ..)));
     assert!(matches!(run("void f(long) {} int main() { auto p = reinterpret_cast<void (*)(int)>(&f); p(1); return 0; }"), RunOutcome::Undefined("PFX-19", ..)));
+}
+
+#[test]
+fn classes_with_data_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // Layout, aggregate initialization with brace elision, member access.
+    assert_eq!(run("struct P { int x = 1; int y; }; P p{2, 3}; P q; int main() { P r = p; r.y += 10; P a[2] = {{1, 2}, 5, 6}; P* pp = &a[1]; return p.x * 1000 + r.y * 10 + q.x + pp->y * 10000; }"), RunOutcome::Result(62131));
+    assert_eq!(rule("struct S { char c; int i; char d; }; static_assert(sizeof(S) == 12 && alignof(S) == 4);"), None);
+    assert_eq!(rule("struct S { int a; }; struct T { S s; int b; }; constexpr T t{{1}, 2}; static_assert(t.s.a + t.b == 3);"), None);
+    assert_eq!(rule("struct S { int a; }; S s{1, 2};"), Some("LIST-12"));
+    assert_eq!(rule("struct S { int a; int b; }; S s{.b = 1, .a = 2};"), Some("LIST-14"));
+    assert_eq!(rule("struct S { int a; }; int f(S s) { return s.b; }"), Some("PFX-11"));
+    assert_eq!(rule("class C { int x; }; int f(C c) { return c.x; }"), Some("ACC-2"));
+    assert_eq!(rule("struct S; struct S s;"), Some("INIT-7"));
+    assert_eq!(rule("struct S { S s; };"), Some("CLS-1"));
+    // Deleted special members and volatile copies.
+    assert_eq!(rule("struct S { const int c; }; S s;"), Some("CTOR-20"));
+    assert_eq!(rule("struct S { const int c = 1; }; void f(S& a, const S& b) { a = b; }"), Some("CPY-23"));
+    assert_eq!(rule("struct S { int v; }; volatile S a{}; S b = a;"), Some("VOL-11"));
+    // Constant evaluation of class values.
+    assert_eq!(rule("struct P { int a; int b; }; constinit P p;"), Some("CINIT-1"));
+    assert_eq!(rule("struct T { mutable int c; int f; }; constexpr T s{1, 2}; constexpr T t = s;"), Some("CX-1"));
+    // A class and a variable of one name in one scope: the variable hides
+    // the class.
+    assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
+    // Member functions wait for a later part.
+    assert_eq!(rule("struct S { int f(); };"), Some("unsupported"));
+    // The bytes of a class, with padding.
+    assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
 }

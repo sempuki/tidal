@@ -268,13 +268,29 @@ impl<'a> Machine<'a> {
     pub fn uninit(&self, ty: &QType) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.uninit(e)).collect()),
+            Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.uninit(t)).collect()),
             _ => Val::Uninit,
+        }
+    }
+    /// A static object's value after its initializer: the parts that
+    /// default-initialization left without a value keep the zero of the
+    /// zero-initialization before it (SINIT rules).
+    pub fn fill_zero(&self, ty: &QType, v: Val) -> Val {
+        match (v, &ty.t) {
+            (Val::Uninit, _) => self.zero(ty),
+            (Val::Agg(xs), Type::Array(e, _)) => Val::Agg(xs.into_iter().map(|x| self.fill_zero(e, x)).collect()),
+            (Val::Agg(xs), Type::Class(c)) => {
+                let tys = self.u.field_types(*c);
+                Val::Agg(xs.into_iter().zip(tys.iter()).map(|(x, t)| self.fill_zero(t, x)).collect())
+            }
+            (v, _) => v,
         }
     }
     /// The zero value of a type (value-initialization of a scalar).
     pub fn zero(&self, ty: &QType) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(e)).collect()),
+            Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.zero(t)).collect()),
             Type::Float(crate::sem::types::FloatK::LongDouble) => Val::Ext(crate::foundations::types::run::F80::ZERO),
             Type::Float(_) => Val::Float(0.0),
             Type::Ptr(_) | Type::NullPtr => Val::Null,
@@ -285,12 +301,15 @@ impl<'a> Machine<'a> {
     pub fn type_at(&self, p: &Ptr) -> Option<QType> {
         let mut t = self.objs.get(p.obj)?.ty.clone();
         let n = p.path.len();
-        for (k, _) in p.path.iter().enumerate() {
+        for (k, &i) in p.path.iter().enumerate() {
             if k + 1 == n && p.array && !t.is_array() {
                 // An object counted as an array of one.
                 return Some(t);
             }
-            t = t.elem()?.clone();
+            t = match &t.t {
+                Type::Class(c) => self.u.field_types(*c).get(i as usize)?.clone(),
+                _ => t.elem()?.clone(),
+            };
         }
         Some(t)
     }

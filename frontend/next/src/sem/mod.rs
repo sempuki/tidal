@@ -103,6 +103,10 @@ pub enum EntKind {
     Typedef(QType),
     Namespace(ScopeId),
     Enum(EnumId),
+    /// The name of a class (`classes/members`).
+    Class(types::ClassId),
+    /// A non-static data member of a class.
+    Field(Field),
     /// An entity of a kind that build step 3 does not model (a class, a
     /// template); a name that finds it gives `unsupported`.
     Unsupported(&'static str),
@@ -122,6 +126,8 @@ pub struct Entity {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ScopeKind {
     Namespace,
+    /// The members of a class.
+    Class,
     Block,
     /// The parameters of a function definition, with its body's
     /// outermost block (FN rules).
@@ -140,6 +146,46 @@ pub struct Scope {
     pub using: Vec<ScopeId>,
     pub inline: bool,
     pub name: Rc<str>,
+}
+
+/// `class`, `struct`, or `union`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ClassKey {
+    Class,
+    Struct,
+    Union,
+}
+
+/// The access of a member (`classes/access`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Access {
+    Public,
+    Protected,
+    Private,
+}
+
+/// A class: its name, key, member scope, and non-static data members in
+/// the order of their declarations.
+#[derive(Clone, Debug)]
+pub struct ClassInfo {
+    pub name: Rc<str>,
+    pub key: ClassKey,
+    pub scope: ScopeId,
+    pub fields: Vec<EntityId>,
+    pub complete: bool,
+}
+
+/// A non-static data member: its type, its class, its position among
+/// the class's data members, its default member initializer, and its
+/// access.
+#[derive(Clone, Debug)]
+pub struct Field {
+    pub ty: QType,
+    pub class: types::ClassId,
+    pub index: usize,
+    pub init: Option<tree::Init>,
+    pub mutable: bool,
+    pub access: Access,
 }
 
 #[derive(Clone, Debug)]
@@ -163,6 +209,7 @@ pub struct Unit {
     pub entities: Vec<Entity>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
+    pub classes: Vec<ClassInfo>,
     /// The variables with static storage, in the order of their
     /// definitions (SINIT rules).
     pub statics: Vec<EntityId>,
@@ -187,6 +234,7 @@ impl Default for Unit {
             entities: Vec::new(),
             scopes: vec![Scope { kind: ScopeKind::Namespace, parent: None, names: HashMap::new(), using: Vec::new(), inline: false, name: "".into() }],
             enums: Vec::new(),
+            classes: Vec::new(),
             statics: Vec::new(),
             diags: Vec::new(),
             target: Target::default(),
@@ -212,6 +260,21 @@ impl Unit {
             self.scopes[scope].names.entry(name).or_default().push(id);
         }
         id
+    }
+    /// An incomplete type: void, an array of unknown bound, or a class
+    /// whose definition has not ended, also as an array element.
+    pub fn is_incomplete(&self, t: &QType) -> bool {
+        t.is_incomplete() || t.base_elem().class().is_some_and(|c| !self.classes[c].complete)
+    }
+    pub fn field(&self, id: EntityId) -> Option<&Field> {
+        match &self.entities.get(id)?.kind {
+            EntKind::Field(f) => Some(f),
+            _ => None,
+        }
+    }
+    /// The types of a class's data members, in order.
+    pub fn field_types(&self, c: types::ClassId) -> Vec<QType> {
+        self.classes[c].fields.iter().filter_map(|&f| self.field(f).map(|x| x.ty.clone())).collect()
     }
     pub fn var(&self, id: EntityId) -> Option<&Var> {
         match &self.entities.get(id)?.kind {
@@ -267,7 +330,7 @@ impl Unit {
         loop {
             match self.scopes[s].kind {
                 ScopeKind::Block | ScopeKind::Function | ScopeKind::Prototype => return true,
-                ScopeKind::Namespace => return false,
+                ScopeKind::Namespace | ScopeKind::Class => return false,
                 ScopeKind::Enum => {}
             }
             match self.scopes[s].parent {

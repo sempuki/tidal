@@ -31,6 +31,18 @@ pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
         return e;
     }
     crate::declarations::volatile::check::assignment_value_used(cx, &e);
+    if let Some(c) = e.ty.class() {
+        // UN-6: no value of an incomplete class. VOL-11: the implicit copy
+        // of a class does not take a volatile object.
+        if !cx.u.classes[c].complete {
+            cx.error(e.span, "UN-6", "a read of an object of an incomplete class");
+            return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
+        }
+        if e.ty.v {
+            cx.error(e.span, "VOL-11", "a copy of a volatile object of a class");
+            return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
+        }
+    }
     let t = e.ty.unqual();
     e.conv(Conv::LToR, t, Cat::PR)
 }

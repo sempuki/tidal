@@ -18,7 +18,7 @@ fn extends(e: &Expr) -> bool {
         EK::Conv(Conv::NoOp | Conv::ArrayDecay, x) => extends(x),
         EK::Cond(_, a, b) => extends(a) || extends(b),
         EK::Comma(_, b) => extends(b),
-        EK::Index(a, _) => extends(a),
+        EK::Index(a, _) | EK::Member(a, _) => extends(a),
         _ => e.cat == Cat::PR,
     }
 }

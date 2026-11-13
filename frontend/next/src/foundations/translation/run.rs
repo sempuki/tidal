@@ -47,12 +47,18 @@ pub fn link(u: &mut Unit) {
     let named = |u: &Unit, t: String| -> String {
         let mut out = String::new();
         let mut rest = t.as_str();
-        while let Some(i) = rest.find("enum#") {
+        while let Some(i) = rest.find("enum#").into_iter().chain(rest.find("class#")).min() {
             out.push_str(&rest[..i]);
-            let digits: String = rest[i + 5..].chars().take_while(|c| c.is_ascii_digit()).collect();
+            let class = rest[i..].starts_with("class#");
+            let skip = if class { 6 } else { 5 };
+            let digits: String = rest[i + skip..].chars().take_while(|c| c.is_ascii_digit()).collect();
             let n: usize = digits.parse().unwrap_or(usize::MAX);
-            out.push_str(&u.enums.get(n).map_or(String::from("enum"), |e| format!("enum {}", e.name)));
-            rest = &rest[i + 5 + digits.len()..];
+            out.push_str(&if class {
+                u.classes.get(n).map_or(String::from("class"), |e| format!("class {}", e.name))
+            } else {
+                u.enums.get(n).map_or(String::from("enum"), |e| format!("enum {}", e.name))
+            });
+            rest = &rest[i + skip + digits.len()..];
         }
         out.push_str(rest);
         out
@@ -146,6 +152,7 @@ pub fn run_program(u: &Unit) -> RunOutcome {
             let v = u.var(id).unwrap();
             if let Some(init) = &v.init {
                 let val = crate::machine::eval::init_value(&mut m, &v.ty, init)?;
+                let val = m.fill_zero(&v.ty, val);
                 m.objs[o].val = val;
                 m.objs[o].konst = v.ty.is_const();
                 for t in m.temps.drain(..) {

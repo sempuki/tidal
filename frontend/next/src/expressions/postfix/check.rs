@@ -46,6 +46,12 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
             if b.ty.is_error() {
                 return bad(n.span);
             }
+            let arrow = toks.contains(&"->");
+            let is_class = if arrow { b.ty.nonref().pointee().is_some_and(|p| p.is_class()) } else { b.ty.nonref().is_class() };
+            if is_class && !cx.source(n).contains('~') {
+                let Some(id) = ns.get(1).copied() else { return bad(n.span) };
+                return crate::classes::members::check::member_access(cx, b, arrow, id, n.span);
+            }
             if cx.source(n).contains('~') {
                 if b.ty.nonref().is_scalar() {
                     cx.error(n.span, "DTOR-8", "a destructor name that is not called");
@@ -81,7 +87,7 @@ pub fn subscript(cx: &mut Check, a: Expr, i: Expr, span: Span) -> Expr {
         return bad(span);
     }
     let Some(el) = p.ty.pointee().cloned() else { return bad(span) };
-    if el.is_void() || el.is_func() || el.is_incomplete() {
+    if el.is_void() || el.is_func() || cx.u.is_incomplete(&el) {
         cx.error(span, "PFX-2", "a subscript of a pointer to an incomplete or function type");
         return bad(span);
     }
@@ -282,6 +288,13 @@ fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr
         }
     };
     let f = if f.ty.is_func() { f } else { rvalue(cx, f) };
+    // PFX-14: no parameter or return type of incomplete class, outside
+    // an unevaluated operand.
+    let incomplete = |cx: &Check, t: &QType| t.class().is_some_and(|c| !cx.u.classes[c].complete);
+    if cx.unevaluated == 0 && (incomplete(cx, &fty.ret) || fty.params.iter().any(|p| incomplete(cx, p))) {
+        cx.error(span, "PFX-14", "a call of a function whose parameter or return type is an incomplete class");
+        return bad(span);
+    }
     let n = fty.params.len();
     // PFX-5: one argument for each parameter without a default.
     let defaults: Vec<Option<Expr>> = target.and_then(|t| cx.u.func(t)).map(|fi| fi.defaults.clone()).unwrap_or_default();

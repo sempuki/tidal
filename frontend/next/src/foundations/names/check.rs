@@ -141,7 +141,10 @@ pub fn check_ambiguous(cx: &mut Check, found: &[EntityId], name: &str, span: Spa
     if found.len() > 1 && !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
         // A scope can hold an enumeration and another entity of one name
         // (NAM-39); the other entity wins (NAM-40).
-        let others: Vec<_> = found.iter().filter(|&&e| !matches!(cx.u.entities[e].kind, EntKind::Enum(_))).collect();
+        let tag = |e: EntityId| matches!(cx.u.entities[e].kind, EntKind::Enum(_) | EntKind::Class(_));
+        // NAM-39: a tag that shares its scope with another entity of the
+        // name is hidden; tags of other scopes stay in the set.
+        let others: Vec<_> = found.iter().filter(|&&e| !tag(e) || !found.iter().any(|&o| !tag(o) && cx.u.entities[o].scope == cx.u.entities[e].scope)).collect();
         if others.len() == 1 {
             return false;
         }
@@ -245,15 +248,20 @@ pub fn declare(cx: &mut Check, name: &str, kind: EntKind, span: Span, linkage: L
 pub fn declare_in(cx: &mut Check, scope: ScopeId, name: &str, kind: EntKind, span: Span, linkage: Linkage) -> EntityId {
     if !name.is_empty() {
         let earlier: Vec<EntityId> = cx.u.scopes[scope].names.get(name).cloned().unwrap_or_default();
-        let new_is_enum = matches!(kind, EntKind::Enum(_));
+        let new_is_enum = matches!(kind, EntKind::Enum(_) | EntKind::Class(_));
         for e in earlier {
-            let old_is_enum = matches!(cx.u.entities[e].kind, EntKind::Enum(_));
+            let old_is_enum = matches!(cx.u.entities[e].kind, EntKind::Enum(_) | EntKind::Class(_));
             // NAM-39: an enumeration and one other entity can share a
             // name in a scope.
             if new_is_enum != old_is_enum && !matches!(cx.u.entities[e].kind, EntKind::Typedef(_) | EntKind::Namespace(_)) && !matches!(kind, EntKind::Typedef(_) | EntKind::Namespace(_)) {
                 continue;
             }
             if matches!(cx.u.entities[e].kind, EntKind::Unsupported(_)) || matches!(kind, EntKind::Unsupported(_)) {
+                continue;
+            }
+            // TYN rules: a typedef name can name the class of its name.
+            let same_class = |a: &EntKind, b: &EntKind| matches!((a, b), (EntKind::Class(c), EntKind::Typedef(t)) | (EntKind::Typedef(t), EntKind::Class(c)) if t.class() == Some(*c) && t.c == false && t.v == false);
+            if same_class(&cx.u.entities[e].kind, &kind) {
                 continue;
             }
             // Functions are overloads or redeclarations, which their page
@@ -298,6 +306,19 @@ pub fn declared_here(cx: &Check, scope: ScopeId, name: &str) -> Vec<EntityId> {
 fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) {
     use crate::sem::types::Type;
     match &t.t {
+        // NAM rules on ADL: the namespace that holds the class.
+        Type::Class(c) => {
+            let mut ns = cx.u.enclosing_namespace(cx.u.classes[*c].scope);
+            loop {
+                if !out.contains(&ns) {
+                    out.push(ns);
+                }
+                match cx.u.scopes[ns].parent.filter(|_| cx.u.scopes[ns].inline) {
+                    Some(p) => ns = cx.u.enclosing_namespace(p),
+                    None => break,
+                }
+            }
+        }
         Type::Enum(e) => {
             let mut s = cx.u.scopes[cx.u.enums[*e].scope].parent;
             while let Some(sc) = s {

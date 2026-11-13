@@ -15,8 +15,8 @@ fn integral_operand(cx: &Check, t: &QType) -> bool {
 }
 
 /// A pointer to a complete object type, which arithmetic can move.
-fn object_pointer(t: &QType) -> bool {
-    t.pointee().is_some_and(|p| !p.is_void() && !p.is_func() && !p.is_incomplete())
+fn object_pointer(cx: &Check, t: &QType) -> bool {
+    t.pointee().is_some_and(|p| !p.is_void() && !p.is_func() && !cx.u.is_incomplete(p))
 }
 
 /// `+` and `-` on two operands (ADD-1 to ADD-3).
@@ -28,7 +28,7 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
     }
     let sub = op == BOp::Sub;
     if l.ty.is_ptr() && integral_operand(cx, &r.ty) {
-        if !object_pointer(&l.ty) {
+        if !object_pointer(cx, &l.ty) {
             cx.error(span, "ADD-3", "arithmetic on a pointer to an incomplete or function type");
             return bad(span);
         }
@@ -37,7 +37,7 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
         return Expr::new(EK::PtrAdd(Box::new(l), Box::new(r), sub), t, Cat::PR, span);
     }
     if !sub && r.ty.is_ptr() && integral_operand(cx, &l.ty) {
-        if !object_pointer(&r.ty) {
+        if !object_pointer(cx, &r.ty) {
             cx.error(span, "ADD-3", "arithmetic on a pointer to an incomplete or function type");
             return bad(span);
         }
@@ -47,7 +47,7 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
     }
     if sub && l.ty.is_ptr() && r.ty.is_ptr() {
         let (a, b) = (l.ty.pointee().unwrap(), r.ty.pointee().unwrap());
-        if a.t != b.t || !object_pointer(&l.ty) {
+        if a.t != b.t || !object_pointer(cx, &l.ty) {
             cx.error(span, "ADD-3", format!("the difference of {} and {}", l.ty.show(), r.ty.show()));
             return bad(span);
         }

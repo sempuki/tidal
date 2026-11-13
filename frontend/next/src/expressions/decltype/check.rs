@@ -20,6 +20,8 @@ pub fn decltype_of_named(cx: &Check, e: &Expr) -> QType {
     let declared = match &e.k {
         EK::Var(id) => cx.u.var(*id).map(|v| if cx.bindings.contains(id) { v.ty.nonref() } else { v.ty.clone() }),
         EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
+        // DTY rules: a member access names the member's declared type.
+        EK::Member(x, i) => x.ty.class().and_then(|c| cx.u.field_types(c).get(*i).cloned()),
         _ => None,
     };
     decltype_with(e, declared)

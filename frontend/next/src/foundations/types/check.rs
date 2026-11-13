@@ -88,6 +88,7 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
         match &cx.u.entities[e].kind {
             EntKind::Typedef(t) => return t.clone(),
             EntKind::Enum(en) => return QType::new(Type::Enum(*en)),
+            EntKind::Class(c) => return QType::new(Type::Class(*c)),
             EntKind::Unsupported(_) => return cx.unsupported(span, format!("the type '{}', which the front end does not model", name)),
             _ => {}
         }
@@ -125,7 +126,15 @@ pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<Q
                 defines = true;
             }
             "decltype_spec" | "decltype_expr" => ty = Some(crate::expressions::decltype::check::decltype_spec(cx, x)),
-            "elaborated_type" => ty = Some(crate::declarations::enumerations::check::elaborated_type(cx, x)),
+            "elaborated_type" => {
+                ty = Some(crate::declarations::enumerations::check::elaborated_type(cx, x));
+                // `struct S;` declares the class.
+                defines = cx.first_word(x) != "enum";
+            }
+            "class_def" => {
+                ty = Some(crate::classes::members::check::class_def(cx, x));
+                defines = true;
+            }
             _ => {
                 unsup = true;
                 cx.unsupported(x.span, format!("a type specifier of the form {}", x.prod));

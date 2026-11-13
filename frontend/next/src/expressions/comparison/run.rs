@@ -75,6 +75,12 @@ pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, _ty: &QType) -> R<Val> 
         (Val::Ptr(x), Val::Ptr(y)) => {
             let (x, y) = (norm(x), norm(y));
             if x.obj == y.obj {
+                // Places in one object order by their addresses, also
+                // across members of a class (CMP-26).
+                if x.path.len() != y.path.len() || m.objs[x.obj].ty.base_elem().is_class() {
+                    let (a, b) = (crate::foundations::storage::run::offset(m, &x), crate::foundations::storage::run::offset(m, &y));
+                    return Ok(Val::Int(order(a.cmp(&b), op)));
+                }
                 if let (Some(a), Some(b)) = (flat(m, &x), flat(m, &y)) {
                     return Ok(Val::Int(order(a.cmp(&b), op)));
                 }

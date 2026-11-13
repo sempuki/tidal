@@ -404,6 +404,12 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
     }
     let mut out = Vec::new();
     for p in &ps {
+        // CLS-14: an explicit object parameter belongs to a member
+        // function, which build step 4 part a does not model.
+        if p.kids.iter().any(|k| cx.text(k) == "this") {
+            cx.unsupported(p.span, "an explicit object parameter (member functions come with build step 4)");
+            return (Vec::new(), variadic);
+        }
         let mut attrs = crate::declarations::attributes::check::Attrs::default();
         for a in p.children("attribute_spec") {
             crate::declarations::attributes::check::attribute_spec(cx, a, &mut attrs);

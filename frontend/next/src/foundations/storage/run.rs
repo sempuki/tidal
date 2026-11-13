@@ -42,6 +42,11 @@ pub fn offset(m: &Machine, p: &Ptr) -> i64 {
                 off += i * size(m, &e);
                 t = (*e).clone();
             }
+            Type::Class(c) => {
+                let offs = m.target.layout(m.u, c).map(|l| l.2).unwrap_or_default();
+                off += offs.get(i as usize).copied().unwrap_or(0) as i64;
+                t = m.u.field_types(c).get(i as usize).cloned().unwrap_or(t);
+            }
             _ => off += i * size(m, &t),
         }
     }
@@ -64,6 +69,20 @@ pub fn reach(m: &Machine, obj: usize, off: i64, want: &QType) -> Option<Ptr> {
     fn walk(m: &Machine, t: &QType, off: i64, want: &QType, path: &mut Vec<i64>) -> Option<bool> {
         if off == 0 && same_or_counterpart(t, want) {
             return Some(false);
+        }
+        if let Type::Class(c) = &t.t {
+            let offs = m.target.layout(m.u, *c)?.2;
+            for (k, ft) in m.u.field_types(*c).iter().enumerate() {
+                let fo = offs[k] as i64;
+                if off >= fo && off < fo + size(m, ft).max(1) {
+                    path.push(k as i64);
+                    if let Some(a) = walk(m, ft, off - fo, want, path) {
+                        return Some(a);
+                    }
+                    path.pop();
+                }
+            }
+            return None;
         }
         let Type::Array(e, Some(n)) = &t.t else { return None };
         let es = size(m, e);
@@ -241,6 +260,19 @@ pub fn encode(m: &mut Machine, ty: &QType, v: &Val) -> R<Vec<Option<u8>>> {
     }
     let int = |x: u128, n: usize| (0..n).map(|k| Some((x >> (8 * k)) as u8)).collect::<Vec<_>>();
     Ok(match (&ty.t, v) {
+        (Type::Class(c), Val::Agg(xs)) => {
+            let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
+            let tys = m.u.field_types(*c);
+            // Padding bytes have unspecified values, which a byte read
+            // can copy (STG-26).
+            let mut out = vec![Some(0); n];
+            for (k, x) in xs.iter().enumerate() {
+                let b = encode(m, &tys[k], x)?;
+                let at = offs[k] as usize;
+                out[at..at + b.len()].clone_from_slice(&b);
+            }
+            out
+        }
         (Type::Array(e, _), Val::Agg(xs)) => {
             let mut out = Vec::new();
             for x in xs {
@@ -268,6 +300,15 @@ pub fn encode(m: &mut Machine, ty: &QType, v: &Val) -> R<Vec<Option<u8>>> {
 /// The value of type `ty` that bytes represent: a value with no value
 /// when a byte has none.
 pub fn decode(m: &Machine, ty: &QType, bytes: &[Option<u8>]) -> R<Val> {
+    if let Type::Class(c) = &ty.t {
+        let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
+        let mut out = Vec::new();
+        for (k, t) in m.u.field_types(*c).iter().enumerate() {
+            let at = offs[k] as usize;
+            out.push(decode(m, t, &bytes[at..at + size(m, t) as usize])?);
+        }
+        return Ok(Val::Agg(out));
+    }
     if let Type::Array(e, Some(k)) = &ty.t {
         let es = size(m, e) as usize;
         let mut out = Vec::new();

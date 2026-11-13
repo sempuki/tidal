@@ -129,6 +129,11 @@ fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<In
     }
     if words.first() == Some(&"(") {
         let args: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
+        let other = ty.is_class() && args.len() == 1 && first_node(args[0]).is_some_and(|c| c.prod == "braced_init");
+        if ty.base_elem().is_class() && (args.len() != 1 || ty.is_array() || other) {
+            cx.unsupported(init.span, "a parenthesized initializer for a class (build step 4)");
+            return None;
+        }
         if let Type::Array(el, n) = &ty.t {
             // INIT-5: an array from a parenthesized list of values, with
             // no check for narrowing.
@@ -159,6 +164,12 @@ fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<In
         let e = expr(cx, args[0]);
         if ty.is_array() {
             cx.error(init.span, "INIT-7", "an array initialized from a parenthesized expression");
+            return None;
+        }
+        // A class from a value of another type needs a constructor, or
+        // parenthesized aggregate initialization.
+        if ty.is_class() && !e.ty.is_error() && e.ty.nonref().unqual().t != ty.unqual().t {
+            cx.unsupported(init.span, "a class from a parenthesized value of another type (build step 4)");
             return None;
         }
         let span = e.span;
@@ -400,7 +411,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
             }
         }
         (Some(i), None) => {
-            if ty.is_incomplete() && !ty.is_array() {
+            if cx.u.is_incomplete(&ty) && !ty.is_array() {
                 cx.error(span, "INIT-7", format!("the variable '{}' has an incomplete type", name));
                 return None;
             }
@@ -431,15 +442,23 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 crate::declarations::declarators::check::reference_needs_init(cx, span, &name);
                 return None;
             }
+            if constexpr && ty.base_elem().is_class() {
+                cx.unsupported(span, "a constexpr object of class type with no initializer (build step 4)");
+                return None;
+            }
             if constexpr {
                 constexpr::check::needs_initializer(cx, span, &name);
+                return None;
+            }
+            if ty.base_elem().is_class() && ty.is_const() && !s.is_extern {
+                cx.unsupported(span, "a const object of class type with no initializer (build step 4)");
                 return None;
             }
             if ty.is_const() && !s.is_extern && ty.base_elem().is_scalar() {
                 crate::declarations::declarators::check::const_needs_init(cx, span, &name);
                 return None;
             }
-            if defined && ty.is_incomplete() {
+            if defined && cx.u.is_incomplete(&ty) {
                 if ty.is_array() {
                     cx.error(span, "DCL-19", format!("the array '{}' has no bound and no initializer", name));
                 } else {
@@ -447,7 +466,15 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 }
                 return None;
             }
-            Init::Default
+            // A class gets the default member initializers of its members.
+            if ty.base_elem().is_class() {
+                if !crate::classes::members::check::check_default_init(cx, &ty, span) {
+                    return None;
+                }
+                crate::classes::members::check::default_init(cx, &ty)
+            } else {
+                Init::Default
+            }
         }
     };
     // CE-24: a constant initializer makes the variable usable in
@@ -456,11 +483,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         Init::Expr(e) => ce::is_constant(cx, e),
         Init::Ref(e) => ce::evaluate_ref(cx, e, storage != Storage::Automatic).is_ok(),
         Init::Zero => true,
-        Init::List(items) => items.iter().all(|i| match i {
-            Init::Expr(e) => ce::is_constant(cx, e),
-            Init::Zero | Init::Default => true,
-            _ => false,
-        }),
+        Init::List(items) => items.iter().all(|i| constant_part(cx, i, ty.base_elem().is_class())),
         Init::Default => storage != Storage::Automatic,
     };
     if let Some(v) = cx.u.var_mut(id) {
@@ -492,7 +515,37 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
 }
 
 /// CX-1, CINIT-1: the initializer must be a constant expression.
+/// A part of a list initializer that is a constant: a constant
+/// expression, zero, a list of such parts, or, in an array of scalars,
+/// a default-initialized element. A default-initialized member of a class
+/// gets no value (CE-21).
+fn constant_part(cx: &Check, i: &Init, class: bool) -> bool {
+    match i {
+        Init::Expr(e) => ce::is_constant(cx, e),
+        Init::Zero => true,
+        Init::Default => !class,
+        Init::List(xs) => xs.iter().all(|x| constant_part(cx, x, class)),
+        Init::Ref(_) => false,
+    }
+}
+
+/// CE-21: a part of a class's value that default-initialization leaves
+/// without a value.
+fn has_default_part(i: &Init) -> bool {
+    match i {
+        Init::Default => true,
+        Init::List(xs) => xs.iter().any(has_default_part),
+        _ => false,
+    }
+}
+
 fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'static str, static_storage: bool) {
+    if let Init::List(_) = init {
+        if has_default_part(init) {
+            ce::report(cx, span, rule, ("CE-21", "a part of the value has no value".into()));
+            return;
+        }
+    }
     // CX-2: a constexpr reference or pointer refers to an object with
     // static storage duration or to a function.
     let held = |rule: &'static str, why: &(&'static str, String)| if rule == constexpr::check::VARIABLE && matches!(why.0, "CE-3" | "CE-14") { "CX-2" } else { rule };
@@ -502,14 +555,15 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'s
         }
         return;
     }
-    let exprs: Vec<&Expr> = match init {
-        Init::Expr(e) => vec![e],
-        Init::List(items) => items.iter().filter_map(|i| match i {
-            Init::Expr(e) => Some(e),
-            _ => None,
-        }).collect(),
-        _ => vec![],
-    };
+    fn exprs_of<'i>(i: &'i Init, out: &mut Vec<&'i Expr>) {
+        match i {
+            Init::Expr(e) => out.push(e),
+            Init::List(xs) => xs.iter().for_each(|x| exprs_of(x, out)),
+            _ => {}
+        }
+    }
+    let mut exprs = Vec::new();
+    exprs_of(init, &mut exprs);
     for e in exprs {
         if let Err(why) = ce::evaluate(cx, e) {
             let rule = if e.ty.is_ptr() { held(rule, &why) } else { rule };
@@ -572,7 +626,7 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
                 storage_linkage::check::thread_local_agrees(cx, span, v.storage, storage, name);
                 return Some(e);
             }
-            EntKind::Enum(_) => continue,
+            EntKind::Enum(_) | EntKind::Class(_) => continue,
             EntKind::Unsupported(_) => continue,
             k => {
                 // TYN-2: a typedef name is not declared again as another

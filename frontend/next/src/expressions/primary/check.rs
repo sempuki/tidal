@@ -246,7 +246,7 @@ pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
 /// The expression that names one of the entities a lookup found.
 pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -> Expr {
     let funcs: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
-    let pick = found.iter().copied().find(|&e| !matches!(cx.u.entities[e].kind, EntKind::Enum(_))).unwrap_or(found[0]);
+    let pick = found.iter().copied().find(|&e| !matches!(cx.u.entities[e].kind, EntKind::Enum(_) | EntKind::Class(_))).unwrap_or(found[0]);
     crate::declarations::attributes::check::use_entity(cx, pick, span);
     match cx.u.entities[pick].kind.clone() {
         EntKind::Var(v) => {
@@ -280,7 +280,11 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, format!("the name '{}': {}", name, why));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
-        EntKind::Typedef(_) | EntKind::Enum(_) | EntKind::Namespace(_) => {
+        EntKind::Field(_) => {
+            let t = cx.unsupported(span, format!("the data member '{}' named without an object (member functions come with build step 4)", name));
+            Expr::new(EK::Int(0), t, Cat::PR, span)
+        }
+        EntKind::Typedef(_) | EntKind::Enum(_) | EntKind::Namespace(_) | EntKind::Class(_) => {
             let t = cx.unsupported(span, format!("the name '{}' of a type or namespace as an expression", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }

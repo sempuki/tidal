@@ -12,6 +12,22 @@ use crate::syntax::Node;
 
 /// ASN-2: the left operand is a modifiable lvalue.
 fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
+    if let Some(c) = l.ty.class() {
+        if l.cat != Cat::L {
+            cx.unsupported(span, "an assignment to a class prvalue (member functions come with build step 4)");
+            return false;
+        }
+        // VOL-11, CPY-23: the implicit copy assignment is not volatile,
+        // and a const member deletes it.
+        if l.ty.v {
+            cx.error(span, "VOL-11", "an assignment to a volatile object of a class");
+            return false;
+        }
+        if crate::classes::members::check::has_const_member(cx, c) {
+            cx.error(span, "CPY-23", "the copy assignment of a class with a const member is deleted");
+            return false;
+        }
+    }
     if l.cat != Cat::L {
         // VC-12: a prvalue of a type that is not a class is not assigned
         // to.
@@ -98,7 +114,7 @@ fn compound(cx: &mut Check, op: &str, l: Expr, r: Expr, span: Span) -> Expr {
     let lt = l.ty.clone();
     if lt.is_ptr() && matches!(bop, BOp::Add | BOp::Sub) {
         let int_ok = r.ty.is_integral() || matches!(r.ty.t, Type::Enum(en) if !cx.u.enums[en].scoped);
-        if !int_ok || lt.pointee().is_some_and(|p| p.is_void() || p.is_func() || p.is_incomplete()) {
+        if !int_ok || lt.pointee().is_some_and(|p| p.is_void() || p.is_func() || cx.u.is_incomplete(p)) {
             cx.error(span, "ASN-13", format!("'{}' with operands {} and {}", op, lt.show(), r.ty.show()));
             return bad(span);
         }

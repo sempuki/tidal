@@ -476,6 +476,7 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
             return Ok(p);
         }
         let val = init_value(m, &v.ty, &init)?;
+        let val = m.fill_zero(&v.ty, val);
         let o = m.new_obj(&v.ty, val, &name);
         m.objs[o].is_static = true;
         m.objs[o].own = false;

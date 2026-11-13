@@ -31,7 +31,40 @@ pub fn check_read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     if ty.v || o.ty.v {
         return limit("CE-12", format!("a read of the volatile object {}", o.name));
     }
+    // CE-3: a mutable member of an object that the evaluation did not
+    // create is not usable.
+    if !o.own && through_mutable(m, p) {
+        return limit("CE-3", "a read of a mutable member of an object from outside the evaluation");
+    }
     Ok(())
+}
+
+/// The place goes through a mutable data member, or reads a whole class
+/// object that has one.
+fn through_mutable(m: &Machine, p: &Ptr) -> bool {
+    fn has_mutable(m: &Machine, t: &QType) -> bool {
+        match &t.t {
+            crate::sem::types::Type::Array(e, _) => has_mutable(m, e),
+            crate::sem::types::Type::Class(c) => m.u.classes[*c].fields.iter().any(|&f| m.u.field(f).is_some_and(|x| x.mutable || has_mutable(m, &x.ty))),
+            _ => false,
+        }
+    }
+    let mut t = m.objs[p.obj].ty.clone();
+    for &i in &p.path {
+        match &t.t.clone() {
+            crate::sem::types::Type::Class(c) => {
+                let Some(&f) = m.u.classes[*c].fields.get(i as usize) else { return false };
+                let Some(x) = m.u.field(f) else { return false };
+                if x.mutable {
+                    return true;
+                }
+                t = x.ty.clone();
+            }
+            crate::sem::types::Type::Array(e, _) => t = (**e).clone(),
+            _ => return false,
+        }
+    }
+    has_mutable(m, &t)
 }
 
 /// CE-5: a change of an object that existed before the evaluation.

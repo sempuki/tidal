@@ -150,7 +150,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 earlier = Some(e);
                 break;
             }
-            EntKind::Unsupported(_) | EntKind::Enum(_) => {}
+            EntKind::Unsupported(_) | EntKind::Enum(_) | EntKind::Class(_) => {}
             _ => {
                 if !local {
                     cx.error(span, "NAM-3", format!("'{}' is already declared as a different kind of entity", name));
@@ -236,7 +236,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     match &e.k {
         EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
         EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Closure(_) => None,
-        EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) => sub(x),
+        EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) => sub(x),
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
         EK::Call(f, args) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
@@ -339,8 +339,9 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     for (k, p) in d.params.iter().enumerate() {
         let ty = fty.params.get(k).cloned().unwrap_or_else(QType::error);
         let ty = if p.cv.0 || p.cv.1 { ty.with_cv(p.cv.0 || ty.c, p.cv.1 || ty.v) } else { ty };
-        if ty.is_incomplete() && !ty.is_void() {
-            cx.error(p.span, "FN-12", "a function definition with a parameter of incomplete type");
+        if cx.u.is_incomplete(&ty) && !ty.is_void() {
+            let class = ty.base_elem().is_class().then_some("TYN-7");
+            cx.error_cause(p.span, "FN-12", class, "a function definition with a parameter of incomplete type");
         }
         let v = Var {
             ty,
@@ -371,6 +372,10 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
     }
     let f = cx.u.func(id).unwrap().clone();
     let ret = fty.ret.clone();
+    // TYN-7: a definition does not return an incomplete class.
+    if ret.class().is_some_and(|c| !cx.u.classes[c].complete) {
+        cx.error(cx.u.entities[id].span, "TYN-7", "a function definition whose return type is an incomplete class");
+    }
     let deduce = d.placeholder.is_some();
     let ctx = FnCtx {
         id: Some(id),

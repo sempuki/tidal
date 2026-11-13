@@ -221,6 +221,17 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     let mut vars: Vec<(EntityId, Init)> = Vec::new();
     let decls: Vec<&Node> = n.children("init_declarator").collect();
     if decls.is_empty() {
+        // CX-5, INL-2, STO-6: a declaration of a class alone takes no
+        // such specifier.
+        if specs.defines_type && specs.ty.as_ref().is_some_and(|t| t.is_class()) {
+            if specs.constexpr {
+                cx.error(n.span, "CX-5", "constexpr on the definition of a class");
+            } else if specs.inline {
+                cx.error(n.span, "INL-2", "inline on the definition of a class");
+            } else if specs.is_static || specs.is_extern || specs.thread_local || specs.mutable {
+                cx.error(n.span, "STO-6", "a storage class on the definition of a class");
+            }
+        }
         if specs.typedef && !specs.defines_type && !specs.unsupported {
             cx.error(n.span, "TYN-2", "a typedef declaration declares no name");
         } else if !specs.defines_type && !specs.unsupported {
@@ -245,6 +256,14 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
             continue;
         }
         if specs.typedef {
+            // TYN-9: a class that a typedef names for linkage has no
+            // default member initializer.
+            if let Some(c) = declared.ty.class().filter(|&c| cx.u.classes[c].name.is_empty()) {
+                if cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
+                    cx.error(d.span, "TYN-9", "a class named by a typedef for linkage has a default member initializer");
+                    continue;
+                }
+            }
             if specs.inline {
                 crate::declarations::inline::check::misplaced(cx, d.span, "on a typedef");
             }
@@ -266,7 +285,7 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
         if let Some((id, i)) = initialization::forms::check::declare_variable(cx, &specs, &declared, init, &aligns, &mut first_auto) {
             if local {
                 let automatic = cx.u.var(id).is_some_and(|v| v.storage == crate::sem::Storage::Automatic);
-                if automatic && !matches!(i, Init::Default) {
+                if automatic && !matches!(i, Init::Default) && !crate::classes::members::check::trivial_default(&i) {
                     if let Some(f) = cx.func.as_mut() {
                         f.live.push(id);
                     }

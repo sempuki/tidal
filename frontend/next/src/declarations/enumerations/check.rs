@@ -157,7 +157,7 @@ pub fn enum_def(cx: &mut Check, n: &Node) -> QType {
         let scope = if scoped { cx.u.enums[id].scope } else { cx.scope };
         // ENUM-14: two enumerators of one name; ENUM-15: a name already
         // declared in the enclosing scope.
-        if !names::declared_here(cx, scope, ename).is_empty() {
+        if names::declared_here(cx, scope, ename).iter().any(|&e| !matches!(cx.u.entities[e].kind, EntKind::Class(_))) {
             let rule = if cx.u.enums[id].enumerators.iter().any(|&e| &*cx.u.entities[e].name == ename) { "ENUM-14" } else { "ENUM-15" };
             cx.error(espan, rule, format!("'{}' is already declared", ename));
             continue;
@@ -233,7 +233,7 @@ pub fn value_range(u: &crate::sem::Unit, en: EnumId) -> (i128, i128) {
 /// `unsupported` in build step 3.
 pub fn elaborated_type(cx: &mut Check, n: &Node) -> QType {
     if cx.first_word(n) != "enum" {
-        return cx.unsupported(n.span, "a class named by an elaborated type specifier");
+        return crate::classes::members::check::elaborated_class(cx, n);
     }
     lookup_enum(cx, n)
 }

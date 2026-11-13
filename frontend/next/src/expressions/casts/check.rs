@@ -264,6 +264,33 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
         return e;
     }
     let args: Vec<&Node> = n.child("expression_list").map(|l| l.children("argument").collect()).unwrap_or_default();
+    // A class: `T()` value-initializes, `T(x)` copies a T; any other
+    // form needs a constructor.
+    if to.is_class() && args.len() <= 1 {
+        if cx.u.is_incomplete(&to) {
+            cx.error(span, "TYN-7", "an object of an incomplete class");
+            return bad(span);
+        }
+        if args.is_empty() {
+            let i = crate::classes::members::check::value_init(cx, &to);
+            return Expr::new(EK::List(Box::new(i)), to.unqual(), Cat::PR, span);
+        }
+        let e = expr(cx, args[0]);
+        if e.ty.is_error() {
+            return bad(span);
+        }
+        if e.ty.nonref().unqual().t != to.unqual().t {
+            let t = cx.unsupported(span, "a class from a value of another type (constructors come with build step 4)");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        }
+        let mut x = rvalue(cx, e);
+        x.span = span;
+        return x;
+    }
+    if to.is_class() && args.len() > 1 {
+        let t = cx.unsupported(span, "a class from a parenthesized list (constructors come with build step 4)");
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    }
     match args.len() {
         0 => {
             if to.is_void() {

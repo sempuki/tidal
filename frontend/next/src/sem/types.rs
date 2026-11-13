@@ -41,6 +41,9 @@ pub enum FloatK {
 /// An index into `Unit::enums`.
 pub type EnumId = usize;
 
+/// An index into `Unit::classes`.
+pub type ClassId = usize;
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Type {
     Void,
@@ -54,6 +57,8 @@ pub enum Type {
     Array(Rc<QType>, Option<u64>),
     Func(Rc<FnType>),
     Enum(EnumId),
+    /// A class, a struct, or a union (`classes` pages).
+    Class(ClassId),
     /// The type of a construct after an error was reported, or of a
     /// construct the front end does not model. No check fires on it.
     Error,
@@ -222,6 +227,15 @@ impl QType {
     pub fn is_arithmetic(&self) -> bool {
         self.is_integral() || self.is_floating()
     }
+    pub fn is_class(&self) -> bool {
+        matches!(self.t, Type::Class(_))
+    }
+    pub fn class(&self) -> Option<ClassId> {
+        match self.t {
+            Type::Class(c) => Some(c),
+            _ => None,
+        }
+    }
     pub fn is_enum(&self) -> bool {
         matches!(self.t, Type::Enum(_))
     }
@@ -330,6 +344,7 @@ fn show(q: &QType, inner: &str) -> String {
         Type::Float(FloatK::LongDouble) => format!("{}long double{}", cv(q), inner),
         Type::NullPtr => format!("{}std::nullptr_t{}", cv(q), inner),
         Type::Enum(e) => format!("{}enum#{}{}", cv(q), e, inner),
+        Type::Class(c) => format!("{}class#{}{}", cv(q), c, inner),
         Type::Error => "<error>".into(),
         Type::Ptr(p) => {
             let c = cv(q).trim_end();

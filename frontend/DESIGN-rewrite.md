@@ -482,6 +482,16 @@ These parts are not in it yet: lambdas (their closure is a class), the
 exploration of choice points, extended floating-point literals, and an
 array with more elements than the machine holds.
 
+Step 4 part a is in place in part (item RW3). A class whose members are
+non-static data members has its layout, aggregate initialization with
+brace elision and designators, member access, copies, and its bytes.
+The checks that such classes need come with them: incomplete classes,
+deleted default constructors and copy assignments, volatile copies,
+constant initializers of class type, and names that a class shares with
+another entity. A member function, a static member, a base, a union, a
+bit-field, a nested type, and a constructor are unsupported, so a unit
+that has one gives no verdict.
+
 Model sections 1, 2, and 5 come first because section 2 needs the marks
 of section 1, and section 5 needs both. Section 3 needs the marks for
 its substitution, and section 4 needs section 3, because an
