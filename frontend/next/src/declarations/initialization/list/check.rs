@@ -75,7 +75,8 @@ pub fn scalar_list(cx: &mut Check, b: &Node, to: &QType, rule: &'static str) -> 
         1 => {
             let c = first_node(its[0])?;
             if c.prod == "braced_init" || c.prod == "designator" {
-                cx.error(span, "LIST-11", "a braced list inside the braces for a scalar");
+                // LIST-14: a designator names a member of a class.
+                cx.error_cause(span, "LIST-11", (c.prod == "designator").then_some("LIST-14"), "a braced list inside the braces for a scalar");
                 return None;
             }
             let e = expr(cx, c);

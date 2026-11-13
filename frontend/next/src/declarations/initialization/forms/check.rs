@@ -542,7 +542,9 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
                     return None;
                 }
                 if local && !(v.is_extern && s.is_extern) {
-                    cx.error(span, "NAM-3", format!("'{}' is declared twice in one scope", name));
+                    // STO-13: a block's extern declaration after a local
+                    // of the name.
+                    cx.error_cause(span, "NAM-3", s.is_extern.then_some("STO-13"), format!("'{}' is declared twice in one scope", name));
                     return None;
                 }
                 if !same_type {

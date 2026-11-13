@@ -19,7 +19,7 @@ pub fn register(cx: &mut Check, span: Span) {
 
 /// STO-6: a storage class with `typedef`.
 pub fn typedef_with_storage(cx: &mut Check, span: Span) {
-    cx.error(span, "STO-6", "a storage class with typedef");
+    cx.error_cause(span, "STO-6", Some("TYN-2"), "a storage class with typedef");
 }
 
 /// STO-6: a storage class on a function parameter.

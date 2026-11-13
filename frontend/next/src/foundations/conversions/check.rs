@@ -198,7 +198,13 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
                 // CONV-9: to or from a pointer to void. CV-10 with
                 // CONV-9: a qualification conversion that is not valid.
                 Type::Ptr(fp) if fp.is_void() || tp.is_void() => Err(format!("no implicit conversion from {} to {} (CONV-9)", from.show(), to.show())),
-                Type::Ptr(fp) if similar(fp, tp) => Err(format!("no implicit conversion from {} to {} (CV-10, CONV-9)", from.show(), to.show())),
+                Type::Ptr(fp) if similar(fp, tp) => {
+                    // PRIM-19 for a string literal, and VOL-10 for a
+                    // pointer that drops volatile.
+                    let string = matches!(&e.k, crate::sem::tree::EK::Conv(Conv::ArrayDecay, x) if matches!(x.k, crate::sem::tree::EK::Str(_)));
+                    let more = if string { " (PRIM-19)" } else if fp.v && !tp.v { " (VOL-10)" } else { "" };
+                    Err(format!("no implicit conversion from {} to {} (CV-10, CONV-9){}", from.show(), to.show(), more))
+                }
                 // CONV-10: a function pointer gains no `noexcept`.
                 Type::Ptr(fp) if fp.is_func() && tp.is_func() => Err(format!("no implicit conversion from {} to {} (CONV-10)", from.show(), to.show())),
                 Type::Ptr(_) => Err(format!("no implicit conversion from {} to {}", from.show(), to.show())),
@@ -227,7 +233,7 @@ pub fn rule_of(msg: &str) -> Option<&'static str> {
 /// cause, beside the rule of the context or of `rule_of`: the last rule
 /// in parentheses.
 pub fn cause_of(msg: &str) -> Option<&'static str> {
-    const CAUSES: [&str; 6] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15"];
+    const CAUSES: [&str; 8] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10"];
     CAUSES.iter().copied().filter(|r| msg.contains(&format!("{})", r))).max_by_key(|r| msg.rfind(&format!("{})", r)))
 }
 

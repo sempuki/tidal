@@ -800,6 +800,13 @@ fn first_errors_name_the_specific_rule() {
     assert_eq!(named("namespace n { int a = 1; } int main() { return a; }"), (Some("NAM-8"), Some("NAM-9")));
     assert_eq!(named("int main() { return b; }"), (Some("NAM-8"), None));
     assert_eq!(named("namespace A { int x; } namespace B { int x; } using namespace A; using namespace B; int y = x;"), (Some("NAM-26"), Some("NS-17")));
+    assert_eq!(named("void f() { int x = 0; extern int x; }"), (Some("NAM-3"), Some("STO-13")));
+    assert_eq!(named("static typedef int A;"), (Some("STO-6"), Some("TYN-2")));
+    assert_eq!(named("void f() { if constexpr (false) { g(); } }"), (Some("NAM-8"), Some("IF-23")));
+    assert_eq!(named("char* p = \"abc\";"), (Some("CV-10"), Some("PRIM-19")));
+    assert_eq!(named("volatile int v; int* p = &v;"), (Some("CV-10"), Some("VOL-10")));
+    assert_eq!(named("int x{.a = 1};"), (Some("LIST-11"), Some("LIST-14")));
+    assert_eq!(named("const int x = 1; int& r = x;"), (Some("REF-8"), None));
 }
 
 #[test]
