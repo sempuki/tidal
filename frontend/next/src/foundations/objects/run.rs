@@ -31,6 +31,29 @@ pub fn check_write(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     Ok(())
 }
 
+/// DTOR-6: a pseudo-destructor call ends the life of a whole object.
+/// The machine keeps one lifetime for each complete object, so the end
+/// of a subobject is not modeled in constant evaluation, and at run
+/// time it changes nothing the machine checks.
+pub fn end_life(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
+    if !p.path.is_empty() {
+        if m.constant {
+            return crate::machine::unsup("the end of the life of a subobject");
+        }
+        return Ok(crate::machine::Val::Void);
+    }
+    if m.objs.get(p.obj).is_some_and(|o| !o.alive) {
+        return check_write(m, p, &QType::void()).map(|_| crate::machine::Val::Void);
+    }
+    if m.constant {
+        constant_evaluation::run::check_write(m, p)?;
+    }
+    if let Some(o) = m.objs.get_mut(p.obj) {
+        o.alive = false;
+    }
+    Ok(crate::machine::Val::Void)
+}
+
 /// OBJ-2: a scalar read before it has a value. A variable with automatic
 /// storage and no initializer is the case of INIT-1, which its page
 /// names.

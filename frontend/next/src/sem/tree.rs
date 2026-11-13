@@ -146,6 +146,8 @@ pub enum EK {
     /// A string literal: its code units with the terminating zero.
     Str(Rc<Vec<u32>>),
     Var(EntityId),
+    /// A pseudo-destructor call: the life of the object ends (DTOR-6).
+    EndLife(Box<Expr>),
     Func(EntityId),
     Conv(Conv, Box<Expr>),
     Unary(UOp, Box<Expr>),
@@ -211,7 +213,7 @@ impl Expr {
             return true;
         }
         match &self.k {
-            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) => x.any(f),
+            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) => x.any(f),
             EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => a.any(f) || b.any(f),
             EK::Cond(c, a, b) => c.any(f) || a.any(f) || b.any(f),
             EK::Call(c, args) => c.any(f) || args.iter().any(|a| a.e.any(f)),

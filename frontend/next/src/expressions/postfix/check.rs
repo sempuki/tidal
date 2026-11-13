@@ -3,6 +3,7 @@
 
 use crate::expressions::check::{bad, expr, first_node, nodes};
 use crate::expressions::primary;
+use crate::foundations::names::check as names;
 use crate::foundations::values::check::{deref_ref, rvalue};
 use crate::overloading::overload_resolution::check as ovl;
 use crate::sem::check::Check;
@@ -46,7 +47,11 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
                 return bad(n.span);
             }
             if cx.source(n).contains('~') {
-                let t = cx.unsupported(n.span, "a pseudo-destructor call");
+                if b.ty.nonref().is_scalar() {
+                    cx.error(n.span, "DTOR-8", "a destructor name that is not called");
+                    return bad(n.span);
+                }
+                let t = cx.unsupported(n.span, "a destructor call on a class (build step 4)");
                 return Expr::new(EK::Int(0), t, Cat::PR, n.span);
             }
             let t = cx.error(n.span, "PFX-11", format!("member access on {}, which is not a class", b.ty.show()));
@@ -102,8 +107,97 @@ fn callee_name(n: &Node) -> Option<&Node> {
     }
 }
 
+/// The member part of `x.~T` or `p->~T`, if the callee has that form.
+fn destructor_name<'n>(cx: &Check, callee: &'n Node) -> Option<(&'n Node, bool, &'n Node)> {
+    if callee.prod != "postfix_expr" {
+        return None;
+    }
+    let arrow = match callee.kids.get(1) {
+        Some(k @ Kid::Tok(_)) if matches!(cx.text(k), "." | "->") => cx.text(k) == "->",
+        _ => return None,
+    };
+    let (Some(Kid::Node(base)), Some(Kid::Node(id))) = (callee.kids.first(), callee.kids.get(2)) else { return None };
+    let u = match first_node(id)? {
+        q if q.prod == "qualified_name" => q.child("unqualified_id")?,
+        u => u,
+    };
+    cx.has_word(u, "~").then_some((base, arrow, id))
+}
+
+/// The type a name after `~`, or in its qualifier, names.
+fn named_type(cx: &mut Check, n: &Node) -> Option<QType> {
+    if n.child("decltype_expr").is_some() {
+        return Some(crate::expressions::decltype::check::decltype_spec(cx, n));
+    }
+    let mut toks = Vec::new();
+    n.tokens(&mut toks);
+    let name = toks.iter().map(|&t| cx.toks[t].text.as_str()).rfind(|w| *w != "~" && *w != "::")?;
+    let found = names::lookup_where(cx, name, |k| matches!(k, EntKind::Typedef(_)));
+    match found.first().map(|&f| cx.u.entities[f].kind.clone()) {
+        Some(EntKind::Typedef(t)) => Some(t),
+        _ => None,
+    }
+}
+
+/// A pseudo-destructor call `x.~T()` or `p->~T()` on a scalar (DTOR-6,
+/// DTOR-8, NAM-16): it ends the life of the object. The names after `~`
+/// and in its qualifier name the type of the object.
+fn pseudo_destructor(cx: &mut Check, base: &Node, arrow: bool, id: &Node, args: bool, span: Span) -> Expr {
+    let b = expr(cx, base);
+    if b.ty.is_error() {
+        return bad(span);
+    }
+    let obj = if arrow {
+        let b = rvalue(cx, b);
+        if !b.ty.is_ptr() {
+            cx.error(span, "PFX-11", format!("'->' on {}, which is not a pointer", b.ty.show()));
+            return bad(span);
+        }
+        crate::expressions::unary::check::indirection(cx, b, span)
+    } else {
+        deref_ref(b)
+    };
+    if obj.ty.is_error() {
+        return bad(span);
+    }
+    if !obj.ty.is_scalar() {
+        let t = cx.unsupported(span, "a destructor call on a class (build step 4)");
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    }
+    if args {
+        cx.error(span, "DTOR-8", "a destructor call with arguments");
+        return bad(span);
+    }
+    let mut parts: Vec<&Node> = Vec::new();
+    match first_node(id) {
+        Some(q) if q.prod == "qualified_name" => {
+            parts.extend(q.child("nested_name"));
+            parts.extend(q.child("unqualified_id"));
+        }
+        Some(u) => parts.push(u),
+        None => return bad(span),
+    }
+    for p in parts {
+        let Some(t) = named_type(cx, p) else {
+            let t = cx.unsupported(p.span, "a name after '~' that is not a type alias or decltype");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        };
+        if t.is_error() {
+            return bad(span);
+        }
+        if t.unqual() != obj.ty.unqual() {
+            cx.error(p.span, "DTOR-8", format!("the destructor name names {}, and the object has type {}", t.show(), obj.ty.show()));
+            return bad(span);
+        }
+    }
+    Expr::new(EK::EndLife(Box::new(obj)), QType::void(), Cat::PR, span)
+}
+
 /// A call (PFX-3 to PFX-8, OVL rules for a name with several functions).
 pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> Expr {
+    if let Some((base, arrow, id)) = destructor_name(cx, callee) {
+        return pseudo_destructor(cx, base, arrow, id, !arg_nodes(list).is_empty(), span);
+    }
     let mut args = Vec::new();
     for a in arg_nodes(list) {
         if first_node(a).is_some_and(|c| c.prod == "braced_init") {

@@ -103,6 +103,10 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             let v = eval(m, c)?;
             crate::declarations::attributes::run::assume(m, v)
         }
+        EK::EndLife(x) => {
+            let p = place(m, x)?;
+            crate::foundations::objects::run::end_life(m, &p)
+        }
     }
 }
 

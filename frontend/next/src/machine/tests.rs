@@ -614,3 +614,19 @@ fn structured_bindings_of_arrays() {
     assert_eq!(run("int main() { int a[2] = {1, 2}; auto& [x, y] = a; x = 10; return a[0] + (&y == &a[1]); }"), RunOutcome::Result(11));
     assert_eq!(run("int a[2] = {3, 4}; auto [x, y] = a; int main() { return x * 10 + y; }"), RunOutcome::Result(34));
 }
+
+#[test]
+fn pseudo_destructor_calls() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("using I = int; void f(int i, int* p) { i.~I(); p->~I(); p->I::~I(); }"), None);
+    assert_eq!(rule("using L = long; void f(int i) { i.~L(); }"), Some("DTOR-8"));
+    assert_eq!(rule("using I = int; void f(int i) { i.~I(1); }"), Some("DTOR-8"));
+    assert_eq!(rule("int x; void f() { x.~decltype(x)(); }"), None);
+    assert_eq!(rule("using I = int; constexpr int f() { int x = 1; x.~I(); x = 3; return 1; } static_assert(f() == 1);"), Some("OBJ-2"));
+    assert_eq!(rule("using I = int; constexpr int f() { int x = 1; x.~I(); return 1; } static_assert(f() == 1);"), None);
+    assert!(matches!(run("using I = int; int main() { int x = 1; x.~I(); return x; }"), RunOutcome::Undefined(..)));
+}
