@@ -1691,3 +1691,13 @@ foundations/storage/equal-values-different-bytes.cpp	3	12f48f6d
 foundations/storage/past-end-address.cpp	3	12f48f6d
 foundations/storage/pointer-bytes-are-address.cpp	3	12f48f6d
 programs/roadmap/r4-bits.cpp	3	12f48f6d
+declarations/namespaces/using-directive-ambiguous-use.cpp	3	ae773667
+declarations/namespaces/using-directive-global-ambiguity.cpp	3	ae773667
+declarations/structured-bindings/parenthesized.cpp	3	ae773667
+declarations/structured-bindings/with-other-declarator.cpp	3	ae773667
+expressions/comma/braced-list-left-operand.cpp	3	ae773667
+expressions/comma/braced-list-operand.cpp	3	ae773667
+expressions/conditional/gnu-omitted-operand-constant.cpp	3	ae773667
+expressions/conditional/gnu-omitted-operand.cpp	3	ae773667
+foundations/names/namespace-qualified-call.cpp	3	ae773667
+foundations/names/namespace-qualified-use.cpp	3	ae773667
