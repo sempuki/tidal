@@ -315,7 +315,10 @@ fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr
                     out.push(Arg { e: d, by_ref });
                 }
                 None => {
-                    cx.error(span, "PFX-5", format!("the call gives {} arguments for {} parameters", args.len(), n));
+                    // DEFARG-5: a call through a pointer or a reference
+                    // has no default arguments.
+                    let cause = target.is_none().then_some("DEFARG-5");
+                    cx.error_cause(span, "PFX-5", cause, format!("the call gives {} arguments for {} parameters", args.len(), n));
                     return bad(span);
                 }
             }

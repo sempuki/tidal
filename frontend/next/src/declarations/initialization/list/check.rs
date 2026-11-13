@@ -49,7 +49,7 @@ pub fn braced_value(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> 
     match conv::implicit(cx, e, to, true) {
         Ok(x) => Some(x),
         Err(m) => {
-            cx.error(span, conv::rule_of(&m).unwrap_or(if rule == "LIST-2" { "INIT-7" } else { rule }), m);
+            cx.error_cause(span, conv::rule_of(&m).unwrap_or(if rule == "LIST-2" { "INIT-7" } else { rule }), conv::cause_of(&m), m);
             None
         }
     }

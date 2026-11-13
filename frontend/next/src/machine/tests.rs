@@ -772,3 +772,24 @@ fn rules_for_declarations_the_grammar_does_not_derive() {
     assert_eq!(rule("int f(int v) { switch (v) { case 1, 2: return 1; } return 0; }"), Some("COMMA-8"));
     assert_eq!(rule("typedef int;"), Some("TYN-2"));
 }
+
+#[test]
+fn first_errors_name_the_specific_rule() {
+    let named = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => (ds[0].rule, ds[0].cause),
+        _ => (None, None),
+    };
+    assert_eq!(named("inline int main() { return 0; }"), (Some("TR-3"), Some("FN-4")));
+    assert_eq!(named("int main() { return main(); }"), (Some("FN-4"), Some("TR-3")));
+    assert_eq!(named("const int x = 1; int* p = &x;"), (Some("CV-10"), Some("CONV-9")));
+    assert_eq!(named("void* v = nullptr; int* p = v;"), (Some("INIT-7"), Some("CONV-9")));
+    assert_eq!(named("int* p; long* q = p;"), (Some("INIT-7"), None));
+    assert_eq!(named("int&& r = 1; int&& s = r;"), (Some("REF-10"), Some("VC-14")));
+    assert_eq!(named("int f(int a = 1); int (*p)(int) = f; int x = p();"), (Some("PFX-5"), Some("DEFARG-5")));
+    assert_eq!(named("typedef int span; int span = 1;"), (Some("NAM-3"), Some("TYN-2")));
+    assert_eq!(named("int X; typedef int X;"), (Some("NAM-3"), Some("TYN-2")));
+    assert_eq!(named("int main() { { a: ; } { a: ; } }"), (Some("JMP-14"), Some("NAM-11")));
+    assert_eq!(named("void f() noexcept; void f() noexcept(false) {}"), (Some("DCL-14"), Some("EXS-8")));
+    assert_eq!(named("void f() { int l = 1; constexpr int* p = &l; }"), (Some("CX-2"), Some("CE-3")));
+    assert_eq!(named("int val(); void f() { val() = 1; }"), (Some("ASN-2"), Some("VC-12")));
+}

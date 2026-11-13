@@ -130,7 +130,7 @@ fn wrap(cx: &mut Check, l: &Node, case: Option<Stmt>, s: Stmt, live: Vec<usize>)
     let Some(name) = label_name(cx, l) else { return s };
     if let Some(f) = cx.func.as_mut() {
         if f.labels.contains_key(&name) {
-            cx.error(l.span, "JMP-14", format!("the label '{}' is defined twice in the function", name));
+            cx.error_cause(l.span, "JMP-14", Some("NAM-11"), format!("the label '{}' is defined twice in the function", name));
         } else {
             let ifs = f.constexpr_ifs.clone();
             f.labels.insert(name.clone(), (l.span, live, ifs));

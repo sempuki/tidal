@@ -132,7 +132,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-The question index has 458 questions: 201 open for opinions (201
+The question index has 459 questions: 202 open for opinions (202
 provisional and 0 open), 13 compiler defects, and 244 settled. Each open
 question has a provisional answer that the specification follows. A
 compiler-defect answer says that one compiler or an older version is

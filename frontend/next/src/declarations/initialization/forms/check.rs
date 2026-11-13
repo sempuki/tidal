@@ -35,7 +35,7 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
     match conv::implicit(cx, e, to, false) {
         Ok(x) => Some(x),
         Err(m) => {
-            cx.error(span, conv::rule_of(&m).unwrap_or(rule), m);
+            cx.error_cause(span, conv::rule_of(&m).unwrap_or(rule), conv::cause_of(&m), m);
             None
         }
     }
@@ -166,7 +166,7 @@ fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<In
             Ok(x) => Some(Init::Expr(x)),
             Err(m) => {
                 if !m.is_empty() {
-                    cx.error(span, conv::rule_of(&m).unwrap_or("INIT-7"), m);
+                    cx.error_cause(span, conv::rule_of(&m).unwrap_or("INIT-7"), conv::cause_of(&m), m);
                 }
                 None
             }
@@ -250,7 +250,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         crate::declarations::inline::check::misplaced(cx, d.span, "on a variable in a block");
     }
     if name.as_ref() == "main" && (cx.lang_c || (cx.scope == 0 && d.qual == names::Qual::None)) {
-        cx.error(span, "TR-3", "a variable named main in the global namespace or with C language linkage");
+        cx.error_cause(span, "TR-3", Some("FN-4"), "a variable named main in the global namespace or with C language linkage");
     }
     storage_linkage::check::variable_specifiers(cx, s);
     if s.consteval {
@@ -473,9 +473,12 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
 
 /// CX-1, CINIT-1: the initializer must be a constant expression.
 fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'static str, static_storage: bool) {
+    // CX-2: a constexpr reference or pointer refers to an object with
+    // static storage duration or to a function.
+    let held = |rule: &'static str, why: &(&'static str, String)| if rule == constexpr::check::VARIABLE && matches!(why.0, "CE-3" | "CE-14") { "CX-2" } else { rule };
     if let Init::Ref(e) = init {
         if let Err(why) = ce::evaluate_ref(cx, e, static_storage) {
-            ce::report(cx, span, rule, why);
+            ce::report(cx, span, held(rule, &why), why);
         }
         return;
     }
@@ -489,6 +492,7 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'s
     };
     for e in exprs {
         if let Err(why) = ce::evaluate(cx, e) {
+            let rule = if e.ty.is_ptr() { held(rule, &why) } else { rule };
             ce::report(cx, span, rule, why);
             return;
         }
@@ -548,8 +552,11 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
             }
             EntKind::Enum(_) => continue,
             EntKind::Unsupported(_) => continue,
-            _ => {
-                cx.error(span, "NAM-3", format!("'{}' is already declared as a different kind of entity", name));
+            k => {
+                // TYN-2: a typedef name is not declared again as another
+                // kind of entity.
+                let cause = matches!(k, EntKind::Typedef(_)).then_some("TYN-2");
+                cx.error_cause(span, "NAM-3", cause, format!("'{}' is already declared as a different kind of entity", name));
                 return None;
             }
         }

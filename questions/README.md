@@ -495,6 +495,7 @@ status, and the first sentence of its answer section.
 | [Q-0456](Q-0456-braced-template-argument.md) | Can a braced list be a template argument? | provisional | A braced list is a template argument |
 | [Q-0457](Q-0457-guide-user-conversion-copy-init.md) | In copy initialization, is a deduction guide viable when its parameter needs a user-defined conversion of the argument? | provisional | The guide is viable |
 | [Q-0458](Q-0458-friend-two-heads-pattern.md) | Can a friend with two template heads name a member of a class template specialization whose arguments are a pattern of the first head's parameters? | provisional | The friend is not valid |
+| [Q-0459](Q-0459-main-rules-on-two-pages.md) | Which rule names each constraint on `main`, when TR-3 and FN-4 both state it? | provisional | Keep both rules |
 
 ## Status values
 

@@ -23,7 +23,9 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     let (compatible, cv_ok) = related(&e.ty, &inner);
     if compatible && e.cat == Cat::L {
         if rv && !inner.is_func() {
-            cx.error(span, "REF-10", "an rvalue reference bound to an lvalue");
+            // VC-14: the name of an rvalue reference is an lvalue.
+            let named_rref = matches!(&e.k, crate::sem::tree::EK::Var(id) if cx.u.var(*id).is_some_and(|v| matches!(v.ty.t, Type::Ref(_, true))));
+            cx.error_cause(span, "REF-10", named_rref.then_some("VC-14"), "an rvalue reference bound to an lvalue");
             return None;
         }
         if !cv_ok {
@@ -67,7 +69,7 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     let v = match conv::implicit(cx, e, &inner.unqual(), false) {
         Ok(v) => v,
         Err(m) => {
-            cx.error(span, conv::rule_of(&m).unwrap_or(rule), format!("cannot bind the reference: {}", m));
+            cx.error_cause(span, conv::rule_of(&m).unwrap_or(rule), conv::cause_of(&m), format!("cannot bind the reference: {}", m));
             return None;
         }
     };

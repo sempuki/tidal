@@ -13,7 +13,10 @@ use crate::syntax::Node;
 /// ASN-2: the left operand is a modifiable lvalue.
 fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
     if l.cat != Cat::L {
-        cx.error(span, "ASN-2", "an assignment to an rvalue");
+        // VC-12: a prvalue of a type that is not a class is not assigned
+        // to.
+        let cause = (l.cat == Cat::PR).then_some("VC-12");
+        cx.error_cause(span, "ASN-2", cause, "an assignment to an rvalue");
         return false;
     }
     if l.ty.is_array() {
@@ -74,7 +77,7 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
             Ok(r) => r,
             Err(m) => {
                 let rule = conv::rule_of(&m).unwrap_or("ASN-12");
-                cx.error(span, rule, m);
+                cx.error_cause(span, rule, conv::cause_of(&m), m);
                 return bad(span);
             }
         };

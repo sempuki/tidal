@@ -250,7 +250,9 @@ pub fn declare_in(cx: &mut Check, scope: ScopeId, name: &str, kind: EntKind, spa
             if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && matches!(kind, EntKind::Func(_)) {
                 continue;
             }
-            redeclared(cx, scope, name, span);
+            // TYN-2: a typedef name and another kind of entity.
+            let typedef = matches!(cx.u.entities[e].kind, EntKind::Typedef(_)) != matches!(kind, EntKind::Typedef(_));
+            redeclared(cx, scope, name, span, typedef);
             break;
         }
     }
@@ -259,10 +261,10 @@ pub fn declare_in(cx: &mut Check, scope: ScopeId, name: &str, kind: EntKind, spa
 
 /// NAM-3, with FN-13 for a parameter name redeclared in the outermost
 /// block of a function.
-fn redeclared(cx: &mut Check, scope: ScopeId, name: &str, span: Span) {
+fn redeclared(cx: &mut Check, scope: ScopeId, name: &str, span: Span, typedef: bool) {
     let in_body = cx.u.scopes[scope].kind == ScopeKind::Function;
     let _ = in_body;
-    cx.error(span, "NAM-3", format!("'{}' is already declared in this scope", name));
+    cx.error_cause(span, "NAM-3", typedef.then_some("TYN-2"), format!("'{}' is already declared in this scope", name));
 }
 
 /// A name whose declaration build step 3 does not model, so a use of it

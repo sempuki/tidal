@@ -29,14 +29,14 @@ fn is_main(cx: &Check, name: &str, scope: usize) -> bool {
 fn check_main(cx: &mut Check, s: &Specs, d: &Declared, span: Span) {
     let f = d.ty.func();
     if d.placeholder.is_some() || d.trailing && f.is_some_and(|f| f.ret.t != Type::int()) {
-        cx.error(span, "TR-3", "the return type of main must be int, written out");
+        cx.error_cause(span, "TR-3", Some("FN-4"), "the return type of main must be int, written out");
         return;
     }
     if f.is_some_and(|f| f.ret.unqual().t != Type::int()) {
-        cx.error(span, "TR-3", "the return type of main must be int");
+        cx.error_cause(span, "TR-3", Some("FN-4"), "the return type of main must be int");
     }
     if s.inline || s.constexpr || s.consteval {
-        cx.error(span, "TR-3", "main must not be inline, constexpr, or consteval");
+        cx.error_cause(span, "TR-3", Some("FN-4"), "main must not be inline, constexpr, or consteval");
     }
 }
 
@@ -60,7 +60,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         check_main(cx, s, d, span);
     }
     if name.as_ref() == "main" && cx.lang_c {
-        cx.error(span, "TR-3", "main has C language linkage");
+        cx.error_cause(span, "TR-3", Some("FN-4"), "main has C language linkage");
     }
     if s.inline && local {
         crate::declarations::inline::check::misplaced(cx, d.span, "on a function declaration in a block");
@@ -108,7 +108,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                     return None;
                 }
                 if f.ty.noexcept != fty.noexcept {
-                    cx.error(span, "DCL-14", format!("the declarations of '{}' disagree on noexcept", name));
+                    cx.error_cause(span, "DCL-14", Some("EXS-8"), format!("the declarations of '{}' disagree on noexcept", name));
                     return None;
                 }
                 if body.is_some() && !deleted && f.defined {
@@ -628,7 +628,7 @@ fn walk(s: &Stmt, f: &mut impl FnMut(&Stmt)) {
 /// FN-4: a program must not call `main`.
 pub fn called(cx: &mut Check, f: EntityId, span: Span) {
     if cx.u.main() == Some(f) || (&*cx.u.entities[f].name == "main" && cx.u.entities[f].scope == 0) {
-        cx.error(span, "FN-4", "main is called");
+        cx.error_cause(span, "FN-4", Some("TR-3"), "main is called");
     }
     if cx.u.func(f).is_some_and(|x| x.deleted) {
         cx.error(span, "DEL-1", format!("'{}' is deleted", cx.u.entities[f].name));
@@ -639,7 +639,7 @@ pub fn called(cx: &mut Check, f: EntityId, span: Span) {
 pub fn address_taken(cx: &mut Check, f: EntityId, span: Span) {
     crate::declarations::constexpr::check::address_of(cx, f, span);
     if &*cx.u.entities[f].name == "main" && cx.u.entities[f].scope == 0 {
-        cx.error(span, "FN-4", "the address of main is taken");
+        cx.error_cause(span, "FN-4", Some("TR-3"), "the address of main is taken");
     }
 }
 

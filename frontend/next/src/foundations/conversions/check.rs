@@ -136,6 +136,15 @@ pub fn pointer_convertible(from: &QType, to: &QType) -> bool {
     }
 }
 
+/// Two types that differ at most in cv-qualifiers and array bounds at
+/// each level of pointers and arrays.
+fn similar(a: &QType, b: &QType) -> bool {
+    match (&a.t, &b.t) {
+        (Type::Ptr(x), Type::Ptr(y)) | (Type::Array(x, _), Type::Array(y, _)) => similar(x, y),
+        (x, y) => x == y,
+    }
+}
+
 /// CV-10: one level of a qualification conversion.
 fn qual_level(from: &QType, to: &QType, const_above: bool) -> bool {
     if (from.c && !to.c) || (from.v && !to.v) {
@@ -186,6 +195,10 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
             }
             match &from.t {
                 Type::Ptr(fp) if pointer_convertible(fp, tp) => Ok(e.conv(Conv::PtrNoOp, target, Cat::PR)),
+                // CONV-9: to or from a pointer to void. CV-10 with
+                // CONV-9: a qualification conversion that is not valid.
+                Type::Ptr(fp) if fp.is_void() || tp.is_void() => Err(format!("no implicit conversion from {} to {} (CONV-9)", from.show(), to.show())),
+                Type::Ptr(fp) if similar(fp, tp) => Err(format!("no implicit conversion from {} to {} (CV-10, CONV-9)", from.show(), to.show())),
                 Type::Ptr(_) => Err(format!("no implicit conversion from {} to {}", from.show(), to.show())),
                 _ => Err(format!("no implicit conversion from {} to a pointer (CONV-8)", from.show())),
             }
@@ -205,7 +218,9 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
 /// The rule that names a failed implicit conversion's reason, when the
 /// reason is one of this page's rules.
 pub fn rule_of(msg: &str) -> Option<&'static str> {
-    if msg.contains("CONV-12") {
+    if msg.contains("(CV-10, CONV-9)") {
+        Some("CV-10")
+    } else if msg.contains("CONV-12") {
         Some("CONV-12")
     } else if msg.contains("CONV-18") {
         Some("CONV-18")
@@ -214,6 +229,12 @@ pub fn rule_of(msg: &str) -> Option<&'static str> {
     } else {
         None
     }
+}
+
+/// The rule that a failed implicit conversion's reason names as its
+/// cause, beside the rule of the context or of `rule_of`.
+pub fn cause_of(msg: &str) -> Option<&'static str> {
+    msg.contains("CONV-9)").then_some("CONV-9")
 }
 
 /// CONV-21: the conversion of `e` to `to` is narrowing. A constant whose
