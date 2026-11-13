@@ -232,7 +232,7 @@ where the table says so.
 | `syntax` | the cursor, the table of nonterminals, error recovery (it reports TR-12 through `foundations::translation`), the `Names` oracle trait, the syn node types | none |
 | `sem` | the arenas, entities, scopes, the type table with `DepType`, the typed tree with its marks, `Subst`, the `Check` context, `Unit` | written new in step 3 (`sem::types`, `sem::tree`, `sem::check`); `DepType`, the marks, and `Subst` come with step 5 |
 | `target` | the LP64 and ILP32 tables: sizes, alignments, class layout | written new in step 3 from TYP-1 and TYP-2; class layout comes with step 4 |
-| `machine` | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Stop`, `Choice`, the byte view's tables, the x87 format | written new in step 3 for the step 3 constructs; it names no rule, and calls the `run.rs` part of a page for each operation whose rule can stop a run. The byte view, the x87 format, and the exploration of choice points are not in it yet |
+| `machine` | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Stop`, `Choice`, the byte view's tables, the x87 format | written new in step 3 for the step 3 constructs; it names no rule, and calls the `run.rs` part of a page for each operation whose rule can stop a run. The x87 format is the run part of `foundations::types`. The byte view and the exploration of choice points are not in it yet |
 | `conform` | the conformance harness | `conform.rs`, with the same statuses and output, without the exploration of choice points |
 | `driver` (`main.rs`) | the command line, the outcome, the run of a program, the `--proposal` flag | `main.rs`, parts of `interp/run.rs` |
 
@@ -472,16 +472,16 @@ Steps 1 and 2 are in place. Every nonterminal of the Syntax segments
 has its function, and the parse count's disagreements are listed by
 cause in the front end's round report.
 
-Step 3 is in place in part (item RW2, `reports/clean-room/rust-frontend/report-rw3.md`).
-The new front end passes the check of 1602 of the 1897 step 3 plain
-tests (1600 of them tests that the old front end passes too), and it
-owns 1327 of them. These parts are not in it yet: lambdas (their closure
-is a class), structured bindings, `if consteval`, the `noexcept`
-operator and a `noexcept` specifier with an operand, assumptions,
-`long double` arithmetic at the machine's precision, the linking of
-several translation units, the exploration of choice points, the byte
-view of objects, and the checks of 122 reject tests of the plain
-scope.
+Step 3 is in place in part (items RW2 and RW3, `reports/clean-room/rust-frontend/report-rw3.md`
+and the commits of item RW3). The new front end passes the check of
+1819 of the 1903 step 3 plain tests (1813 of them tests that the old
+front end passes too), and it owns 1495 of them. Of the 84 plain tests
+that it does not pass, 74 are unsupported, 68 of them for a lambda, and
+10 have the status EDG-AGREES where the old front end has EDG-ONLY.
+These parts are not in it yet: lambdas (their closure is a class), the
+linking of several translation units, the exploration of choice points,
+the byte view of objects, extended floating-point literals, and an
+array with more elements than the machine holds.
 
 Model sections 1, 2, and 5 come first because section 2 needs the marks
 of section 1, and section 5 needs both. Section 3 needs the marks for
