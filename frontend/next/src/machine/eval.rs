@@ -19,6 +19,11 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         EK::Float(f) if e.ty.t == Type::Float(crate::sem::types::FloatK::LongDouble) => Ok(Val::Ext(crate::foundations::types::run::F80::from_f64(*f))),
         EK::Float(f) => Ok(Val::Float(*f)),
         EK::LongDouble(x) => Ok(Val::Ext(*x)),
+        // UN-5: `*p` for a pointer to a function names the function.
+        EK::Deref(x) if e.ty.is_func() => match eval(m, x)? {
+            Val::Fn(id) => Ok(Val::Fn(id)),
+            v => unary::run::indirection(m, v, &e.ty).and_then(|_| unsup("indirection through this value")),
+        },
         EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
@@ -340,6 +345,10 @@ pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
 
 /// Run a function with the given arguments.
 pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret> {
+    // A declaration in a block, or a C function declared in another
+    // namespace, names a function that another declaration defines
+    // (LNK-9, LSP-4).
+    let id = postfix::run::defining(m, id);
     let Some(func) = m.u.func(id) else { return unsup("a call of an entity that is not a function") };
     if let Some(why) = &func.unsupported {
         return unsup(why.clone());

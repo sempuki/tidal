@@ -806,3 +806,11 @@ fn pointer_reference_binding_and_indeterminate_bytes() {
     assert!(matches!(run("int main() { unsigned char a; int b = a; return b; }"), RunOutcome::Undefined(..)));
     assert_eq!(run("int main() { int a; (void)a; return 4; }"), RunOutcome::Result(4));
 }
+
+#[test]
+fn calls_through_indirection_and_other_declarations() {
+    assert_eq!(run("int twice(int v) { return v * 2; } int main() { int (*p)(int) = twice; return (*p)(3) + (**p)(1); }"), RunOutcome::Result(8));
+    assert_eq!(run("int f(int a) { return a; } int g() { int f(int a = 7); return f(); } int main() { return g(); }"), RunOutcome::Result(7));
+    assert_eq!(run("namespace { extern \"C\" int code() { return 3; } } namespace b { extern \"C\" int code(); } int main() { return b::code(); }"), RunOutcome::Result(3));
+    assert!(matches!(run("int main() { int (*p)() = nullptr; return (*p)(); }"), RunOutcome::Undefined(..)));
+}

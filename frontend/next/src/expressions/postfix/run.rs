@@ -54,6 +54,29 @@ pub fn check_callable(m: &mut Machine, id: EntityId) -> R<()> {
 }
 
 /// A call of a function with no definition in the unit.
+/// The declaration of the same function that has its body: `id` itself
+/// when it has one. A function declared in a block is the function of
+/// that name and type in the enclosing namespace (LNK-9), and a function
+/// with C language linkage is the one of its name with C language
+/// linkage in any namespace (LSP-4).
+pub fn defining(m: &Machine, id: EntityId) -> EntityId {
+    let Some(f) = m.u.func(id) else { return id };
+    if f.body.is_some() {
+        return id;
+    }
+    let ent = &m.u.entities[id];
+    let home = m.u.enclosing_namespace(ent.scope);
+    let found = m.u.entities.iter().enumerate().find(|(k, e)| {
+        let Some(g) = m.u.func(*k) else { return false };
+        g.body.is_some()
+            && e.name == ent.name
+            && g.ty.params == f.ty.params
+            && g.ty.ret == f.ty.ret
+            && ((f.c_linkage && g.c_linkage) || (e.scope == home && ent.scope != home))
+    });
+    found.map_or(id, |(k, _)| k)
+}
+
 pub fn no_definition(m: &mut Machine, id: EntityId) -> R<Ret> {
     let name = m.u.entities[id].name.to_string();
     if m.constant {
