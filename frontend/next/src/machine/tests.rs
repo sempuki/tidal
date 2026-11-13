@@ -210,3 +210,19 @@ fn flowing_off_the_end_of_a_function() {
     assert!(!warns("[[noreturn]] void stop(); int f() { stop(); }"));
     assert!(!warns("int main() {}"));
 }
+
+#[test]
+fn a_discarded_volatile_glvalue_is_read_in_the_listed_forms() {
+    let rule = |body: &str| {
+        let src = format!("constexpr int f() {{ volatile int v = 1; volatile int w = 2; {body} return 0; }} static_assert(f() == 0);");
+        match crate::check_source(&src, Path::new("t.cpp"), &crate::Options::default()).0 {
+            Outcome::Reject(ds) => ds[0].cause,
+            _ => None,
+        }
+    };
+    assert_eq!(rule("v;"), Some("CE-12"));
+    assert_eq!(rule("true ? v : w;"), Some("CE-12"));
+    assert_eq!(rule("(void)0, v;"), Some("CE-12"));
+    assert_eq!(rule("v = 3;"), None);
+    assert_eq!(rule("(void)&v;"), None);
+}

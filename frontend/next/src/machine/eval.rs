@@ -112,7 +112,10 @@ pub fn eval_any(m: &mut Machine, e: &Expr) -> R<Val> {
 /// Evaluate an expression for its effects (an expression statement).
 pub fn eval_discard(m: &mut Machine, e: &Expr) -> R<()> {
     if e.cat != Cat::PR {
-        place(m, e)?;
+        let p = place(m, e)?;
+        if crate::expressions::decltype::run::reads_volatile(e) {
+            values::run::read(m, &p, &e.ty)?;
+        }
     } else {
         eval(m, e)?;
     }
