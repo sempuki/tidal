@@ -97,3 +97,15 @@ fn casts_to_enumerations_stay_in_their_values() {
     assert_eq!(rule("enum E {}; int main() { int n = 1; E x = static_cast<E>(n); return 0; }"), None);
     assert_eq!(rule("enum F : unsigned char { z }; int main() { int n = 300; F x = static_cast<F>(n); return x == z; }"), None);
 }
+
+#[test]
+fn a_reference_keeps_only_the_temporary_it_binds() {
+    let rule = |src: &str| match run(src) {
+        RunOutcome::Undefined(r, ..) => Some(r),
+        _ => None,
+    };
+    assert_eq!(rule("const int& pass(const int& x) { return x; } int main() { const int& r = pass(3); return r; }"), Some("OBJ-2"));
+    assert_eq!(rule("int main() { int n = 2; const int& r = n + 1; return r - 3; }"), None);
+    assert_eq!(rule("int main() { int n = 2; const int& r = n > 1 ? 4 : 5; return r - 4; }"), None);
+    assert_eq!(rule("int f(int v) { return v; } int main() { int (&g)(int) = f; return g(0); }"), None);
+}

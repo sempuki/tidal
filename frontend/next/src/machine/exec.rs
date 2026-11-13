@@ -392,9 +392,8 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     if let Init::Ref(e) = init {
         let t = m.temps.len();
         let p = place(m, e)?;
-        // A temporary bound to a reference lives as long as the
-        // reference (REF rules): it moves to the block.
-        let kept: Vec<usize> = m.temps.drain(t..).collect();
+        // The temporary the reference keeps moves to the block.
+        let kept = crate::declarations::initialization::references::run::kept_temporary(m, e, p.obj, t);
         if let Some(f) = m.frames.last_mut() {
             if let Some(b) = f.blocks.last_mut() {
                 b.extend(kept);
