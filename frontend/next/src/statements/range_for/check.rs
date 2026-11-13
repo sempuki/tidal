@@ -49,6 +49,10 @@ pub fn range_for_stmt(cx: &mut Check, n: &Node) -> Stmt {
         let Some(rd) = n.child("range_decl") else { return Stmt::new(SK::Null, n.span) };
         let Some(ri) = n.child("range_init") else { return Stmt::new(SK::Null, n.span) };
         let Some(re) = first_node(ri) else { return Stmt::new(SK::Null, n.span) };
+        if re.prod == "braced_init" && !crate::foundations::names::check::std_declares(cx, "initializer_list") {
+            cx.error_cause(re.span, "AUTO-21", Some("LSUP-1"), "a range-based for over a braced list needs a declaration of std::initializer_list");
+            return Stmt::new(SK::Null, n.span);
+        }
         if re.prod == "braced_init" {
             return unsupported(cx, n, "a range-based for over a braced list (std::initializer_list, build step 4)");
         }

@@ -191,6 +191,10 @@ fn init_expr(cx: &mut Check, init: &Node, p: &auto::check::Placeholder) -> Optio
     let one = if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
         let items: Vec<&Node> = b.children("init_clause").collect();
         if words.first() == Some(&"=") {
+            if !names::std_declares(cx, "initializer_list") {
+                cx.error_cause(init.span, "AUTO-21", Some("LSUP-1"), "'auto' with '= { ... }' needs a declaration of std::initializer_list");
+                return None;
+            }
             cx.unsupported(init.span, "auto with '= { ... }' (std::initializer_list, build step 4)");
             return None;
         }

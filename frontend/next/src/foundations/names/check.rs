@@ -339,3 +339,11 @@ pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QTy
     out
 }
 
+/// LSUP-1, LSUP-2: whether the unit has declared `std::<name>`, a type
+/// that the language builds from the library's declaration.
+pub fn std_declares(cx: &Check, name: &str) -> bool {
+    declared_here(cx, 0, "std").iter().any(|&e| match cx.u.entities[e].kind {
+        EntKind::Namespace(sc) => !declared_here(cx, sc, name).is_empty(),
+        _ => false,
+    })
+}

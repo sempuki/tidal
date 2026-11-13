@@ -677,3 +677,16 @@ fn references_in_constant_evaluation() {
     assert_eq!(rule("int f() { constexpr int k = 3; constexpr int s = k; return s; }"), None);
     assert_eq!(rule("void p(int) {} void (&c)(int) = p; void (&&d)(int){p}; static_assert(&c == &p && &d == &p);"), None);
 }
+
+#[test]
+fn library_types_the_language_needs() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("auto a = {1, 2};"), Some("LSUP-1"));
+    assert_eq!(rule("int main() { int s = 0; for (int v : {1, 2}) s += v; return s; }"), Some("LSUP-1"));
+    assert_eq!(rule("auto r = 1 <=> 2;"), Some("LSUP-2"));
+    assert_eq!(rule("namespace std { class strong_ordering; } auto r = 1 <=> 2;"), Some("unsupported"));
+}

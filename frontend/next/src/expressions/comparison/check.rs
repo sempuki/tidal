@@ -158,6 +158,15 @@ fn warnings(cx: &mut Check, op: BOp, l: &Expr, r: &Expr, span: Span) {
 /// `relational_expr`, `equality_expr`, `three_way_expr`.
 pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
     let op = BOp::from_str(operator(cx, n)).unwrap_or(BOp::Eq);
+    if op == BOp::Spaceship && !crate::foundations::names::check::std_declares(cx, "strong_ordering") {
+        // The operands decide which ordering type the result has. Each
+        // needs std::strong_ordering or a weaker type, and a unit that
+        // declares none has none of them.
+        if !["partial_ordering", "weak_ordering"].iter().any(|t| crate::foundations::names::check::std_declares(cx, t)) {
+            cx.error_cause(n.span, "CMP-25", Some("LSUP-2"), "the three-way comparison needs a declaration of its ordering type in namespace std");
+            return bad(n.span);
+        }
+    }
     if op == BOp::Spaceship {
         let t = cx.unsupported(n.span, "the three-way comparison (its result types come from the library)");
         return Expr::new(EK::Int(0), t, Cat::PR, n.span);
