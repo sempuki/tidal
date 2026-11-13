@@ -81,15 +81,53 @@ pub fn condition(cx: &mut Check, n: &Node, rule: &'static str, as_bool: bool) ->
     Some(Cond::Expr(e))
 }
 
+/// `if consteval` and `if !consteval` (IF-18, IF-19, IF-24): the branch
+/// that runs in constant evaluation is an immediate function context.
+/// No jump enters a branch (IF-17).
+fn if_consteval(cx: &mut Check, n: &Node, negated: bool) -> Stmt {
+    let id = cx.next_stmt_id();
+    if let Some(f) = cx.func.as_mut() {
+        f.constexpr_ifs.push(id);
+    }
+    let branches: Vec<&Node> = n.children("block").collect();
+    let mut out = Vec::new();
+    for (k, b) in branches.iter().enumerate() {
+        let constant = (k == 0) != negated;
+        if let Some(f) = cx.func.as_mut() {
+            if constant {
+                f.immediate += 1;
+            } else {
+                f.runtime += 1;
+            }
+        }
+        let s = match b.child("compound_stmt") {
+            Some(cs) => crate::statements::blocks::check::compound_stmt(cx, cs, None),
+            None => Stmt::new(SK::Null, b.span),
+        };
+        out.push(s);
+        if let Some(f) = cx.func.as_mut() {
+            if constant {
+                f.immediate -= 1;
+            } else {
+                f.runtime -= 1;
+            }
+        }
+    }
+    if let Some(f) = cx.func.as_mut() {
+        f.constexpr_ifs.pop();
+    }
+    let mut out = out.into_iter();
+    let first = out.next().unwrap_or(Stmt::new(SK::Null, n.span));
+    let second = out.next().unwrap_or(Stmt::new(SK::Null, n.span));
+    let (constant, runtime) = if negated { (second, first) } else { (first, second) };
+    Stmt::new(SK::Consteval { constant: Box::new(constant), runtime: Box::new(runtime) }, n.span)
+}
+
 /// `if_stmt` (IF-1 to IF-10, IF-16, IF-20, IF-23).
 pub fn if_stmt(cx: &mut Check, n: &Node) -> Stmt {
     let words = cx.words(n);
     if words.contains(&"consteval") {
-        cx.unsupported(n.span, "if consteval");
-        if let Some(f) = cx.func.as_mut() {
-            f.unsupported = Some("if consteval".into());
-        }
-        return Stmt::new(SK::Unsupported("if consteval".into()), n.span);
+        return if_consteval(cx, n, words.contains(&"!"));
     }
     let constexpr = words.contains(&"constexpr");
     let saved = cx.scope;

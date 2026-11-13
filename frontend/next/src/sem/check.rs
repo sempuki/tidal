@@ -81,9 +81,15 @@ pub struct FnCtx {
     /// and the `if constexpr` statements that enclose it (IF-17).
     pub labels: HashMap<Rc<str>, (Span, Vec<EntityId>, Vec<StmtId>)>,
     pub gotos: Vec<(Rc<str>, Span, Vec<EntityId>, Vec<StmtId>)>,
-    /// The `if constexpr` statements that enclose the statement being
-    /// checked, innermost last.
+    /// The `if constexpr` and `if consteval` statements that enclose the
+    /// statement being checked, innermost last.
     pub constexpr_ifs: Vec<StmtId>,
+    /// Depth of the branches of `if consteval` that run in constant
+    /// evaluation, each an immediate function context (IF-19).
+    pub immediate: u32,
+    /// Depth of the branches of `if consteval` that run at run time,
+    /// where a call of a `consteval` function must be a constant (IF-24).
+    pub runtime: u32,
     /// The automatic variables with an initializer in scope.
     pub live: Vec<EntityId>,
     /// The switches that enclose the statement, innermost last.

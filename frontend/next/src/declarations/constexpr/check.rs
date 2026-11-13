@@ -46,14 +46,21 @@ pub const VARIABLE: &str = "CX-1";
 /// The rule that a constinit variable's initializer breaks.
 pub const CONSTINIT: &str = "CINIT-1";
 
+/// The body of a `consteval` function, or a branch of `if consteval`
+/// that runs in constant evaluation (IF-19).
+fn immediate_context(cx: &Check) -> bool {
+    cx.func.as_ref().is_some_and(|c| c.consteval || c.immediate > 0)
+}
+
 /// CEV-1: a call of a `consteval` function outside an immediate function
 /// context must be a constant expression.
 pub fn immediate_call(cx: &mut Check, f: crate::sem::EntityId, call: crate::sem::tree::Expr) -> crate::sem::tree::Expr {
-    if !cx.u.func(f).is_some_and(|x| x.consteval) || cx.func.as_ref().is_some_and(|c| c.consteval) || cx.unevaluated > 0 {
+    if !cx.u.func(f).is_some_and(|x| x.consteval) || immediate_context(cx) || cx.unevaluated > 0 {
         return call;
     }
     if let Err(why) = crate::foundations::constant_evaluation::check::evaluate(cx, &call) {
-        crate::foundations::constant_evaluation::check::report(cx, call.span, "CEV-1", why);
+        let rule = if cx.func.as_ref().is_some_and(|c| c.runtime > 0) { "IF-24" } else { "CEV-1" };
+        crate::foundations::constant_evaluation::check::report(cx, call.span, rule, why);
     }
     call
 }
@@ -62,7 +69,7 @@ pub fn immediate_call(cx: &mut Check, f: crate::sem::EntityId, call: crate::sem:
 /// immediate function context (the body of a `consteval` function).
 pub fn address_of(cx: &mut Check, f: crate::sem::EntityId, span: Span) {
     let immediate = cx.u.func(f).is_some_and(|x| x.consteval);
-    let inside = cx.func.as_ref().is_some_and(|c| c.consteval);
+    let inside = immediate_context(cx);
     if immediate && !inside {
         cx.error(span, "CEV-2", format!("the address of the consteval function '{}' is taken", cx.u.entities[f].name));
     }

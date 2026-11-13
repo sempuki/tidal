@@ -519,6 +519,11 @@ impl Paths {
                 }
             },
             SK::Chosen(c) => c.as_ref().map_or(true, |c| self.completes(cx, c)),
+            SK::Consteval { constant, runtime } => {
+                let a = self.completes(cx, constant);
+                let b = self.completes(cx, runtime);
+                a || b
+            }
             SK::While { id, cond, body } => self.forever(cx, *id, body, constant(cond) == Some(true)),
             SK::For { id, cond, body, .. } => self.forever(cx, *id, body, cond.as_ref().map_or(true, |c| constant(c) == Some(true))),
             SK::Do { id, body, cond } => self.forever(cx, *id, body, constant_bool(cond) == Some(true)),
@@ -597,6 +602,10 @@ fn walk(s: &Stmt, f: &mut impl FnMut(&Stmt)) {
             els.iter().for_each(|x| walk(x, f));
         }
         SK::Chosen(c) => c.iter().for_each(|x| walk(x, f)),
+        SK::Consteval { constant, runtime } => {
+            walk(constant, f);
+            walk(runtime, f);
+        }
         SK::While { body, .. } | SK::Do { body, .. } => walk(body, f),
         SK::For { init, body, .. } | SK::RangeArray { init, body, .. } | SK::Switch { init, body, .. } => {
             init.iter().for_each(|x| walk(x, f));

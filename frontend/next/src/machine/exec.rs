@@ -28,6 +28,7 @@ pub fn contains(s: &Stmt, t: &Seek) -> bool {
         SK::Block(xs) => xs.iter().any(|x| contains(x, t)),
         SK::If { then, els, .. } => contains(then, t) || els.as_ref().is_some_and(|e| contains(e, t)),
         SK::Chosen(Some(x)) => contains(x, t),
+        SK::Consteval { constant, runtime } => contains(constant, t) || contains(runtime, t),
         SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => contains(body, t),
         // A nested switch's own labels are not the outer switch's.
         SK::Switch { body, .. } => matches!(t, Seek::Label(_)) && contains(body, t),
@@ -116,6 +117,8 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
             Some(x) => run(m, x, seek),
             None => Ok(Flow::Normal),
         },
+        // IF-18, IF-25: the branch for the mode the evaluation runs in.
+        SK::Consteval { constant, runtime } => run(m, if m.constant || m.constant_init { constant } else { runtime }, seek),
         SK::While { id, cond, body } => {
             let mut seek = seek.cloned();
             loop {
@@ -369,6 +372,18 @@ fn declare(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
         static_var(m, id)?;
         return Ok(());
     }
+    // IF-25: an initializer of a local variable that the language tries
+    // as a constant, and that is one, runs as a constant evaluation.
+    let constant = v.constexpr || (v.const_init && (v.ty.is_ref() || crate::foundations::constant_evaluation::run::usable_in_constant_expressions(m, v)));
+    let was = m.constant_init;
+    m.constant_init |= constant;
+    let r = declare_automatic(m, id, init);
+    m.constant_init = was;
+    r
+}
+
+fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
+    let Some(v) = m.u.var(id) else { return Ok(()) };
     let has = m.frames.last().is_some_and(|f| f.vars.contains_key(&id));
     if !has {
         return declare_new(m, id, init);
@@ -451,6 +466,8 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
     crate::declarations::storage_linkage::run::enter_init(m, id)?;
     let saved = std::mem::take(&mut m.temps);
     let frames = std::mem::replace(&mut m.frames, vec![super::Frame { blocks: vec![Vec::new()], ..Default::default() }]);
+    let was = m.constant_init;
+    m.constant_init |= v.const_init;
     let r = (|| -> R<Ptr> {
         if let Init::Ref(e) = &init {
             let p = place(m, e)?;
@@ -466,6 +483,7 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
         end_temps(m, 0);
         Ok(Ptr::whole(o))
     })();
+    m.constant_init = was;
     m.frames = frames;
     m.temps = saved;
     m.initializing.retain(|&x| x != id);

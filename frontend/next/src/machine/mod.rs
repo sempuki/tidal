@@ -146,6 +146,10 @@ pub struct Machine<'a> {
     pub u: &'a Unit,
     pub target: Target,
     pub constant: bool,
+    /// The run is inside an initializer that the language tries as a
+    /// constant, and that is one, so `if consteval` takes its constant
+    /// branch (IF-25).
+    pub constant_init: bool,
     pub objs: Vec<Obj>,
     pub frames: Vec<Frame>,
     pub globals: HashMap<EntityId, usize>,
@@ -187,6 +191,7 @@ impl<'a> Machine<'a> {
             u,
             target: u.target,
             constant,
+            constant_init: false,
             objs: Vec::new(),
             frames: vec![Frame::default()],
             globals: HashMap::new(),

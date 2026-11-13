@@ -507,3 +507,21 @@ fn constants_inline_and_unread() {
     assert_eq!(rule("int f() { int n; n = 3; return n; }", &["-Wunused"]), None);
     assert_eq!(rule("void f() { int n = 0; n = n + 1; }", &["-Wunused"]), None);
 }
+
+#[test]
+fn if_consteval() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    let w = "constexpr int w() { if consteval { return 1; } else { return 2; } } ";
+    assert_eq!(rule(&format!("{}static_assert(w() == 1);", w)), None);
+    assert_eq!(rule(&format!("{}static_assert(w() == 2);", w)), Some("SA-1"));
+    let t = "consteval int t(int v) { return v * 2; } ";
+    assert_eq!(rule(&format!("{}constexpr int f(int v) {{ if consteval {{ return t(v); }} return v; }}", t)), None);
+    assert_eq!(rule(&format!("{}constexpr int f(int v) {{ if !consteval {{ return t(v); }} return v; }}", t)), Some("IF-24"));
+    assert_eq!(rule(&format!("{}constexpr int f(int v) {{ return t(v); }}", t)), Some("CEV-1"));
+    assert_eq!(rule("void f() { goto in; if consteval { in:; } }"), Some("IF-17"));
+    assert_eq!(run(&format!("{}int c = w(); int o = 0; int d = w() + o; int main() {{ return c * 10 + d; }}", w)), RunOutcome::Result(12));
+    assert_eq!(run(&format!("{}int main() {{ const int k = w(); int n = w(); return k * 10 + n; }}", w)), RunOutcome::Result(12));
+}

@@ -256,6 +256,10 @@ pub enum SK {
     /// `if consteval` and `if constexpr` that analysis already decided:
     /// the branch that runs, if any.
     Chosen(Option<Box<Stmt>>),
+    /// `if consteval` and `if !consteval`: the branch that runs in
+    /// constant evaluation, and the branch that runs at run time
+    /// (IF-18), either one a null statement when the form has none.
+    Consteval { constant: Box<Stmt>, runtime: Box<Stmt> },
     While { id: StmtId, cond: Cond, body: Box<Stmt> },
     Do { id: StmtId, body: Box<Stmt>, cond: Expr },
     For { id: StmtId, init: Option<Box<Stmt>>, cond: Option<Cond>, step: Option<Expr>, body: Box<Stmt> },

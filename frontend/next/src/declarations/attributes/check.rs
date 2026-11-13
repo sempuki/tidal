@@ -231,6 +231,10 @@ fn placement(s: &crate::sem::tree::Stmt, next: Next, sw: Option<crate::sem::tree
                 placement(e, next, sw, bad);
             }
         }
+        SK::Consteval { constant, runtime } => {
+            placement(constant, next, sw, bad);
+            placement(runtime, next, sw, bad);
+        }
         SK::Chosen(Some(x)) | SK::Case(_, _, x) | SK::Label(_, x) => placement(x, next, sw, bad),
         SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => placement(body, Next::LoopEnd, sw, bad),
         SK::Switch { id, body, .. } => placement(body, Next::Other, Some(*id), bad),
@@ -268,6 +272,10 @@ fn falls(cx: &Check, s: &crate::sem::tree::Stmt, warn: &mut Vec<Span>) {
             if let Some(e) = els {
                 falls(cx, e, warn);
             }
+        }
+        SK::Consteval { constant, runtime } => {
+            falls(cx, constant, warn);
+            falls(cx, runtime, warn);
         }
         SK::Chosen(Some(x)) | SK::Case(_, _, x) | SK::Label(_, x) => falls(cx, x, warn),
         SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => falls(cx, body, warn),
