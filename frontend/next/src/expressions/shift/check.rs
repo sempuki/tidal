@@ -23,6 +23,13 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
     }
     let l = conv::promote(cx, l);
     let r = conv::promote(cx, r);
+    // SHF-9: a constant count that is negative or not less than the
+    // width of the promoted left operand.
+    if let (Some(crate::machine::Val::Int(c)), Some(k)) = (crate::foundations::constant_evaluation::check::try_value(cx, &r), l.ty.int_kind()) {
+        if c < 0 || c >= cx.u.target.int_bits(k) as i128 {
+            cx.warning(span, "SHF-9", format!("the shift count {} is negative or not less than the width of {}", c, l.ty.show()));
+        }
+    }
     let t = l.ty.clone();
     Expr::new(EK::Binary(op, Box::new(l), Box::new(r)), t, Cat::PR, span)
 }

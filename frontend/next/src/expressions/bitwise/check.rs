@@ -13,6 +13,10 @@ use crate::syntax::Node;
 /// integer operands.
 pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
     crate::expressions::check::mixed_enumerations(cx, &l, &r, span, "BIT-8", false);
+    // BIT-6: a comparison as an operand without parentheses.
+    if [&l, &r].iter().any(|e| !e.paren && matches!(e.k, EK::Binary(o, ..) if o.is_comparison())) && cx.wflag(&["-Wall", "-Wparentheses"]) {
+        cx.warning(span, "BIT-6", "a comparison as an operand of a bitwise operator without parentheses");
+    }
     let (l, r) = (rvalue(cx, l), rvalue(cx, r));
     if l.ty.is_error() || r.ty.is_error() {
         return bad(span);

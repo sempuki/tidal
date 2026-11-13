@@ -261,3 +261,23 @@ fn warnings_for_values_without_effect_and_mixed_enumerations() {
     assert_eq!(rule("enum E { A }; double f() { return A * 1.5; }", &[]), Some("MUL-16"));
     assert_eq!(rule("enum E { A }; double f() { return A | 1; }", &[]), None);
 }
+
+#[test]
+fn operator_warnings() {
+    let rule = |src: &str, flags: &[&str]| {
+        let o = crate::Options { werror: true, wflags: flags.iter().map(|f| f.to_string()).collect(), ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    assert_eq!(rule("bool f(bool a, bool b, bool c) { return a || b && c; }", &["-Wparentheses"]), Some("LOG-8"));
+    assert_eq!(rule("bool f(bool a, bool b, bool c) { return a || (b && c); }", &["-Wparentheses"]), None);
+    assert_eq!(rule("bool f(int a, int b) { return !a == b; }", &["-Wall"]), Some("LOG-9"));
+    assert_eq!(rule("bool f(int a, int b) { return (!a) == b; }", &["-Wall"]), None);
+    assert_eq!(rule("bool f(int a, int b, int c) { return a & b == c; }", &["-Wparentheses"]), Some("BIT-6"));
+    assert_eq!(rule("int f(bool b) { return ~b; }", &["-Wbool-operation"]), Some("BIT-7"));
+    assert_eq!(rule("int f() { return 1 << 33; }", &[]), Some("SHF-9"));
+    assert_eq!(rule("int f(int v) { return v << -1; }", &[]), Some("SHF-9"));
+    assert_eq!(rule("int f(int v) { return v << 31; }", &[]), None);
+}

@@ -80,6 +80,10 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
         }
         "~" => {
             let e = rvalue(cx, e);
+            // BIT-7: `~` on a `bool` operand.
+            if e.ty.is_bool() && cx.wflag(&["-Wall", "-Wbool-operation"]) {
+                cx.warning(span, "BIT-7", "'~' on a bool operand");
+            }
             let scoped = matches!(e.ty.t, Type::Enum(en) if cx.u.enums[en].scoped);
             if !(e.ty.is_integral() || e.ty.is_enum()) || scoped {
                 cx.error(span, "BIT-3", format!("'~' on {}", e.ty.show()));

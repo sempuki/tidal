@@ -123,6 +123,10 @@ fn nonnegative_constant(e: &Expr) -> bool {
 /// The recommended warnings of a comparison, on its operands as written.
 fn warnings(cx: &mut Check, op: BOp, l: &Expr, r: &Expr, span: Span) {
     let relational = |o: BOp| matches!(o, BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge);
+    // LOG-9: `!` that applies only to the left operand, as in `!a == b`.
+    if !l.paren && matches!(l.k, EK::Unary(crate::sem::tree::UOp::Not, _)) && !r.ty.is_bool() && cx.wflag(&["-Wall", "-Wlogical-not-parentheses"]) {
+        cx.warning(span, "LOG-9", "'!' applies only to the left operand of the comparison");
+    }
     // CMP-14: a chained comparison, `a < b < c`.
     if relational(op) && !l.paren && matches!(l.k, EK::Binary(o, ..) if relational(o)) && cx.wflag(&["-Wall", "-Wparentheses"]) {
         cx.warning(span, "CMP-14", "comparisons like 'a < b < c' do not compare b with both");

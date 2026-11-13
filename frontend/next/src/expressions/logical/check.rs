@@ -17,6 +17,10 @@ pub fn bool_operand(cx: &mut Check, e: Expr) -> Expr {
 pub fn logical(cx: &mut Check, n: &Node) -> Expr {
     let and = operator(cx, n) == "&&";
     let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+    // LOG-8: `&&` as an operand of `||` without parentheses.
+    if !and && [&l, &r].iter().any(|e| !e.paren && matches!(e.k, EK::Logical(true, ..))) && cx.wflag(&["-Wall", "-Wparentheses"]) {
+        cx.warning(n.span, "LOG-8", "'&&' within '||' without parentheses");
+    }
     let l = bool_operand(cx, l);
     let r = bool_operand(cx, r);
     if l.ty.is_error() || r.ty.is_error() {
