@@ -392,3 +392,21 @@ fn specifier_agreement_and_c_names() {
     assert_eq!(rule("int g(int); extern \"C\" int g(int);"), Some("LSP-7"));
     assert_eq!(rule("extern \"C\" int g(int); int g(int);"), None);
 }
+
+#[test]
+fn overload_sets_need_a_target() {
+    let rule = |src: &str| match crate::check_source(&format!("void f(int); void f(double); {src}"), Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("void u() { f; }"), Some("OVL-20"));
+    assert_eq!(rule("void u() { (void)f; }"), Some("OVL-20"));
+    assert_eq!(rule("auto p = &f;"), Some("AUTO-8"));
+    assert_eq!(rule("decltype(f) x;"), Some("DTY-4"));
+    assert_eq!(rule("void g(...); void u() { g(f); }"), Some("OVL-20"));
+    assert_eq!(rule("void g(void (&)(int)); void g(void (*)(int)); void u() { g(f); }"), Some("OVL-36"));
+    assert_eq!(rule("void (*q)(int) = &f;"), None);
+    assert_eq!(rule("void (&r)(double){f};"), None);
+    assert_eq!(rule("void g(void (*)(int)); void u() { g(&f); }"), None);
+    assert_eq!(rule("void (*q)(int) = (void (*)(int))f;"), None);
+}

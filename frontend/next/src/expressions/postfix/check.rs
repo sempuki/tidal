@@ -116,7 +116,7 @@ pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> E
         let t = cx.unsupported(span, "a pack expansion in a call");
         return Expr::new(EK::Int(0), t, Cat::PR, span);
     }
-    if args.iter().any(|a| a.ty.is_error()) {
+    if args.iter().any(|a| a.ty.is_error() && !primary::check::unresolved_set(a)) {
         return bad(span);
     }
     // A name that finds functions: overload resolution chooses.

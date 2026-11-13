@@ -72,6 +72,10 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
     }
     if ctx.deduce {
         let t = match &value {
+            Some(v) if crate::expressions::primary::check::unresolved_set(v) => {
+                crate::expressions::primary::check::no_target(cx, v, "OVL-20");
+                return Stmt::new(SK::Null, span);
+            }
             Some(v) if v.ty.is_error() => return Stmt::new(SK::Null, span),
             Some(v) => crate::declarations::auto::check::decay(&v.ty).unqual_top(),
             None => QType::void(),

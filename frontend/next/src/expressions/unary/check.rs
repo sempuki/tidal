@@ -41,6 +41,9 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
     }
     let Some(operand) = nodes(n).last().copied() else { return bad(span) };
     let e = expr(cx, operand);
+    if op == "&" && crate::expressions::primary::check::unresolved_set(&e) {
+        return address_of(cx, e, span);
+    }
     if e.ty.is_error() {
         return bad(span);
     }
@@ -106,8 +109,9 @@ pub fn address_of(cx: &mut Check, e: Expr, span: Span) -> Expr {
     if let EK::Func(f) = e.k {
         crate::declarations::functions::definitions::check::address_taken(cx, f, span);
         if e.ty.is_error() {
-            let t = cx.unsupported(span, "the address of an overload set");
-            return Expr::new(EK::Int(0), t, Cat::PR, span);
+            // The address of an overload set: a target type chooses
+            // the function (OVL-18).
+            return Expr::new(EK::AddrOf(Box::new(e)), QType::error(), Cat::PR, span);
         }
     }
     if e.cat != Cat::L {

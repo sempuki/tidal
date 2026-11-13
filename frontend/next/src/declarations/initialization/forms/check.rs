@@ -44,6 +44,13 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
 /// An overload set converted to a pointer to function selects the
 /// function of the target's type (OVL-18, ICS-47); None after an error.
 pub fn select_overload(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
+    if let EK::AddrOf(inner) = &e.k {
+        if crate::expressions::primary::check::unresolved_set(&e) {
+            let f = select_overload(cx, (**inner).clone(), to)?;
+            let t = QType::ptr_to(f.ty.clone());
+            return Some(Expr::new(EK::AddrOf(Box::new(f)), t, Cat::PR, e.span));
+        }
+    }
     let EK::Func(_) = e.k else { return Some(e) };
     if !e.ty.is_error() {
         return Some(e);
@@ -55,7 +62,7 @@ pub fn select_overload(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
         _ => None,
     };
     let Some(want) = want else {
-        cx.unsupported(e.span, "an overload set without a target function type");
+        crate::expressions::primary::check::no_target(cx, &e, "OVL-20");
         return None;
     };
     let pick: Vec<EntityId> = set.into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).collect();

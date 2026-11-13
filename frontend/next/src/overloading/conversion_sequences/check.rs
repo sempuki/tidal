@@ -89,6 +89,21 @@ fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bo
 
 /// The sequence from an argument to a parameter type, or None.
 pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
+    // ICS-47: an overload set converts to a pointer or a reference to a
+    // function whose type one of its functions has, by the identity.
+    if crate::expressions::primary::check::unresolved_set(arg) {
+        let inner = match &arg.k {
+            crate::sem::tree::EK::AddrOf(x) => x,
+            _ => arg,
+        };
+        let want = match &param.t {
+            Type::Ptr(p) => p.func().cloned(),
+            Type::Ref(p, _) if !matches!(arg.k, crate::sem::tree::EK::AddrOf(_)) => p.func().cloned(),
+            _ => None,
+        }?;
+        let set = crate::expressions::primary::check::overload_set(cx, inner);
+        return set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).then(|| Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false });
+    }
     if arg.ty.is_error() || param.is_error() {
         return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false });
     }

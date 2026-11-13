@@ -41,6 +41,9 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
     cx.unevaluated += 1;
     let e = expr(cx, c);
     cx.unevaluated -= 1;
+    if crate::expressions::primary::check::unresolved_set(&e) {
+        crate::expressions::primary::check::no_target(cx, &e, "DTY-4");
+    }
     if e.ty.is_error() {
         return QType::error();
     }

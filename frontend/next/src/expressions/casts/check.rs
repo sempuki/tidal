@@ -145,6 +145,7 @@ pub fn named_cast(cx: &mut Check, n: &Node) -> Expr {
     let to = crate::declarations::declarators::check::type_id(cx, tn);
     let Some(en) = nodes(n).into_iter().find(|c| c.prod != "cast_keyword" && c.prod != "type_id") else { return bad(span) };
     let e = expr(cx, en);
+    let Some(e) = resolve_set(cx, e, &to) else { return bad(span) };
     if to.is_error() || e.ty.is_error() {
         return bad(span);
     }
@@ -172,6 +173,7 @@ pub fn named_cast(cx: &mut Check, n: &Node) -> Expr {
 /// A cast in the notation `(T)e` or `T(e)` (CAST-9): the first of the
 /// kinds that is valid.
 pub fn explicit(cx: &mut Check, e: Expr, to: &QType, span: Span) -> Expr {
+    let Some(e) = resolve_set(cx, e, to) else { return bad(span) };
     if to.is_error() || e.ty.is_error() {
         return bad(span);
     }
@@ -264,3 +266,14 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
         }
     }
 }
+
+/// An overload set as the operand of a cast: the target type chooses the
+/// function (OVL-18), and a target that is not a pointer or a reference
+/// to a function chooses none (OVL-20). None after an error.
+fn resolve_set(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
+    if !crate::expressions::primary::check::unresolved_set(&e) || to.is_error() {
+        return Some(e);
+    }
+    crate::declarations::initialization::forms::check::select_overload(cx, e, to)
+}
+

@@ -143,6 +143,9 @@ pub fn expression_stmt(cx: &mut Check, n: &Node) -> Stmt {
     let Some(c) = first_node(n) else { return Stmt::new(SK::Null, n.span) };
     let e = expr(cx, c);
     nodiscard(cx, &e);
+    if crate::expressions::primary::check::unresolved_set(&e) {
+        crate::expressions::primary::check::no_target(cx, &e, "OVL-20");
+    }
     if e.ty.is_error() {
         return Stmt::new(SK::Null, n.span);
     }

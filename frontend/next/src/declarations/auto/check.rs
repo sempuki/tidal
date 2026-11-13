@@ -27,6 +27,10 @@ pub fn placeholder(cx: &mut Check, n: &Node) -> Placeholder {
 /// initializer (AUTO-2 to AUTO-5, AUTO-10). `declarator` is the
 /// declarator node, applied again to the deduced type by the caller.
 pub fn deduce(cx: &mut Check, p: &Placeholder, declarator: &Node, init: &Expr) -> Option<QType> {
+    if crate::expressions::primary::check::unresolved_set(init) {
+        crate::expressions::primary::check::no_target(cx, init, "AUTO-8");
+        return None;
+    }
     if init.ty.is_error() {
         return None;
     }

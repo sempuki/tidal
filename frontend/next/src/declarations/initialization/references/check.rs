@@ -14,11 +14,11 @@ use crate::syntax::Node;
 pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<Expr> {
     let Type::Ref(inner, rv) = &rt.t else { return None };
     let (inner, rv) = ((**inner).clone(), *rv);
+    let e = crate::declarations::initialization::forms::check::select_overload(cx, e, rt)?;
     if e.ty.is_error() || inner.is_error() {
         return None;
     }
     let e = deref_ref(e);
-    let e = crate::declarations::initialization::forms::check::select_overload(cx, e, rt)?;
     let span = e.span;
     let (compatible, cv_ok) = related(&e.ty, &inner);
     if compatible && e.cat == Cat::L {
@@ -106,6 +106,9 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
         let c = first_node(its[0])?;
         let e = expr(cx, c);
         let inner = ty.nonref();
+        if crate::expressions::primary::check::unresolved_set(&e) {
+            return bind(cx, e, ty, "INIT-7").map(Init::Ref);
+        }
         let rv = crate::foundations::values::check::rvalue(cx, e.clone());
         if conv::is_narrowing(cx, &rv, &inner) && e.ty.unqual().t != inner.unqual().t {
             cx.error(init.span, "REF-11", "a narrowing conversion in the braces of a reference");

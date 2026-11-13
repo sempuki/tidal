@@ -258,3 +258,20 @@ pub fn overload_set(cx: &Check, e: &Expr) -> Vec<EntityId> {
         set
     }
 }
+
+/// A name of an overload set, or its address, that no target type has
+/// resolved yet (OVL-18): it has the error type until a target chooses.
+pub fn unresolved_set(e: &Expr) -> bool {
+    e.ty.is_error()
+        && match &e.k {
+            EK::Func(_) => true,
+            EK::AddrOf(x) => matches!(x.k, EK::Func(_)) && x.ty.is_error(),
+            _ => false,
+        }
+}
+
+/// OVL-20 and the rules that name it for one context (AUTO-8, DTY-4,
+/// ICS-6): an overload set where no target type chooses a function.
+pub fn no_target(cx: &mut Check, e: &Expr, rule: &'static str) {
+    cx.error(e.span, rule, "an overload set with no target type that chooses one function");
+}

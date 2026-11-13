@@ -102,6 +102,11 @@ pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, na
         let mut ok = true;
         for (k, a) in args.iter().enumerate() {
             if k >= n {
+                // ICS-6: an overload set has no sequence to an ellipsis.
+                if crate::expressions::primary::check::unresolved_set(a) {
+                    ok = false;
+                    break;
+                }
                 seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true });
                 continue;
             }

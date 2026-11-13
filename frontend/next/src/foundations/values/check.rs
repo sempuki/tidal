@@ -10,6 +10,10 @@ use crate::sem::types::QType;
 /// to a pointer (CONV-13), and a glvalue of another type is read, which
 /// drops its top-level cv-qualifiers.
 pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
+    if crate::expressions::primary::check::unresolved_set(&e) {
+        crate::expressions::primary::check::no_target(cx, &e, "OVL-20");
+        return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
+    }
     if e.ty.is_error() {
         return e;
     }
