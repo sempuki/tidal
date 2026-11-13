@@ -145,7 +145,10 @@ pub fn check_ambiguous(cx: &mut Check, found: &[EntityId], name: &str, span: Spa
         if others.len() == 1 {
             return false;
         }
-        cx.error(span, "NAM-26", format!("'{}' is ambiguous", name));
+        // NS-17: the names come from namespaces that using-directives
+        // bring in.
+        let scopes: std::collections::HashSet<_> = others.iter().map(|&&e| cx.u.entities[e].scope).collect();
+        cx.error_cause(span, "NAM-26", (scopes.len() > 1).then_some("NS-17"), format!("'{}' is ambiguous", name));
         return true;
     }
     false

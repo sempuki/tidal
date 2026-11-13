@@ -187,7 +187,12 @@ impl<'a> Check<'a> {
         if (unsup && self.parser_names.contains(name)) || name.starts_with("__") {
             return self.unsupported(span, format!("'{}' names a declaration the front end did not model", name));
         }
-        self.error(span, rule, format!("'{}' is not declared", name))
+        // NAM-9: a member of a named namespace that the scope does not
+        // reach, which needs a qualifier or a using-declaration.
+        let member = rule == "NAM-8"
+            && self.u.scopes.iter().enumerate().skip(self.u.root).any(|(k, s)| s.kind == super::ScopeKind::Namespace && !s.name.is_empty() && k != self.u.root && s.names.contains_key(name));
+        self.error_cause(span, rule, member.then_some("NAM-9"), format!("'{}' is not declared", name));
+        QType::error()
     }
     pub fn errors(&self) -> usize {
         self.u.diags.iter().filter(|d| d.sev == Severity::Error).count()

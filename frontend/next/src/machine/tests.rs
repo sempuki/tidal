@@ -792,6 +792,14 @@ fn first_errors_name_the_specific_rule() {
     assert_eq!(named("void f() noexcept; void f() noexcept(false) {}"), (Some("DCL-14"), Some("EXS-8")));
     assert_eq!(named("void f() { int l = 1; constexpr int* p = &l; }"), (Some("CX-2"), Some("CE-3")));
     assert_eq!(named("int val(); void f() { val() = 1; }"), (Some("ASN-2"), Some("VC-12")));
+    assert_eq!(named("int f(int a, int b) { return a ?: b; }"), (Some("COND-14"), None));
+    assert_eq!(named("int f() { return (1, {2}); }"), (Some("COMMA-9"), None));
+    assert_eq!(named("int f() { if ({1}, true) return 1; return 0; }"), (Some("COMMA-9"), None));
+    assert_eq!(named("int a[2]; auto ([x, y]) = a;"), (Some("SB-15"), None));
+    assert_eq!(named("int a[2]; auto [x, y] = a, z = 1;"), (Some("SB-15"), None));
+    assert_eq!(named("namespace n { int a = 1; } int main() { return a; }"), (Some("NAM-8"), Some("NAM-9")));
+    assert_eq!(named("int main() { return b; }"), (Some("NAM-8"), None));
+    assert_eq!(named("namespace A { int x; } namespace B { int x; } using namespace A; using namespace B; int y = x;"), (Some("NAM-26"), Some("NS-17")));
 }
 
 #[test]

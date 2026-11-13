@@ -36,6 +36,9 @@ pub fn sb_decl(p: &mut Parser) -> PResult<Node> {
     let head = p.node("sb_decl", sp, kids.clone());
     p.declared(&head, DeclCtx::default());
     kids.push(Kid::Node(sb_init(p)?));
+    if p.at(",") {
+        return Err(p.fail_rule("SB-15", "a structured binding declaration has one declarator"));
+    }
     kids.push(p.expect(";")?);
     Ok(p.node("sb_decl", sp, kids))
 }
@@ -62,7 +65,7 @@ pub fn near_miss(p: &mut Parser) {
         k += 1;
     }
     let before = if k > 0 { p.ahead(k - 1) } else { "" };
-    let typed = matches!(before, "auto" | ")" | "*" | "&" | "&&") || crate::foundations::types::check::is_fundamental(before);
+    let typed = matches!(before, "auto" | ")" | "*" | "&" | "&&" | "(") || crate::foundations::types::check::is_fundamental(before);
     if p.ahead(k) != "[" || !typed || p.ahead_kind(k + 1) != crate::lex::TK::Ident {
         return;
     }
@@ -70,7 +73,7 @@ pub fn near_miss(p: &mut Parser) {
     while p.ahead(j) == "," && p.ahead_kind(j + 1) == crate::lex::TK::Ident {
         j += 2;
     }
-    if p.ahead(j) != "]" || !matches!(p.ahead(j + 1), "=" | "(" | "{" | ";" | ")" | ",") {
+    if p.ahead(j) != "]" || !matches!(p.ahead(j + 1), "=" | "(" | "{" | ";" | ")" | ",") || (before == "(" && p.ahead(j + 1) != ")") {
         return;
     }
     let m = p.mark();

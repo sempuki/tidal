@@ -21,6 +21,9 @@ pub fn conditional_rest(p: &mut Parser, cond: Node) -> PResult<Node> {
     }
     let sp = cond.span;
     let q = p.bump();
+    if p.at(":") {
+        return Err(p.fail_rule("COND-14", "the conditional operator needs its middle operand"));
+    }
     let mid = p.bracketed(expression)?;
     let colon = p.expect(":")?;
     let last = assignment_expr(p)?;
