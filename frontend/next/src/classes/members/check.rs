@@ -276,7 +276,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     cx.unsupported(md.span, "a bit-field (build step 4)");
                     return false;
                 };
-                if specs.ty.is_none() && crate::classes::constructors::check::special_name(cx, id, dn).is_some() {
+                if (specs.ty.is_none() && crate::classes::constructors::check::special_name(cx, id, dn).is_some()) || crate::classes::constructors::check::special_name(cx, id, dn) == Some(true) {
                     if !crate::classes::constructors::check::member(cx, id, Some(&specs), dn, None, *access, ctor_bodies) {
                         return false;
                     }

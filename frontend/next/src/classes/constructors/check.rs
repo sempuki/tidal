@@ -21,6 +21,9 @@ use std::rc::Rc;
 /// identifier spells.
 pub const CTOR: &str = "{ctor}";
 
+/// The name under which a class holds its destructor.
+pub const DTOR: &str = "{dtor}";
+
 /// The constructors of a class.
 pub fn ctors(cx: &Check, c: ClassId) -> Vec<EntityId> {
     names::declared_here(cx, cx.u.classes[c].scope, CTOR)
@@ -56,8 +59,7 @@ fn copy_or_move(cx: &Check, c: ClassId, f: EntityId) -> bool {
 /// class in `bodies`. False after an unsupported member.
 pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Node, def: Option<&'n Node>, access: crate::sem::Access, bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
     if special_name(cx, c, dn) == Some(true) {
-        cx.unsupported(dn.span, "a destructor (build step 4)");
-        return false;
+        return dtor_member(cx, c, specs, dn, def, access, bodies);
     }
     let mut specs = specs.cloned().unwrap_or_default();
     if specs.unsupported || specs.is_static || specs.typedef || specs.ty.is_some() {
@@ -135,6 +137,82 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
     true
 }
 
+/// A destructor member (DTOR-1): the class's name after `~`, no
+/// parameters, no return type, not static, no cv-qualifiers.
+fn dtor_member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Node, def: Option<&'n Node>, access: crate::sem::Access, bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
+    let mut specs = specs.cloned().unwrap_or_default();
+    if specs.unsupported || cx.u.is_local(cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0)) || specs.consteval || def.is_some_and(|x| x.child("attribute_spec").is_some()) || dn.find("exception_spec").is_some_and(|e| first_node(e).is_some()) {
+        cx.unsupported(dn.span, "a destructor of this form (build step 4)");
+        return false;
+    }
+    let named = dn.find("class_name").map(|n| cx.source(n)).unwrap_or_default();
+    if named != *cx.u.classes[c].name {
+        cx.error(dn.span, "DTOR-1", "a destructor without the name of its class after '~'");
+        return true;
+    }
+    if specs.ty.is_some() || specs.is_static || specs.explicit {
+        cx.error(dn.span, "DTOR-1", "a destructor with a return type, static, or explicit");
+        return true;
+    }
+    specs.ty = Some(QType::void());
+    let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    if d.unsupported || !d.ty.is_func() {
+        cx.unsupported(dn.span, "a destructor of this form (build step 4)");
+        return false;
+    }
+    if !d.params.is_empty() || d.ty.func().is_some_and(|f| f.variadic) || d.obj_cv != (false, false) || d.ref_q {
+        cx.error(dn.span, "DTOR-1", "a destructor with parameters or qualifiers");
+        return true;
+    }
+    if !names::declared_here(cx, cx.scope, DTOR).is_empty() && !names::declared_here(cx, cx.scope, DTOR).iter().any(|e| cx.deferred.contains(e)) {
+        cx.error_cause(dn.span, "DTOR-1", Some("CLS-9"), "a destructor declared twice");
+        return true;
+    }
+    let mut d2 = d.clone();
+    d2.name = d.name.clone().map(|(_, s)| (Rc::from(DTOR), s));
+    let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d2, None) else { return true };
+    cx.u.access.insert(f, access);
+    if let Some(x) = cx.u.func_mut(f) {
+        x.special = Special::Dtor;
+    }
+    if let Some(def) = def {
+        let words = def.child("function_body").map(|b| cx.words(b)).unwrap_or_default();
+        if let Some(x) = cx.u.func_mut(f) {
+            x.inline = true;
+        }
+        if words.contains(&"delete") {
+            if let Some(x) = cx.u.func_mut(f) {
+                x.deleted = true;
+                x.defined = true;
+            }
+            return true;
+        }
+        if words.contains(&"default") {
+            cx.u.defaulted.insert(f);
+        }
+        cx.deferred.insert(f);
+        bodies.push((f, def));
+    }
+    true
+}
+
+/// DTOR-3: the destructor of a class, or of a member's class, is
+/// deleted or not accessible, so no object of the class can end. True
+/// when it can.
+pub fn dtor_usable(cx: &mut Check, ty: &QType, span: Span) -> bool {
+    fn blocked(cx: &Check, c: ClassId) -> bool {
+        let own = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|&d| cx.u.func(d).is_some_and(|f| f.deleted) || !crate::classes::members::check::accessible(cx, d));
+        own || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| blocked(cx, d)))
+    }
+    let Some(c) = ty.base_elem().class() else { return true };
+    if blocked(cx, c) {
+        let cause = if cx.unevaluated > 0 { "UNEV-5" } else { "VC-11" };
+        cx.error_cause(span, "DTOR-3", Some(cause), format!("the destructor of '{}' is deleted or not accessible", cx.u.classes[c].name));
+        return false;
+    }
+    true
+}
+
 /// The checks at the end of a class with constructors: no delegation
 /// cycle (CTOR-14), and no member with the class's name (CLS-9).
 pub fn end_of_class(cx: &mut Check, c: ClassId, span: Span) {
@@ -176,6 +254,13 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
     cx.u.diags.truncate(marks);
     cx.deferred.remove(&f);
     let Some(body) = def.child("function_body") else { return };
+    if cx.words(body).contains(&"default") && cx.u.func(f).is_some_and(|x| x.special == Special::Dtor) {
+        if let Some(x) = cx.u.func_mut(f) {
+            x.body = Some(Rc::new(crate::sem::tree::Stmt::new(crate::sem::tree::SK::Block(Vec::new()), def.span)));
+            x.defined = true;
+        }
+        return;
+    }
     if cx.words(body).contains(&"default") {
         let c = cx.u.func(f).and_then(|x| x.class).unwrap();
         let fields = cx.u.classes[c].fields.clone();
@@ -221,7 +306,23 @@ pub fn out_of_class(cx: &mut Check, n: &Node) -> bool {
         return false;
     }
     if cx.has_word(u, "~") || cx.has_word(q, "~") {
-        cx.unsupported(dn.span, "a destructor (build step 4)");
+        let found = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().copied();
+        match found {
+            Some(f) if !cx.u.func(f).unwrap().defined => {
+                let saved = cx.scope;
+                let outer = cx.member_of.replace(c);
+                cx.scope = cx.u.classes[c].scope;
+                define(cx, f, n);
+                cx.scope = saved;
+                cx.member_of = outer;
+            }
+            Some(_) => {
+                cx.error(dn.span, "FN-14", format!("the destructor of '{}' is defined twice", cname));
+            }
+            None => {
+                cx.error(dn.span, "NS-14", format!("the class '{}' declares no destructor", cname));
+            }
+        }
         return true;
     }
     if dn.find("parameter").is_some_and(|_| cx.source(dn).contains('=')) {

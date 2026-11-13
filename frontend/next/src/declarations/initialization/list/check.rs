@@ -59,6 +59,9 @@ pub fn braced_value(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> 
 /// expression that converts without narrowing.
 pub fn scalar_list(cx: &mut Check, b: &Node, to: &QType, rule: &'static str) -> Option<Expr> {
     if to.base_elem().is_class() && !to.is_array() {
+        if !crate::classes::constructors::check::dtor_usable(cx, to, b.span) {
+            return None;
+        }
         // A functional cast `T{...}` is direct-list-initialization; the
         // other places of a braced list here copy (CTOR-9).
         let i = aggregate_with(cx, b, to, rule != "CAST-11")?;

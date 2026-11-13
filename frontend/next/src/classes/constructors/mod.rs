@@ -3,6 +3,7 @@
 //! run parts come with later steps.
 
 pub mod check;
+pub mod run;
 pub mod syntax;
 
 #[cfg(test)]

@@ -52,7 +52,12 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
         c = x;
     }
     cx.unevaluated += 1;
+    // The call that is the operand, or the right operand of a comma that
+    // is.
+    let last = if c.prod == "expression" { c.kids.iter().rev().find_map(|k| match k { crate::syntax::Kid::Node(x) => Some(x), _ => None }).unwrap_or(c) } else { c };
+    cx.decltype_call = (last.prod == "postfix_expr" && cx.text(last.kids.last().unwrap_or(&crate::syntax::Kid::Tok(0))) == ")").then_some(last.span);
     let e = expr(cx, c);
+    cx.decltype_call = None;
     cx.unevaluated -= 1;
     unevaluated_effect_warning(cx, &e);
     if crate::expressions::primary::check::unresolved_set(&e) {

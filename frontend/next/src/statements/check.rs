@@ -138,6 +138,10 @@ pub fn sub_statement(cx: &mut Check, n: &Node, cond: Option<(usize, &'static str
         f.live.truncate(live);
     }
     cx.scope = saved;
+    if matches!(s.k, SK::Decl(_)) {
+        let span = s.span;
+        return Stmt::new(SK::Block(vec![s]), span);
+    }
     s
 }
 

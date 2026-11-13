@@ -76,6 +76,8 @@ pub fn subscript(cx: &mut Check, a: Expr, i: Expr, span: Span) -> Expr {
     if a.ty.is_error() || i.ty.is_error() {
         return bad(span);
     }
+    // PFX-1: the subscript of an array xvalue is an xvalue.
+    let xvalue = [&a, &i].iter().any(|x| x.cat == Cat::X && x.ty.is_array());
     let (a, i) = (rvalue(cx, a), rvalue(cx, i));
     let (p, x) = if a.ty.is_ptr() { (a, i) } else if i.ty.is_ptr() { (i, a) } else {
         cx.error(span, "PFX-2", format!("a subscript of {}", a.ty.show()));
@@ -92,7 +94,7 @@ pub fn subscript(cx: &mut Check, a: Expr, i: Expr, span: Span) -> Expr {
         return bad(span);
     }
     let x = crate::foundations::conversions::check::promote(cx, x);
-    Expr::new(EK::Index(Box::new(p), Box::new(x)), el, Cat::L, span)
+    Expr::new(EK::Index(Box::new(p), Box::new(x)), el, if xvalue { Cat::X } else { Cat::L }, span)
 }
 
 /// The argument nodes of a call.
@@ -201,6 +203,13 @@ fn pseudo_destructor(cx: &mut Check, base: &Node, arrow: bool, id: &Node, args: 
 
 /// A call (PFX-3 to PFX-8, OVL rules for a name with several functions).
 pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> Expr {
+    let top = cx.decltype_call == Some(span);
+    let r = call_inner(cx, callee, list, span, top);
+    cx.no_temporary = false;
+    r
+}
+
+fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, top: bool) -> Expr {
     if let Some((base, arrow, id)) = destructor_name(cx, callee) {
         return pseudo_destructor(cx, base, arrow, id, !arg_nodes(list).is_empty(), span);
     }
@@ -219,7 +228,9 @@ pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> E
     if args.iter().any(|a| a.ty.is_error() && !primary::check::unresolved_set(a)) {
         return bad(span);
     }
+    cx.no_temporary = top;
     if let Some(r) = member_call(cx, callee, &args, span) {
+        cx.no_temporary = false;
         return r;
     }
     // A name that finds functions: overload resolution chooses.
@@ -429,6 +440,10 @@ fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr
         }
     }
     let ret = fty.ret.clone();
+    let no_temporary = std::mem::take(&mut cx.no_temporary);
+    if ret.is_class() && !no_temporary && !crate::classes::constructors::check::dtor_usable(cx, &ret, span) {
+        return bad(span);
+    }
     let (ty, cat) = match &ret.t {
         Type::Ref(inner, rv) => ((**inner).clone(), if *rv && !inner.is_func() { Cat::X } else { Cat::L }),
         _ => (ret.unqual_top(), Cat::PR),

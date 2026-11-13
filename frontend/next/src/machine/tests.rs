@@ -908,8 +908,8 @@ fn classes_with_data_members() {
     // A class and a variable of one name in one scope: the variable hides
     // the class.
     assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
-    // Destructors wait for a later part.
-    assert_eq!(rule("struct S { ~S(); };"), Some("unsupported"));
+    // Unions wait for a later part.
+    assert_eq!(rule("union U { int a; float b; };"), Some("unsupported"));
     // The bytes of a class, with padding.
     assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
 }
@@ -965,4 +965,26 @@ fn constructors() {
     // A constant initializer through a constexpr constructor.
     assert_eq!(rule("struct P { int x; constexpr P(int v) : x(v) {} }; constexpr P p(3); static_assert(p.x == 3);"), None);
     assert_eq!(rule("struct P { int f; int s; constexpr P() : f(1) {} }; constinit P p;"), Some("CINIT-1"));
+}
+
+#[test]
+fn destructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let d = "int log_ = 0;\nstruct D { int id; D(int i) : id(i) {} ~D() { log_ = log_ * 10 + id; } };\n";
+    // Block objects end in reverse order; an elided temporary is one object.
+    assert_eq!(run(&format!("{}int main() {{ {{ D a(1); D b(2); }} {{ D t = D(3); }} return log_; }}", d)), RunOutcome::Result(213));
+    // A temporary ends with its full expression; a bound one with the
+    // reference.
+    assert_eq!(run(&format!("{}int main() {{ D(4).id; log_ = log_ * 10 + 5; {{ const D& r = D(6); log_ = log_ * 10 + 7; }} return log_; }}", d)), RunOutcome::Result(4576));
+    // Members are destroyed after the body, last declared first.
+    assert_eq!(run("int log_ = 0; struct M { int v; ~M() { log_ = log_ * 10 + v; } }; struct H { M a{1}; M b{2}; ~H() { log_ = log_ * 10 + 9; } }; int main() { { H h; } return log_; }"), RunOutcome::Result(921));
+    assert_eq!(rule("struct S { ~S() = delete; }; void f() { S s; }"), Some("DTOR-3"));
+    assert_eq!(rule("struct S { ~S() = delete; }; S make(); void f() { make(); }"), Some("DTOR-3"));
+    assert_eq!(rule("struct S { ~S() = delete; }; S make(); using T = decltype(make());"), None);
+    assert_eq!(rule("struct S { int ~S(); };"), Some("DTOR-1"));
+    assert_eq!(rule("struct S { int v; ~S() {} }; constexpr S s{1};"), Some("CX-1"));
 }

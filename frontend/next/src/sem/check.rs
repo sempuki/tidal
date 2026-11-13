@@ -134,6 +134,11 @@ pub struct Check<'a> {
     /// A converting constructor's arguments are being converted, where no
     /// second user-defined conversion is allowed (CTOR-22).
     pub converting: bool,
+    /// The operand of `decltype` is a call, whose result is no
+    /// temporary (DTY rules, DTOR-3).
+    pub decltype_call: Option<crate::source::Span>,
+    /// The call being checked is that outermost call.
+    pub no_temporary: bool,
     /// The names that the parser's declare pass recorded in any scope.
     pub parser_names: std::collections::HashSet<String>,
     /// The entities with C language linkage, by name (LSP-4).
@@ -154,7 +159,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, deferred: Default::default(), converting: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default() }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default() }
     }
 
     // -----------------------------------------------------------------

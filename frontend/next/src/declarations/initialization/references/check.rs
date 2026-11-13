@@ -165,6 +165,23 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
         if ty.nonref().is_array() {
             return array_reference(cx, ty, b).map(Init::Ref);
         }
+        // REF-14: a list of a class's values makes a temporary of it.
+        let one_of_class = its.len() == 1 && first_node(its[0]).is_some_and(|c| c.prod != "braced_init" && {
+            let probe = cx.u.diags.len();
+            let e = expr(cx, c);
+            cx.u.diags.truncate(probe);
+            e.ty.nonref().class() == ty.nonref().class()
+        });
+        if ty.nonref().is_class() && !one_of_class {
+            let inner = ty.nonref();
+            let Type::Ref(_, rv) = ty.t else { return None };
+            if !rv && !(inner.c && !inner.v) {
+                cx.error(init.span, "REF-9", "a non-const lvalue reference bound to a temporary from a braced list");
+                return None;
+            }
+            let e = crate::declarations::initialization::list::check::scalar_list(cx, b, &inner.unqual(), "LIST-2")?;
+            return Some(Init::Ref(e.conv(Conv::Materialize, inner.clone(), Cat::L)));
+        }
         if its.len() != 1 {
             cx.error(init.span, "REF-11", "a braced list for a reference must hold one value");
             return None;

@@ -8,6 +8,7 @@ use crate::sem::types::QType;
 /// OBJ-2: a read of an object outside its lifetime.
 pub fn check_read(m: &mut Machine, p: &Ptr, _ty: &QType) -> R<()> {
     match m.objs.get(p.obj) {
+        Some(o) if !o.alive && o.is_static => ub("OBJ-12", format!("a read of the static object {} after its destruction", o.name)),
         Some(o) if !o.alive => ub("OBJ-2", format!("a read of {} after its lifetime ended", o.name)),
         _ => Ok(()),
     }

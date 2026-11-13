@@ -40,14 +40,9 @@ pub fn exec(m: &mut Machine, s: &Stmt) -> R<Flow> {
     run(m, s, None)
 }
 
-fn end_block(m: &mut Machine) {
-    if let Some(f) = m.frames.last_mut() {
-        if let Some(objs) = f.blocks.pop() {
-            for o in objs.into_iter().rev() {
-                m.objs[o].alive = false;
-            }
-        }
-    }
+fn end_block(m: &mut Machine) -> R<()> {
+    let objs = m.frames.last_mut().and_then(|f| f.blocks.pop()).unwrap_or_default();
+    crate::classes::constructors::run::end_objects(m, objs)
 }
 
 fn open_block(m: &mut Machine) {
@@ -57,10 +52,9 @@ fn open_block(m: &mut Machine) {
 }
 
 /// The objects of a full expression end with it.
-fn end_temps(m: &mut Machine, from: usize) {
-    for o in m.temps.drain(from..) {
-        m.objs[o].alive = false;
-    }
+pub fn end_temps(m: &mut Machine, from: usize) -> R<()> {
+    let objs: Vec<usize> = m.temps.drain(from.min(m.temps.len())..).collect();
+    crate::classes::constructors::run::end_objects(m, objs)
 }
 
 /// Run a statement; with a seek, run from the target inside it.
@@ -77,7 +71,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
         SK::Expr(e) => {
             let t = m.temps.len();
             eval_discard(m, e)?;
-            end_temps(m, t);
+            end_temps(m, t)?;
             Ok(Flow::Normal)
         }
         SK::Decl(vars) => {
@@ -110,7 +104,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                     run(m, els.as_ref().unwrap(), seek)
                 }
             })();
-            end_block(m);
+            end_block(m)?;
             r
         }
         SK::Chosen(x) => match x {
@@ -131,7 +125,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                     seek = None;
                     Ok(loop_flow(f, *id))
                 })();
-                end_block(m);
+                end_block(m)?;
                 if let Some(f) = r? {
                     return Ok(f);
                 }
@@ -147,7 +141,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                 }
                 let t = m.temps.len();
                 let c = eval(m, cond)?.truthy();
-                end_temps(m, t);
+                end_temps(m, t)?;
                 if !c {
                     return Ok(Flow::Normal);
                 }
@@ -176,18 +170,18 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                         seek = None;
                         Ok(loop_flow(f, *id))
                     })();
-                    end_block(m);
+                    end_block(m)?;
                     if let Some(f) = r? {
                         return Ok(f);
                     }
                     if let Some(st) = step {
                         let t = m.temps.len();
                         eval_discard(m, st)?;
-                        end_temps(m, t);
+                        end_temps(m, t)?;
                     }
                 }
             })();
-            end_block(m);
+            end_block(m)?;
             r
         }
         SK::RangeArray { id, init, range, range_init, var, bound, body } => {
@@ -196,7 +190,10 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                 if let Some(i) = init {
                     run(m, i, None)?;
                 }
-                declare(m, *range, range_init)?;
+                m.keep_temps = true;
+                let d = declare(m, *range, range_init);
+                m.keep_temps = false;
+                d?;
                 let base = m.var_place(*range)?;
                 for k in 0..*bound as i64 {
                     open_block(m);
@@ -208,14 +205,14 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                         let f = run(m, body, None)?;
                         Ok(loop_flow(f, *id))
                     })();
-                    end_block(m);
+                    end_block(m)?;
                     if let Some(f) = r? {
                         return Ok(f);
                     }
                 }
                 Ok(Flow::Normal)
             })();
-            end_block(m);
+            end_block(m)?;
             r
         }
         SK::Switch { id, init, cond, body, cases } => {
@@ -239,7 +236,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                     f => f,
                 })
             })();
-            end_block(m);
+            end_block(m)?;
             r
         }
         SK::Case(_, _, x) | SK::Label(_, x) => {
@@ -258,8 +255,10 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
             let v = match e {
                 Some(e) => {
                     let t = m.temps.len();
+                    // The result object owns the returned prvalue.
+                    m.elide = true;
                     let v = eval_any(m, e)?;
-                    end_temps(m, t);
+                    end_temps(m, t)?;
                     v
                 }
                 None => Val::Void,
@@ -304,6 +303,7 @@ fn block(m: &mut Machine, items: &[Stmt], seek: Option<&Seek>) -> R<Flow> {
                         let val = m.uninit(&v.ty);
                         let o = m.new_obj(&v.ty, val, &m.u.entities[*id].name.clone());
                         m.objs[o].konst = false;
+                        m.undeclared.insert(o);
                         if let Some(f) = m.frames.last_mut() {
                             f.vars.insert(*id, o);
                             if let Some(b) = f.blocks.last_mut() {
@@ -341,7 +341,7 @@ fn block(m: &mut Machine, items: &[Stmt], seek: Option<&Seek>) -> R<Flow> {
         }
         Ok(Flow::Normal)
     })();
-    end_block(m);
+    end_block(m)?;
     r
 }
 
@@ -356,7 +356,7 @@ fn condition(m: &mut Machine, c: &Cond) -> R<Val> {
             eval(m, e)?
         }
     };
-    end_temps(m, t);
+    end_temps(m, t)?;
     Ok(v)
 }
 
@@ -391,6 +391,7 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     let ty = v.ty.clone();
     let t = m.temps.len();
     let o = m.frames.last().unwrap().vars[&id];
+    m.undeclared.remove(&o);
     if crate::declarations::initialization::forms::run::constructs(init) {
         m.objs[o].val = m.uninit(&ty);
         m.objs[o].alive = true;
@@ -401,7 +402,7 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
         m.objs[o].alive = true;
     }
     m.objs[o].konst = ty.is_const();
-    end_temps(m, t);
+    end_temps(m, t)?;
     Ok(())
 }
 
@@ -414,7 +415,7 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
         let t = m.temps.len();
         let p = place(m, e)?;
         // The temporary the reference keeps moves to the block.
-        let kept = crate::declarations::initialization::references::run::kept_temporary(m, e, p.obj, t);
+        let kept = crate::declarations::initialization::references::run::kept_temporary(m, e, p.obj, t)?;
         if let Some(f) = m.frames.last_mut() {
             if let Some(b) = f.blocks.last_mut() {
                 b.extend(kept);
@@ -433,7 +434,7 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
         let val = init_value(m, &ty, init)?;
         m.new_obj(&ty, val, &m.u.entities[id].name.clone())
     };
-    end_temps(m, t);
+    end_temps(m, t)?;
     m.objs[o].konst = ty.is_const();
     if let Some(f) = m.frames.last_mut() {
         f.vars.insert(id, o);
@@ -473,6 +474,7 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
         m.objs[o].is_static = true;
         m.objs[o].own = false;
         m.globals.insert(id, o);
+        m.static_order.push(o);
         return Ok(Ptr::whole(o));
     };
     crate::declarations::storage_linkage::run::enter_init(m, id)?;
@@ -493,7 +495,8 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
             m.objs[o].own = false;
             m.globals.insert(id, o);
             crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &v.ty, &init)?;
-            end_temps(m, 0);
+            end_temps(m, 0)?;
+            m.static_order.push(o);
             return Ok(Ptr::whole(o));
         }
         let val = init_value(m, &v.ty, &init)?;
@@ -502,7 +505,8 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
         m.objs[o].is_static = true;
         m.objs[o].own = false;
         m.globals.insert(id, o);
-        end_temps(m, 0);
+        end_temps(m, 0)?;
+        m.static_order.push(o);
         Ok(Ptr::whole(o))
     })();
     m.constant_init = was;

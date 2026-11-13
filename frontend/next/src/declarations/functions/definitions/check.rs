@@ -505,7 +505,7 @@ fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
         }
     };
     let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().enumerate().skip(cx.u.first_entity).filter_map(|(id, e)| match &e.kind {
-        EntKind::Var(v) if !v.param && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) && !crate::declarations::initialization::forms::check::is_read(cx, id) && !v.init.as_ref().is_some_and(|i| i.constructs()) => Some((e.span, e.name.clone())),
+        EntKind::Var(v) if !v.param && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) && !crate::declarations::initialization::forms::check::is_read(cx, id) && !v.init.as_ref().is_some_and(|i| i.constructs()) && !crate::classes::constructors::run::needs_in(&cx.u, &v.ty) => Some((e.span, e.name.clone())),
         _ => None,
     }).collect();
     for (span, name) in found {

@@ -27,12 +27,16 @@ fn extends(e: &Expr) -> bool {
 /// `from` on: the one the reference binds to lives as long as the
 /// reference (REF-4) and is returned; the others end with the full
 /// expression (REF-5).
-pub fn kept_temporary(m: &mut Machine, init: &Expr, bound: usize, from: usize) -> Option<usize> {
-    let keep = extends(init) && m.temps[from..].contains(&bound);
-    for o in m.temps.drain(from..) {
-        if !(keep && o == bound) {
-            m.objs[o].alive = false;
+pub fn kept_temporary(m: &mut Machine, init: &Expr, bound: usize, from: usize) -> crate::machine::R<Option<usize>> {
+    if m.keep_temps {
+        let all: Vec<usize> = m.temps.drain(from..).collect();
+        if let Some(b) = m.frames.last_mut().and_then(|f| f.blocks.last_mut()) {
+            b.extend(all.iter().copied().filter(|&o| o != bound));
         }
+        return Ok(all.contains(&bound).then_some(bound));
     }
-    keep.then_some(bound)
+    let keep = extends(init) && m.temps[from..].contains(&bound);
+    let others: Vec<usize> = m.temps.drain(from..).filter(|&o| !(keep && o == bound)).collect();
+    crate::classes::constructors::run::end_objects(m, others)?;
+    Ok(keep.then_some(bound))
 }

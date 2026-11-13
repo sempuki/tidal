@@ -207,6 +207,21 @@ pub struct Machine<'a> {
     /// The objects whose constructors run, which are not const or
     /// volatile yet (VOL-2, CTOR-11).
     pub constructing: Vec<usize>,
+    /// The objects that an explicit destructor call destroyed (DTOR-7).
+    pub destroyed: std::collections::HashSet<usize>,
+    /// The prvalue being evaluated initializes an object, which owns it;
+    /// otherwise a prvalue of a class that needs a destructor is a
+    /// temporary of its full expression (OBJ-9).
+    pub elide: bool,
+    /// Every temporary of the initializer that a reference binds lives as
+    /// long as the reference (the range of a range-based for, RFOR-4).
+    pub keep_temps: bool,
+    /// The static objects in the order their initialization completed,
+    /// which their destruction reverses after main (OBJ-12).
+    pub static_order: Vec<usize>,
+    /// The objects of a block whose declarations the run has not reached
+    /// yet, which get no destructor call if the block ends first.
+    pub undeclared: std::collections::HashSet<usize>,
 }
 
 /// One read or write of a place while unsequenced operands run, with the
@@ -244,6 +259,11 @@ impl<'a> Machine<'a> {
             addrs: HashMap::new(),
             next_addr: 0x1_0000,
             constructing: Vec::new(),
+            destroyed: Default::default(),
+            elide: false,
+            keep_temps: false,
+            static_order: Vec::new(),
+            undeclared: Default::default(),
         }
     }
 

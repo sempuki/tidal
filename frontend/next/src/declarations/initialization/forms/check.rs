@@ -549,6 +549,22 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         Init::Default => storage != Storage::Automatic,
         Init::Ctor(..) => ce::is_constant(cx, &Expr::new(EK::List(Box::new(init_value.clone())), ty.unqual(), crate::sem::tree::Cat::PR, span)),
     };
+    if storage != Storage::Static || !s.is_extern {
+        if !crate::classes::constructors::check::dtor_usable(cx, &ty, span) {
+            return None;
+        }
+    }
+    // CE-23: a constexpr object has a literal type, whose destructor is
+    // constexpr.
+    if constexpr {
+        if let Some(c) = ty.base_elem().class() {
+            let user = names::declared_here(cx, cx.u.classes[c].scope, crate::classes::constructors::check::DTOR).first().copied();
+            if crate::classes::constructors::run::needs_in(&cx.u, &ty) && !user.is_some_and(|d| cx.u.func(d).is_some_and(|f| f.constexpr)) {
+                cx.error_cause(span, "CX-1", Some("CE-23"), format!("the constexpr variable '{}' has a type whose destructor is not constexpr", name));
+                return None;
+            }
+        }
+    }
     if let Some(v) = cx.u.var_mut(id) {
         // A later declaration without an initializer, such as `extern`
         // after a definition, keeps the definition's initializer.

@@ -11,6 +11,7 @@ use crate::sem::types::{QType, Type};
 
 /// The value of a prvalue expression.
 pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
+    let owned = std::mem::take(&mut m.elide);
     m.step()?;
     m.line = e.span.line;
     match &e.k {
@@ -80,7 +81,9 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             Ok(old)
         }
         EK::Cond(c, a, b) => {
-            if eval(m, c)?.truthy() {
+            let pick = eval(m, c)?.truthy();
+            m.elide = owned;
+            if pick {
                 eval_any(m, a)
             } else {
                 eval_any(m, b)
@@ -88,10 +91,11 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         }
         EK::Comma(a, b) => {
             eval_discard(m, a)?;
+            m.elide = owned;
             eval_any(m, b)
         }
         EK::Call(f, args) => match call_expr(m, f, args)? {
-            Ret::Val(v) => Ok(v),
+            Ret::Val(v) => temporary(m, &e.ty, v, owned),
             Ret::Place(p) => values::run::read(m, &p, &e.ty),
         },
         EK::AddrOf(x) => match &x.k {
@@ -115,7 +119,10 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         },
         EK::Closure(id) => Ok(Val::Fn(*id)),
         EK::Unevaluated(_) => Ok(Val::Void),
-        EK::List(i) => init_value(m, &e.ty, i),
+        EK::List(i) => {
+            let v = init_value(m, &e.ty, i)?;
+            temporary(m, &e.ty, v, owned)
+        }
         // ATTR-15: the expression is not evaluated. An expression with
         // no side effect is, so that a false one is found (ATTR-10).
         EK::Assume(c) => {
@@ -135,6 +142,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
 /// Evaluate an operand whose value category can be either.
 pub fn eval_any(m: &mut Machine, e: &Expr) -> R<Val> {
     if e.cat != Cat::PR && !matches!(e.k, EK::Cond(..) | EK::Comma(..)) {
+        m.elide = false;
         let p = place(m, e)?;
         return values::run::read(m, &p, &e.ty);
     }
@@ -245,6 +253,7 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
         },
         EK::Conv(Conv::NoOp, x) => place(m, x),
         EK::Conv(Conv::Materialize, x) => {
+            m.elide = true;
             let v = eval(m, x)?;
             temp(m, &e.ty, v)
         }
@@ -256,6 +265,16 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
 }
 
 /// A temporary object that holds a value.
+/// A class prvalue that no object owns: a temporary object that holds
+/// it until the end of its full expression, when its destructor runs
+/// (OBJ-9). Other prvalues are values only.
+fn temporary(m: &mut Machine, ty: &QType, v: Val, owned: bool) -> R<Val> {
+    if !owned && crate::classes::constructors::run::needs(m, ty) {
+        temp(m, ty, v.clone())?;
+    }
+    Ok(v)
+}
+
 pub fn temp(m: &mut Machine, ty: &QType, v: Val) -> R<Ptr> {
     let o = m.new_obj(&ty.unqual(), v, "a temporary");
     m.objs[o].konst = false;
@@ -375,6 +394,8 @@ pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
             }
             vals.push(Ret::Place(p?));
         } else {
+            // A parameter owns its argument's object.
+            m.elide = true;
             vals.push(Ret::Val(eval_any(m, &a.e)?));
         }
     }
@@ -439,9 +460,13 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     };
     m.depth -= 1;
     let mut frame = m.frames.pop().unwrap_or_default();
-    for b in frame.blocks.drain(..) {
-        for o in b {
-            m.objs[o].alive = false;
+    for b in frame.blocks.drain(..).rev() {
+        if r.is_ok() {
+            crate::classes::constructors::run::end_objects(m, b)?;
+        } else {
+            for o in b {
+                m.objs[o].alive = false;
+            }
         }
     }
     let flow = r?;

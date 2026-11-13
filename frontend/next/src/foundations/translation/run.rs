@@ -153,9 +153,8 @@ pub fn run_program(u: &Unit) -> RunOutcome {
             if let Some(init) = &v.init {
                 if crate::declarations::initialization::forms::run::constructs(init) {
                     crate::declarations::initialization::forms::run::construct(&mut m, &crate::machine::Ptr::whole(o), &v.ty, init)?;
-                    for t in m.temps.drain(..) {
-                        m.objs[t].alive = false;
-                    }
+                    crate::machine::exec::end_temps(&mut m, 0)?;
+                    m.static_order.push(o);
                     continue;
                 }
                 let val = crate::machine::eval::init_value(&mut m, &v.ty, init)?;
@@ -169,10 +168,19 @@ pub fn run_program(u: &Unit) -> RunOutcome {
         }
         let Some(main) = u.main() else { return crate::machine::unsup("the program has no main function") };
         let args = main_arguments(&mut m, main);
-        match call(&mut m, main, args)? {
-            Ret::Val(Val::Int(v)) => Ok(v),
-            _ => crate::machine::unsup("main returned no integer"),
-        }
+        let v = match call(&mut m, main, args)? {
+            Ret::Val(Val::Int(v)) => v,
+            _ => return crate::machine::unsup("main returned no integer"),
+        };
+        // OBJ-12: after main, the static objects end in the reverse order
+        // of their construction, each that needs it destroyed.
+        // Namespace-scope objects count in the order of their
+        // definitions, also the constant-initialized ones.
+        let defined: Vec<usize> = u.statics.iter().filter_map(|id| m.globals.get(id).copied()).collect();
+        let mut order = defined.clone();
+        order.extend(std::mem::take(&mut m.static_order).into_iter().filter(|o| !defined.contains(o)));
+        crate::classes::constructors::run::end_objects(&mut m, order)?;
+        Ok(v)
     })();
     match r {
         Ok(v) | Err(Stop::Exit(v)) => RunOutcome::Result(v),

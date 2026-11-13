@@ -130,7 +130,22 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
     let ty = QType::new(Type::Class(c));
     match mi {
         crate::sem::MemInits::Delegate(i) => construct(m, &this, &ty, i),
-        crate::sem::MemInits::Fields(inits) => construct(m, &this, &ty, &Init::List(inits.clone())),
+        crate::sem::MemInits::Fields(inits) => {
+            // Each member's initializer is a full expression (VC-9).
+            let tys = m.u.field_types(c);
+            for (k, t) in tys.iter().enumerate() {
+                let mut q = this.clone();
+                q.path.push(k as i64);
+                q.array = false;
+                let from = m.temps.len();
+                match inits.get(k) {
+                    Some(i) => construct(m, &q, t, i)?,
+                    None => set(m, &q, m.zero(t))?,
+                }
+                crate::machine::exec::end_temps(m, from)?;
+            }
+            Ok(())
+        }
     }
 }
 
@@ -142,8 +157,12 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
         // A constructor runs on an object: a temporary, whose value is
         // the result.
         Init::Ctor(..) => {
+            // The object that the value initializes owns it, so the
+            // object the constructor ran on ends without destruction.
             let p = crate::machine::eval::temp(m, ty, m.uninit(ty))?;
             construct(m, &p, ty, init)?;
+            m.temps.retain(|&o| o != p.obj);
+            m.objs[p.obj].alive = false;
             Ok(m.objs[p.obj].val.clone())
         }
         Init::Default => Ok(m.uninit(ty)),
@@ -152,7 +171,9 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
             if let Some(v) = indeterminate_copy(m, ty, e) {
                 return v;
             }
+            m.elide = true;
             let v = eval_any(m, e)?;
+            m.elide = false;
             match (&ty.t, v) {
                 (Type::Float(k), v @ (Val::Float(_) | Val::Ext(_))) => Ok(crate::foundations::conversions::run::to_float(v, *k)),
                 (_, v) => Ok(v),

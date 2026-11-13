@@ -490,12 +490,16 @@ it, and static member functions have `this`, calls with the implicit
 object parameter in overload resolution, and access control.
 Constructors have member initializer lists, delegation, `= default`,
 `= delete`, and `explicit`, and the machine constructs each object in
-its place, so `this` in a constructor is the object's address. The
+its place, so `this` in a constructor is the object's address.
+Destructors run when objects end: block objects and temporaries in
+reverse order, temporaries at the end of their full expression unless a
+reference extends them, members after the destructor's body, and static
+objects after `main`. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. A static data member, a destructor, a user-declared
-copy or move constructor, an operator function, a base, a union, a
+another entity. A static data member, an explicit destructor call on a
+class, a user-declared copy or move constructor, an operator function, a base, a union, a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with

@@ -236,6 +236,13 @@ fn apply(cx: &mut Check, t: QType, n: &Node, d: &mut Declared, top: bool) -> QTy
 }
 
 fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
+    // A destructor `~C`, which the class's members name as such (DTOR-1).
+    if cx.member_of.is_some() && cx.has_word(n, "~") {
+        if let Some(c) = n.child("class_name") {
+            d.name = Some((Rc::from(format!("~{}", cx.source(c)).as_str()), c.span));
+            return;
+        }
+    }
     let Some(id) = n.child("id_expression") else {
         d.unsupported = true;
         cx.unsupported(n.span, "an operator function or a declarator-id of this form");
