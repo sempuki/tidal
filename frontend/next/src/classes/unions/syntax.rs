@@ -3,22 +3,34 @@
 use crate::classes::members::syntax::{class_body, class_name, member_init};
 use crate::declarations::alignment::syntax::alignment_specifier;
 use crate::declarations::attributes::syntax::attribute_spec;
-use crate::expressions::primary::syntax::identifier;
+use crate::expressions::primary::syntax::{identifier, nested_name};
 use crate::foundations::constant_evaluation::syntax::constant_expr;
 use crate::lex::{Token, TK};
-use crate::syntax::names::DeclCtx;
+use crate::syntax::names::{DeclCtx, Qual};
 use crate::syntax::{Kid, Node, PResult, Parser};
+use crate::templates::arguments::syntax::template_id;
 
 /// `union_def: "union" {attribute_spec | alignment_specifier}
-/// [class_name ["final"]] "{" {member_decl} "}"`.
+/// [[nested_name] (class_name | template_id) ["final"]] "{" {member_decl} "}"`.
 pub fn union_def(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = vec![p.expect("union")?];
     while p.at_attr() || p.at("alignas") {
         kids.push(Kid::Node(if p.at("alignas") { alignment_specifier(p)? } else { attribute_spec(p)? }));
     }
-    if p.kind() == TK::Ident {
-        kids.push(Kid::Node(class_name(p)?));
+    if p.kind() == TK::Ident || p.at("::") {
+        let mut q = Qual::None;
+        if p.at("::") || p.ahead(1) == "::" || p.ahead(1) == "<" {
+            if let Some((nn, qq, _)) = p.opt(nested_name) {
+                kids.push(Kid::Node(nn));
+                q = qq;
+            }
+        }
+        if p.ahead(1) == "<" && p.find(q, p.peek()).is_template() {
+            kids.push(Kid::Node(template_id(p, q, false)?.0));
+        } else {
+            kids.push(Kid::Node(class_name(p)?));
+        }
         if p.at("final") && p.ahead(1) == "{" {
             kids.push(p.bump());
         }
@@ -47,7 +59,7 @@ pub fn anonymous_union(n: &Node, toks: &[Token]) -> bool {
         let mut ids = Vec::new();
         ds.tokens(&mut ids);
         match ds.find("union_def") {
-            Some(ud) if ud.child("class_name").is_none() => u += 1,
+            Some(ud) if ud.child("class_name").is_none() && ud.child("template_id").is_none() => u += 1,
             _ if ids.len() == 1 && toks[ids[0]].text == "static" => {}
             _ => return false,
         }
