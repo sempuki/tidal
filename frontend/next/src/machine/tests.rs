@@ -82,3 +82,18 @@ fn unsequenced_accesses_and_volatile_objects() {
     assert_eq!(rule("volatile int v = 3; int main() { int* p = const_cast<int*>(&v); return *p; }"), Some("VOL-6"));
     assert_eq!(rule("volatile int a[] = {1, 2}; int main() { int s = 0; for (int x : a) s += x; return s; }"), None);
 }
+
+#[test]
+fn casts_to_enumerations_stay_in_their_values() {
+    let rule = |src: &str| match run(src) {
+        RunOutcome::Undefined(r, ..) => Some(r),
+        r => {
+            assert!(matches!(r, RunOutcome::Result(_)), "{:?}", r);
+            None
+        }
+    };
+    assert_eq!(rule("enum C { a, b, c }; int main() { int n = 4; C x = static_cast<C>(n); return x == a; }"), Some("ENUM-6"));
+    assert_eq!(rule("enum C { a, b, c }; int main() { int n = 3; C x = static_cast<C>(n); return x == a; }"), None);
+    assert_eq!(rule("enum E {}; int main() { int n = 1; E x = static_cast<E>(n); return 0; }"), None);
+    assert_eq!(rule("enum F : unsigned char { z }; int main() { int n = 300; F x = static_cast<F>(n); return x == z; }"), None);
+}

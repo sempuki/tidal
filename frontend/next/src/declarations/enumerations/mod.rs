@@ -4,6 +4,7 @@
 
 pub mod syntax;
 pub mod check;
+pub mod run;
 
 #[cfg(test)]
 mod tests;

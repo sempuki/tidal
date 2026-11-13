@@ -6,6 +6,11 @@ use crate::sem::types::{QType, Type};
 
 /// Convert a value of type `from` to type `to`.
 pub fn convert(m: &mut Machine, v: Val, from: &QType, to: &QType) -> R<Val> {
+    if let (Type::Enum(e), Val::Int(x)) = (&to.t, &v) {
+        if from.t != to.t {
+            crate::declarations::enumerations::run::check_value(m, *e, *x)?;
+        }
+    }
     let to_t = match &to.t {
         Type::Enum(e) => match m.u.enums.get(*e).and_then(|i| i.underlying) {
             Some(k) => Type::Int(k),

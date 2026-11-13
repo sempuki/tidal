@@ -177,15 +177,16 @@ fn underlying_for(cx: &Check, values: &[i128]) -> IntK {
 }
 
 /// The values of an enumeration (ENUM-22): all values of a fixed type,
-/// or the smallest bit-field that holds every enumerator.
-pub fn value_range(cx: &Check, en: EnumId) -> (i128, i128) {
-    let info = &cx.u.enums[en];
-    let t = cx.u.target;
+/// or the smallest bit-field that holds every enumerator, at least one
+/// bit wide (so 0 and 1 with no enumerators).
+pub fn value_range(u: &crate::sem::Unit, en: EnumId) -> (i128, i128) {
+    let info = &u.enums[en];
+    let t = u.target;
     if info.fixed {
         let k = info.underlying.unwrap_or(IntK::Int);
         return (t.int_min(k), t.int_max(k));
     }
-    let vals: Vec<i128> = info.enumerators.iter().filter_map(|&e| match cx.u.entities[e].kind {
+    let vals: Vec<i128> = info.enumerators.iter().filter_map(|&e| match u.entities[e].kind {
         EntKind::Enumerator { value, .. } => Some(value),
         _ => None,
     }).collect();
@@ -197,7 +198,7 @@ pub fn value_range(cx: &Check, en: EnumId) -> (i128, i128) {
     if lo < 0 {
         (-(1i128 << bits), (1i128 << bits) - 1)
     } else {
-        (0, (1i128 << bits) - 1)
+        (0, (1i128 << bits.max(1)) - 1)
     }
 }
 
