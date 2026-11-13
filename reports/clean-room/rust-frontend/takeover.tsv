@@ -1729,3 +1729,9 @@ expressions/postfix/postfix-on-const.cpp	3	978877ef
 expressions/unary/address-of-rvalue.cpp	3	978877ef
 expressions/unary/increment-const.cpp	3	978877ef
 foundations/conversions/potentially-throwing-to-noexcept.cpp	3	978877ef
+declarations/initialization/list/designator-on-scalar.cpp	3	921a1819
+declarations/storage-linkage/block-extern-after-local.cpp	3	921a1819
+declarations/type-names/typedef-storage-class.cpp	3	921a1819
+declarations/volatile/pointer-remove-volatile.cpp	3	921a1819
+expressions/primary/string-to-nonconst-pointer.cpp	3	921a1819
+statements/if/constexpr-non-template-checked.cpp	3	921a1819
