@@ -8,9 +8,8 @@
 # pages, use no keyword of a later step, pass on both front ends, and, for
 # a reject test, whose first error on the new front end names a cited or
 # linked rule. Their commit cell names 5f100f69, the commit of item RW2.
-# The rows of item RW3 meet the same conditions, with a cited rule for the
-# first error of a reject test. Their commit cell names the commit whose
-# tree the new front end passed them on.
+# The rows of item RW3 meet the same conditions. Their commit cell names
+# the commit whose tree the new front end passed them on.
 declarations/alignment/alignof-variable-type.cpp	3	5f100f69
 declarations/alignment/definition-without-earlier-with.cpp	3	5f100f69
 declarations/alignment/max-fundamental.cpp	3	5f100f69
@@ -1506,3 +1505,51 @@ statements/if/constexpr-goto-into.cpp	3	5abc3623
 statements/if/not-consteval-else-immediate.cpp	3	5abc3623
 statements/loops/jump-into-range-for-body.cpp	3	5abc3623
 statements/loops/jump-into-while-body-past-condition-declaration.cpp	3	5abc3623
+declarations/attributes/deprecated-added-later.cpp	3	5abc3623
+declarations/attributes/fallthrough-if-without-else-warns.cpp	3	5abc3623
+declarations/attributes/implicit-fallthrough-warns.cpp	3	5abc3623
+declarations/attributes/noreturn-returns.cpp	3	5abc3623
+declarations/attributes/unused-set-not-read-warns.cpp	3	5abc3623
+declarations/attributes/unused-warns.cpp	3	5abc3623
+declarations/declarators/volatile-return-deprecated.cpp	3	5abc3623
+declarations/functions/definitions/flow-off-end-goto-out-of-loop-warns.cpp	3	5abc3623
+declarations/functions/definitions/flow-off-end-loop-break-warns.cpp	3	5abc3623
+declarations/functions/definitions/flow-off-end-plain-call-warns.cpp	3	5abc3623
+declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp	3	5abc3623
+declarations/functions/definitions/flow-off-end-warns.cpp	3	5abc3623
+declarations/initialization/references/lifetime-not-through-return.cpp	3	5abc3623
+declarations/volatile/assignment-result-warns.cpp	3	5abc3623
+declarations/volatile/volatile-parameter-warns.cpp	3	5abc3623
+declarations/volatile/volatile-return-warns.cpp	3	5abc3623
+expressions/additive/enum-float-warns.cpp	3	5abc3623
+expressions/additive/mixed-enum-warns.cpp	3	5abc3623
+expressions/bitwise/complement-bool-warns.cpp	3	5abc3623
+expressions/bitwise/mixed-enum-warns.cpp	3	5abc3623
+expressions/bitwise/mixed-enum-xor-warns.cpp	3	5abc3623
+expressions/bitwise/parentheses-warns.cpp	3	5abc3623
+expressions/casts/static-cast-enum-out-of-range-constant.cpp	3	5abc3623
+expressions/comma/unused-left-literal-warns.cpp	3	5abc3623
+expressions/comma/unused-left-warns.cpp	3	5abc3623
+expressions/comparison/array-comparison-warns.cpp	3	5abc3623
+expressions/comparison/array-relational-warns.cpp	3	5abc3623
+expressions/comparison/chained-comparison-warns.cpp	3	5abc3623
+expressions/comparison/chained-less-equal-warns.cpp	3	5abc3623
+expressions/comparison/chained-mixed-relational-warns.cpp	3	5abc3623
+expressions/comparison/different-enums-warns.cpp	3	5abc3623
+expressions/comparison/enum-float-comparison-warns.cpp	3	5abc3623
+expressions/comparison/sign-compare-warns.cpp	3	5abc3623
+expressions/decltype/side-effect-decltype-warns.cpp	3	5abc3623
+expressions/decltype/side-effect-unevaluated-warns.cpp	3	5abc3623
+expressions/logical/not-on-lhs-warns.cpp	3	5abc3623
+expressions/logical/parentheses-warns.cpp	3	5abc3623
+expressions/multiplicative/enum-enum-warns.cpp	3	5abc3623
+expressions/multiplicative/enum-float-warns.cpp	3	5abc3623
+expressions/primary/char-multichar-warns.cpp	3	5abc3623
+expressions/primary/float-overflow-warns.cpp	3	5abc3623
+expressions/shift/count-constant-warns.cpp	3	5abc3623
+expressions/shift/count-negative-warns.cpp	3	5abc3623
+expressions/unary/sizeof-array-parameter-warns.cpp	3	5abc3623
+statements/blocks/unused-value-warns.cpp	3	5abc3623
+statements/loops/jump-into-for-body-past-initialized-declaration.cpp	3	5abc3623
+statements/switch/case-value-not-enumerator-warns.cpp	3	5abc3623
+statements/switch/enum-missing-case-warns.cpp	3	5abc3623
