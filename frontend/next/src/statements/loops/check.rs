@@ -89,5 +89,8 @@ pub fn for_stmt(cx: &mut Check, n: &Node) -> Stmt {
         Some(e) if e.ty.is_error() => return Stmt::new(SK::Null, n.span),
         s => s,
     };
+    if let Some(e) = &step {
+        crate::expressions::decltype::check::no_effect_warning(cx, e, "UNEV-3", "the iteration expression");
+    }
     Stmt::new(SK::For { id, init, cond, step, body: Box::new(body) }, n.span)
 }

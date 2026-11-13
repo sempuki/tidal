@@ -16,6 +16,7 @@ pub fn arithmetic_operand(cx: &Check, t: &QType) -> bool {
 
 /// `*`, `/`, `%` on two prvalues (MUL-3, MUL-4).
 pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: crate::source::Span) -> Expr {
+    crate::expressions::check::mixed_enumerations(cx, &l, &r, span, "MUL-16", true);
     let (l, r) = (rvalue(cx, l), rvalue(cx, r));
     if l.ty.is_error() || r.ty.is_error() {
         return bad(span);

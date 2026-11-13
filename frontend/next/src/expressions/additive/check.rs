@@ -21,6 +21,7 @@ fn object_pointer(t: &QType) -> bool {
 
 /// `+` and `-` on two operands (ADD-1 to ADD-3).
 pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
+    crate::expressions::check::mixed_enumerations(cx, &l, &r, span, "ADD-16", true);
     let (l, r) = (rvalue(cx, l), rvalue(cx, r));
     if l.ty.is_error() || r.ty.is_error() {
         return bad(span);

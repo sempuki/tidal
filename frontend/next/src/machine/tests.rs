@@ -241,3 +241,23 @@ fn enumeration_declarations_agree_and_hold_their_values() {
     assert_eq!(rule("enum class F : int { A }; F f{5};"), None);
     assert_eq!(rule("enum H { A = 1ULL << 63, B = -1 };"), Some("ENUM-5"));
 }
+
+#[test]
+fn warnings_for_values_without_effect_and_mixed_enumerations() {
+    let rule = |src: &str, flags: &[&str]| {
+        let o = crate::Options { werror: true, wflags: flags.iter().map(|f| f.to_string()).collect(), ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    let w = &["-Wunused-value"];
+    assert_eq!(rule("void f(int a) { a + 1; }", w), Some("STMT-4"));
+    assert_eq!(rule("int f(int a, int b) { return (a + 1, b); }", w), Some("COMMA-5"));
+    assert_eq!(rule("int f(int k, int n) { for (; k < n; n) ++k; return k; }", w), Some("UNEV-3"));
+    assert_eq!(rule("int g(); volatile int p; void f(int a) { p; a = 1; ++a; g(); (void)a; a ? g() : g(); }", w), None);
+    assert_eq!(rule("enum E { A }; enum F { B }; int f() { return A + B; }", &[]), Some("ADD-16"));
+    assert_eq!(rule("enum E { A }; enum F { B }; int f() { return A | B; }", &[]), Some("BIT-8"));
+    assert_eq!(rule("enum E { A }; double f() { return A * 1.5; }", &[]), Some("MUL-16"));
+    assert_eq!(rule("enum E { A }; double f() { return A | 1; }", &[]), None);
+}

@@ -146,6 +146,7 @@ pub fn expression_stmt(cx: &mut Check, n: &Node) -> Stmt {
     if e.ty.is_error() {
         return Stmt::new(SK::Null, n.span);
     }
+    crate::expressions::decltype::check::no_effect_warning(cx, &e, "STMT-4", "the expression statement");
     Stmt::new(SK::Expr(e), n.span)
 }
 

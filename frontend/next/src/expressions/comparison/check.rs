@@ -133,16 +133,7 @@ fn warnings(cx: &mut Check, op: BOp, l: &Expr, r: &Expr, span: Span) {
     }
     // CMP-21: two different enumerations, or an unscoped enumeration and
     // a floating-point value.
-    let unscoped = |t: &QType| matches!(t.t, Type::Enum(e) if !cx.u.enums[e].scoped);
-    match (&l.ty.t, &r.ty.t) {
-        (Type::Enum(a), Type::Enum(b)) if a != b && unscoped(&l.ty) && unscoped(&r.ty) => {
-            cx.warning(span, "CMP-21", "a comparison of two different enumeration types is deprecated");
-        }
-        (Type::Enum(_), Type::Float(_)) | (Type::Float(_), Type::Enum(_)) if unscoped(&l.ty) || unscoped(&r.ty) => {
-            cx.warning(span, "CMP-21", "a comparison of an enumeration with a floating-point value is deprecated");
-        }
-        _ => {}
-    }
+    crate::expressions::check::mixed_enumerations(cx, l, r, span, "CMP-21", true);
     // CMP-4: a signed operand converted to an unsigned type.
     if cx.wflag(&["-Wall", "-Wsign-compare"]) {
         let kind = |cx: &Check, e: &Expr| conv::promoted(cx, &e.ty).int_kind();

@@ -52,3 +52,28 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
     let unparenthesized_name = matches!(c.prod, "primary" | "id_expression") && !e.paren;
     decltype_with(&e, if unparenthesized_name { declared } else { None })
 }
+
+/// UNEV-3: whether the step that gives the value of a discarded-value
+/// expression has an effect: it calls a function, writes an object,
+/// reads a volatile object, or allocates storage. A cast to `void`
+/// counts, so that it prevents the warning.
+pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
+    use crate::sem::tree::{Conv, EK};
+    match &e.k {
+        EK::Call(..) | EK::Assign(..) | EK::Compound(..) | EK::IncDec(..) | EK::Assume(_) => true,
+        EK::Conv(Conv::ToVoid, _) => true,
+        EK::Conv(_, x) => has_effect(x),
+        EK::Comma(_, b) => has_effect(b),
+        EK::Cond(_, a, b) => has_effect(a) || has_effect(b),
+        EK::Var(_) | EK::Index(..) | EK::Deref(_) => e.ty.is_volatile(),
+        _ => false,
+    }
+}
+
+/// UNEV-3 (and STMT-4, COMMA-5, which link to it): warn about a
+/// discarded-value expression whose value step has no effect.
+pub fn no_effect_warning(cx: &mut Check, e: &crate::sem::tree::Expr, rule: &'static str, what: &str) {
+    if !e.ty.is_error() && !has_effect(e) && cx.wflag(&["-Wall", "-Wunused-value"]) {
+        cx.warning(e.span, rule, format!("{} has no effect", what));
+    }
+}

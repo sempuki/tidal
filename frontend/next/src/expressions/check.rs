@@ -98,3 +98,22 @@ pub fn operands(cx: &mut Check, n: &Node) -> Option<(Expr, Expr)> {
     let r = expr(cx, ns[1]);
     Some((l, r))
 }
+
+/// The deprecated mixes of the usual arithmetic conversions, which an
+/// implementation should warn about: operands of two different
+/// unscoped enumeration types, and (when `with_float`) an unscoped
+/// enumeration with a floating-point operand. `rule` is the operator
+/// page's rule (ADD-16, BIT-8, CMP-21, MUL-16).
+pub fn mixed_enumerations(cx: &mut Check, l: &Expr, r: &Expr, span: crate::source::Span, rule: &'static str, with_float: bool) {
+    use crate::sem::types::Type;
+    let unscoped = |t: &QType| matches!(t.t, Type::Enum(e) if !cx.u.enums[e].scoped);
+    match (&l.ty.t, &r.ty.t) {
+        (Type::Enum(a), Type::Enum(b)) if a != b && unscoped(&l.ty) && unscoped(&r.ty) => {
+            cx.warning(span, rule, "operands of two different enumeration types are deprecated");
+        }
+        (Type::Enum(_), Type::Float(_)) | (Type::Float(_), Type::Enum(_)) if with_float && (unscoped(&l.ty) || unscoped(&r.ty)) => {
+            cx.warning(span, rule, "an enumeration operand with a floating-point operand is deprecated");
+        }
+        _ => {}
+    }
+}

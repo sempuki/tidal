@@ -12,6 +12,7 @@ use crate::syntax::Node;
 /// `&`, `^`, `|` (BIT-1 to BIT-3): the usual arithmetic conversions on
 /// integer operands.
 pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
+    crate::expressions::check::mixed_enumerations(cx, &l, &r, span, "BIT-8", false);
     let (l, r) = (rvalue(cx, l), rvalue(cx, r));
     if l.ty.is_error() || r.ty.is_error() {
         return bad(span);

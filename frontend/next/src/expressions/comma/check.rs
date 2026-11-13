@@ -23,6 +23,7 @@ pub fn expression(cx: &mut Check, n: &Node) -> Expr {
             acc = bad(n.span);
             continue;
         }
+        crate::expressions::decltype::check::no_effect_warning(cx, &acc, "COMMA-5", "the left operand of the comma operator");
         let (t, cat) = (r.ty.clone(), r.cat);
         acc = Expr::new(EK::Comma(Box::new(acc), Box::new(r)), t, cat, n.span);
     }
