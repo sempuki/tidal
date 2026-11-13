@@ -72,6 +72,18 @@ pub fn c_name(cx: &mut Check, id: crate::sem::EntityId, c: bool, span: crate::so
             return;
         }
     }
+    // LSP-7: a C name must not have the spelling of a global variable
+    // with C++ language linkage, in either order.
+    let first_c = cx.c_names.get(&name).copied();
+    let clash = if c {
+        crate::foundations::names::check::declared_here(cx, 0, &name).into_iter().any(|e| e != id && Some(e) != first_c && matches!(cx.u.entities[e].kind, EntKind::Var(_)))
+    } else {
+        mine.0 && cx.u.entities[id].scope == 0 && first_c.is_some_and(|e| e != id)
+    };
+    if clash {
+        cx.error(span, "LSP-7", format!("the C name '{}' has the spelling of a global variable with C++ language linkage", name));
+        return;
+    }
     if c {
         cx.c_names.entry(name).or_insert(id);
     }

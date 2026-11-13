@@ -127,6 +127,17 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 // ATTR-2: `noreturn` and `carries_dependency` belong on the
                 // first declaration. ATTR-4: a later declaration can add
                 // `deprecated`.
+                // CX-5: every declaration agrees on constexpr and consteval.
+                if s.constexpr != f.constexpr || s.consteval != f.consteval {
+                    cx.error(span, "CX-5", format!("the declarations of '{}' differ in constexpr or consteval", name));
+                    return None;
+                }
+                // LSP-7: a function first declared with C++ language
+                // linkage cannot be given C language linkage later.
+                if cx.lang_c && !f.c_linkage {
+                    cx.error(span, "LSP-7", format!("'{}' was first declared with C++ language linkage", name));
+                    return None;
+                }
                 if s.attrs.noreturn && !f.noreturn {
                     cx.error(span, "ATTR-2", format!("'noreturn' on '{}', whose first declaration does not have it", name));
                 }
@@ -603,6 +614,7 @@ pub fn called(cx: &mut Check, f: EntityId, span: Span) {
 
 /// FN-4: a program must not take the address of `main`.
 pub fn address_taken(cx: &mut Check, f: EntityId, span: Span) {
+    crate::declarations::constexpr::check::address_of(cx, f, span);
     if &*cx.u.entities[f].name == "main" && cx.u.entities[f].scope == 0 {
         cx.error(span, "FN-4", "the address of main is taken");
     }

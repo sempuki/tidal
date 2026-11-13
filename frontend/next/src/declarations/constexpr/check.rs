@@ -57,3 +57,13 @@ pub fn immediate_call(cx: &mut Check, f: crate::sem::EntityId, call: crate::sem:
     }
     call
 }
+
+/// CEV-2: the address of a `consteval` function is taken only in an
+/// immediate function context (the body of a `consteval` function).
+pub fn address_of(cx: &mut Check, f: crate::sem::EntityId, span: Span) {
+    let immediate = cx.u.func(f).is_some_and(|x| x.consteval);
+    let inside = cx.func.as_ref().is_some_and(|c| c.consteval);
+    if immediate && !inside {
+        cx.error(span, "CEV-2", format!("the address of the consteval function '{}' is taken", cx.u.entities[f].name));
+    }
+}

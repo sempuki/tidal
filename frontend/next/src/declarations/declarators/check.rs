@@ -398,6 +398,9 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
         if specs.is_static || specs.is_extern || specs.thread_local || specs.mutable {
             crate::declarations::storage_linkage::check::parameter_storage(cx, ds.span);
         }
+        if specs.inline {
+            crate::declarations::inline::check::misplaced(cx, ds.span, "on a parameter");
+        }
         if specs.constexpr || specs.consteval || specs.constinit {
             crate::declarations::constexpr::check::on_parameter(cx, ds.span);
         }

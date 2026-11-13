@@ -372,3 +372,23 @@ fn attribute_placement_and_warnings() {
     assert_eq!(rule("void f() { [[maybe_unused]] int local = 1; }", &["-Wunused"]), None);
     assert_eq!(rule("[[using gnu: gnu::unused]] int x;", &[]), Some("ATTR-17"));
 }
+
+#[test]
+fn specifier_agreement_and_c_names() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("consteval int one() { return 1; } int (*p)() = one;"), Some("CEV-2"));
+    assert_eq!(rule("consteval int one() { return 1; } consteval int two() { return one(); }"), None);
+    assert_eq!(rule("constexpr int f(); int f() { return 1; }"), Some("CX-5"));
+    assert_eq!(rule("constexpr int f(); constexpr int f() { return 1; }"), None);
+    assert_eq!(rule("extern constinit int y; int y = 1;"), Some("CINIT-2"));
+    assert_eq!(rule("extern constinit int y; constinit int y = 1;"), None);
+    assert_eq!(rule("void f(inline int x);"), Some("INL-2"));
+    assert_eq!(rule("inline typedef int I;"), Some("INL-2"));
+    assert_eq!(rule("namespace n { extern \"C\" int c; } int c;"), Some("LSP-7"));
+    assert_eq!(rule("int c; namespace n { extern \"C\" int c; }"), Some("LSP-7"));
+    assert_eq!(rule("int g(int); extern \"C\" int g(int);"), Some("LSP-7"));
+    assert_eq!(rule("extern \"C\" int g(int); int g(int);"), None);
+}

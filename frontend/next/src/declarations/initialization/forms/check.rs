@@ -508,6 +508,12 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
                     }
                     return None;
                 }
+                // CINIT-2: after a constinit declaration, the initializing
+                // declaration has constinit too.
+                if v.constinit && has_init && !s.constinit {
+                    cx.error(span, "CINIT-2", format!("the initializing declaration of '{}' lacks constinit", name));
+                    return None;
+                }
                 let old_link = cx.u.entities[e].linkage;
                 storage_linkage::check::redeclared_linkage(cx, span, old_link, s, name);
                 storage_linkage::check::thread_local_agrees(cx, span, v.storage, storage, name);

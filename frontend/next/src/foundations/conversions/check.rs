@@ -14,6 +14,9 @@ pub fn decay(_cx: &mut Check, e: Expr) -> Expr {
     match e.ty.t.clone() {
         Type::Array(el, _) => e.conv(Conv::ArrayDecay, QType::ptr_to((*el).clone()), Cat::PR),
         Type::Func(_) => {
+            if let crate::sem::tree::EK::Func(f) = e.k {
+                crate::declarations::constexpr::check::address_of(_cx, f, e.span);
+            }
             let t = QType::ptr_to(e.ty.clone());
             e.conv(Conv::FuncDecay, t, Cat::PR)
         }

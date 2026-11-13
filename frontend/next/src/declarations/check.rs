@@ -239,6 +239,9 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
             continue;
         }
         if specs.typedef {
+            if specs.inline {
+                crate::declarations::inline::check::misplaced(cx, d.span, "on a typedef");
+            }
             if d.child("init").is_some() {
                 type_names::check::typedef_with_init(cx, d.span);
             }
