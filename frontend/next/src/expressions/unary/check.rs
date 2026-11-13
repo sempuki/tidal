@@ -65,6 +65,13 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
     if e.ty.is_error() {
         return bad(span);
     }
+    // OPR-6: an operand of class or enumeration type can select an
+    // operator function.
+    if matches!(op, "-" | "+" | "!" | "~" | "*" | "&" | "++" | "--") {
+        if let Some(x) = crate::classes::operators::check::unary(cx, op, &e, false, span) {
+            return x;
+        }
+    }
     match op {
         "&" => address_of(cx, e, span),
         "*" => indirection(cx, e, span),

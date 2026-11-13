@@ -1065,3 +1065,30 @@ fn copy_and_move_constructors() {
     assert_eq!(rule("struct S { S() {} S(const volatile S&) = default; }; S a; S b(a);"), Some("CPY-26"));
     assert_eq!(rule("struct M { M() {} M(const M&) = delete; }; struct S { M m; S() {} S(const S&); }; S::S(const S&) = default;"), Some("CPY-17"));
 }
+
+#[test]
+fn operator_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // Member and non-member operator functions, by operator and by name.
+    assert_eq!(run("struct V { int x; V operator+(const V& o) const { return V{x + o.x}; } }; V operator-(V a, V b) { return V{a.x - b.x}; } int main() { V a{1}, b{2}; V c = a + b; c = a.operator+(b); return operator-(c, a).x + (c - b).x; }"), RunOutcome::Result(3));
+    // Prefix and postfix increment, subscript, call, and != from ==.
+    assert_eq!(run("struct C { int n = 0; C& operator++() { ++n; return *this; } C operator++(int) { C t = *this; ++n; return t; } int operator[](int i) const { return n * i; } int operator()(int a, int b) const { return a + b + n; } bool operator==(const C& o) const { return n == o.n; } }; int main() { C c; ++c; c++; C d; return c[3] * 10 + c(1, 2) + (c != d) * 100 + (d == c); }"), RunOutcome::Result(165));
+    // Assignment operators; the implicit assignment assigns each member.
+    assert_eq!(run("int k = 0; struct M { M& operator=(const M&) { ++k; return *this; } }; struct S { M m; int v; }; struct A { int v; A& operator=(int x) { v = x; return *this; } }; int main() { A a{1}; a = 5; S s{}, t{}; s = t; return a.v * 10 + k; }"), RunOutcome::Result(51));
+    // The right operand of an overloaded assignment comes first.
+    assert_eq!(run("int log_ = 0; struct V { V& operator=(int) { return *this; } }; V v; V& left() { log_ = log_ * 10 + 1; return v; } int right() { log_ = log_ * 10 + 2; return 1; } int main() { left() = right(); return log_; }"), RunOutcome::Result(21));
+    // A converting constructor converts an operand of a non-member.
+    assert_eq!(run("struct S { int v; S(int x) : v(x) {} }; S operator+(S a, S b) { return S(a.v + b.v); } int main() { S s = 1 + S(2); return s.v; }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct S {}; int operator+(int, int);"), Some("OPR-2"));
+    assert_eq!(rule("struct S {}; S& operator=(S&, int);"), Some("OPR-2"));
+    assert_eq!(rule("struct S { S operator++(double); };"), Some("OPR-2"));
+    assert_eq!(rule("struct S { S& operator++(); }; void f(S s) { s++; }"), Some("OPR-13"));
+    assert_eq!(rule("struct S {}; void f(S a, S b) { a * b; }"), Some("MUL-3"));
+    assert_eq!(rule("struct S { int v; int operator==(int o) const { return v == o; } }; bool f(S s) { return s != 1; }"), Some("DCMP-12"));
+    assert_eq!(rule("enum C { r, b }; bool operator==(const C&, const C&); bool x = r == b;"), Some("OVL-36"));
+    assert_eq!(rule("struct S { void operator=(const S&) = default; };"), Some("CPY-17"));
+}

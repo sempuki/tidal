@@ -81,7 +81,7 @@ pub fn can_throw(cx: &Check, e: &Expr) -> bool {
     }
     e.any(&|x| match &x.k {
         EK::List(i) => ctor_throws(cx, i),
-        EK::Call(f, _) => {
+        EK::Call(f, _, _) => {
             let t = f.ty.nonref();
             let t = match &t.t {
                 Type::Ptr(q) => (**q).clone(),

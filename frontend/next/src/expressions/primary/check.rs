@@ -188,6 +188,7 @@ pub fn name_of<'a>(cx: &mut Check<'a>, n: &Node) -> Option<(names::Qual, &'a str
     match first.prod {
         "unqualified_id" => match first.kids.as_slice() {
             [k @ Kid::Tok(_)] => Some((names::Qual::None, cx.text(k), cx.token(k)?.span)),
+            [Kid::Node(o)] if o.prod == "operator_function_id" => Some((names::Qual::None, crate::classes::operators::check::function_name(cx, o)?, o.span)),
             _ => None,
         },
         "qualified_name" => {
@@ -195,6 +196,7 @@ pub fn name_of<'a>(cx: &mut Check<'a>, n: &Node) -> Option<(names::Qual, &'a str
             let u = first.child("unqualified_id")?;
             match u.kids.as_slice() {
                 [k @ Kid::Tok(_)] => Some((q, cx.text(k), cx.token(k)?.span)),
+                [Kid::Node(o)] if o.prod == "operator_function_id" => Some((q, crate::classes::operators::check::function_name(cx, o)?, o.span)),
                 _ => None,
             }
         }

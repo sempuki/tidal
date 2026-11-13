@@ -14,6 +14,8 @@ pub enum Rank {
     Exact,
     Promotion,
     Conversion,
+    /// A user-defined conversion by a converting constructor (ICS-4).
+    User,
 }
 
 /// An implicit conversion sequence of a non-class argument.

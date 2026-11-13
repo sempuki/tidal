@@ -22,6 +22,15 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
         Some("(") => call(cx, base, ns.get(1).copied(), n.span),
         Some("[") => {
             let b = expr(cx, base);
+            // OPR-3: `operator[]` takes any number of arguments.
+            if b.ty.nonref().class().is_some_and(|c| !crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, "operator[]").is_empty()) {
+                let parts: Vec<&Node> = ns.get(1).map(|i| nodes(i)).unwrap_or_default();
+                let args: Vec<Expr> = parts.into_iter().map(|p| expr(cx, p)).collect();
+                if args.iter().any(|a| a.ty.is_error()) {
+                    return bad(n.span);
+                }
+                return crate::classes::operators::check::subscript(cx, &b, &args, n.span).unwrap_or_else(|| bad(n.span));
+            }
             let Some(i) = ns.get(1) else {
                 cx.error(n.span, "PFX-2", "a subscript with no index");
                 return bad(n.span);
@@ -32,12 +41,20 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
                 return bad(n.span);
             }
             let x = expr(cx, parts[0]);
+            // OPR-3: the subscript of a class object.
+            if let Some(r) = crate::classes::operators::check::subscript(cx, &b, std::slice::from_ref(&x), n.span) {
+                return r;
+            }
             subscript(cx, b, x, n.span)
         }
         Some("++") | Some("--") => {
             let e = expr(cx, base);
             if e.ty.is_error() {
                 return bad(n.span);
+            }
+            // OPR-4: the postfix form of an operator function.
+            if let Some(x) = crate::classes::operators::check::unary(cx, toks[0], &e, true, n.span) {
+                return x;
             }
             crate::expressions::unary::check::inc_dec(cx, e, false, toks[0] == "++", n.span, "PFX-13")
         }
@@ -47,6 +64,10 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
                 return bad(n.span);
             }
             let arrow = toks.contains(&"->");
+            if arrow && crate::classes::operators::check::has_arrow(cx, &b.ty) {
+                let t = cx.unsupported(n.span, "an operator-> (OPR-5)");
+                return Expr::new(EK::Int(0), t, Cat::PR, n.span);
+            }
             let is_class = if arrow { b.ty.nonref().pointee().is_some_and(|p| p.is_class()) } else { b.ty.nonref().is_class() };
             if is_class && !cx.source(n).contains('~') {
                 let Some(id) = ns.get(1).copied() else { return bad(n.span) };
@@ -279,9 +300,10 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         return bad(span);
     }
     let f = deref_ref(f);
-    // LAM-1: a call of a closure object calls its call operator.
-    if let Some(op) = crate::expressions::lambdas::check::call_operator(cx, &f) {
-        let Some(op) = ovl::resolve_with(cx, &[op], Some(&f), &args, span, "operator()") else { return bad(span) };
+    // LAM-1, OPR-3: a call of a class object calls its call operator.
+    let ops = crate::expressions::lambdas::check::call_operators(cx, &f);
+    if !ops.is_empty() {
+        let Some(op) = ovl::resolve_with(cx, &ops, Some(&f), &args, span, "operator()") else { return bad(span) };
         let func = cx.u.func(op).unwrap().clone();
         let fty = QType::new(Type::Func(func.ty.clone()));
         let callee = Expr::new(EK::Func(op), fty, Cat::L, f.span);
@@ -308,7 +330,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         if u.prod != "unqualified_id" || u.kids.len() != 1 {
             return None;
         }
-        let name = cx.source(u);
+        let name = crate::classes::operators::check::unqualified_name(cx, u)?.to_string();
         let b = expr(cx, base);
         if b.ty.is_error() {
             return Some(bad(span));
@@ -385,7 +407,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
 
 /// The call of a chosen function or of a function pointer: the
 /// arguments initialize the parameters.
-fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr>, span: Span, object: Option<Expr>) -> Expr {
+pub fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr>, span: Span, object: Option<Expr>) -> Expr {
     let fty = match &f.ty.t {
         Type::Func(ft) => ft.clone(),
         Type::Ptr(p) => match &p.t {
@@ -471,7 +493,7 @@ fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr
         };
         out.insert(0, Arg { e: o, by_ref: true });
     }
-    let call = Expr::new(EK::Call(Box::new(f), out), ty, cat, span);
+    let call = Expr::new(EK::Call(Box::new(f), out, false), ty, cat, span);
     if let Some(t) = target {
         return crate::declarations::constexpr::check::immediate_call(cx, t, call);
     }

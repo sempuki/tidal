@@ -34,5 +34,10 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
 pub fn bitwise(cx: &mut Check, n: &Node) -> Expr {
     let op = BOp::from_str(operator(cx, n)).unwrap_or(BOp::BitAnd);
     let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+    // OPR-6: an operand of class or enumeration type can select an
+    // operator function.
+    if let Some(e) = crate::classes::operators::check::binary(cx, cx.first_word(n), &l, &r, n.span) {
+        return e;
+    }
     operate(cx, op, l, r, n.span)
 }

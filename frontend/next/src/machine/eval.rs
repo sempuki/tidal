@@ -94,7 +94,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             m.elide = owned;
             eval_any(m, b)
         }
-        EK::Call(f, args) => match call_expr(m, f, args)? {
+        EK::Call(f, args, rev) => match call_expr_in(m, f, args, *rev)? {
             Ret::Val(v) => temporary(m, &e.ty, v, owned),
             Ret::Place(p) => values::run::read(m, &p, &e.ty),
         },
@@ -247,7 +247,7 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
             eval_discard(m, a)?;
             place(m, b)
         }
-        EK::Call(f, args) => match call_expr(m, f, args)? {
+        EK::Call(f, args, rev) => match call_expr_in(m, f, args, *rev)? {
             Ret::Place(p) => Ok(p),
             Ret::Val(v) => temp(m, &e.ty, v),
         },
@@ -378,10 +378,18 @@ pub fn binary(m: &mut Machine, op: BOp, a: Val, b: Val, lt: &QType, rt: &QType, 
 
 /// A call: the callee, then the arguments, then the body.
 pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
+    call_expr_in(m, f, args, false)
+}
+
+/// A call whose arguments are evaluated from the last to the first when
+/// `rev` holds (OPR-7).
+pub fn call_expr_in(m: &mut Machine, f: &Expr, args: &[Arg], rev: bool) -> R<Ret> {
     let callee = eval(m, f)?;
     let id = postfix::run::callee(m, callee, &f.ty)?;
     let mut vals = Vec::new();
-    for (k, a) in args.iter().enumerate() {
+    let order: Vec<usize> = if rev { (0..args.len()).rev().collect() } else { (0..args.len()).collect() };
+    for k in order {
+        let a = &args[k];
         if a.by_ref {
             let p = place(m, &a.e);
             // The object of a member call in constant evaluation can be a
@@ -398,6 +406,9 @@ pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
             m.elide = true;
             vals.push(Ret::Val(eval_any(m, &a.e)?));
         }
+    }
+    if rev {
+        vals.reverse();
     }
     call(m, id, vals)
 }

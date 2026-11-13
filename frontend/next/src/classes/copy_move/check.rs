@@ -25,6 +25,31 @@ pub fn copy_or_move(cx: &Check, c: ClassId, f: EntityId) -> Option<bool> {
     }
 }
 
+/// A copy or move assignment operator of `c` (CPY-3): a member
+/// `operator=` with one parameter of the class or a reference to it.
+/// True for a move assignment.
+pub fn assignment_kind(cx: &Check, c: ClassId, f: EntityId) -> Option<bool> {
+    let func = cx.u.func(f)?;
+    if func.ty.params.len() != 1 || func.class != Some(c) {
+        return None;
+    }
+    match &func.ty.params[0].t {
+        Type::Ref(t, rv) if t.class() == Some(c) => Some(*rv),
+        Type::Class(d) if *d == c => Some(false),
+        _ => None,
+    }
+}
+
+/// CPY-5: the class has an implicit move assignment.
+pub fn implicit_move_assign(cx: &Check, c: ClassId) -> bool {
+    user(cx, c).is_empty() && user_assignments(cx, c).iter().all(|(f, _)| cx.u.defaulted.contains(f)) && !has_dtor(cx, c)
+}
+
+/// The user-declared copy and move assignment operators of a class.
+fn user_assignments(cx: &Check, c: ClassId) -> Vec<(EntityId, bool)> {
+    crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, "operator=").into_iter().filter_map(|f| assignment_kind(cx, c, f).map(|m| (f, m))).collect()
+}
+
 /// The user-declared copy and move constructors of a class.
 fn user(cx: &Check, c: ClassId) -> Vec<(EntityId, bool)> {
     ctors(cx, c).into_iter().filter_map(|f| copy_or_move(cx, c, f).map(|m| (f, m))).collect()
@@ -33,7 +58,13 @@ fn user(cx: &Check, c: ClassId) -> Vec<(EntityId, bool)> {
 /// The class, or a member of it at any depth, has a user-declared copy
 /// or move constructor, so that a copy of its object runs code.
 pub fn needs_copy_function(cx: &Check, c: ClassId) -> bool {
-    !user(cx, c).is_empty() || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| needs_copy_function(cx, d)))
+    !user(cx, c).is_empty() || !user_assignments(cx, c).is_empty() || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| needs_copy_function(cx, d)))
+}
+
+/// A member at any depth whose copy or move constructor runs code, or
+/// is deleted by a user-declared move assignment.
+fn members_run_code(cx: &Check, c: ClassId) -> bool {
+    cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| !user(cx, d).is_empty() || user_assignments(cx, d).iter().any(|&(_, m)| m) || members_run_code(cx, d)))
 }
 
 /// A user-declared destructor (CPY-5).
@@ -52,9 +83,20 @@ pub fn copy(cx: &mut Check, e: Expr, copy_init: bool, span: Span) -> Option<Expr
     let users = user(cx, c);
     let rvalue = e.cat != Cat::L;
     if users.is_empty() {
+        // CPY-4: a user-declared move assignment deletes the implicit
+        // copy constructor.
+        if !rvalue && user_assignments(cx, c).iter().any(|&(_, m)| m) {
+            cx.error_cause(span, "CPY-21", Some("CPY-24"), format!("the copy constructor of '{}' is deleted, because the class declares a move assignment operator", cx.u.classes[c].name));
+            return None;
+        }
+        // CPY-13: an implicit copy in a class with a user-provided copy
+        // assignment is deprecated.
+        if user_assignments(cx, c).iter().any(|&(f, m)| !m && !cx.u.defaulted.contains(&f)) && cx.wflag(&["-Wextra", "-Wdeprecated-copy"]) {
+            cx.warning(span, "CPY-13", format!("the implicit copy constructor of '{}' is deprecated, because the class has a user-provided copy assignment operator", cx.u.classes[c].name));
+        }
         return implicit(cx, e, c, span);
     }
-    let has_move = users.iter().any(|&(_, m)| m);
+    let has_move = users.iter().any(|&(_, m)| m) || user_assignments(cx, c).iter().any(|&(_, m)| m);
     let has_copy = users.iter().any(|&(_, m)| !m);
     let mut cands: Vec<EntityId> = users.iter().map(|&(f, _)| f).collect();
     if copy_init {
@@ -163,7 +205,7 @@ fn move_deleted(cx: &Check, c: ClassId) -> bool {
 /// copied or moved in turn.
 fn implicit(cx: &mut Check, e: Expr, c: ClassId, span: Span) -> Option<Expr> {
     let ty = e.ty.unqual();
-    if !needs_copy_function(cx, c) {
+    if !members_run_code(cx, c) {
         return Some(e.conv(crate::sem::tree::Conv::LToR, ty, Cat::PR));
     }
     // The object is named once for each member.
@@ -174,7 +216,7 @@ fn implicit(cx: &mut Check, e: Expr, c: ClassId, span: Span) -> Option<Expr> {
     // CPY-5: without an implicit move constructor, an rvalue is copied;
     // CPY-7: so is one whose move a member's deleted move deletes.
     let mut e = e;
-    if e.cat != Cat::L && (has_dtor(cx, c) || move_deleted(cx, c)) {
+    if e.cat != Cat::L && (has_dtor(cx, c) || move_deleted(cx, c) || !user_assignments(cx, c).is_empty()) {
         e.cat = Cat::L;
     }
     let fields = cx.u.classes[c].fields.clone();
@@ -209,7 +251,7 @@ fn member_copy(cx: &mut Check, m: Expr, span: Span) -> Option<Init> {
 /// constructor deletes the implicit copy assignment. True when the
 /// assignment is valid.
 pub fn assignable(cx: &mut Check, c: ClassId, span: Span) -> bool {
-    if user(cx, c).iter().any(|&(_, m)| m) {
+    if user(cx, c).iter().any(|&(_, m)| m) && user_assignments(cx, c).is_empty() {
         cx.error(span, "CPY-21", format!("the copy assignment of '{}' is deleted, because the class declares a move constructor", cx.u.classes[c].name));
         return false;
     }

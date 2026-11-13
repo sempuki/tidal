@@ -23,6 +23,14 @@ pub fn expression(cx: &mut Check, n: &Node) -> Expr {
             acc = bad(n.span);
             continue;
         }
+        // OPR-6: an operand of class or enumeration type can select an
+        // operator function; a void operand cannot (COMMA-7).
+        if !acc.ty.is_void() && !r.ty.is_void() {
+            if let Some(e) = crate::classes::operators::check::binary(cx, ",", &acc, &r, n.span) {
+                acc = e;
+                continue;
+            }
+        }
         crate::expressions::decltype::check::no_effect_warning(cx, &acc, "COMMA-5", "the left operand of the comma operator");
         let (t, cat) = (r.ty.clone(), r.cat);
         acc = Expr::new(EK::Comma(Box::new(acc), Box::new(r)), t, cat, n.span);

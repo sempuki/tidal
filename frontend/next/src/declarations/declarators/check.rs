@@ -243,9 +243,27 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
             return;
         }
     }
+    // An operator function (OPR-1).
+    if let Some(o) = n.child("operator_function_id") {
+        if let Some(nn) = n.child("nested_name") {
+            d.qual = names::nested_name(cx, nn);
+            if d.qual == Qual::Unsupported {
+                d.unsupported = true;
+                return;
+            }
+        }
+        match crate::classes::operators::check::function_name(cx, o) {
+            Some(name) => d.name = Some((Rc::from(name), o.span)),
+            None => {
+                d.unsupported = true;
+                cx.unsupported(n.span, "an operator function of this form");
+            }
+        }
+        return;
+    }
     let Some(id) = n.child("id_expression") else {
         d.unsupported = true;
-        cx.unsupported(n.span, "an operator function or a declarator-id of this form");
+        cx.unsupported(n.span, "a conversion function, a literal operator, or a declarator-id of this form");
         return;
     };
     match id.kids.first() {
@@ -260,9 +278,16 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
             if let Some(nn) = q.child("nested_name") {
                 d.qual = names::nested_name(cx, nn);
             }
-            match q.child("unqualified_id").map(|u| u.kids.as_slice()) {
-                Some([k @ Kid::Tok(_)]) if d.qual != Qual::Unsupported => d.name = Some((Rc::from(cx.text(k)), cx.token(k).map(|t| t.span).unwrap_or(n.span))),
-                _ => d.unsupported = true,
+            match q.child("unqualified_id") {
+                Some(u) if d.qual != Qual::Unsupported && matches!(u.kids.as_slice(), [Kid::Node(o)] if o.prod == "operator_function_id") => match crate::classes::operators::check::unqualified_name(cx, u) {
+                    Some(name) => d.name = Some((Rc::from(name), u.span)),
+                    None => d.unsupported = true,
+                },
+                Some(u) => match u.kids.as_slice() {
+                    [k @ Kid::Tok(_)] if d.qual != Qual::Unsupported => d.name = Some((Rc::from(cx.text(k)), cx.token(k).map(|t| t.span).unwrap_or(n.span))),
+                    _ => d.unsupported = true,
+                },
+                None => d.unsupported = true,
             }
         }
         _ => {
@@ -365,8 +390,11 @@ fn array_suffix(cx: &mut Check, t: QType, n: &Node) -> QType {
 /// A declarator whose name is qualified by a class: an out-of-class
 /// declaration of a member.
 fn names_class_member(cx: &Check, n: &Node) -> bool {
-    let Some(q) = n.find("qualified_name") else { return false };
-    let Some(nn) = q.child("nested_name") else { return false };
+    let nn = match n.find("qualified_name") {
+        Some(q) => q.child("nested_name"),
+        None => n.find("declarator_id").and_then(|d| d.child("nested_name")),
+    };
+    let Some(nn) = nn else { return false };
     let mut toks = Vec::new();
     nn.tokens(&mut toks);
     let Some(name) = toks.iter().rev().map(|&t| cx.toks[t].text.as_str()).find(|w| *w != "::") else { return false };

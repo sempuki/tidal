@@ -84,6 +84,10 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
     }
     let rhs = ns[2];
     if rhs.prod == "braced_init" {
+        if l.ty.is_class() {
+            let t = cx.unsupported(span, "a braced list on the right of an assignment to a class object");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        }
         if op != "=" {
             cx.error(span, "ASN-14", "a braced list on the right of a compound assignment");
             return bad(span);
@@ -98,6 +102,11 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
     let r = expr(cx, rhs);
     if r.ty.is_error() {
         return bad(span);
+    }
+    // CPY-3, OPR-6: a user-declared assignment operator.
+    let chosen = if op == "=" { crate::classes::operators::check::assignment(cx, &l, &r, span) } else { crate::classes::operators::check::binary(cx, op, &l, &r, span) };
+    if let Some(e) = chosen {
+        return e;
     }
     if !modifiable(cx, &l, span) {
         return bad(span);

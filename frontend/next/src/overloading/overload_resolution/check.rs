@@ -35,7 +35,7 @@ fn same_expr(a: &Expr, b: &Expr) -> bool {
             (Compound(o, x1, x2, _), Compound(p, y1, y2, _)) => o == p && same_expr(x1, y1) && same_expr(x2, y2),
             (IncDec(a1, a2, x), IncDec(b1, b2, y)) => a1 == b1 && a2 == b2 && same_expr(x, y),
             (Cond(x1, x2, x3), Cond(y1, y2, y3)) => same_expr(x1, y1) && same_expr(x2, y2) && same_expr(x3, y3),
-            (Call(f, xs), Call(g, ys)) => same_expr(f, g) && same_args(xs, ys),
+            (Call(f, xs, r), Call(g, ys, s)) => r == s && same_expr(f, g) && same_args(xs, ys),
             (Deref(x), Deref(y)) | (AddrOf(x), AddrOf(y)) | (Unevaluated(x), Unevaluated(y)) | (Assume(x), Assume(y)) => same_expr(x, y),
             _ => false,
         }
@@ -87,7 +87,7 @@ pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, na
 /// parameter of each non-static candidate: an lvalue reference to the
 /// class with the function's cv-qualifiers, which also binds an rvalue
 /// (ICS-13, ICS-40). A static member function matches any object.
-fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
+pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
     let func = cx.u.func(f)?;
     let Some(c) = func.class.filter(|_| !func.member_static) else {
         return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false });

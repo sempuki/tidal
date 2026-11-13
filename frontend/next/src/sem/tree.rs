@@ -174,7 +174,10 @@ pub enum EK {
     IncDec(bool, bool, Box<Expr>),
     Cond(Box<Expr>, Box<Expr>, Box<Expr>),
     Comma(Box<Expr>, Box<Expr>),
-    Call(Box<Expr>, Vec<Arg>),
+    /// A call: the callee, the arguments, and whether the arguments are
+    /// evaluated from the last to the first (an overloaded assignment,
+    /// OPR-7).
+    Call(Box<Expr>, Vec<Arg>, bool),
     Deref(Box<Expr>),
     /// `a[i]` with the pointer operand and the integer operand: an
     /// lvalue of the element (`expressions/postfix`).
@@ -223,7 +226,7 @@ impl Expr {
             EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) => x.any(f),
             EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => a.any(f) || b.any(f),
             EK::Cond(c, a, b) => c.any(f) || a.any(f) || b.any(f),
-            EK::Call(c, args) => c.any(f) || args.iter().any(|a| a.e.any(f)),
+            EK::Call(c, args, _) => c.any(f) || args.iter().any(|a| a.e.any(f)),
             EK::List(i) => i.any(f),
             _ => false,
         }

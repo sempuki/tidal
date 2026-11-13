@@ -158,7 +158,7 @@ pub fn expression_stmt(cx: &mut Check, n: &Node) -> Stmt {
 }
 
 fn nodiscard(cx: &mut Check, e: &Expr) {
-    let EK::Call(f, _) = &e.k else { return };
+    let EK::Call(f, _, _) = &e.k else { return };
     let EK::Func(id) = f.k else { return };
     if crate::declarations::functions::definitions::check::is_nodiscard(cx, id) && !e.ty.is_void() {
         let name = cx.u.entities[id].name.clone();

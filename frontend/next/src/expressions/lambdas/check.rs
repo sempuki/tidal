@@ -568,11 +568,11 @@ pub fn to_pointer(cx: &Check, e: &Expr, to: Option<&QType>) -> Option<Result<Exp
     Some(Ok(Expr::new(EK::Closure(cl.op), to.unqual(), Cat::PR, e.span)))
 }
 
-/// A call of a closure object (LAM-1): its call operator, with the object
-/// as the implicit object argument. None when `obj` is not a closure.
-pub fn call_operator(cx: &Check, obj: &Expr) -> Option<EntityId> {
-    let c = obj.ty.nonref().class()?;
-    cx.u.closures.get(&c).map(|cl| cl.op)
+/// A call of a class object (LAM-1, OPR-3): the call operators of its
+/// class, a closure type's or any class's `operator()`.
+pub fn call_operators(cx: &Check, obj: &Expr) -> Vec<EntityId> {
+    let Some(c) = obj.ty.nonref().class() else { return Vec::new() };
+    names::declared_here(cx, cx.u.classes[c].scope, CALL).into_iter().filter(|&e| cx.u.func(e).is_some()).collect()
 }
 
 /// The closure type of a class with captures, which has no default

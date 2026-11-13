@@ -37,6 +37,11 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: crate::source::S
 pub fn mul_expr(cx: &mut Check, n: &Node) -> Expr {
     let op = BOp::from_str(operator(cx, n)).unwrap_or(BOp::Mul);
     let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+    // OPR-6: an operand of class or enumeration type can select an
+    // operator function.
+    if let Some(e) = crate::classes::operators::check::binary(cx, cx.first_word(n), &l, &r, n.span) {
+        return e;
+    }
     crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
     operate(cx, op, l, r, n.span)
 }

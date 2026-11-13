@@ -81,7 +81,34 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     let linkage = if s.is_static && cx.member_of.is_none() { Linkage::Internal } else { stl::linkage(cx, s, false, false, false) };
     let deleted = body.is_some_and(|b| cx.words(b).contains(&"delete"));
     let defaulted = body.is_some_and(|b| cx.words(b).contains(&"default"));
-    if defaulted {
+    // OPR-2: the limits on an operator function.
+    if crate::classes::operators::check::is_operator(&name) {
+        let class = cx.member_of.or(match d.qual {
+            names::Qual::Scope(sc) if cx.u.scopes[sc].kind == ScopeKind::Class => cx.u.classes.iter().position(|c| c.scope == sc),
+            _ => None,
+        });
+        let defaults = d.params.iter().any(|p| p.default.is_some());
+        if !crate::classes::operators::check::declaration(cx, &name, &d.ty, defaults, class, s.is_static, span) {
+            return None;
+        }
+        if defaulted && matches!(&*name, "operator==" | "operator<=>" | "operator!=" | "operator<" | "operator>" | "operator<=" | "operator>=") {
+            cx.unsupported(d.span, "a defaulted comparison operator (classes/comparisons)");
+            return None;
+        }
+    }
+    let assign_default = defaulted && &*name == "operator=";
+    // CPY-17: a defaulted assignment operator takes a reference and
+    // returns a reference to its class.
+    if assign_default {
+        let class = cx.member_of;
+        let ret_ok = matches!(&fty.ret.t, crate::sem::types::Type::Ref(t, false) if t.class() == class && !t.c && !t.v);
+        let param_ok = fty.params.len() == 1 && fty.params[0].is_ref();
+        if !ret_ok || !param_ok {
+            cx.error(d.span, "CPY-17", "a defaulted assignment operator must take a reference and return a reference to its class");
+            return None;
+        }
+    }
+    if defaulted && !assign_default {
         cx.error(d.span, "DEL-4", "'= default' on a function that is not a special member function");
         return None;
     }
@@ -117,7 +144,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                     cx.error(span, "FN-14", format!("the function '{}' is defined twice", name));
                     return None;
                 }
-                if deleted {
+                if deleted && !cx.deferred.contains(&e) {
                     cx.error(span, "DEL-2", format!("'= delete' must be on the first declaration of '{}'", name));
                     return None;
                 }
@@ -165,7 +192,14 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     }
     let id = match earlier {
         // The body of a member function that its class declared.
-        Some(e) if cx.deferred.remove(&e) => e,
+        Some(e) if cx.deferred.remove(&e) => {
+            if deleted {
+                if let Some(f) = cx.u.func_mut(e) {
+                    f.deleted = true;
+                }
+            }
+            e
+        }
         Some(e) => {
             let old_defaults = cx.u.func(e).unwrap().defaults.clone();
             for (k, dflt) in defaults.into_iter().enumerate() {
@@ -221,6 +255,15 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             id
         }
     };
+    // A defaulted copy or move assignment is the implicit one (CPY-3).
+    if assign_default {
+        cx.u.defaulted.insert(id);
+        cx.deferred.remove(&id);
+        if let Some(f) = cx.u.func_mut(id) {
+            f.defined = true;
+            f.inline = true;
+        }
+    }
     // DEFARG-8: after a parameter with a default argument, each later
     // one has one, from this declaration or an earlier one.
     let all = cx.u.func(id).map(|f| f.defaults.clone()).unwrap_or_default();
@@ -250,7 +293,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
         EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) => sub(x),
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
-        EK::Call(f, args) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
+        EK::Call(f, args, _) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
         EK::List(i) => {
             fn init(cx: &Check, i: &crate::sem::tree::Init) -> Option<EntityId> {
                 use crate::sem::tree::Init;
@@ -332,7 +375,7 @@ pub fn function_definition(cx: &mut Check, n: &Node) {
     let body = n.child("function_body");
     let Some(id) = declare_function(cx, &specs, &d, body) else { return };
     let Some(body) = body else { return };
-    if cx.words(body).contains(&"delete") {
+    if cx.words(body).contains(&"delete") || cx.words(body).contains(&"default") {
         return;
     }
     let Some(cs) = body.child("compound_stmt") else {
@@ -637,7 +680,7 @@ fn ends_path(cx: &Check, e: &Expr) -> bool {
     use crate::sem::tree::EK;
     match &e.k {
         EK::Conv(_, x) => ends_path(cx, x),
-        EK::Call(f, _) => matches!(&f.k, EK::Func(id) if cx.u.func(*id).is_some_and(|x| x.noreturn)),
+        EK::Call(f, _, _) => matches!(&f.k, EK::Func(id) if cx.u.func(*id).is_some_and(|x| x.noreturn)),
         _ => false,
     }
 }

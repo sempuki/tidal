@@ -504,11 +504,16 @@ definition when it is inline or constexpr or has an initializer. A copy
 of a class object uses the copy or move constructor that overload
 resolution chooses, user-declared or implicit; the implicit one copies
 each member, and a copy of the bytes stands for it where no member runs
-code. The
+code. An operator applied to an operand of class or enumeration type
+calls the operator function that overload resolution chooses among the
+members of the left operand's class and the non-members that lookup
+finds, with the reversed and rewritten candidates of `==` and `!=`; a
+converting constructor converts an operand of a non-member. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. An explicit destructor call on a class, an operator function, a base, a union, a
+another entity. An explicit destructor call on a class, a literal operator, an
+`operator->`, a comparison that `<=>` rewrites, a base, a union, a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with

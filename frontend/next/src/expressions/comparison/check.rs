@@ -2,7 +2,7 @@
 //! equality operators. `<=>` needs the library's ordering types, which
 //! come with build step 4.
 
-use crate::expressions::check::{bad, operands, operator};
+use crate::expressions::check::{bad, first_node, operands, operator};
 use crate::expressions::multiplicative::check::arithmetic_operand;
 use crate::foundations::conversions::check as conv;
 use crate::foundations::values::check::rvalue;
@@ -158,6 +158,14 @@ fn warnings(cx: &mut Check, op: BOp, l: &Expr, r: &Expr, span: Span) {
 /// `relational_expr`, `equality_expr`, `three_way_expr`.
 pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
     let op = BOp::from_str(operator(cx, n)).unwrap_or(BOp::Eq);
+    // OPR-6: a three-way comparison of class or enumeration operands can
+    // select an operator function.
+    if op == BOp::Spaceship && cx.u.entities.iter().any(|e| &*e.name == "operator<=>") {
+        let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+        if let Some(e) = crate::classes::operators::check::binary(cx, "<=>", &l, &r, n.span) {
+            return e;
+        }
+    }
     if op == BOp::Spaceship && !crate::foundations::names::check::std_declares(cx, "strong_ordering") {
         // The operands decide which ordering type the result has. Each
         // needs std::strong_ordering or a weaker type, and a unit that
@@ -172,6 +180,16 @@ pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
         return Expr::new(EK::Int(0), t, Cat::PR, n.span);
     }
     let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+    // OPR-6: an operand of class or enumeration type can select an
+    // operator function.
+    if let Some(e) = crate::classes::operators::check::binary(cx, cx.first_word(n), &l, &r, n.span) {
+        // CMP-14: a chained comparison, also of class operands.
+        let relational = matches!(op, BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge);
+        if relational && l.ty.is_bool() && first_node(n).is_some_and(|x| x.prod == "relational_expr") && cx.wflag(&["-Wall", "-Wparentheses"]) {
+            cx.warning(n.span, "CMP-14", "comparisons like 'a < b < c' do not compare b with both");
+        }
+        return e;
+    }
     crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
     operate(cx, op, l, r, n.span)
 }
