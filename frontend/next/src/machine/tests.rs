@@ -137,3 +137,12 @@ fn an_alias_names_a_qualified_function_type() {
     assert_eq!(rule("using F = void() const; F f;"), Some("DCL-21"));
     assert_eq!(rule("void f() const;"), Some("DCL-21"));
 }
+
+#[test]
+fn lookup_in_enumerations_arguments_and_qualified_declarators() {
+    let accepts = |src: &str| matches!(crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0, Outcome::Accept);
+    assert!(accepts("constexpr int v = 1; enum class E { v = v + 1, w = v * 2 }; static_assert(int(E::w) == 4);"));
+    assert!(accepts("namespace n { enum class m { on }; int probe(m) { return 1; } } int r() { return probe(n::m::on); }"));
+    assert!(!accepts("namespace n { int twice(int x) { return x; } } int r() { return twice(1); }"));
+    assert!(accepts("namespace N { constexpr int k = 2; extern int a[k]; } int N::a[k];"));
+}

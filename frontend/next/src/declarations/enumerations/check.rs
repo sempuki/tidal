@@ -100,8 +100,16 @@ pub fn enum_def(cx: &mut Check, n: &Node) -> QType {
             Kid::Node(c) if c.prod != "attribute_spec" => Some(c),
             _ => None,
         }).next();
-        let value = match value_node {
-            Some(e) => match ce::enumerator_value(cx, e, under) {
+        // ENUM-12: the value sees the enumerators declared before it,
+        // which a scoped enumeration keeps in its own scope.
+        let saved = cx.scope;
+        if scoped {
+            cx.scope = cx.u.enums[id].scope;
+        }
+        let computed = value_node.map(|e| ce::enumerator_value(cx, e, under));
+        cx.scope = saved;
+        let value = match computed {
+            Some(r) => match r {
                 Some((v, k)) => {
                     cur_ty = k;
                     v

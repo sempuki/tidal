@@ -260,3 +260,66 @@ pub fn declare_unsupported(cx: &mut Check, name: &str, span: Span) {
 pub fn declared_here(cx: &Check, scope: ScopeId, name: &str) -> Vec<EntityId> {
     cx.u.scopes[scope].names.get(name).cloned().unwrap_or_default()
 }
+
+/// NAM-27: the associated namespaces of an argument type that build step
+/// 3 models: an enumeration adds the innermost namespace that contains
+/// it, also through a pointer, an array, a reference, or the parameter
+/// and return types of a function. Fundamental types add nothing
+/// (NAM-28).
+fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) {
+    use crate::sem::types::Type;
+    match &t.t {
+        Type::Enum(e) => {
+            let mut s = cx.u.scopes[cx.u.enums[*e].scope].parent;
+            while let Some(sc) = s {
+                if cx.u.scopes[sc].kind == ScopeKind::Namespace {
+                    if !out.contains(&sc) {
+                        out.push(sc);
+                    }
+                    return;
+                }
+                s = cx.u.scopes[sc].parent;
+            }
+        }
+        Type::Ptr(x) | Type::Array(x, _) | Type::Ref(x, _) => associated(cx, x, out),
+        Type::Func(f) => {
+            associated(cx, &f.ret, out);
+            for p in &f.params {
+                associated(cx, p, out);
+            }
+        }
+        _ => {}
+    }
+}
+
+/// NAM-29: the functions that argument-dependent lookup finds for a call
+/// of `name` with these argument types: the functions that each
+/// associated namespace declares or names in a using-declaration, and
+/// those of its inline namespaces. Names that are not functions are
+/// skipped.
+pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QType]) -> Vec<EntityId> {
+    let mut spaces = Vec::new();
+    for a in args {
+        associated(cx, a, &mut spaces);
+    }
+    let mut k = 0;
+    while k < spaces.len() {
+        let ns = spaces[k];
+        for (i, sc) in cx.u.scopes.iter().enumerate() {
+            if sc.parent == Some(ns) && sc.inline && !spaces.contains(&i) {
+                spaces.push(i);
+            }
+        }
+        k += 1;
+    }
+    let mut out: Vec<EntityId> = Vec::new();
+    for ns in spaces {
+        for &e in cx.u.scopes[ns].names.get(name).map(|v| v.as_slice()).unwrap_or(&[]) {
+            if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && !out.contains(&e) {
+                out.push(e);
+            }
+        }
+    }
+    out
+}
+

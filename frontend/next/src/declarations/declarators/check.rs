@@ -190,9 +190,21 @@ fn apply(cx: &mut Check, t: QType, n: &Node, d: &mut Declared, top: bool) -> QTy
                 }
             }
             let direct = inner.is_some_and(|i| i.child("declarator_id").is_some() && i.kids.len() == 1) || inner.is_none();
+            // NAM-21: after a qualified declarator-id, the rest of the
+            // declarator looks names up in the scope that it names.
+            let saved = cx.scope;
+            if let Some(nn) = n.find("declarator_id").and_then(|i| i.find("nested_name")) {
+                let marks = cx.u.diags.len();
+                if let Qual::Scope(q) = names::nested_name(cx, nn) {
+                    cx.scope = q;
+                }
+                // The declarator-id reports its own faults.
+                cx.u.diags.truncate(marks);
+            }
             for s in suffixes.iter().rev() {
                 t = suffix(cx, t, s, d, top && direct);
             }
+            cx.scope = saved;
             match inner {
                 Some(i) => apply(cx, t, i, d, top),
                 None => t,

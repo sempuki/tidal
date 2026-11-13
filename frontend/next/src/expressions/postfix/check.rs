@@ -121,7 +121,24 @@ pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> E
     }
     // A name that finds functions: overload resolution chooses.
     if let Some(name) = callee_name(callee) {
-        if let Some((found, rule, text, nspan)) = primary::check::find(cx, name) {
+        if let Some((mut found, rule, text, nspan)) = primary::check::find(cx, name) {
+            // NAM-27, NAM-29: an unqualified name also finds the functions
+            // of the arguments' associated namespaces, unless ordinary
+            // lookup finds something other than a function at namespace
+            // scope.
+            if rule == "NAM-8" {
+                let plain = found.iter().all(|&e| {
+                    matches!(cx.u.entities[e].kind, EntKind::Func(_)) && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Namespace
+                });
+                if plain {
+                    let tys: Vec<QType> = args.iter().map(|a| a.ty.clone()).collect();
+                    for e in crate::foundations::names::check::argument_dependent(cx, &text, &tys) {
+                        if !found.contains(&e) {
+                            found.push(e);
+                        }
+                    }
+                }
+            }
             if found.is_empty() {
                 if !rule.is_empty() {
                     cx.not_found(nspan, rule, &text);
