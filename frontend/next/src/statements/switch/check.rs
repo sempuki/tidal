@@ -53,6 +53,9 @@ pub fn switch_stmt(cx: &mut Check, n: &Node) -> Stmt {
         f.live.truncate(live);
     }
     cx.scope = saved;
+    if let Some(sw) = &sw {
+        enumeration_warnings(cx, sw, n.span);
+    }
     match (cond, body, sw) {
         (Some(cond), Some(body), Some(sw)) => Stmt::new(SK::Switch { id, init, cond, body: Box::new(body), cases: sw.cases }, n.span),
         _ => Stmt::new(SK::Null, n.span),
@@ -130,3 +133,29 @@ pub fn label_prefix(cx: &mut Check, l: &Node) -> Option<Stmt> {
     }
     Some(Stmt::new(SK::Case(sw.id, Some(k), Box::new(Stmt::new(SK::Null, l.span))), l.span))
 }
+
+/// SW-7 and SW-8 (-Wall, -Wswitch), for a condition of enumeration type:
+/// an enumerator with no case label when there is no default label, and
+/// a case value that no enumerator has.
+fn enumeration_warnings(cx: &mut Check, sw: &crate::sem::check::SwitchCtx, span: crate::source::Span) {
+    let crate::sem::types::Type::Enum(en) = sw.ty.t else { return };
+    if !cx.wflag(&["-Wall", "-Wswitch"]) {
+        return;
+    }
+    let values: Vec<i128> = cx.u.enums[en].enumerators.iter().filter_map(|&e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Enumerator { value, .. } => Some(value),
+        _ => None,
+    }).collect();
+    for v in &sw.cases {
+        if !values.contains(v) {
+            cx.warning(span, "SW-8", format!("the case value {} is not a value of an enumerator", v));
+        }
+    }
+    if !sw.default {
+        if let Some(&e) = cx.u.enums[en].enumerators.iter().find(|&&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Enumerator { value, .. } if !sw.cases.contains(&value))) {
+            let name = cx.u.entities[e].name.clone();
+            cx.warning(span, "SW-7", format!("the enumerator '{}' has no case label", name));
+        }
+    }
+}
+

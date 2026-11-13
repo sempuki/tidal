@@ -281,3 +281,23 @@ fn operator_warnings() {
     assert_eq!(rule("int f(int v) { return v << -1; }", &[]), Some("SHF-9"));
     assert_eq!(rule("int f(int v) { return v << 31; }", &[]), None);
 }
+
+#[test]
+fn switch_and_volatile_warnings() {
+    let rule = |src: &str| {
+        let o = crate::Options { werror: true, wflags: vec!["-Wall".into()], ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    let sw = |cases: &str| format!("enum L {{ r, a, g }}; int c(L l) {{ switch (l) {{ {cases} }} return 0; }}");
+    assert_eq!(rule(&sw("case r: return 1; case a: return 2;")), Some("SW-7"));
+    assert_eq!(rule(&sw("case r: return 1; default: return 2;")), None);
+    assert_eq!(rule(&sw("case r: case a: case g: return 1; case 5: return 2;")), Some("SW-8"));
+    assert_eq!(rule("volatile int v; int f() { int a = (v = 1); return a; }"), Some("VOL-5"));
+    assert_eq!(rule("volatile int v; void f() { v = 1; v += 2; }"), None);
+    assert_eq!(rule("volatile int f();"), Some("CV-9"));
+    assert_eq!(rule("void g(volatile int);"), Some("CV-9"));
+    assert_eq!(rule("void g(volatile int*); volatile int& h();"), None);
+}

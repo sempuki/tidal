@@ -357,6 +357,7 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
         ret = rt;
     }
     let (params, variadic) = parameters(cx, n.child("parameters"));
+    crate::declarations::volatile::check::top_level(cx, &ret, n.span, "return type");
     if ret.is_array() {
         cx.error(n.span, "DCL-21", "a function returns an array");
     } else if ret.is_func() {
@@ -427,6 +428,7 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             cx.error(p.span, "DCL-16", "a parameter of a function type with a cv-qualifier or a ref-qualifier");
             t = QType::error();
         }
+        crate::declarations::volatile::check::top_level(cx, &t, p.span, "parameter type");
         t = adjust_parameter(t);
         let default = p.kids.iter().skip_while(|k| !matches!(k, Kid::Tok(_)) || cx.text(k) != "=").nth(1).and_then(|k| match k {
             Kid::Node(e) => Some(e.clone()),

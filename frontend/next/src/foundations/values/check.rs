@@ -26,6 +26,7 @@ pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
         }
         return e;
     }
+    crate::declarations::volatile::check::assignment_value_used(cx, &e);
     let t = e.ty.unqual();
     e.conv(Conv::LToR, t, Cat::PR)
 }
