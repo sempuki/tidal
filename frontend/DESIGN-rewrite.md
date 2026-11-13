@@ -475,7 +475,7 @@ cause in the front end's round report.
 Step 3 is in place in part (items RW2 and RW3, `reports/clean-room/rust-frontend/report-rw3.md`
 and the commits of item RW3). The new front end passes the check of
 1819 of the 1903 step 3 plain tests (1813 of them tests that the old
-front end passes too), and it owns 1557 of them. Of the 84 plain tests
+front end passes too), and it owns 1576 of them. Of the 84 plain tests
 that it does not pass, 74 are unsupported, 68 of them for a lambda, and
 10 have the status EDG-AGREES where the old front end has EDG-ONLY.
 These parts are not in it yet: lambdas (their closure is a class), the
