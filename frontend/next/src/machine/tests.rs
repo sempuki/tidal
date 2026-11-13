@@ -158,3 +158,20 @@ fn attributes_on_using_directives_and_qualified_reference_bindings() {
     assert_eq!(rule("namespace t { int c; } [[deprecated]] using namespace t;"), Some("ATTR-2"));
     assert_eq!(rule("int* m(); int p(int* const&); int p(const int* const&); int r = p(m());"), None);
 }
+
+#[test]
+fn comparison_warnings() {
+    let rule = |src: &str, flags: &[&str]| {
+        let o = crate::Options { werror: true, wflags: flags.iter().map(|f| f.to_string()).collect(), ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            _ => None,
+        }
+    };
+    assert_eq!(rule("bool f(int a, int b, int c) { return a < b < c; }", &["-Wparentheses"]), Some("CMP-14"));
+    assert_eq!(rule("bool f(int a, int b, int c) { return (a < b) < c; }", &["-Wparentheses"]), None);
+    assert_eq!(rule("int a[2], b[2]; bool f() { return a == b; }", &["-Wall"]), Some("CMP-16"));
+    assert_eq!(rule("bool f(int a, unsigned b) { return a < b; }", &["-Wsign-compare"]), Some("CMP-4"));
+    assert_eq!(rule("bool f(unsigned b) { return 0 < b; }", &["-Wsign-compare"]), None);
+    assert_eq!(rule("enum E { a }; bool f(double d) { return a < d; }", &[]), Some("CMP-21"));
+}

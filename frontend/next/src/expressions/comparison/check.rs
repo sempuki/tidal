@@ -45,6 +45,7 @@ fn composite(a: &QType, b: &QType) -> Option<QType> {
 
 /// A relational or equality operator on two operands.
 pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
+    warnings(cx, op, &l, &r, span);
     let (ln, rn) = (conv::is_null_constant(&l), conv::is_null_constant(&r));
     let (l, r) = (rvalue(cx, l), rvalue(cx, r));
     if l.ty.is_error() || r.ty.is_error() {
@@ -107,6 +108,56 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
     }
     cx.error(span, "CMP-9", format!("invalid operands of types {} and {}", l.ty.show(), r.ty.show()));
     bad(span)
+}
+
+/// A constant of a signed type whose value is not negative, which keeps
+/// its value as unsigned.
+fn nonnegative_constant(e: &Expr) -> bool {
+    match &e.k {
+        EK::Int(v) => *v >= 0,
+        EK::Conv(Conv::Arith | Conv::NoOp | Conv::LToR, x) if !e.paren => nonnegative_constant(x),
+        _ => false,
+    }
+}
+
+/// The recommended warnings of a comparison, on its operands as written.
+fn warnings(cx: &mut Check, op: BOp, l: &Expr, r: &Expr, span: Span) {
+    let relational = |o: BOp| matches!(o, BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge);
+    // CMP-14: a chained comparison, `a < b < c`.
+    if relational(op) && !l.paren && matches!(l.k, EK::Binary(o, ..) if relational(o)) && cx.wflag(&["-Wall", "-Wparentheses"]) {
+        cx.warning(span, "CMP-14", "comparisons like 'a < b < c' do not compare b with both");
+    }
+    // CMP-16: two array operands.
+    if l.ty.is_array() && r.ty.is_array() && cx.wflag(&["-Wall", "-Wextra", "-Warray-compare"]) {
+        cx.warning(span, "CMP-16", "a comparison of two arrays compares their addresses");
+    }
+    // CMP-21: two different enumerations, or an unscoped enumeration and
+    // a floating-point value.
+    let unscoped = |t: &QType| matches!(t.t, Type::Enum(e) if !cx.u.enums[e].scoped);
+    match (&l.ty.t, &r.ty.t) {
+        (Type::Enum(a), Type::Enum(b)) if a != b && unscoped(&l.ty) && unscoped(&r.ty) => {
+            cx.warning(span, "CMP-21", "a comparison of two different enumeration types is deprecated");
+        }
+        (Type::Enum(_), Type::Float(_)) | (Type::Float(_), Type::Enum(_)) if unscoped(&l.ty) || unscoped(&r.ty) => {
+            cx.warning(span, "CMP-21", "a comparison of an enumeration with a floating-point value is deprecated");
+        }
+        _ => {}
+    }
+    // CMP-4: a signed operand converted to an unsigned type.
+    if cx.wflag(&["-Wall", "-Wsign-compare"]) {
+        let kind = |cx: &Check, e: &Expr| conv::promoted(cx, &e.ty).int_kind();
+        if let (Some(a), Some(b)) = (kind(cx, l), kind(cx, r)) {
+            let (sa, sb) = (a.signed(), b.signed());
+            if sa != sb && a != crate::sem::types::IntK::Bool && b != crate::sem::types::IntK::Bool {
+                let (signed, other) = if sa { (l, b) } else { (r, a) };
+                let wider = if sa { a } else { b };
+                let to_unsigned = cx.u.target.int_max(other) > cx.u.target.int_max(wider) || other.rank() >= wider.rank();
+                if to_unsigned && !nonnegative_constant(signed) {
+                    cx.warning(span, "CMP-4", "a comparison of integers of different signedness converts the signed one");
+                }
+            }
+        }
+    }
 }
 
 /// `relational_expr`, `equality_expr`, `three_way_expr`.
