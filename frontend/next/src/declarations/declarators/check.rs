@@ -47,6 +47,11 @@ pub struct Declared {
     pub attrs: crate::declarations::attributes::check::Attrs,
     /// The declarator node, which a placeholder's deduction reads again.
     pub node: Node,
+    /// The cv-qualifiers and ref-qualifier after the parameters of the
+    /// function declarator applied to the name: the object of a member
+    /// function.
+    pub obj_cv: (bool, bool),
+    pub ref_q: bool,
 }
 
 /// The declarator of a declaration with these specifiers.
@@ -62,6 +67,8 @@ pub fn declarator(cx: &mut Check, specs: &Specs, n: &Node) -> Declared {
         trailing: false,
         attrs: Default::default(),
         node: n.clone(),
+        obj_cv: (false, false),
+        ref_q: false,
     };
     let base = match (&specs.ty, &specs.placeholder) {
         (Some(t), _) => t.clone(),
@@ -94,6 +101,8 @@ pub fn with_base(cx: &mut Check, base: QType, n: &Node) -> QType {
         trailing: false,
         attrs: Default::default(),
         node: n.clone(),
+        obj_cv: (false, false),
+        ref_q: false,
     };
     let marks = cx.u.diags.len();
     let t = apply(cx, base, n, &mut d, false);
@@ -127,6 +136,8 @@ pub fn type_id(cx: &mut Check, n: &Node) -> QType {
                 trailing: false,
                 attrs: Default::default(),
                 node: a.clone(),
+                obj_cv: (false, false),
+                ref_q: false,
             };
             apply(cx, base, a, &mut d, false)
         }
@@ -344,16 +355,40 @@ fn array_suffix(cx: &mut Check, t: QType, n: &Node) -> QType {
     QType::new(Type::Array(Rc::new(t), bound))
 }
 
+/// A declarator whose name is qualified by a class: an out-of-class
+/// declaration of a member.
+fn names_class_member(cx: &Check, n: &Node) -> bool {
+    let Some(q) = n.find("qualified_name") else { return false };
+    let Some(nn) = q.child("nested_name") else { return false };
+    let mut toks = Vec::new();
+    nn.tokens(&mut toks);
+    let Some(name) = toks.iter().rev().map(|&t| cx.toks[t].text.as_str()).find(|w| *w != "::") else { return false };
+    !crate::foundations::names::check::lookup_where(cx, name, |k| matches!(k, crate::sem::EntKind::Class(_))).is_empty()
+}
+
 /// `function_suffix`: the parameters, the cv-qualifiers, the exception
 /// specification, and a trailing return type (DCL-21, DCL-22).
 fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: bool) -> QType {
     let mut ret = ret;
     // DCL-15: an alias or a typedef can name a qualified function type.
     let qualified = cx.naming_type && (n.children("cv").next().is_some() || n.child("ref_qualifier").is_some());
-    if !qualified && n.children("cv").next().is_some() {
+    // A member function: declared in its class, or named with its class
+    // as the qualifier. Its qualifiers belong to its object.
+    let member = (top && (cx.member_of.is_some() || names_class_member(cx, &d.node))) || d.node.find("ptr_part").is_some_and(|p| p.find("nested_name").is_some());
+    if member {
+        for c in n.children("cv") {
+            match cx.first_word(c) {
+                "const" => d.obj_cv.0 = true,
+                _ => d.obj_cv.1 = true,
+            }
+        }
+        d.ref_q = n.child("ref_qualifier").is_some();
+    }
+    let not_member = !qualified && !member;
+    if not_member && n.children("cv").next().is_some() {
         cx.error(n.span, "DCL-21", "a function that is not a member has a cv-qualifier");
     }
-    if !qualified && n.child("ref_qualifier").is_some() {
+    if not_member && n.child("ref_qualifier").is_some() {
         cx.error(n.span, "DCL-21", "a function that is not a member has a ref-qualifier");
     }
     let (params, variadic) = parameters(cx, n.child("parameters"));
@@ -439,6 +474,8 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             trailing: false,
             attrs: Default::default(),
             node: (*p).clone(),
+            obj_cv: (false, false),
+            ref_q: false,
         };
         let base = specs.ty.clone().unwrap_or_else(QType::error);
         let decl = p.child("declarator").or_else(|| p.child("abstract_declarator"));

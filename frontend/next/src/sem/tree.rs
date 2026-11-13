@@ -153,6 +153,8 @@ pub enum EK {
     /// A non-static data member of a class object, by its position
     /// (PFX-10).
     Member(Box<Expr>, usize),
+    /// `this` in a non-static member function.
+    This,
     Func(EntityId),
     Conv(Conv, Box<Expr>),
     Unary(UOp, Box<Expr>),

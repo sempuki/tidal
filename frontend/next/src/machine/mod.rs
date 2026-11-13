@@ -154,6 +154,8 @@ pub struct Frame {
     pub vars: HashMap<EntityId, usize>,
     pub refs: HashMap<EntityId, Ptr>,
     pub func: Option<EntityId>,
+    /// The object of a non-static member function.
+    pub this: Option<Ptr>,
     pub ret: Option<Ret>,
     /// The objects that end when each open block ends.
     pub blocks: Vec<Vec<usize>>,

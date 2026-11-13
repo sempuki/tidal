@@ -6,6 +6,7 @@
 use crate::overloading::conversion_sequences::check::{better, sequence, Ics};
 use crate::sem::check::Check;
 use crate::sem::tree::Expr;
+use crate::sem::types::QType;
 use crate::sem::EntityId;
 use crate::source::Span;
 
@@ -79,6 +80,26 @@ fn merge_c_functions(cx: &Check, cands: &[EntityId], nargs: usize) -> (Vec<Entit
 
 /// The candidate that a call chooses, or None after an error.
 pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
+    resolve_with(cx, cands, None, args, span, name)
+}
+
+/// The object of a call of a member function meets the implicit object
+/// parameter of each non-static candidate: an lvalue reference to the
+/// class with the function's cv-qualifiers, which also binds an rvalue
+/// (ICS-13, ICS-40). A static member function matches any object.
+fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
+    let func = cx.u.func(f)?;
+    let Some(c) = func.class.filter(|_| !func.member_static) else {
+        return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false });
+    };
+    let param = QType::lref(QType::new(crate::sem::types::Type::Class(c)).with_cv(func.obj_cv.0, func.obj_cv.1));
+    let mut o = object.clone();
+    o.cat = crate::sem::tree::Cat::L;
+    sequence(cx, &o, &param)
+}
+
+/// Overload resolution with the object of a member call, if any.
+pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
     let (merged, differ) = merge_c_functions(cx, cands, args.len());
     let cands = &merged[..];
     let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
@@ -100,6 +121,15 @@ pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, na
         }
         let mut seqs = Vec::new();
         let mut ok = true;
+        let member = func.class.is_some() && !func.member_static;
+        match object {
+            Some(o) => match object_sequence(cx, f, o) {
+                Some(s) => seqs.push(s),
+                None => continue,
+            },
+            None if member => continue,
+            None => {}
+        }
         for (k, a) in args.iter().enumerate() {
             if k >= n {
                 // ICS-6: an overload set has no sequence to an ellipsis.

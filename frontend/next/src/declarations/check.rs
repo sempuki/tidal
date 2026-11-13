@@ -259,8 +259,10 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
             // TYN-9: a class that a typedef names for linkage has no
             // default member initializer.
             if let Some(c) = declared.ty.class().filter(|&c| cx.u.classes[c].name.is_empty()) {
-                if cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
-                    cx.error(d.span, "TYN-9", "a class named by a typedef for linkage has a default member initializer");
+                let scope = cx.u.classes[c].scope;
+                let functions = cx.u.scopes[scope].names.values().flatten().any(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Func(_)));
+                if functions || cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
+                    cx.error(d.span, "TYN-9", "a class named by a typedef for linkage has a member function or a default member initializer");
                     continue;
                 }
             }

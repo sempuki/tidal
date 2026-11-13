@@ -200,18 +200,21 @@ pub fn nested_name(cx: &mut Check, n: &Node) -> Qual {
     }
     let mut cur: Option<ScopeId> = if global { Some(0) } else { None };
     for (name, span) in parts {
-        let keep = |k: &EntKind| matches!(k, EntKind::Namespace(_) | EntKind::Enum(_) | EntKind::Typedef(_) | EntKind::Unsupported(_));
+        let keep = |k: &EntKind| matches!(k, EntKind::Namespace(_) | EntKind::Enum(_) | EntKind::Class(_) | EntKind::Typedef(_) | EntKind::Unsupported(_));
         let found: Vec<EntityId> = match cur {
             None => lookup_where(cx, name, keep),
             Some(s) => lookup_in(cx, s, name),
         };
         // NAM-15: only namespaces and types are found before `::`.
-        let pick = found.iter().copied().find(|&e| matches!(cx.u.entities[e].kind, EntKind::Namespace(_) | EntKind::Enum(_) | EntKind::Typedef(_) | EntKind::Unsupported(_)));
+        let pick = found.iter().copied().find(|&e| matches!(cx.u.entities[e].kind, EntKind::Namespace(_) | EntKind::Enum(_) | EntKind::Class(_) | EntKind::Typedef(_) | EntKind::Unsupported(_)));
         let next = match pick.map(|e| cx.u.entities[e].kind.clone()) {
             Some(EntKind::Namespace(s)) => s,
             Some(EntKind::Enum(en)) => cx.u.enums[en].scope,
+            // A class qualifier: its members (NAM-14).
+            Some(EntKind::Class(c)) => cx.u.classes[c].scope,
             Some(EntKind::Typedef(t)) => match &t.t {
                 crate::sem::types::Type::Enum(en) => cx.u.enums[*en].scope,
+                crate::sem::types::Type::Class(c) => cx.u.classes[*c].scope,
                 _ => {
                     cx.error(span, "NAM-16", format!("'{}' does not name a namespace, class, or enumeration", name));
                     return Qual::Error;

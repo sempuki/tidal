@@ -106,9 +106,11 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     cx.scope = cx.u.classes[id].scope;
     let mut access = if key == ClassKey::Class { Access::Private } else { Access::Public };
     let mut inits: Vec<(EntityId, &Node)> = Vec::new();
+    let mut bodies: Vec<&Node> = Vec::new();
     let mut ok = true;
+    let outer = cx.member_of.replace(id);
     for m in n.children("member_decl") {
-        if !member(cx, id, m, &mut access, &mut inits) {
+        if !member(cx, id, m, &mut access, &mut inits, &mut bodies) {
             ok = false;
             break;
         }
@@ -125,22 +127,40 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             }
         }
     }
-    // CLS-2: a default member initializer sees the complete class.
+    // CLS-2: default member initializers and member function bodies see
+    // the complete class.
     if ok {
         for (f, init) in inits {
             let Some(ty) = cx.u.field(f).map(|x| x.ty.clone()) else { continue };
+            // CLS-2: `this` and the members are there; the machine runs
+            // such an initializer with a later part.
+            let this = QType::ptr_to(QType::new(Type::Class(id)));
+            let saved_func = cx.func.replace(crate::sem::check::FnCtx { this: Some(this), ..Default::default() });
             let i = member_init(cx, &ty, init);
+            cx.func = saved_func;
+            if i.as_ref().is_some_and(|i| i.any(&|e| matches!(e.k, EK::This))) {
+                cx.unsupported(init.span, "a default member initializer that uses this or another member (build step 4)");
+                ok = false;
+                break;
+            }
             if let EntKind::Field(x) = &mut cx.u.entities[f].kind {
                 x.init = i;
             }
         }
+        if ok {
+            for b in bodies {
+                crate::declarations::functions::definitions::check::function_definition(cx, b);
+            }
+        }
     }
+    cx.member_of = outer;
     cx.scope = saved;
     QType::new(Type::Class(id))
 }
 
-/// One `member_decl`. False after an unsupported member.
-fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>) -> bool {
+/// One `member_decl`. False after an unsupported member. A member
+/// function's body waits in `bodies` for the complete class.
+fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>) -> bool {
     let Some(first) = first_node(m) else { return true };
     match first.prod {
         "access_label" => {
@@ -151,7 +171,51 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             };
             true
         }
+        "function_definition" => {
+            // The declaration now, the body when the class is complete.
+            if let Some(e) = first.child("declarator").and_then(|d| d.find("exception_spec")).filter(|e| first_node(e).is_some()) {
+                cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
+                return false;
+            }
+            let Some(ds) = first.child("decl_specifiers") else {
+                cx.unsupported(first.span, "a constructor, destructor, or conversion function (build step 4)");
+                return false;
+            };
+            let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+            if specs.unsupported {
+                return false;
+            }
+            let Some(dn) = first.child("declarator") else { return true };
+            let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+            if d.unsupported || !d.ty.is_func() {
+                cx.unsupported(first.span, "a member function definition of this form (build step 4)");
+                return false;
+            }
+            if !modeled_function(cx, id, dn, &d) {
+                return false;
+            }
+            if !valid_function(cx, id, &specs, &d) {
+                return true;
+            }
+            let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None) else { return true };
+            cx.u.access.insert(f, *access);
+            cx.deferred.insert(f);
+            // CLS rules: a member function defined in its class is inline.
+            if let Some(x) = cx.u.func_mut(f) {
+                x.inline = true;
+            }
+            bodies.push(first);
+            true
+        }
         "decl_specifiers" => {
+            if first.find("union_def").is_some() {
+                cx.unsupported(m.span, "a nested union (build step 4)");
+                return false;
+            }
+            if let Some(e) = m.find("exception_spec").filter(|e| first_node(e).is_some()) {
+                cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
+                return false;
+            }
             if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator"))) {
                 cx.unsupported(m.span, "a bit-field or a member of this form (build step 4)");
                 return false;
@@ -160,22 +224,14 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             if specs.unsupported {
                 return false;
             }
-            if specs.is_static || specs.typedef || specs.is_extern || specs.thread_local || specs.constexpr || specs.inline {
-                cx.unsupported(m.span, "a member of this kind (static, typedef, or inline; build step 4)");
+            if specs.typedef || specs.is_extern || specs.thread_local || specs.defines_type && m.children("member_declarator").next().is_none() {
+                cx.unsupported(m.span, "a member of this kind (a typedef or a nested type; build step 4)");
                 return false;
             }
-            // CLS-9: no placeholder, and no `mutable` with `const`.
-            if specs.placeholder.is_some() {
-                cx.error(m.span, "CLS-9", "a data member declared with a placeholder type");
-                return true;
-            }
+            // CLS-9: no `mutable` with `const`.
             if specs.mutable && specs.ty.as_ref().is_some_and(|t| t.c) {
                 cx.error_cause(m.span, "CLS-9", Some("STO-6"), "a mutable data member that is const");
                 return true;
-            }
-            if specs.is_static || specs.typedef || specs.is_extern || specs.thread_local || specs.constexpr || specs.inline || specs.defines_type && m.children("member_declarator").next().is_none() {
-                cx.unsupported(m.span, "a member of this kind (static, typedef, or a nested type; build step 4)");
-                return false;
             }
             for md in m.children("member_declarator") {
                 let Some(dn) = md.child("declarator") else {
@@ -186,26 +242,44 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     cx.unsupported(md.span, "a member declarator of this form (build step 4)");
                     return false;
                 }
-                // A member function's declarator has rules of its own
-                // (DCL-21 holds only outside a class).
-                let marks = cx.u.diags.len();
                 let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
-                if d.ty.is_func() {
-                    cx.u.diags.truncate(marks);
-                    cx.unsupported(dn.span, "a member function (build step 4)");
+                if d.unsupported {
                     return false;
                 }
-                if d.unsupported || d.ty.is_error() {
-                    if !d.unsupported {
+                if d.ty.is_func() {
+                    if md.child("member_init").is_some() {
+                        cx.unsupported(md.span, "a pure, defaulted, or deleted member function (build step 4)");
+                        return false;
+                    }
+                    if !modeled_function(cx, id, dn, &d) {
+                        return false;
+                    }
+                    if !valid_function(cx, id, &specs, &d) {
                         return true;
                     }
+                    if let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None) {
+                        cx.u.access.insert(f, *access);
+                    }
+                    continue;
+                }
+                if specs.is_static {
+                    let _ = static_member;
+                    cx.unsupported(md.span, "a static data member (build step 4)");
                     return false;
+                }
+                if specs.constexpr || specs.inline {
+                    cx.unsupported(md.span, "constexpr or inline on a non-static data member (build step 4)");
+                    return false;
+                }
+                // CLS-9: no placeholder for a non-static data member.
+                if specs.placeholder.is_some() {
+                    cx.error(m.span, "CLS-9", "a data member declared with a placeholder type");
+                    return true;
+                }
+                if d.ty.is_error() {
+                    return true;
                 }
                 let Some((name, span)) = d.name.clone() else { continue };
-                if d.ty.is_func() {
-                    cx.unsupported(span, "a member function (build step 4)");
-                    return false;
-                }
                 if d.ty.is_ref() {
                     cx.unsupported(span, "a reference data member (build step 4)");
                     return false;
@@ -234,6 +308,72 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             false
         }
     }
+}
+
+/// A member function declaration that build step 4's first pieces model:
+/// no default argument or noexcept operand, which see the complete class,
+/// in a class that is not local. True when it is modeled; otherwise an
+/// unsupported diagnostic is out.
+fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarations::declarators::check::Declared) -> bool {
+    let parent = cx.u.scopes[cx.u.classes[id].scope].parent.unwrap_or(0);
+    // A member function of a local or nested class waits for a later
+    // part (access to the enclosing class, locals of the function).
+    let local = cx.u.is_local(parent) || cx.u.scopes[parent].kind == ScopeKind::Class;
+    let defaults = d.params.iter().any(|p| p.default.is_some());
+    let operand = dn.find("exception_spec").is_some_and(|e| first_node(e).is_some());
+    let qualified = d.ty.func().is_some_and(|f| f.qualified);
+    if local || defaults || operand || qualified || d.ref_q {
+        cx.unsupported(dn.span, "a member function of a local class, with a default argument, a noexcept operand, or a ref-qualifier (build step 4)");
+        return false;
+    }
+    true
+}
+
+/// CLS-9, CLS-27, CTOR-1: a member function that has the class's name,
+/// that is declared twice, or that is static with cv-qualifiers. True
+/// when the declaration is valid.
+fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::check::Specs, d: &crate::declarations::declarators::check::Declared) -> bool {
+    let Some((name, span)) = d.name.clone() else { return false };
+    if *name == *cx.u.classes[id].name {
+        cx.error_cause(span, "CTOR-1", Some("CLS-9"), "a member function with the class's name, which only a constructor has");
+        return false;
+    }
+    if specs.is_static && (d.obj_cv.0 || d.obj_cv.1) {
+        cx.error(span, "CLS-27", "a static member function with cv-qualifiers");
+        return false;
+    }
+    let fty = d.ty.func().cloned();
+    let twice = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref() && f.obj_cv == d.obj_cv));
+    if twice {
+        cx.error(span, "CLS-9", format!("the member function '{}' is declared twice in its class", name));
+        return false;
+    }
+    true
+}
+
+/// A static data member (CLS rules): a variable of the class's scope.
+/// Without `inline` or `constexpr` the declaration in the class is not a
+/// definition, unless it is a const integral member with an initializer
+/// that the program does not take the address of.
+fn static_member(cx: &mut Check, specs: &crate::declarations::check::Specs, d: &crate::declarations::declarators::check::Declared, init: Option<&Node>, access: Access) -> bool {
+    if specs.mutable {
+        cx.unsupported(d.span, "a mutable static data member");
+        return false;
+    }
+    let mut first = None;
+    let Some((id, _)) = crate::declarations::initialization::forms::check::declare_variable(cx, specs, d, init, &[], &mut first) else { return true };
+    cx.u.access.insert(id, access);
+    let definition = specs.inline || specs.constexpr;
+    if let Some(v) = cx.u.var_mut(id) {
+        if !definition {
+            v.is_extern = init.is_none();
+            v.defined = init.is_some();
+        }
+    }
+    if !definition && init.is_none() {
+        cx.u.statics.retain(|&x| x != id);
+    }
+    true
 }
 
 /// A default member initializer (`member_init`) for a member of type
@@ -370,12 +510,42 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
         cx.error(span, "PFX-11", format!("no member named '{}'", name));
         return bad(span);
     };
-    let Some(field) = cx.u.field(f).cloned() else {
-        return cx_unsupported(cx, span, "a member that is not a data member");
+    match cx.u.entities[f].kind.clone() {
+        EntKind::Field(_) => field_of(cx, obj, f, span),
+        // A static data member: the object is not read.
+        EntKind::Var(_) => {
+            if !accessible(cx, f) {
+                cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
+                return bad(span);
+            }
+            crate::expressions::primary::check::entity_expr(cx, &[f], &name, span)
+        }
+        _ => cx_unsupported(cx, span, "a member function named outside a call, or a member of this kind"),
+    }
+}
+
+/// The access of a member (ACC-2): public, or named inside a member
+/// function of its class.
+pub fn accessible(cx: &Check, f: EntityId) -> bool {
+    let access = match &cx.u.entities[f].kind {
+        EntKind::Field(x) => x.access,
+        _ => cx.u.access.get(&f).copied().unwrap_or(Access::Public),
     };
-    // ACC-2: outside the class, only a public member can be named.
-    if field.access != Access::Public {
-        cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
+    if access == Access::Public {
+        return true;
+    }
+    let class = cx.u.scopes[cx.u.entities[f].scope].clone();
+    let inside = cx.func.as_ref().and_then(|x| x.id).and_then(|id| cx.u.func(id)).and_then(|x| x.class).is_some_and(|c| cx.u.classes[c].scope == cx.u.entities[f].scope);
+    let _ = class;
+    inside
+}
+
+/// The data member `f` of the object `obj` (PFX-10), with the access of
+/// ACC-2.
+pub fn field_of(cx: &mut Check, obj: Expr, f: EntityId, span: Span) -> Expr {
+    let Some(field) = cx.u.field(f).cloned() else { return bad(span) };
+    if !accessible(cx, f) {
+        cx.error(span, "ACC-2", format!("the member '{}' is not public", cx.u.entities[f].name));
         return bad(span);
     }
     let obj = if obj.cat == Cat::PR {

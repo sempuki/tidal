@@ -38,6 +38,26 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
         }
     }
     let Some(operand) = nodes(n).last().copied() else { return bad(span) };
+    if op == "&" && operand.find("qualified_name").is_some() && operand.prod != "postfix_expr" {
+        if let Some(q) = operand.find("qualified_name").and_then(|q| q.child("nested_name")) {
+            let mut toks = Vec::new();
+            q.tokens(&mut toks);
+            let classes = toks.iter().rev().map(|&t| cx.toks[t].text.as_str()).find(|w| *w != "::").map(|w| crate::foundations::names::check::lookup_where(cx, w, |k| matches!(k, crate::sem::EntKind::Class(_)))).unwrap_or_default();
+            // A static member function gives an ordinary pointer.
+            let member = operand.find("qualified_name").and_then(|q| q.child("unqualified_id")).map(|u| cx.source(u));
+            let all_static = classes.first().and_then(|&c| match cx.u.entities[c].kind {
+                crate::sem::EntKind::Class(k) => Some(cx.u.classes[k].scope),
+                _ => None,
+            }).zip(member).is_some_and(|(s, m)| {
+                let found = crate::foundations::names::check::declared_here(cx, s, &m);
+                !found.is_empty() && found.iter().all(|&e| cx.u.func(e).is_some_and(|f| f.member_static))
+            });
+            if !classes.is_empty() && !all_static {
+                let t = cx.unsupported(span, "the address of a member, a pointer to member (build step 4)");
+                return Expr::new(EK::Int(0), t, Cat::PR, span);
+            }
+        }
+    }
     let e = expr(cx, operand);
     if op == "&" && crate::expressions::primary::check::unresolved_set(&e) {
         return address_of(cx, e, span);

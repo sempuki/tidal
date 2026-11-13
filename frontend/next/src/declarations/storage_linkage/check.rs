@@ -66,6 +66,12 @@ pub fn storage(cx: &Check, s: &Specs) -> Storage {
 /// The linkage of a variable or function at the current scope (LNK-1 to
 /// LNK-3, LNK-5, LNK-9).
 pub fn linkage(cx: &Check, s: &Specs, is_var: bool, ty_const: bool, ty_volatile: bool) -> Linkage {
+    // A member of a class has the linkage of its class; `static` there
+    // says the member has no object.
+    if cx.u.scopes[cx.scope].kind == ScopeKind::Class {
+        let outer = cx.u.enclosing_namespace(cx.scope);
+        return if cx.u.is_local(cx.u.scopes[cx.scope].parent.unwrap_or(outer)) || in_unnamed(cx, outer) { Linkage::None } else { Linkage::External };
+    }
     if cx.u.is_local(cx.scope) {
         return if s.is_extern || !is_var { Linkage::External } else { Linkage::None };
     }

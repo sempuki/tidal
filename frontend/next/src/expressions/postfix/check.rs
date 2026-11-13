@@ -219,6 +219,9 @@ pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> E
     if args.iter().any(|a| a.ty.is_error() && !primary::check::unresolved_set(a)) {
         return bad(span);
     }
+    if let Some(r) = member_call(cx, callee, &args, span) {
+        return r;
+    }
     // A name that finds functions: overload resolution chooses.
     if let Some(name) = callee_name(callee) {
         if let Some((mut found, rule, text, nspan)) = primary::check::find(cx, name) {
@@ -252,7 +255,7 @@ pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> E
                 crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
                 let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
                 let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
-                return finish_call(cx, callee, Some(f), args, span);
+                return finish_call(cx, callee, Some(f), args, span, None);
             }
             if found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Unsupported(_))) {
                 let t = cx.unsupported(span, format!("a call of '{}', which the front end does not model", text));
@@ -269,12 +272,100 @@ pub fn call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> E
         EK::Func(id) => Some(*id),
         _ => None,
     };
-    finish_call(cx, f, target, args, span)
+    finish_call(cx, f, target, args, span, None)
+}
+
+/// A call of a member function (PFX-10, ICS-13): `x.f(...)`, `p->f(...)`,
+/// or a name that finds member functions inside a member function of
+/// their class, whose object is `*this`. None for any other callee.
+fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Option<Expr> {
+    let (object, scope, name, nspan) = if callee.prod == "postfix_expr" && matches!(callee.kids.get(1).map(|k| cx.text(k)), Some("." | "->")) {
+        let (Some(Kid::Node(base)), Some(Kid::Node(id))) = (callee.kids.first(), callee.kids.get(2)) else { return None };
+        let arrow = cx.text(&callee.kids[1]) == "->";
+        // Only a member that is a function: a callee of another kind
+        // goes through member access.
+        let u = first_node(id)?;
+        if u.prod != "unqualified_id" || u.kids.len() != 1 {
+            return None;
+        }
+        let name = cx.source(u);
+        let b = expr(cx, base);
+        if b.ty.is_error() {
+            return Some(bad(span));
+        }
+        let obj = if arrow {
+            let b = rvalue(cx, b);
+            match b.ty.pointee() {
+                Some(p) if p.is_class() => crate::expressions::unary::check::indirection(cx, b, span),
+                _ => {
+                    cx.error(span, "PFX-11", format!("'->' on {}, which is not a pointer to a class", b.ty.show()));
+                    return Some(bad(span));
+                }
+            }
+        } else {
+            deref_ref(b)
+        };
+        let Some(c) = obj.ty.class() else {
+            cx.error(span, "PFX-11", format!("member access on {}, which is not a class", obj.ty.show()));
+            return Some(bad(span));
+        };
+        let found = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, &name);
+        if found.is_empty() || !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
+            // A data member that holds a function pointer, or no member.
+            let m = crate::classes::members::check::member_access(cx, obj, false, id, span);
+            if m.ty.is_error() {
+                return Some(m);
+            }
+            let f = deref_ref(m);
+            return Some(finish_call(cx, f, None, args.to_vec(), span, None));
+        }
+        (Some(obj), cx.u.classes[c].scope, name, id.span)
+    } else {
+        let n = callee_name(callee)?;
+        let (q, name, nspan) = primary::check::name_of(cx, n)?;
+        let found = match q {
+            crate::foundations::names::check::Qual::None => crate::foundations::names::check::lookup(cx, name),
+            crate::foundations::names::check::Qual::Scope(s) => crate::foundations::names::check::lookup_in(cx, s, name),
+            _ => return None,
+        };
+        let members: Vec<EntityId> = found.iter().copied().filter(|&e| cx.u.func(e).is_some_and(|f| f.class.is_some())).collect();
+        if members.is_empty() || members.len() != found.len() {
+            return None;
+        }
+        let class = cx.u.func(members[0]).unwrap().class.unwrap();
+        // Inside a member function of the class, the object is `*this`.
+        let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()) == Some(class));
+        let obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
+        if obj.is_none() && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static) && !members.iter().any(|&f| cx.u.func(f).unwrap().member_static) {
+            let t = cx.unsupported(span, "a non-static member function called without an object (build step 4)");
+            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
+        (obj, cx.u.classes[class].scope, name.to_string(), nspan)
+    };
+    let cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+    let f = ovl::resolve_with(cx, &cands, object.as_ref(), args, span, &name)?;
+    if !crate::classes::members::check::accessible(cx, f) {
+        cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
+        return Some(bad(span));
+    }
+    crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
+    let func = cx.u.func(f).unwrap().clone();
+    let fty = QType::new(Type::Func(func.ty.clone()));
+    let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
+    let object = object.filter(|_| !func.member_static);
+    // ICS-13: the object binds the implicit object parameter.
+    if let Some(o) = &object {
+        if (o.ty.c && !func.obj_cv.0) || (o.ty.v && !func.obj_cv.1) {
+            cx.error_cause(span, "OVL-35", Some("ICS-13"), format!("the member function '{}' does not take a {} object", name, if o.ty.c { "const" } else { "volatile" }));
+            return Some(bad(span));
+        }
+    }
+    Some(finish_call(cx, callee, Some(f), args.to_vec(), span, object))
 }
 
 /// The call of a chosen function or of a function pointer: the
 /// arguments initialize the parameters.
-fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr>, span: Span) -> Expr {
+fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr>, span: Span, object: Option<Expr>) -> Expr {
     let fty = match &f.ty.t {
         Type::Func(ft) => ft.clone(),
         Type::Ptr(p) => match &p.t {
@@ -344,6 +435,17 @@ fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<Expr
     };
     if let Some(t) = target {
         crate::declarations::functions::definitions::check::called(cx, t, span);
+    }
+    // The object of a member function comes first, as a place; a prvalue
+    // object is materialized.
+    if let Some(o) = object {
+        let o = if o.cat == Cat::PR {
+            let t = o.ty.clone();
+            o.conv(crate::sem::tree::Conv::Materialize, t, Cat::X)
+        } else {
+            o
+        };
+        out.insert(0, Arg { e: o, by_ref: true });
     }
     let call = Expr::new(EK::Call(Box::new(f), out), ty, cat, span);
     if let Some(t) = target {

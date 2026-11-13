@@ -93,6 +93,8 @@ pub struct FnCtx {
     /// Depth of the branches of `if consteval` that run in constant
     /// evaluation, each an immediate function context (IF-19).
     pub immediate: u32,
+    /// The type of `this` in a non-static member function.
+    pub this: Option<QType>,
     /// Depth of the branches of `if consteval` that run at run time,
     /// where a call of a `consteval` function must be a constant (IF-24).
     pub runtime: u32,
@@ -124,6 +126,11 @@ pub struct Check<'a> {
     /// Inside the form of a linkage specification without braces, whose
     /// declaration counts as having `extern` (LSP-2).
     pub implicit_extern: bool,
+    /// The class whose member declarations are being checked.
+    pub member_of: Option<crate::sem::types::ClassId>,
+    /// Member functions defined in their class, which the class declared
+    /// before their bodies are checked.
+    pub deferred: std::collections::HashSet<EntityId>,
     /// The names that the parser's declare pass recorded in any scope.
     pub parser_names: std::collections::HashSet<String>,
     /// The entities with C language linkage, by name (LSP-4).
@@ -144,7 +151,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default() }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, deferred: Default::default(), parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default() }
     }
 
     // -----------------------------------------------------------------

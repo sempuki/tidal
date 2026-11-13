@@ -908,8 +908,33 @@ fn classes_with_data_members() {
     // A class and a variable of one name in one scope: the variable hides
     // the class.
     assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
-    // Member functions wait for a later part.
-    assert_eq!(rule("struct S { int f(); };"), Some("unsupported"));
+    // Constructors wait for a later part.
+    assert_eq!(rule("struct S { S(); };"), Some("unsupported"));
     // The bytes of a class, with padding.
     assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
+}
+
+#[test]
+fn member_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let counter = "class Counter { int n = 0; public: void add(int k) { n += k; } int get() const { return n; } int twice() const { return get() * 2; } static int unit() { return 1; } };\n";
+    assert_eq!(run(&format!("{}int main() {{ Counter c; c.add(3); c.add(Counter::unit()); const Counter& r = c; return r.twice(); }}", counter)), RunOutcome::Result(8));
+    assert_eq!(rule(&format!("{}int f(const Counter& c) {{ return c.add(1), 0; }}", counter)), Some("OVL-35"));
+    assert_eq!(rule(&format!("{}int f(Counter c) {{ return c.n; }}", counter)), Some("ACC-2"));
+    // Out-of-class definitions, `this`, overloads on the object's cv.
+    assert_eq!(run("struct S { int x; int y() const; int f() { return 1; } int f() const { return 2; } };\nint S::y() const { return this->x; }\nint main() { S s{3}; const S& c = s; return s.y() * 100 + s.f() * 10 + c.f(); }"), RunOutcome::Result(312));
+    assert_eq!(rule("struct S { void f(); void f(); };"), Some("CLS-9"));
+    assert_eq!(rule("struct S { static void f() const; };"), Some("CLS-27"));
+    assert_eq!(rule("struct S { void S(); };"), Some("CTOR-1"));
+    assert_eq!(rule("struct C { }; C::C* p = nullptr;"), Some("NAM-34"));
+    assert_eq!(rule("struct S { int v; }; int f() { return S::v; }"), Some("PRIM-25"));
+    assert_eq!(rule("struct S { int v; }; static_assert(sizeof(S::v) == sizeof(int));"), None);
+    // A static member function has no object, and the linkage of its
+    // class.
+    assert_eq!(rule("struct C { static int f(int); }; int (*p)(int) = C::f;"), None);
+    assert_eq!(rule("struct S { static int n; };"), Some("unsupported"));
 }

@@ -78,7 +78,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     }
     // Default arguments (DEFARG-8, DEFARG-10): checked at the declaration.
     let defaults = default_arguments(cx, &d.params);
-    let linkage = if s.is_static { Linkage::Internal } else { stl::linkage(cx, s, false, false, false) };
+    let linkage = if s.is_static && cx.member_of.is_none() { Linkage::Internal } else { stl::linkage(cx, s, false, false, false) };
     let deleted = body.is_some_and(|b| cx.words(b).contains(&"delete"));
     let defaulted = body.is_some_and(|b| cx.words(b).contains(&"default"));
     if defaulted {
@@ -92,7 +92,9 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     for e in names::declared_here(cx, scope, &name) {
         match cx.u.entities[e].kind.clone() {
             EntKind::Func(f) => {
-                if f.ty.params != fty.params || f.ty.variadic != fty.variadic {
+                // Member functions that differ in the qualifiers of their
+                // object are overloads.
+                if f.ty.params != fty.params || f.ty.variadic != fty.variadic || (f.class.is_some() && f.obj_cv != d.obj_cv) {
                     if f.c_linkage && cx.lang_c {
                         cx.error(span, "LSP-7", format!("two C functions named '{}'", name));
                         return None;
@@ -123,7 +125,9 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                     crate::declarations::inline::check::misplaced(cx, d.span, "on a function after its definition");
                 }
                 let old_link = cx.u.entities[e].linkage;
-                stl::redeclared_linkage(cx, span, old_link, s, &name);
+                if cx.member_of.is_none() && cx.u.scopes[scope].kind != crate::sem::ScopeKind::Class {
+                    stl::redeclared_linkage(cx, span, old_link, s, &name);
+                }
                 // ATTR-2: `noreturn` and `carries_dependency` belong on the
                 // first declaration. ATTR-4: a later declaration can add
                 // `deprecated`.
@@ -134,7 +138,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 }
                 // LSP-7: a function first declared with C++ language
                 // linkage cannot be given C language linkage later.
-                if cx.lang_c && !f.c_linkage {
+                if cx.lang_c && !f.c_linkage && f.class.is_none() {
                     cx.error(span, "LSP-7", format!("'{}' was first declared with C++ language linkage", name));
                     return None;
                 }
@@ -160,6 +164,8 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         }
     }
     let id = match earlier {
+        // The body of a member function that its class declared.
+        Some(e) if cx.deferred.remove(&e) => e,
         Some(e) => {
             let old_defaults = cx.u.func(e).unwrap().defaults.clone();
             for (k, dflt) in defaults.into_iter().enumerate() {
@@ -198,12 +204,15 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 deleted,
                 noreturn: s.attrs.noreturn,
                 nodiscard: s.attrs.nodiscard,
-                c_linkage: cx.lang_c,
+                c_linkage: cx.lang_c && cx.member_of.is_none(),
                 pending_return: deduce,
                 placeholder: deduce,
                 used: false,
                 defined: deleted,
                 unsupported: if deduce { Some("a deduced return type that no definition gave".into()) } else { None },
+                class: cx.member_of,
+                member_static: cx.member_of.is_some() && s.is_static,
+                obj_cv: d.obj_cv,
             };
             let id = names::declare_in(cx, scope, &name, EntKind::Func(f), span, linkage);
             cx.u.entities[id].deprecated = s.attrs.deprecated.clone();
@@ -218,7 +227,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             cx.error(d.span, "DEFARG-8", "a parameter after one with a default argument has none");
         }
     }
-    if (cx.lang_c && !s.is_static) || (scope == cx.u.root && !cx.lang_c) {
+    if cx.member_of.is_none() && ((cx.lang_c && !s.is_static) || (scope == cx.u.root && !cx.lang_c)) {
         crate::declarations::linkage_specifications::check::c_name(cx, id, cx.lang_c, span);
     }
     if s.attrs.noreturn && earlier.is_some() && !cx.u.func(id).unwrap().noreturn {
@@ -235,7 +244,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     let sub = |x: &Expr| local_in(cx, x);
     match &e.k {
         EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
-        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Closure(_) => None,
+        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Closure(_) | EK::This => None,
         EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) => sub(x),
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
@@ -392,6 +401,9 @@ fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
         }),
         constexpr: f.constexpr,
         consteval: f.consteval,
+        // CLS rules: `this` points to the object, with the function's
+        // cv-qualifiers.
+        this: f.class.filter(|_| !f.member_static).map(|c| QType::ptr_to(QType::new(Type::Class(c)).with_cv(f.obj_cv.0, f.obj_cv.1))),
         is_main: cx.u.main() == Some(id) || (&*cx.u.entities[id].name == "main" && decl_scope == cx.u.root),
         ..Default::default()
     };

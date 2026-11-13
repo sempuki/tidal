@@ -78,6 +78,13 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
         }
     }
     let Some((name, span)) = name else { return cx.unsupported(n.span, "a type name") };
+    // NAM-34: a class's name after its own qualifier names its
+    // constructor, not the class.
+    if let names::check::Qual::Scope(s) = qual {
+        if cx.u.scopes[s].kind == crate::sem::ScopeKind::Class && &*cx.u.scopes[s].name == name {
+            return cx.error(span, "NAM-34", format!("'{}::{}' names the constructor, not a type", name, name));
+        }
+    }
     let found = match qual {
         names::check::Qual::None => names::check::lookup(cx, name),
         names::check::Qual::Scope(s) => names::check::lookup_in(cx, s, name),

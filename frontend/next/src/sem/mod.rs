@@ -91,6 +91,11 @@ pub struct Func {
     /// The body could not be checked in full, so the function does not
     /// run.
     pub unsupported: Option<String>,
+    /// The class of a member function, and for a non-static one the
+    /// cv-qualifiers of its object.
+    pub class: Option<types::ClassId>,
+    pub member_static: bool,
+    pub obj_cv: (bool, bool),
 }
 
 #[derive(Clone, Debug)]
@@ -226,6 +231,8 @@ pub struct Unit {
     /// For a declaration with external linkage that its unit does not
     /// define, the definition in another unit (LNK rules, linking).
     pub links: HashMap<EntityId, EntityId>,
+    /// The access of each member that is not a data member.
+    pub access: HashMap<EntityId, Access>,
 }
 
 impl Default for Unit {
@@ -242,6 +249,7 @@ impl Default for Unit {
             roots: vec![0],
             first_entity: 0,
             links: HashMap::new(),
+            access: HashMap::new(),
         }
     }
 }

@@ -20,10 +20,13 @@ pub fn primary(cx: &mut Check, n: &Node) -> Expr {
             "id_expression" => id_expression(cx, c),
             _ => expr(cx, c),
         },
-        [k @ Kid::Tok(_)] if cx.text(k) == "this" => {
-            let t = cx.unsupported(n.span, "'this' outside a class (classes come with build step 4)");
-            Expr::new(EK::Int(0), t, Cat::PR, n.span)
-        }
+        [k @ Kid::Tok(_)] if cx.text(k) == "this" => match cx.func.as_ref().and_then(|f| f.this.clone()) {
+            Some(t) => Expr::new(EK::This, t, Cat::PR, n.span),
+            None => {
+                let t = cx.unsupported(n.span, "'this' outside a member function body (build step 4)");
+                Expr::new(EK::Int(0), t, Cat::PR, n.span)
+            }
+        },
         [_, Kid::Node(e), _] => {
             let mut x = expr(cx, e);
             x.paren = true;
@@ -201,6 +204,10 @@ pub fn find(cx: &mut Check, n: &Node) -> Option<(Vec<EntityId>, &'static str, St
     let found = match q {
         names::Qual::None => names::lookup(cx, name),
         names::Qual::Scope(s) => {
+            if cx.u.scopes[s].kind == crate::sem::ScopeKind::Class && &*cx.u.scopes[s].name == name {
+                cx.error(span, "NAM-34", format!("'{}::{}' names the constructor", name, name));
+                return Some((Vec::new(), "", name.to_string(), span));
+            }
             let f = names::lookup_in(cx, s, name);
             if f.is_empty() {
                 cx.not_found(span, "NAM-14", name);
@@ -239,6 +246,13 @@ pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
     }
     if names::check_ambiguous(cx, &found, &name, span) {
         return bad(span);
+    }
+    // ACC-2: a member named with its class as the qualifier.
+    if let Some(&e) = found.iter().find(|&&e| cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Class) {
+        if !crate::classes::members::check::accessible(cx, e) {
+            cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
+            return bad(span);
+        }
     }
     entity_expr(cx, &found, &name, span)
 }
@@ -280,10 +294,20 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, format!("the name '{}': {}", name, why));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
-        EntKind::Field(_) => {
-            let t = cx.unsupported(span, format!("the data member '{}' named without an object (member functions come with build step 4)", name));
-            Expr::new(EK::Int(0), t, Cat::PR, span)
-        }
+        // A data member of the class of a member function is `this->m`.
+        EntKind::Field(x) => match cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()) == Some(x.class)) {
+            Some(t) => {
+                let obj = Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, span))), t.pointee().unwrap().clone(), Cat::L, span);
+                crate::classes::members::check::field_of(cx, obj, pick, span)
+            }
+            // PRIM-25: outside an unevaluated operand, a non-static data
+            // member needs an object.
+            None if cx.unevaluated > 0 => Expr::new(EK::Int(0), x.ty.clone(), Cat::L, span),
+            None => {
+                cx.error(span, "PRIM-25", format!("the non-static data member '{}' is named without an object", name));
+                bad(span)
+            }
+        },
         EntKind::Typedef(_) | EntKind::Enum(_) | EntKind::Namespace(_) | EntKind::Class(_) => {
             let t = cx.unsupported(span, format!("the name '{}' of a type or namespace as an expression", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)

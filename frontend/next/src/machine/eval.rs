@@ -2,7 +2,7 @@
 //! stop a run is a function of its page's `run.rs` part, which this
 //! module calls; the module itself names no rule.
 
-use super::{unsup, Machine, Ptr, Ret, Val, R};
+use super::{unsup, Machine, Ptr, Ret, Stop, Val, R};
 use crate::declarations::initialization::forms::run as init_run;
 use crate::expressions::{additive, comparison, multiplicative, postfix, shift, unary};
 use crate::foundations::{conversions, evaluation_order, objects, values};
@@ -19,6 +19,10 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         EK::Float(f) if e.ty.t == Type::Float(crate::sem::types::FloatK::LongDouble) => Ok(Val::Ext(crate::foundations::types::run::F80::from_f64(*f))),
         EK::Float(f) => Ok(Val::Float(*f)),
         EK::LongDouble(x) => Ok(Val::Ext(*x)),
+        EK::This => match m.frames.last().and_then(|f| f.this.clone()) {
+            Some(p) => Ok(Val::Ptr(p)),
+            None => unsup("'this' outside a member function"),
+        },
         // UN-5: `*p` for a pointer to a function names the function.
         EK::Deref(x) if e.ty.is_func() => match eval(m, x)? {
             Val::Fn(id) => Ok(Val::Fn(id)),
@@ -358,9 +362,18 @@ pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
     let callee = eval(m, f)?;
     let id = postfix::run::callee(m, callee, &f.ty)?;
     let mut vals = Vec::new();
-    for a in args {
+    for (k, a) in args.iter().enumerate() {
         if a.by_ref {
-            vals.push(Ret::Place(place(m, &a.e)?));
+            let p = place(m, &a.e);
+            // The object of a member call in constant evaluation can be a
+            // reference whose object is unknown (CE-30); the machine does
+            // not model such an object yet.
+            if let (0, Err(Stop::Limit("CE-30", _))) = (k, &p) {
+                if m.u.func(id).is_some_and(|f| f.class.is_some() && !f.member_static) {
+                    return unsup("the object of a member call is a reference whose object constant evaluation does not know");
+                }
+            }
+            vals.push(Ret::Place(p?));
         } else {
             vals.push(Ret::Val(eval_any(m, &a.e)?));
         }
@@ -390,6 +403,18 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     let ret_ty = func.ty.ret.clone();
     let mut frame = super::Frame { func: Some(id), ..Default::default() };
     let mut made = Vec::new();
+    // The object of a non-static member function comes first.
+    let mut args = args;
+    if func.class.is_some() && !func.member_static {
+        if args.is_empty() {
+            return unsup("a member function called without its object");
+        }
+        match args.remove(0) {
+            Ret::Place(p) => frame.this = Some(p),
+            Ret::Val(Val::Ptr(p)) => frame.this = Some(p),
+            _ => return unsup("the object of a member function call"),
+        }
+    }
     for (k, a) in args.into_iter().enumerate() {
         let Some(&pid) = params.get(k) else { break };
         match a {

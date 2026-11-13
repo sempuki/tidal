@@ -24,9 +24,9 @@ fn qualified(u: &Unit, id: crate::sem::EntityId) -> Option<String> {
         return None;
     }
     let mut parts = vec![e.name.to_string()];
-    let mut s = u.enclosing_namespace(e.scope);
+    let mut s = if u.scopes[e.scope].kind == crate::sem::ScopeKind::Class { e.scope } else { u.enclosing_namespace(e.scope) };
     while let Some(p) = u.scopes[s].parent {
-        if u.scopes[s].kind != crate::sem::ScopeKind::Namespace || u.scopes[s].name.is_empty() {
+        if !matches!(u.scopes[s].kind, crate::sem::ScopeKind::Namespace | crate::sem::ScopeKind::Class) || u.scopes[s].name.is_empty() {
             return None;
         }
         parts.push(u.scopes[s].name.to_string());
