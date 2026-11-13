@@ -97,7 +97,18 @@ fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<In
         return references::check::initializer(cx, ty, init);
     }
     if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
-        return list::check::list_init(cx, b, ty, name);
+        let r = list::check::list_init(cx, b, ty, name);
+        // ENUM-19: an integer in braces initializes an enumeration only by
+        // direct-list-initialization, not after `=`.
+        if words.first() == Some(&"=") && ty.is_enum() {
+            if let Some(Init::Expr(e)) = &r {
+                if matches!(&e.k, crate::sem::tree::EK::Conv(crate::sem::tree::Conv::Arith, x) if x.ty.t != ty.t) {
+                    cx.error(init.span, "ENUM-19", "copy-list-initialization of an enumeration from an integer");
+                    return None;
+                }
+            }
+        }
+        return r;
     }
     if words.first() == Some(&"(") {
         let args: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();

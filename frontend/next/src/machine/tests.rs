@@ -226,3 +226,18 @@ fn a_discarded_volatile_glvalue_is_read_in_the_listed_forms() {
     assert_eq!(rule("v = 3;"), None);
     assert_eq!(rule("(void)&v;"), None);
 }
+
+#[test]
+fn enumeration_declarations_agree_and_hold_their_values() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(rule("enum class F : short; enum class F : int { A };"), Some("ENUM-18"));
+    assert_eq!(rule("enum E : int; enum E { a };"), Some("ENUM-18"));
+    assert_eq!(rule("enum class E : long; enum class E { a };"), Some("ENUM-18"));
+    assert_eq!(rule("enum class E; enum class E : int { a };"), None);
+    assert_eq!(rule("enum class F : int { A }; F f = {5};"), Some("ENUM-19"));
+    assert_eq!(rule("enum class F : int { A }; F f{5};"), None);
+    assert_eq!(rule("enum H { A = 1ULL << 63, B = -1 };"), Some("ENUM-5"));
+}

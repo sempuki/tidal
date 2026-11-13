@@ -37,6 +37,18 @@ fn fixed_type(cx: &mut Check, n: &Node) -> Option<IntK> {
     }
 }
 
+/// ENUM-18: a new declaration agrees with the earlier one on whether the
+/// underlying type is fixed and on that type. Without `: type`, a scoped
+/// enumeration has `int` and an unscoped one has no fixed type.
+fn agrees(cx: &Check, e: EnumId, scoped: bool, fixed: Option<IntK>) -> bool {
+    let info = &cx.u.enums[e];
+    let mine = fixed.or(if scoped { Some(IntK::Int) } else { None });
+    match mine {
+        Some(k) => info.fixed && info.underlying == Some(k),
+        None => !info.fixed,
+    }
+}
+
 /// An enumeration declared before, in this scope, by name.
 fn earlier(cx: &Check, name: &str) -> Option<EnumId> {
     names::declared_here(cx, cx.scope, name).into_iter().find_map(|e| match cx.u.entities[e].kind {
@@ -72,7 +84,7 @@ pub fn enum_def(cx: &mut Check, n: &Node) -> QType {
     let (nm, sp) = name.unwrap_or(("", head.span));
     let id = match earlier(cx, nm).filter(|_| !nm.is_empty()) {
         Some(e) if !cx.u.enums[e].complete && cx.u.enums[e].scoped == scoped => {
-            if cx.u.enums[e].fixed && fixed.is_some() && cx.u.enums[e].underlying != fixed && !scoped {
+            if !agrees(cx, e, scoped, fixed) {
                 cx.error(head.span, "ENUM-18", "the declarations of the enumeration disagree on the underlying type");
             }
             e
@@ -165,6 +177,13 @@ pub fn enum_def(cx: &mut Check, n: &Node) -> QType {
         }
     }
     if under.is_none() {
+        // ENUM-5: no integer type of the implementation holds every value,
+        // so the enumeration is rejected.
+        let t = cx.u.target;
+        let wide = [IntK::LongLong, IntK::ULongLong];
+        if !wide.iter().any(|&k| values.iter().all(|&v| t.fits(k, v))) {
+            cx.error(head.span, "ENUM-5", "no integer type holds every value of the enumeration");
+        }
         cx.u.enums[id].underlying = Some(underlying_for(cx, &values));
     }
     cx.u.enums[id].complete = true;
@@ -255,8 +274,7 @@ pub fn enum_opaque(cx: &mut Check, n: &Node) {
     }
     match earlier(cx, name) {
         Some(e) => {
-            let info = &cx.u.enums[e];
-            if info.scoped != scoped || (info.fixed && info.underlying != Some(fixed.unwrap_or(IntK::Int))) {
+            if cx.u.enums[e].scoped != scoped || !agrees(cx, e, scoped, fixed) {
                 cx.error(n.span, "ENUM-18", "the declarations of the enumeration disagree");
             }
         }
