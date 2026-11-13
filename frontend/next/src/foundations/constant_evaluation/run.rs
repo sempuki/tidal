@@ -49,6 +49,11 @@ pub fn reinterpret<T>() -> R<T> {
     limit("CE-4", "a reinterpret_cast")
 }
 
+/// CE-4: a conversion from `void*` to a pointer to an object type.
+pub fn from_void_pointer<T>() -> R<T> {
+    limit("CE-4", "a conversion from a pointer to void to a pointer to an object type")
+}
+
 /// CE-28: a floating-point division by zero.
 pub fn float_divide_by_zero<T>() -> R<T> {
     limit("CE-28", "a floating-point division by zero")
@@ -98,9 +103,19 @@ pub fn static_var(m: &mut Machine, id: EntityId, v: &Var) -> R<Ptr> {
             return limit("CE-3", format!("the reference '{}' is not usable in constant expressions", name));
         };
         let saved = std::mem::replace(&mut m.static_temps, v.storage != crate::sem::Storage::Automatic);
+        let temps = m.temps.len();
         let p = crate::machine::eval::place(m, e);
         m.static_temps = saved;
         let p = p?;
+        // CE-3: a temporary that the reference extends is usable in
+        // constant expressions only if its type is const. Another
+        // evaluation can neither read nor change it.
+        if m.temps[temps.min(m.temps.len())..].contains(&p.obj) && !v.ty.nonref().c {
+            let o = &mut m.objs[p.obj];
+            o.usable = false;
+            o.own = false;
+            o.name = format!("the temporary that '{}' extends, which is not const,", name).into();
+        }
         m.global_refs.insert(id, p.clone());
         return Ok(p);
     }

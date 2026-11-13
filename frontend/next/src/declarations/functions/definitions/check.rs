@@ -449,7 +449,7 @@ fn noreturn_returns(cx: &mut Check, id: EntityId) {
 }
 
 /// ATTR-6: a local variable of the function that the program never
-/// names, unless it is declared `maybe_unused`.
+/// reads, unless it is declared `maybe_unused`.
 fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
     let inside = |cx: &Check, mut s: crate::sem::ScopeId| loop {
         if s == fs {
@@ -460,8 +460,8 @@ fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
             None => return false,
         }
     };
-    let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().filter_map(|e| match &e.kind {
-        EntKind::Var(v) if !v.param && !v.used && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) => Some((e.span, e.name.clone())),
+    let found: Vec<(Span, Rc<str>)> = cx.u.entities.iter().enumerate().filter_map(|(id, e)| match &e.kind {
+        EntKind::Var(v) if !v.param && !v.maybe_unused && v.storage == Storage::Automatic && !e.name.is_empty() && inside(cx, e.scope) && !crate::declarations::initialization::forms::check::is_read(cx, id) => Some((e.span, e.name.clone())),
         _ => None,
     }).collect();
     for (span, name) in found {
@@ -647,7 +647,7 @@ pub fn func_name_outside(cx: &mut Check, span: Span) {
     cx.error(span, "FN-5", "__func__ outside a function body");
 }
 
-/// The checks at the end of the unit: none yet in build step 3.
+/// The checks at the end of the unit (ODR-9, INL-6).
 pub fn end_of_unit(cx: &mut Check) {
     // ODR-9: a function with internal linkage that the unit uses is
     // defined in the unit. No diagnostic is required; the front end
@@ -658,6 +658,17 @@ pub fn end_of_unit(cx: &mut Check) {
     }).collect();
     for (span, name) in missing {
         cx.error(span, "ODR-9", format!("the function '{}' has internal linkage and is used, but the unit does not define it", name));
+    }
+    // INL-6: an inline variable that the unit uses is defined in the
+    // unit. No diagnostic is required; the compilers give one for a
+    // variable, and the front end does too. A missing inline function
+    // fails at link time on Clang and GCC, so the front end accepts it.
+    let missing: Vec<(Span, Rc<str>)> = cx.u.entities.iter().filter_map(|e| match &e.kind {
+        EntKind::Var(v) if v.inline && v.used && !v.defined => Some((e.span, e.name.clone())),
+        _ => None,
+    }).collect();
+    for (span, name) in missing {
+        cx.error(span, "INL-6", format!("the inline variable '{}' is used, but the unit does not define it", name));
     }
 }
 

@@ -69,8 +69,9 @@ pub fn redeclared_from(cx: &mut Check, cond: ScopeId, body: ScopeId, rule: &'sta
 fn unused_variables(cx: &mut Check, s: ScopeId) {
     let ids: Vec<usize> = cx.u.scopes[s].names.values().flatten().copied().collect();
     for id in ids {
+        let read = crate::declarations::initialization::forms::check::is_read(cx, id);
         if let EntKind::Var(v) = &cx.u.entities[id].kind {
-            if !v.used && !v.maybe_unused && !v.param && v.storage == crate::sem::Storage::Automatic && !v.ty.is_error() {
+            if !read && !v.maybe_unused && !v.param && v.storage == crate::sem::Storage::Automatic && !v.ty.is_error() {
                 let (name, span) = (cx.u.entities[id].name.clone(), cx.u.entities[id].span);
                 crate::declarations::attributes::check::unused_variable(cx, span, &name);
             }

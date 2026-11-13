@@ -44,6 +44,10 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
     if l.ty.is_error() {
         return bad(span);
     }
+    // ATTR-6: a variable on the left of `=` is written, not read.
+    if let (EK::Var(id), "=", 0) = (&l.k, op, cx.unevaluated) {
+        *cx.assigned.entry(*id).or_insert(0) += 1;
+    }
     let rhs = ns[2];
     if rhs.prod == "braced_init" {
         if op != "=" {

@@ -118,11 +118,15 @@ pub struct Check<'a> {
     pub naming_type: bool,
     /// The parameters declared with an array type (UN-19).
     pub array_params: std::collections::HashSet<EntityId>,
+    /// For each variable, the uses outside unevaluated operands and the
+    /// uses as the left operand of `=` (ATTR-6).
+    pub uses: HashMap<EntityId, u32>,
+    pub assigned: HashMap<EntityId, u32>,
 }
 
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
-        Check { u, toks, scope: 0, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default() }
+        Check { u, toks, scope: 0, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new() }
     }
 
     // -----------------------------------------------------------------

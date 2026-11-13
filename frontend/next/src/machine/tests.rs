@@ -486,3 +486,24 @@ fn declaration_types() {
     assert_eq!(rule("void q() noexcept {} void (&c)(){q};", false), Some("REF-11"));
     assert_eq!(rule("void q() {} void (&c)(){q};", false), None);
 }
+
+#[test]
+fn constants_inline_and_unread() {
+    let rule = |src: &str, w: &[&str]| {
+        let o = crate::Options { werror: !w.is_empty(), wflags: w.iter().map(|s| s.to_string()).collect(), ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+            _ => None,
+        }
+    };
+    assert_eq!(rule("constexpr int&& c = 4; static_assert(c == 4);", &[]), Some("CE-3"));
+    assert_eq!(rule("constexpr const int& c = 4; static_assert(c == 4);", &[]), None);
+    assert_eq!(rule("constexpr int f() { int x = 7; void* v = &x; return *static_cast<int*>(v); } static_assert(f() == 7);", &[]), Some("CE-4"));
+    assert_eq!(rule("constexpr int f() { int x = 7; void* v = &x; return v ? 1 : 0; } static_assert(f() == 1);", &[]), None);
+    assert_eq!(rule("extern inline int s; int main() { return s; }", &[]), Some("INL-6"));
+    assert_eq!(rule("extern inline int s; int main() { return sizeof(s) == 4 ? 0 : 1; }", &[]), None);
+    assert_eq!(rule("inline int g(); int main() { return g(); }", &[]), None);
+    assert_eq!(rule("void f() { int n; n = 3; }", &["-Wunused"]), Some("ATTR-6"));
+    assert_eq!(rule("int f() { int n; n = 3; return n; }", &["-Wunused"]), None);
+    assert_eq!(rule("void f() { int n = 0; n = n + 1; }", &["-Wunused"]), None);
+}

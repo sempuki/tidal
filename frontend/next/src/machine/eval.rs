@@ -261,6 +261,9 @@ fn conv(m: &mut Machine, c: Conv, x: &Expr, to: &QType) -> R<Val> {
             eval_any(m, x)?;
             Ok(Val::Null)
         }
+        Conv::PtrNoOp if m.constant && x.ty.pointee().is_some_and(|p| p.is_void()) && to.pointee().is_some_and(|p| !p.is_void()) => {
+            crate::foundations::constant_evaluation::run::from_void_pointer()
+        }
         Conv::PtrNoOp | Conv::NoOp => eval_any(m, x),
         Conv::ToVoid => {
             eval_discard(m, x)?;

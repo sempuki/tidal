@@ -92,7 +92,17 @@ pub fn note_use(cx: &mut Check, id: EntityId, _span: Span) {
         if let Some(v) = cx.u.var_mut(id) {
             v.used = true;
         }
+        *cx.uses.entry(id).or_insert(0) += 1;
     }
+}
+
+/// ATTR-6: the program reads the variable. A use as the left operand of
+/// `=` is a write, so a variable whose every use is such a write is not
+/// read.
+pub fn is_read(cx: &Check, id: EntityId) -> bool {
+    let used = cx.u.var(id).is_some_and(|v| v.used);
+    let assigned = cx.assigned.get(&id).copied().unwrap_or(0);
+    used && (assigned == 0 || cx.uses.get(&id).copied().unwrap_or(0) > assigned)
 }
 
 /// The initializer of a variable from its `init` node (INIT-2 to INIT-8;
