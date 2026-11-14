@@ -1475,3 +1475,21 @@ fn using_declarations_in_classes() {
     assert_eq!(rule("class B { int x; }; class D : public B { public: using B::x; };"), Some("ACC-13"));
     assert_eq!(rule("struct X { int f(); }; struct B {}; struct D : B { using X::f; };"), Some("DER-9"));
 }
+
+#[test]
+fn inheriting_constructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DER-8: the base's constructors construct the derived class, and the
+    // other members take their default member initializers.
+    assert_eq!(run("struct B { int v; B(int x, int y = 10) : v(x + y) {} }; struct D : B { using B::B; int w = 9; }; int main() { D a(1); return a.v + a.w; }"), RunOutcome::Result(20));
+    // OVL-31: a constructor of the derived class beats an inherited one.
+    assert_eq!(run("struct B { int tag = 0; B(int) : tag(1) {} }; struct D : B { using B::B; D(int, int = 0) : B(0) { tag = 2; } }; int main() { return D(5).tag; }"), RunOutcome::Result(2));
+    // OVL-17: an inherited constructor of the copy's shape is not one.
+    assert_eq!(rule("struct B { B() {} B(const B&, int = 0) {} }; struct D : B { using B::B; }; B b; D d(b);"), Some("CTOR-25"));
+    assert_eq!(rule("struct A { A(int) {} }; struct B : A { using A::A; }; struct D : B { using A::A; };"), Some("DER-9"));
+    assert_eq!(rule("class B { B(int) {} public: B() {} friend struct D; }; struct D : B { using B::B; }; D d(1);"), Some("DER-20"));
+}

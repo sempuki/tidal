@@ -32,7 +32,34 @@ pub fn ctors(cx: &Check, c: ClassId) -> Vec<EntityId> {
 /// A class with a user-declared constructor, which is no aggregate and
 /// has no implicit default constructor (CTOR-2).
 pub fn has_ctors(cx: &Check, c: ClassId) -> bool {
-    !ctors(cx, c).is_empty()
+    !ctors(cx, c).is_empty() || cx.u.inherits.contains_key(&c)
+}
+
+/// DER-8, OVL-17: the constructors that class `c` inherits for a call
+/// with `n` arguments: those of the bases it names, other than copy and
+/// move constructors, one that the class declares with the same
+/// parameters, and, for one argument, one whose first parameter is a
+/// reference to a class that `c` derives from.
+fn inherited(cx: &Check, c: ClassId, n: usize) -> Vec<EntityId> {
+    if n == 0 {
+        return Vec::new();
+    }
+    let own: Vec<Vec<QType>> = ctors(cx, c).iter().filter_map(|&f| cx.u.func(f).map(|x| x.ty.params.clone())).collect();
+    let mut out = Vec::new();
+    for &b in cx.u.inherits.get(&c).map(|v| v.as_slice()).unwrap_or(&[]) {
+        for f in ctors(cx, b) {
+            let Some(x) = cx.u.func(f) else { continue };
+            if crate::classes::copy_move::check::copy_or_move(cx, b, f).is_some() || own.contains(&x.ty.params) {
+                continue;
+            }
+            let first = x.ty.params.first();
+            if n == 1 && first.is_some_and(|p| p.is_ref() && p.nonref().class().is_some_and(|k| crate::classes::derived::check::derives(cx, c, k))) {
+                continue;
+            }
+            out.push(f);
+        }
+    }
+    out
 }
 
 /// The name of a declarator's declarator-id: the class's name for a
@@ -577,7 +604,13 @@ pub fn direct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, span
 /// narrow (LIST-2).
 pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, copy: bool, span: Span) -> Option<Init> {
     let c = ty.class()?;
+    // A class whose only constructors are inherited keeps its implicit
+    // default constructor (DER-8).
+    if args.is_empty() && ctors(cx, c).is_empty() {
+        return default_init(cx, ty, span);
+    }
     let mut cands = ctors(cx, c);
+    cands.extend(inherited(cx, c, args.len()));
     // CTOR-9: copy-initialization does not use an explicit constructor;
     // copy-list-initialization considers it and fails if it is chosen
     // (ILC-8).
@@ -640,8 +673,10 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
         cx.error(span, "DEL-1", format!("the constructor of '{}' that the initialization chooses is deleted", name));
         return None;
     }
-    if !crate::classes::derived::check::accessible_through(cx, f, c) {
-        cx.error(span, "ACC-2", format!("the constructor of '{}' is not public", name));
+    // DER-20: an inherited constructor has its access in the base.
+    let base = func.class.filter(|&b| b != c);
+    if !crate::classes::derived::check::accessible_through(cx, f, base.unwrap_or(c)) {
+        cx.error(span, if base.is_some() { "DER-20" } else { "ACC-2" }, format!("the constructor of '{}' is not public", name));
         return None;
     }
     // The parameters after the arguments take their default arguments.
@@ -670,16 +705,33 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
         }
     }
     crate::declarations::functions::definitions::check::note_use(cx, f, span);
+    // DER-8: an inherited constructor initializes its base subobject,
+    // and the other members as the implicit default constructor does.
+    if let Some(b) = base {
+        let k = cx.u.classes[c].fields.iter().position(|&x| cx.u.field(x).is_some_and(|y| y.base && y.ty.class() == Some(b)))?;
+        let Init::List(mut items) = implicit_default_but(cx, c, Some(k), span)? else { return None };
+        items[k] = Init::Ctor(f, out);
+        return Some(Init::List(items));
+    }
     Some(Init::Ctor(f, out))
 }
 
 /// The implicit default constructor's work: each member's default
 /// member initializer or default-initialization.
 fn implicit_default(cx: &mut Check, c: ClassId, span: Span) -> Option<Init> {
+    implicit_default_but(cx, c, None, span)
+}
+
+/// `implicit_default`, with no initializer for the member at `skip`.
+fn implicit_default_but(cx: &mut Check, c: ClassId, skip: Option<usize>, span: Span) -> Option<Init> {
     let fields = cx.u.classes[c].fields.clone();
     let union = crate::classes::unions::check::is_union(cx, c);
     let mut out = Vec::new();
-    for f in fields {
+    for (k, f) in fields.into_iter().enumerate() {
+        if skip == Some(k) {
+            out.push(Init::Default);
+            continue;
+        }
         let x = cx.u.field(f).unwrap().clone();
         out.push(match x.init {
             Some(i) => i,
@@ -703,7 +755,7 @@ fn implicit_default(cx: &mut Check, c: ClassId, span: Span) -> Option<Init> {
 /// an array.
 pub fn default_init(cx: &mut Check, ty: &QType, span: Span) -> Option<Init> {
     match &ty.t {
-        Type::Class(c) if has_ctors(cx, *c) => {
+        Type::Class(c) if has_ctors(cx, *c) && !ctors(cx, *c).is_empty() => {
             let defaults: Vec<EntityId> = ctors(cx, *c).into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.takes_no_argument())).collect();
             if defaults.is_empty() {
                 cx.error(span, "CTOR-19", format!("the class '{}' has no default constructor", cx.u.classes[*c].name));

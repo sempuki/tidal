@@ -708,10 +708,14 @@ fn using_member(cx: &mut Check, id: ClassId, n: &Node, access: Access) -> bool {
             cx.error(span, "DER-9", format!("a using-declaration in a class names '{}' of a class that is not a base", name));
             continue;
         };
-        // An inheriting constructor waits for a later part.
+        // DER-8, DER-9: an inheriting constructor names a direct base.
         if *cx.u.classes[b].name == *name {
-            cx.unsupported(span, "an inheriting constructor (build step 4)");
-            return false;
+            if !cx.u.bases(id).iter().any(|&(_, x)| x == b) {
+                cx.error(span, "DER-9", format!("an inheriting constructor names '{}', which is not a direct base", name));
+                continue;
+            }
+            cx.u.inherits.entry(id).or_default().push(b);
+            continue;
         }
         let found = match crate::classes::derived::check::member_lookup(cx, b, &name) {
             Ok(Some(f)) => f.ents,

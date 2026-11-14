@@ -204,9 +204,15 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
         return None;
     }
     // OVL-29: the best viable function is better than every other.
-    let wins = |a: &Vec<Ics>, b: &Vec<Ics>| -> bool {
+    // OVL-31: a constructor of the derived class beats an inherited one.
+    let ctor_class = |f: EntityId| cx.u.func(f).filter(|x| x.special == crate::sem::Special::Ctor).and_then(|x| x.class);
+    let inherited_tie = |f: EntityId, g: EntityId| match (ctor_class(f), ctor_class(g)) {
+        (Some(a), Some(b)) => crate::classes::derived::check::is_base(cx, a, b),
+        _ => false,
+    };
+    let wins = |a: &(EntityId, Vec<Ics>), b: &(EntityId, Vec<Ics>)| -> bool {
         let mut some = false;
-        for (x, y) in a.iter().zip(b.iter()) {
+        for (x, y) in a.1.iter().zip(b.1.iter()) {
             if better(y, x) {
                 return false;
             }
@@ -214,16 +220,16 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                 some = true;
             }
         }
-        some
+        some || inherited_tie(a.0, b.0)
     };
     let mut best = 0;
     for i in 1..viable.len() {
-        if wins(&viable[i].1, &viable[best].1) {
+        if wins(&viable[i], &viable[best]) {
             best = i;
         }
     }
     for i in 0..viable.len() {
-        if i != best && !wins(&viable[best].1, &viable[i].1) {
+        if i != best && !wins(&viable[best], &viable[i]) {
             cx.error(span, "OVL-36", format!("the call of '{}' is ambiguous", name));
             return None;
         }

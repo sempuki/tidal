@@ -286,6 +286,8 @@ pub struct Unit {
     /// The access that a using-declaration in a class gives a member of
     /// a base, as a member of that class (ACC-9).
     pub using_access: HashMap<(types::ClassId, EntityId), Access>,
+    /// The direct bases whose constructors a class inherits (DER-8).
+    pub inherits: HashMap<types::ClassId, Vec<types::ClassId>>,
     /// The member initializers of each constructor with a body.
     pub mem_inits: HashMap<EntityId, MemInits>,
     /// The constructors defaulted on their first declaration, which act
@@ -335,6 +337,7 @@ impl Default for Unit {
             links: HashMap::new(),
             access: HashMap::new(),
             using_access: HashMap::new(),
+            inherits: HashMap::new(),
             mem_inits: HashMap::new(),
             defaulted: Default::default(),
             closures: HashMap::new(),
