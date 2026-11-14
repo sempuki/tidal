@@ -32,7 +32,7 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
             return false;
         }
         if crate::classes::members::check::has_const_member(cx, c) {
-            cx.error(span, "CPY-23", "the copy assignment of a class with a const member is deleted");
+            cx.error(span, "CPY-23", "the copy assignment of a class with a const or reference member is deleted");
             return false;
         }
     }

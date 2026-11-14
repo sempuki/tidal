@@ -89,6 +89,12 @@ pub fn copy(cx: &mut Check, e: Expr, copy_init: bool, span: Span) -> Option<Expr
             cx.error_cause(span, "CPY-21", Some("CPY-24"), format!("the copy constructor of '{}' is deleted, because the class declares a move assignment operator", cx.u.classes[c].name));
             return None;
         }
+        // CPY-7: an rvalue reference member deletes the implicit copy
+        // constructor.
+        if !rvalue && rvalue_ref_member(cx, c) {
+            cx.error(span, "CPY-23", format!("the copy constructor of '{}' is deleted, because the class has an rvalue reference member", cx.u.classes[c].name));
+            return None;
+        }
         // CPY-13: an implicit copy in a class with a user-provided copy
         // assignment is deprecated.
         if user_assignments(cx, c).iter().any(|&(f, m)| !m && !cx.u.defaulted.contains(&f)) && cx.wflag(&["-Wextra", "-Wdeprecated-copy"]) {
@@ -257,4 +263,10 @@ pub fn assignable(cx: &mut Check, c: ClassId, span: Span) -> bool {
     }
     let _ = has_ctors;
     true
+}
+
+/// A class with a data member of rvalue reference type, also through a
+/// member of class type (CPY-7).
+pub fn rvalue_ref_member(cx: &Check, c: ClassId) -> bool {
+    cx.u.field_types(c).iter().any(|t| matches!(t.t, crate::sem::types::Type::Ref(_, true)) || t.base_elem().class().is_some_and(|d| rvalue_ref_member(cx, d)))
 }

@@ -19,12 +19,18 @@ pub fn evaluate(cx: &Check, e: &Expr) -> Result<Val, (&'static str, String)> {
     let r = if e.cat == Cat::PR { crate::machine::eval::eval(&mut m, e) } else { crate::machine::eval::eval_any(&mut m, e) };
     let r = r.and_then(|v| {
         crate::expressions::new_delete::run::leaked(&m)?;
-        // CE-14: a pointer that is the value of a constant expression
-        // must not point to an automatic or temporary object.
-        if let Val::Ptr(p) = &v {
-            if !m.objs[p.obj].is_static {
-                return crate::machine::limit("CE-14", "the value points to an object that is not static");
+        // CE-14: a pointer that is the value of a constant expression, or
+        // a part of it such as a reference member, must not point to an
+        // automatic or temporary object.
+        fn points_to_automatic(m: &Machine, v: &Val) -> bool {
+            match v {
+                Val::Ptr(p) => !m.objs[p.obj].is_static,
+                Val::Agg(xs) => xs.iter().any(|x| points_to_automatic(m, x)),
+                _ => false,
             }
+        }
+        if points_to_automatic(&m, &v) {
+            return crate::machine::limit("CE-14", "the value points to an object that is not static");
         }
         Ok(v)
     });

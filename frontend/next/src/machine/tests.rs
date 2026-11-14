@@ -1284,3 +1284,24 @@ fn member_types() {
     assert_eq!(rule("struct S { using S = int; };"), Some("CLS-9"));
     assert_eq!(rule("struct S { using T = int; using T = int; };"), Some("TYN-2"));
 }
+
+#[test]
+fn reference_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A reference member holds a pointer and names the object it refers
+    // to; a copy refers to the same object.
+    assert_eq!(run("int g = 4; struct S { int& r; }; int main() { S s{g}; s.r = 7; return g + (sizeof(S) == sizeof(void*)); }"), RunOutcome::Result(8));
+    assert_eq!(run("struct S { int& r; S(int& x) : r(x) {} }; int main() { int a = 2; S s(a); S t = s; t.r = 9; return a; }"), RunOutcome::Result(9));
+    assert_eq!(rule("struct S { const int& r; S() : r(5) {} };"), Some("CTOR-17"));
+    assert_eq!(rule("struct S { int& r; }; void f() { S s; }"), Some("CTOR-20"));
+    assert_eq!(rule("struct S { int& r; S() {} };"), Some("CTOR-3"));
+    assert_eq!(rule("struct S { int& r; }; void f(int& a) { S s{a}, t{a}; s = t; }"), Some("CPY-23"));
+    assert_eq!(rule("struct S { int&& r; }; void f(S& a) { S b(a); }"), Some("CPY-23"));
+    assert_eq!(rule("int g; struct S { mutable int& r = g; };"), Some("CLS-9"));
+    // DTY-1: an unparenthesized member access names the declared type.
+    assert_eq!(rule("struct P { int first; decltype(static_cast<P*>(nullptr)->first) second; }; static_assert(sizeof(P) == 2 * sizeof(int));"), None);
+}

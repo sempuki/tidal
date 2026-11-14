@@ -440,6 +440,11 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     cx.unsupported(md.span, "constexpr or inline on a non-static data member (build step 4)");
                     return false;
                 }
+                // CLS-9: no `mutable` on a reference member.
+                if specs.mutable && d.ty.is_ref() {
+                    cx.error_cause(m.span, "CLS-9", Some("STO-6"), "a mutable reference member");
+                    return true;
+                }
                 // CLS-9: no placeholder for a non-static data member.
                 if specs.placeholder.is_some() {
                     cx.error(m.span, "CLS-9", "a data member declared with a placeholder type");
@@ -453,10 +458,6 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     Some(true) => {}
                     Some(false) => return true,
                     None => return false,
-                }
-                if d.ty.is_ref() {
-                    cx.unsupported(span, "a reference data member (build step 4)");
-                    return false;
                 }
                 // CLS-1: a data member has a complete type.
                 if d.ty.is_incomplete() || d.ty.class().is_some_and(|c| !cx.u.classes[c].complete) {
@@ -623,6 +624,24 @@ fn static_member(cx: &mut Check, class: ClassId, specs: &crate::declarations::ch
 /// `ty`: `= expr`, `= {...}`, or `{...}`.
 fn member_init(cx: &mut Check, ty: &QType, n: &Node) -> Option<Init> {
     let c = first_node(n)?;
+    if ty.is_ref() {
+        if c.prod == "braced_init" {
+            cx.unsupported(c.span, "a braced default member initializer for a reference member");
+            return None;
+        }
+        let e = expr(cx, c);
+        if e.ty.is_error() {
+            return None;
+        }
+        // CTOR-17 holds where a constructor uses the initializer, which
+        // the front end does not track yet.
+        let b = crate::declarations::initialization::references::check::bind(cx, e, ty, "INIT-7")?;
+        if binds_temporary(&b) {
+            cx.unsupported(n.span, "a default member initializer that binds a reference member to a temporary");
+            return None;
+        }
+        return Some(Init::Ref(b));
+    }
     if c.prod == "braced_init" {
         return crate::declarations::initialization::list::check::list_init(cx, c, ty, "");
     }
@@ -659,10 +678,11 @@ fn const_default_ok(cx: &Check, c: ClassId) -> bool {
     })
 }
 
-/// A class with a const data member, also through a member of class
-/// type, whose implicit copy assignment is deleted (CPY-7).
+/// A class with a const or reference data member, also through a
+/// member of class type, whose implicit copy assignment is deleted
+/// (CPY-7).
 pub fn has_const_member(cx: &Check, c: ClassId) -> bool {
-    cx.u.field_types(c).iter().any(|t| t.base_elem().c || t.base_elem().class().is_some_and(|d| has_const_member(cx, d)))
+    cx.u.field_types(c).iter().any(|t| t.is_ref() || t.base_elem().c || t.base_elem().class().is_some_and(|d| has_const_member(cx, d)))
 }
 
 /// CTOR-3, CTOR-20: default-initialization of an object of type `ty`
@@ -684,6 +704,11 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
         }
         if x.init.is_some() {
             continue;
+        }
+        // CTOR-3: a reference member without a default member initializer.
+        if x.ty.is_ref() {
+            cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the reference member '{}' has no initializer", cx.u.entities[f].name));
+            return false;
         }
         let base = x.ty.base_elem();
         // CTOR-3: a member whose class has no usable default constructor.
@@ -896,11 +921,40 @@ pub fn field_of(cx: &mut Check, obj: Expr, f: EntityId, span: Span) -> Expr {
     } else {
         obj
     };
+    // A reference member holds the place it refers to; naming it names
+    // that place, an lvalue (REF rules).
+    if let Type::Ref(inner, _) = &field.ty.t {
+        let pt = QType::ptr_to((**inner).clone());
+        let slot = Expr::new(EK::Member(Box::new(obj), field.index), pt.clone(), Cat::L, span);
+        let p = Expr::new(EK::Conv(Conv::LToR, Box::new(slot)), pt, Cat::PR, span);
+        return Expr::new(EK::Deref(Box::new(p)), (**inner).clone(), Cat::L, span);
+    }
     let c_ = (obj.ty.c && !field.mutable) || field.ty.c;
     let v_ = obj.ty.v || field.ty.v;
     let ty = field.ty.clone().with_cv(c_, v_);
     let cat = obj.cat;
     Expr::new(EK::Member(Box::new(obj), field.index), ty, cat, span)
+}
+
+/// A reference member bound by a mem-init or a default member
+/// initializer (CTOR-17): the binding of `e`, which must not be to a
+/// temporary.
+pub fn bind_member(cx: &mut Check, e: Expr, ty: &QType, span: Span) -> Option<Init> {
+    let b = crate::declarations::initialization::references::check::bind(cx, e, ty, "INIT-7")?;
+    if binds_temporary(&b) {
+        cx.error(span, "CTOR-17", "a reference member bound to a temporary, which ends with the constructor");
+        return None;
+    }
+    Some(Init::Ref(b))
+}
+
+/// Whether a reference binding makes a temporary.
+pub fn binds_temporary(e: &Expr) -> bool {
+    match &e.k {
+        EK::Conv(Conv::Materialize, _) => true,
+        EK::Conv(Conv::NoOp, x) | EK::BasePtr(x, _) => binds_temporary(x),
+        _ => false,
+    }
 }
 
 fn cx_unsupported(cx: &mut Check, span: Span, why: &str) -> Expr {

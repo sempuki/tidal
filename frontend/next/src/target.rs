@@ -203,7 +203,7 @@ impl Target {
                 }
                 continue;
             }
-            let (s, a) = (self.size_of(u, &t)?, self.align_of(u, &t)?);
+            let (s, a) = self.member_size(u, &t)?;
             // The tail padding of a base that is not a POD holds the
             // members that follow (the matrix's ABI, CLS-35).
             let s = match t.class() {
@@ -225,6 +225,14 @@ impl Target {
         }
         let size = u64::try_from(end.div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
         Some((size.max(1), align, offs))
+    }
+    /// The size and alignment of a data member of type `t`: a reference
+    /// member holds a pointer (CLS-35).
+    fn member_size(self, u: &Unit, t: &QType) -> Option<(u64, u64)> {
+        if t.is_ref() {
+            return Some((self.ptr_size(), self.ptr_size()));
+        }
+        Some((self.size_of(u, t)?, self.align_of(u, t)?))
     }
     /// BF-9: the alignment of the largest integer type with at most `w`
     /// bits, for a bit-field wider than its type.
@@ -263,7 +271,7 @@ impl Target {
             }
             let s = match x.ty.class() {
                 Some(b) if x.base && !self.pod(u, b) => self.data_size(u, b)?,
-                _ => self.size_of(u, &x.ty)?,
+                _ => self.member_size(u, &x.ty)?.0,
             };
             end = end.max(offs[k] + s);
         }

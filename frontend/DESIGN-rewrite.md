@@ -546,7 +546,11 @@ bound, and `static_cast` use it, an `explicit` one only in direct
 initialization and contextual conversion to `bool`. A class can have
 member aliases, typedefs, nested classes, and enumerations, with their
 access; a private member type named in a function body outside the
-class is an error. The
+class is an error. A reference member holds a pointer to the object it
+refers to, takes a pointer's size in the layout, and deletes the implicit
+default constructor without an initializer and the implicit copy
+assignment; an rvalue reference member deletes the implicit copy
+constructor. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -564,7 +568,9 @@ resolution with several candidates, a conversion function to a class
 type in overload resolution or a constructor's argument, a conversion
 function in the operand of `?:` or with an operator function in play,
 a choice between conversion functions that ICS rules beyond rank
-decide, a call through a conversion function to a function pointer,
+decide, a call through a conversion function to a function pointer, a
+temporary bound to a reference member by a default member initializer
+or kept alive by an aggregate,
 and a private member type named outside a function body and outside
 its class are unsupported, so a unit that has one gives no verdict.
 

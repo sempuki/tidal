@@ -54,6 +54,12 @@ pub fn rvalue(cx: &mut Check, e: Expr) -> Expr {
             cx.error(e.span, "VOL-11", "a copy of a volatile object of a class");
             return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
         }
+        // CPY-7: an rvalue reference member deletes the implicit copy
+        // constructor.
+        if e.cat == Cat::L && crate::classes::copy_move::check::rvalue_ref_member(cx, c) {
+            cx.error(e.span, "CPY-23", format!("the copy constructor of '{}' is deleted, because the class has an rvalue reference member", cx.u.classes[c].name));
+            return Expr::new(crate::sem::tree::EK::Int(0), QType::error(), Cat::PR, e.span);
+        }
 
     }
     let t = e.ty.unqual();

@@ -498,6 +498,10 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
                     cx.error(cx.u.entities[f].span, "CTOR-3", format!("the constructor leaves the const member '{}' without a value", cx.u.entities[fields[k]].name));
                     return None;
                 }
+                if x.ty.is_ref() {
+                    cx.error(cx.u.entities[f].span, "CTOR-3", format!("the constructor leaves the reference member '{}' unbound", cx.u.entities[fields[k]].name));
+                    return None;
+                }
                 default_init(cx, &x.ty, cx.u.entities[f].span)?
             }
         });
@@ -520,6 +524,10 @@ pub fn direct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, span
         }
         cx.unsupported(span, "an aggregate from a member initializer of this form (build step 4)");
         return None;
+    }
+    // A reference member binds its one value (CTOR-17).
+    if ty.is_ref() && args.len() == 1 && !list {
+        return crate::classes::members::check::bind_member(cx, args[0].clone(), ty, span);
     }
     if ty.is_ref() || ty.is_array() {
         cx.unsupported(span, "a member initializer for a reference or an array (build step 4)");
@@ -656,6 +664,12 @@ fn implicit_default(cx: &mut Check, c: ClassId, span: Span) -> Option<Init> {
             Some(i) => i,
             // A union's member without an initializer stays inactive (UNI-4).
             None if union => Init::Default,
+            // CTOR-3: a reference member without an initializer deletes the
+            // default constructor.
+            None if x.ty.is_ref() => {
+                cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the reference member '{}' has no initializer", cx.u.entities[f].name));
+                return None;
+            }
             None => default_init(cx, &x.ty, span)?,
         });
     }

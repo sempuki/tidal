@@ -263,6 +263,32 @@ fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option
         }
         // BF-11: a braced initializer for a bit-field does not narrow.
         let narrow = if bits.is_some() { "BF-11" } else { "LIST-2" };
+        // A reference member binds its value; a temporary that the
+        // aggregate keeps alive (REF-4) and an omitted reference member
+        // wait for a later part.
+        if mty.is_ref() {
+            let Some(c) = its.get(*pos).and_then(|i| first_node(i)) else {
+                if let Some(i) = dmi {
+                    out.push(i);
+                    continue;
+                }
+                cx.unsupported(b_span(its), "an aggregate that leaves a reference member without a value");
+                return None;
+            };
+            if c.prod == "braced_init" {
+                cx.unsupported(c.span, "a braced value for a reference member");
+                return None;
+            }
+            let e = item_value(cx, its, cache, *pos)?;
+            *pos += 1;
+            let b = crate::declarations::initialization::references::check::bind(cx, e, &mty, "INIT-7")?;
+            if crate::classes::members::check::binds_temporary(&b) {
+                cx.unsupported(c.span, "a temporary that a reference member of an aggregate keeps alive");
+                return None;
+            }
+            out.push(Init::Ref(b));
+            continue;
+        }
         if *pos >= its.len() {
             if ty.is_array() && matches!(ty.t, Type::Array(_, None)) {
                 break;

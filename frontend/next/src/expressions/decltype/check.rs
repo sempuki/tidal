@@ -72,6 +72,24 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
         _ => None,
     };
     let unparenthesized_name = matches!(c.prod, "primary" | "id_expression") && !e.paren;
+    // DTY-1: an unparenthesized member access names the member's
+    // declared type, also a reference member's.
+    let field = |x: &Expr, i: usize| x.ty.class().and_then(|k| cx.u.field_types(k).get(i).cloned());
+    let member = match &e.k {
+        EK::Member(x, i) => field(x, *i),
+        EK::Deref(p) => match &p.k {
+            EK::Conv(crate::sem::tree::Conv::LToR, m) => match &m.k {
+                EK::Member(x, i) => field(x, *i).filter(|t| t.is_ref()),
+                _ => None,
+            },
+            _ => None,
+        },
+        _ => None,
+    };
+    let member_access = c.prod == "postfix_expr" && cx.words(c).iter().any(|w| matches!(*w, "." | "->")) && !e.paren;
+    if member_access {
+        return decltype_with(&e, member.or(declared));
+    }
     decltype_with(&e, if unparenthesized_name { declared } else { None })
 }
 
