@@ -474,7 +474,9 @@ fn has_matching_ne(cx: &Check, f: EntityId) -> bool {
         Some(x) => x.ents,
         None => crate::foundations::names::check::declared_here(cx, scope, "operator!="),
     };
-    ne.into_iter().any(|g| {
+    // DCMP-13: ordinary lookup, which does not find a friend that only a
+    // class declares (ACC-7).
+    ne.into_iter().filter(|g| !cx.u.hidden.contains(g)).any(|g| {
         cx.u.func(g).is_some_and(|h| h.ty.params == func.ty.params && (h.class.is_some() && !h.member_static) == (func.class.is_some() && !func.member_static))
     })
 }

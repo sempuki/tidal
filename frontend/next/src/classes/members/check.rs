@@ -170,7 +170,11 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         if ok {
             crate::classes::r#virtual::check::complete(cx, id, head.span);
             for b in bodies {
-                crate::declarations::functions::definitions::check::function_definition(cx, b);
+                if b.prod == "friend_decl" {
+                    crate::classes::access::check::definition(cx, b);
+                } else {
+                    crate::declarations::functions::definitions::check::function_definition(cx, b);
+                }
             }
             for (f, b) in ctor_bodies {
                 crate::classes::constructors::check::define(cx, f, b);
@@ -480,6 +484,13 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
         "static_assert_decl" => {
             crate::declarations::static_assert::check::static_assert_decl(cx, first);
             true
+        }
+        "friend_decl" => {
+            let ok = crate::classes::access::check::friend_decl(cx, id, first);
+            if ok && first.child("function_definition").is_some() {
+                bodies.push(first);
+            }
+            ok
         }
         // An alias member (TYN rules), with its access.
         "alias_decl" => {
@@ -883,6 +894,10 @@ pub fn accessible(cx: &Check, f: EntityId) -> bool {
     }
     let home = cx.u.entities[f].scope;
     let inside = cx.func.as_ref().and_then(|x| x.id).and_then(|id| cx.u.func(id)).and_then(|x| x.class).is_some_and(|c| cx.u.classes[c].scope == home);
+    // ACC-5: a friend of the class.
+    if cx.u.class_of_scope(home).is_some_and(|c| crate::classes::access::check::befriended(cx, c)) {
+        return true;
+    }
     // A declaration in the class, or in a class nested in it (ACC-19).
     let mut s = Some(cx.scope);
     while let Some(x) = s {

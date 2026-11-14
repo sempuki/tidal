@@ -28,7 +28,7 @@ fn in_scope(cx: &Check, s: ScopeId, name: &str, seen: &mut Vec<ScopeId>) -> Vec<
         return Vec::new();
     }
     seen.push(s);
-    let mut out: Vec<EntityId> = cx.u.scopes[s].names.get(name).cloned().unwrap_or_default();
+    let mut out: Vec<EntityId> = visible(cx, s, name);
     for &u in &cx.u.scopes[s].using.clone() {
         for e in in_scope(cx, u, name, seen) {
             if !out.contains(&e) {
@@ -75,10 +75,10 @@ pub fn lookup(cx: &Check, name: &str) -> Vec<EntityId> {
             nominated.push((n, common(cx, sc, n)));
             work.extend(cx.u.scopes[n].using.iter().copied());
         }
-        let mut found: Vec<EntityId> = cx.u.scopes[sc].names.get(name).cloned().unwrap_or_default();
+        let mut found: Vec<EntityId> = visible(cx, sc, name);
         for &(n, at) in &nominated {
             if at == sc {
-                for e in cx.u.scopes[n].names.get(name).cloned().unwrap_or_default() {
+                for e in visible(cx, n, name) {
                     if !found.contains(&e) {
                         found.push(e);
                     }
@@ -131,7 +131,7 @@ pub fn lookup_in(cx: &Check, s: ScopeId, name: &str) -> Vec<EntityId> {
     let mut found: Vec<EntityId> = Vec::new();
     let mut work = vec![s];
     while let Some(x) = work.pop() {
-        for &e in cx.u.scopes[x].names.get(name).map(|v| v.as_slice()).unwrap_or(&[]) {
+        for e in visible(cx, x, name) {
             if !found.contains(&e) {
                 found.push(e);
             }
@@ -350,6 +350,17 @@ pub fn declare_unsupported(cx: &mut Check, name: &str, span: Span) {
 
 /// The entities of one name in one scope only (no using-directives),
 /// for redeclarations.
+/// The entities of a name in a scope that ordinary and qualified lookup
+/// find: a friend function first declared in a class is not one of them
+/// (ACC-7).
+fn visible(cx: &Check, scope: ScopeId, name: &str) -> Vec<EntityId> {
+    let all = cx.u.scopes[scope].names.get(name).cloned().unwrap_or_default();
+    if cx.u.hidden.is_empty() {
+        return all;
+    }
+    all.into_iter().filter(|e| !cx.u.hidden.contains(e)).collect()
+}
+
 pub fn declared_here(cx: &Check, scope: ScopeId, name: &str) -> Vec<EntityId> {
     cx.u.scopes[scope].names.get(name).cloned().unwrap_or_default()
 }
@@ -422,10 +433,39 @@ pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QTy
         }
         k += 1;
     }
+    // A friend function that only a class declares is found through that
+    // class as an associated class (ACC-7, NAM-30): the class of an
+    // argument, its bases, and the class that a nested class or an
+    // enumeration is a member of (NAM-27).
+    fn classes_of(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<crate::sem::types::ClassId>) {
+        use crate::sem::types::Type;
+        let enclosing = |s: ScopeId, out: &mut Vec<crate::sem::types::ClassId>| {
+            if let Some(k) = cx.u.scopes[s].parent.and_then(|p| cx.u.class_of_scope(p)) {
+                out.push(k);
+            }
+        };
+        match &t.t {
+            Type::Class(c) => {
+                out.push(*c);
+                enclosing(cx.u.classes[*c].scope, out);
+                for (_, b) in cx.u.bases(*c) {
+                    classes_of(cx, &crate::sem::types::QType::new(Type::Class(b)), out);
+                }
+            }
+            Type::Enum(e) => enclosing(cx.u.enums[*e].scope, out),
+            Type::Ptr(x) | Type::Ref(x, _) | Type::Array(x, _) => classes_of(cx, x, out),
+            _ => {}
+        }
+    }
+    let mut classes = Vec::new();
+    for a in args {
+        classes_of(cx, a, &mut classes);
+    }
+    let befriends = |e: EntityId| classes.iter().any(|c| cx.u.friends.get(c).is_some_and(|fs| fs.contains(&e)));
     let mut out: Vec<EntityId> = Vec::new();
     for ns in spaces {
         for &e in cx.u.scopes[ns].names.get(name).map(|v| v.as_slice()).unwrap_or(&[]) {
-            if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && !out.contains(&e) {
+            if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && !out.contains(&e) && (!cx.u.hidden.contains(&e) || befriends(e)) {
                 out.push(e);
             }
         }

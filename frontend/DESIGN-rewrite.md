@@ -550,7 +550,10 @@ class is an error. A reference member holds a pointer to the object it
 refers to, takes a pointer's size in the layout, and deletes the implicit
 default constructor without an initializer and the implicit copy
 assignment; an rvalue reference member deletes the implicit copy
-constructor. The
+constructor. A friend function or class has a member's access; a friend
+function that a class first declares, or defines, belongs to the
+enclosing namespace, and only argument-dependent lookup through the
+class finds it until the namespace declares it. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -568,7 +571,10 @@ resolution with several candidates, a conversion function to a class
 type in overload resolution or a constructor's argument, a conversion
 function in the operand of `?:` or with an operator function in play,
 a choice between conversion functions that ICS rules beyond rank
-decide, a call through a conversion function to a function pointer, a
+decide, a friend member function of another class, a qualified friend, a
+friend that names a type, a friend function defined in a nested or
+local class, a call through a conversion function to a function
+pointer, a
 temporary bound to a reference member by a default member initializer
 or kept alive by an aggregate,
 and a private member type named outside a function body and outside

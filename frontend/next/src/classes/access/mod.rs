@@ -1,7 +1,8 @@
 //! `classes/access`: the page's module (`frontend/DESIGN-rewrite.md`, section 3).
-//! Build step 2 holds its Syntax segment in `syntax.rs`; the check and
-//! run parts come with later steps.
+//! Build step 2 holds its Syntax segment in `syntax.rs`; build step 4 adds
+//! its check part.
 
+pub mod check;
 pub mod syntax;
 
 #[cfg(test)]

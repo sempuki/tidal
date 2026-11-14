@@ -216,6 +216,11 @@ pub fn find(cx: &mut Check, n: &Node) -> Option<(Vec<EntityId>, &'static str, St
             }
             let f = names::lookup_in(cx, s, name);
             if f.is_empty() {
+                // ACC-17: a friend function that only a class declares.
+                if names::declared_here(cx, s, name).iter().any(|e| cx.u.hidden.contains(e)) {
+                    cx.error(span, "ACC-17", format!("'{}' is a friend function that its namespace does not declare", name));
+                    return Some((Vec::new(), "", name.to_string(), span));
+                }
                 cx.not_found(span, "NAM-14", name);
                 return Some((Vec::new(), "", name.to_string(), span));
             }

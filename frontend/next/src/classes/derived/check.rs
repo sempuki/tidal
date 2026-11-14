@@ -304,8 +304,18 @@ pub fn accessible_through(cx: &Check, member: EntityId, naming: ClassId) -> bool
     let Some(owner) = cx.u.class_of_scope(cx.u.entities[member].scope) else { return true };
     let path = paths(cx, naming, owner).into_iter().next().unwrap_or_default();
     let x = here(cx);
-    if x == Some(owner) {
+    // ACC-5: a friend of the class that declares the member.
+    if x == Some(owner) || crate::classes::access::check::befriended(cx, owner) {
         return true;
+    }
+    // A declaration in the class, or in a class nested in it (ACC-10).
+    let home = cx.u.classes[owner].scope;
+    let mut s = Some(cx.scope);
+    while let Some(k) = s {
+        if k == home {
+            return true;
+        }
+        s = cx.u.scopes[k].parent;
     }
     match access_as_member(cx, naming, &path, access) {
         Some(Access::Public) => true,

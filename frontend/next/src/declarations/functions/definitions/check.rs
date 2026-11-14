@@ -47,7 +47,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     let scope = match d.qual {
         // A member of an inline namespace of the named one (NS-15).
         names::Qual::Scope(sc) => crate::declarations::namespaces::check::member_home(cx, sc, &name, |k| matches!(k, EntKind::Func(_))).unwrap_or(sc),
-        names::Qual::None => cx.scope,
+        names::Qual::None => cx.friend_scope.unwrap_or(cx.scope),
         _ => return None,
     };
     let local = cx.in_function();
@@ -67,6 +67,12 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     }
     if let names::Qual::Scope(_) = d.qual {
         crate::declarations::namespaces::check::qualified_place(cx, scope, span, &name);
+        // ACC-17: a qualified name does not find a friend function that
+        // only a class declares.
+        if names::declared_here(cx, scope, &name).iter().any(|e| cx.u.hidden.contains(e)) {
+            cx.error(span, "ACC-17", format!("'{}' is a friend function that its namespace does not declare", name));
+            return None;
+        }
     }
     let Some(fty) = d.ty.func().cloned() else { return None };
     let deduce = d.placeholder.is_some();
@@ -202,9 +208,17 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         }
         Some(e) => {
             let old_defaults = cx.u.func(e).unwrap().defaults.clone();
+            // DEFARG-11: a friend with default arguments is declared only
+            // in its class.
+            if !cx.friend_decl && old_defaults.iter().any(|x| x.is_some()) && cx.u.friends.values().any(|fs| fs.contains(&e)) {
+                cx.error(span, "DEFARG-11", format!("a second declaration of the friend function '{}', which has default arguments", name));
+                return None;
+            }
+            // A friend defined in its class repeats its own declaration.
+            let again = cx.friend_decl && cx.u.hidden.contains(&e);
             for (k, dflt) in defaults.into_iter().enumerate() {
                 if let Some(x) = dflt {
-                    if old_defaults.get(k).is_some_and(|o| o.is_some()) {
+                    if old_defaults.get(k).is_some_and(|o| o.is_some()) && !again {
                         cx.error(span, "DEFARG-9", "a default argument is given again for the same parameter");
                         break;
                     }
@@ -277,6 +291,11 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     }
     if s.attrs.noreturn && earlier.is_some() && !cx.u.func(id).unwrap().noreturn {
         cx.error(span, "ATTR-2", "'noreturn' on a later declaration of a function first declared without it");
+    }
+    // ACC-7: a declaration in the namespace makes a friend function that
+    // a class first declared visible to lookup.
+    if !cx.friend_decl && cx.u.scopes[scope].kind == ScopeKind::Namespace {
+        cx.u.hidden.remove(&id);
     }
     Some(id)
 }
@@ -410,7 +429,8 @@ pub fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
 /// sees the parameters (CTOR-5).
 pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_init: Option<&Node>) {
     let saved_scope = cx.scope;
-    let decl_scope = cx.u.entities[id].scope;
+    // A friend defined in its class looks names up in the class (ACC-7).
+    let decl_scope = if cx.friend_scope.is_some() { cx.scope } else { cx.u.entities[id].scope };
     cx.scope = decl_scope;
     let fs = cx.enter(ScopeKind::Function);
     let fty = cx.u.func(id).unwrap().ty.clone();

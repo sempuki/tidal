@@ -280,6 +280,12 @@ pub struct Unit {
     pub virt: HashMap<EntityId, Virt>,
     /// The abstract classes (VIRT-8).
     pub abstract_classes: std::collections::HashSet<types::ClassId>,
+    /// The friend functions and friend classes of each class (ACC-5).
+    pub friends: HashMap<types::ClassId, Vec<EntityId>>,
+    pub friend_classes: HashMap<types::ClassId, Vec<types::ClassId>>,
+    /// Friend functions first declared in a class, which ordinary and
+    /// qualified lookup do not find (ACC-7, ACC-17).
+    pub hidden: std::collections::HashSet<EntityId>,
 }
 
 /// A virtual function: pure, final, and the functions of the bases that
@@ -313,6 +319,9 @@ impl Default for Unit {
             closures: HashMap::new(),
             virt: HashMap::new(),
             abstract_classes: Default::default(),
+            friends: Default::default(),
+            friend_classes: Default::default(),
+            hidden: Default::default(),
         }
     }
 }

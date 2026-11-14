@@ -1305,3 +1305,22 @@ fn reference_members() {
     // DTY-1: an unparenthesized member access names the declared type.
     assert_eq!(rule("struct P { int first; decltype(static_cast<P*>(nullptr)->first) second; }; static_assert(sizeof(P) == 2 * sizeof(int));"), None);
 }
+
+#[test]
+fn friends() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A friend function and a friend class read private members.
+    assert_eq!(run("class C { int s = 4; friend int reveal(const C&); }; int reveal(const C& c) { return c.s; } int main() { return reveal(C{}); }"), RunOutcome::Result(4));
+    assert_eq!(run("class C { int s = 6; friend class I; }; class I { public: int look(const C& c) const { return c.s; } }; int main() { return I{}.look(C{}); }"), RunOutcome::Result(6));
+    // A friend defined in its class: argument-dependent lookup finds it,
+    // and its body sees the class's members.
+    assert_eq!(run("struct C { static const int k = 5; int v = 2; friend int get(C c) { return k + c.v; } }; int main() { return get(C{}); }"), RunOutcome::Result(7));
+    assert_eq!(rule("class C { int s = 6; }; int f(const C& c) { return c.s; }"), Some("ACC-2"));
+    assert_eq!(rule("namespace n { class C { friend int g(C) { return 1; } }; } int h() { return n::g(n::C{}); }"), Some("ACC-17"));
+    assert_eq!(rule("namespace n { struct S {}; struct H { friend int probe(S) { return 1; } }; } int r() { return probe(n::S{}); }"), Some("NAM-8"));
+    assert_eq!(rule("struct K { friend void open(K, int = 1); };"), Some("DEFARG-11"));
+}
