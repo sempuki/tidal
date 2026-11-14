@@ -1236,3 +1236,31 @@ fn bit_fields() {
     // A bit-field source counts by its width for narrowing.
     assert_eq!(rule("struct B { int x : 4; }; void f(B b) { char c{b.x}; (void)c; }"), None);
 }
+
+#[test]
+fn conversion_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // An initialization, an argument, a built-in operator, a definition
+    // outside the class, and a base's conversion function.
+    assert_eq!(run("struct S { int v; operator int() const { return v; } }; int f(int x) { return x; } int main() { S s{5}; int a = s; return f(s) + a + (s + 1); }"), RunOutcome::Result(16));
+    assert_eq!(run("struct S { operator int() const; }; S::operator int() const { return 4; } struct B { operator int() const { return 7; } }; struct D : B {}; int main() { S s; D d; return s * 10 + d; }"), RunOutcome::Result(47));
+    // An explicit one: a condition and a static_cast, not a copy.
+    assert_eq!(run("struct S { explicit operator bool() const { return true; } explicit operator int() const { return 3; } }; int main() { S s; if (s) return static_cast<int>(s); return 0; }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct S { explicit operator bool() const; }; void g() { S s; bool b = s; }"), Some("CVF-11"));
+    // A switch picks the function by the object's cv-qualifiers.
+    assert_eq!(run("struct S { operator int() const { return 1; } operator int() { return 2; } }; int pick(const S s) { switch (s) { case 1: return 5; default: return 9; } } int main() { return pick(S{}); }"), RunOutcome::Result(5));
+    assert_eq!(rule("struct S { operator int(); }; const S s{}; int x = s;"), Some("INIT-7"));
+    assert_eq!(rule("struct S { operator int() const; operator long() const; }; double d = S{};"), Some("CVF-12"));
+    assert_eq!(rule("struct S { int operator int(); };"), Some("CVF-7"));
+    assert_eq!(rule("struct S { operator int(int); };"), Some("CVF-7"));
+    assert_eq!(rule("struct S { static operator int(); };"), Some("CVF-7"));
+    let warned = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options { werror: true, ..Default::default() }).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(warned("struct S { operator S() const; };"), Some("CVF-6"));
+}

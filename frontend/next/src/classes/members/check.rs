@@ -200,6 +200,29 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 }
                 ok
             }
+            // A conversion function (CVF-1).
+            Some(dn) if dn.find("conversion_function_id").is_some() && m.children("member_declarator").count() == 1 => {
+                if first.kids.iter().skip(1).any(|k| !matches!(k, Kid::Node(x) if matches!(x.prod, "pure_specifier" | "virt_specifiers"))) {
+                    cx.unsupported(first.span, "a pure, defaulted, or deleted member function (build step 4)");
+                    return false;
+                }
+                let specs = crate::declarations::check::Specs::default();
+                let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+                if d.unsupported || !d.ty.is_func() {
+                    return !d.unsupported;
+                }
+                if !modeled_function(cx, id, dn, &d) {
+                    return false;
+                }
+                if !valid_function(cx, id, &specs, &d) {
+                    return true;
+                }
+                if let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None) {
+                    cx.u.access.insert(f, *access);
+                    crate::classes::r#virtual::check::member_function(cx, id, f, false, first, first.child("pure_specifier"), dn.span);
+                }
+                true
+            }
             _ => {
                 cx.unsupported(m.span, "a member declaration of this form (build step 4)");
                 false
@@ -243,11 +266,15 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
                 return false;
             }
-            let Some(ds) = first.child("decl_specifiers") else {
-                cx.unsupported(first.span, "a constructor, destructor, or conversion function (build step 4)");
-                return false;
+            let specs = match first.child("decl_specifiers") {
+                Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, Default::default()),
+                // A conversion function (CVF-1).
+                None if first.child("declarator").is_some_and(|d| d.find("conversion_function_id").is_some()) => Default::default(),
+                None => {
+                    cx.unsupported(first.span, "a constructor, destructor, or conversion function (build step 4)");
+                    return false;
+                }
             };
-            let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
             if specs.unsupported {
                 return false;
             }
@@ -450,10 +477,15 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
         cx.error(span, "CLS-27", "a static member function with cv-qualifiers");
         return false;
     }
+    let conversion = name.starts_with("operator ");
+    if conversion && !crate::classes::conversion_functions::check::declaration(cx, specs, &d.ty, true, span) {
+        return false;
+    }
     let fty = d.ty.func().cloned();
     let twice = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref() && f.obj_cv == d.obj_cv));
     if twice {
-        cx.error(span, "CLS-9", format!("the member function '{}' is declared twice in its class", name));
+        let rule = if conversion { "CVF-7" } else { "CLS-9" };
+        cx.error(span, rule, format!("the member function '{}' is declared twice in its class", name));
         return false;
     }
     true

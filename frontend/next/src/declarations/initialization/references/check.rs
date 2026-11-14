@@ -20,6 +20,27 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     }
     let e = deref_ref(e);
     let span = e.span;
+    // CVF-2: a class object converts by a conversion function, and the
+    // reference binds the result.
+    if crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && !matches!((e.ty.class(), inner.class()), (Some(d), Some(b)) if d == b || crate::classes::derived::check::is_base(cx, d, b)) {
+        if inner.is_func() || inner.is_class() {
+            cx.unsupported(span, "a reference to a function or a class bound by a conversion function");
+            return None;
+        }
+        match crate::classes::conversion_functions::check::convert(cx, &e, rt, false) {
+            Some(Ok(x)) if x.ty.is_error() => return None,
+            Some(Ok(x)) => return bind(cx, x, rt, rule),
+            Some(Err(m)) if m.contains("(CVF-11)") => {
+                cx.unsupported(span, "a reference bound by an explicit conversion function");
+                return None;
+            }
+            Some(Err(m)) => {
+                cx.error_cause(span, crate::foundations::conversions::check::rule_of(&m).unwrap_or(rule), None, m);
+                return None;
+            }
+            None => {}
+        }
+    }
     // BF-4: a reference binds no bit-field. A const reference that is not
     // volatile binds a temporary that holds a copy of its value (REF-2).
     let e = if crate::classes::unions::check::width_of(&cx.u, &e).is_some() && e.cat != Cat::PR {
@@ -221,6 +242,12 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
         let c = first_node(its[0])?;
         let e = expr(cx, c);
         let inner = ty.nonref();
+        // REF-14: a braced class object that converts by a conversion
+        // function makes a temporary, which the front end does not model.
+        if crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && e.ty.nonref().class() != inner.class() {
+            cx.unsupported(init.span, "a braced class object for a reference, which converts by a conversion function");
+            return None;
+        }
         if crate::expressions::primary::check::unresolved_set(&e) {
             return bind(cx, e, ty, "INIT-7").map(Init::Ref);
         }

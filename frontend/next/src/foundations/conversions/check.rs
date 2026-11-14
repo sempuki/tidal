@@ -198,6 +198,21 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
             return r;
         }
     }
+    // CVF-2: a class object converts by a conversion function, followed
+    // by a standard conversion.
+    if e.ty.nonref().is_class() && e.ty.nonref().unqual().t != to.unqual().t {
+        if let Some(r) = crate::classes::conversion_functions::check::convert(cx, &e, to, direct) {
+            let x = r?;
+            if x.ty.is_error() {
+                return Ok(x);
+            }
+            if to.is_class() && x.ty.nonref().unqual().t != to.unqual().t {
+                let t = cx.unsupported(x.span, "a conversion function to a class derived from the target");
+                return Ok(Expr::new(EK::Int(0), t, Cat::PR, x.span));
+            }
+            return implicit(cx, x, to, direct);
+        }
+    }
     let e = rvalue(cx, e);
     let target = to.unqual();
     if e.ty.t == target.t {
@@ -269,6 +284,12 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
 /// The rule that names a failed implicit conversion's reason, when the
 /// reason is one of this page's rules.
 pub fn rule_of(msg: &str) -> Option<&'static str> {
+    if msg.contains("(CVF-12)") {
+        return Some("CVF-12");
+    }
+    if msg.contains("(CVF-11)") {
+        return Some("CVF-11");
+    }
     msg.contains("(CV-10, CONV-9)").then_some("CV-10")
 }
 
@@ -276,7 +297,7 @@ pub fn rule_of(msg: &str) -> Option<&'static str> {
 /// cause, beside the rule of the context or of `rule_of`: the last rule
 /// in parentheses.
 pub fn cause_of(msg: &str) -> Option<&'static str> {
-    const CAUSES: [&str; 10] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25", "DER-10"];
+    const CAUSES: [&str; 12] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25", "DER-10", "CVF-12", "CVF-11"];
     CAUSES.iter().copied().filter(|r| msg.contains(&format!("{})", r))).max_by_key(|r| msg.rfind(&format!("{})", r)))
 }
 

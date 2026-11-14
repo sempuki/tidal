@@ -73,6 +73,16 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
             return x;
         }
     }
+    // CVF-2: a class operand of `+`, `-`, `~`, `*`, or `[]` converts by
+    // its conversion function; `!` converts to bool in its own check.
+    let e = if matches!(op, "+" | "-" | "~" | "*" | "++" | "--") {
+        match crate::classes::conversion_functions::check::builtin_operand(cx, e) {
+            Some(x) => x,
+            None => return bad(span),
+        }
+    } else {
+        e
+    };
     match op {
         "&" if crate::classes::unions::check::width_of(&cx.u, &e).is_some() => {
             let rule = match &e.k {

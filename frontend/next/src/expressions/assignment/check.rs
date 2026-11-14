@@ -140,6 +140,9 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
 /// the result converts back to the type of `E1`.
 fn compound(cx: &mut Check, op: &str, l: Expr, r: Expr, span: Span) -> Expr {
     let bop = BOp::from_str(op.trim_end_matches('=')).unwrap_or(BOp::Add);
+    // CVF-2: a class operand converts by its conversion function.
+    let Some(r) = crate::classes::conversion_functions::check::builtin_operand(cx, r) else { return bad(span) };
+    let Some(l) = crate::classes::conversion_functions::check::builtin_operand(cx, l) else { return bad(span) };
     let r = rvalue(cx, r);
     let lt = l.ty.clone();
     if lt.is_ptr() && matches!(bop, BOp::Add | BOp::Sub) {

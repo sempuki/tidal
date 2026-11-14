@@ -42,6 +42,8 @@ pub fn mul_expr(cx: &mut Check, n: &Node) -> Expr {
     if let Some(e) = crate::classes::operators::check::binary(cx, cx.first_word(n), &l, &r, n.span) {
         return e;
     }
+    // CVF-2: a class operand converts by its conversion function.
+    let Some((l, r)) = crate::classes::conversion_functions::check::builtin_operands(cx, l, r) else { return bad(n.span) };
     crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
     operate(cx, op, l, r, n.span)
 }

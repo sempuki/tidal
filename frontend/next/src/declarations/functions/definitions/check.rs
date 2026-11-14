@@ -246,7 +246,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 unsupported: if deduce { Some("a deduced return type that no definition gave".into()) } else { None },
                 class: cx.member_of,
                 special: crate::sem::Special::None,
-                explicit: false,
+                explicit: s.explicit,
                 member_static: cx.member_of.is_some() && s.is_static,
                 obj_cv: d.obj_cv,
             };
@@ -353,6 +353,8 @@ pub fn function_definition(cx: &mut Check, n: &Node) {
     let (attrs, _) = crate::declarations::check::leading_attrs(cx, n);
     let specs = match n.child("decl_specifiers") {
         Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, attrs),
+        // A conversion function (CVF-1).
+        None if n.child("declarator").is_some_and(|d| d.find("conversion_function_id").is_some()) => crate::declarations::check::Specs { attrs, ..Default::default() },
         None => {
             cx.unsupported(n.span, "a function definition with no decl-specifiers (a constructor or conversion function)");
             return;

@@ -56,6 +56,8 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
             if let Some(x) = crate::classes::operators::check::unary(cx, toks[0], &e, true, n.span) {
                 return x;
             }
+            // CVF-2: a class operand converts by its conversion function.
+            let Some(e) = crate::classes::conversion_functions::check::builtin_operand(cx, e) else { return bad(n.span) };
             crate::expressions::unary::check::inc_dec(cx, e, false, toks[0] == "++", n.span, "PFX-13")
         }
         Some("." | "->") => {

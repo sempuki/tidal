@@ -539,7 +539,11 @@ stops at an access to a member that is not active. A bit-field has its
 width in the layout, as the matrix's ABI places it, and a store wraps
 to the width; a narrow bit-field promotes to `int`, narrowing counts a
 bit-field source by its width, and no address or non-const reference
-reaches it. The
+reaches it. A conversion function is a member function named by its
+target type; an implicit conversion, an argument in overload
+resolution, an operand of a built-in operator, a condition, an array
+bound, and `static_cast` use it, an `explicit` one only in direct
+initialization and contextual conversion to `bool`. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -552,8 +556,12 @@ member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
-operand, and a user-defined conversion in overload resolution with
-several candidates are unsupported, so a unit that has one gives no
+operand, a user-defined conversion by a constructor in overload
+resolution with several candidates, a conversion function to a class
+type in overload resolution or a constructor's argument, a conversion
+function in the operand of `?:` or with an operator function in play,
+and a choice between conversion functions that ICS rules beyond rank
+decide are unsupported, so a unit that has one gives no
 verdict.
 
 Model sections 1, 2, and 5 come first because section 2 needs the marks

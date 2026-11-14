@@ -25,9 +25,19 @@ pub fn switch_stmt(cx: &mut Check, n: &Node) -> Stmt {
         let e = match c {
             Cond::Expr(e) | Cond::Decl(_, _, e) => e,
         };
+        // CVF-8: a class object converts to an integral or enumeration
+        // type by its one conversion function to such a type.
+        if crate::classes::conversion_functions::check::converting_class(cx, e).is_some() {
+            match crate::classes::conversion_functions::check::builtin_operand(cx, e.clone()) {
+                Some(x) => *e = crate::foundations::values::check::rvalue(cx, x),
+                None => e.ty = QType::error(),
+            }
+        }
         let ok = e.ty.is_integral() || e.ty.is_enum();
         if !ok {
-            cx.error(e.span, "SW-2", format!("the condition of a switch has type {}", e.ty.show()));
+            if !e.ty.is_error() {
+                cx.error(e.span, "SW-2", format!("the condition of a switch has type {}", e.ty.show()));
+            }
             cond = None;
         } else {
             let p = conv::promoted(cx, &e.ty);

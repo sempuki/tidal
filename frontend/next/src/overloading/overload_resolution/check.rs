@@ -90,7 +90,7 @@ pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, na
 pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
     let func = cx.u.func(f)?;
     let Some(c) = func.class.filter(|_| !func.member_static) else {
-        return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false });
+        return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
     };
     let param = QType::lref(QType::new(crate::sem::types::Type::Class(c)).with_cv(func.obj_cv.0, func.obj_cv.1));
     let mut o = object.clone();
@@ -100,6 +100,17 @@ pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
 
 /// Overload resolution with the object of a member call, if any.
 pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
+    // A conversion function to a class, which can initialize a class
+    // parameter, waits for a later piece (ICS-4).
+    let to_class = args.iter().any(|a| {
+        crate::classes::conversion_functions::check::converting_class(cx, a).is_some_and(|c| {
+            crate::classes::conversion_functions::check::functions(&cx.u, c).iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.ret.nonref().is_class()))
+        })
+    });
+    if to_class && cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| f.ty.params.iter().any(|p| p.nonref().is_class())) {
+        cx.unsupported(span, "a conversion function to a class in overload resolution (build step 4)");
+        return None;
+    }
     // A conversion by a converting constructor is a user-defined
     // conversion sequence, which a later piece models (ICS-4).
     if cands.len() > 1 {
@@ -157,7 +168,7 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                     ok = false;
                     break;
                 }
-                seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true });
+                seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None });
                 continue;
             }
             match sequence(cx, a, &ty.params[k]) {

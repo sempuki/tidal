@@ -30,6 +30,9 @@ pub struct Ics {
     pub binds: Option<(bool, bool, QType)>,
     /// The argument matches an ellipsis (ICS-6).
     pub ellipsis: bool,
+    /// A user-defined sequence by a conversion function, with the rank of
+    /// the standard sequence after it (ICS-4, ICS-8).
+    pub user: Option<(crate::sem::EntityId, Rank)>,
 }
 
 /// ICS-2: the rank of the conversion from a prvalue type to a target.
@@ -112,10 +115,10 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
             _ => None,
         }?;
         let set = crate::expressions::primary::check::overload_set(cx, inner);
-        return set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).then(|| Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false });
+        return set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).then(|| Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
     }
     if arg.ty.is_error() || param.is_error() {
-        return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false });
+        return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
     }
     let null = conv::is_null_constant(arg);
     if let Type::Ref(inner, rv) = &param.t {
@@ -132,7 +135,7 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
             let cv_ok = (!at.c || inner.c) && (!at.v || inner.v);
             let binds_ok = (lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)));
             if cv_ok && binds_ok && crate::classes::derived::check::paths(cx, at.class().unwrap(), inner.class().unwrap()).len() == 1 {
-                return Some(Ics { rank: Rank::Conversion, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false });
+                return Some(Ics { rank: Rank::Conversion, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None });
             }
             return None;
         }
@@ -140,10 +143,10 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         let compatible = same && (!at.c || inner.c) && (!at.v || inner.v);
         if compatible && ((lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)))) {
             // ICS-11: a direct binding is the identity.
-            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false });
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None });
         }
         if at.is_func() && inner.t == at.t {
-            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, false, (**inner).clone())), ellipsis: false });
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, false, (**inner).clone())), ellipsis: false, user: None });
         }
         // REF-2, REF-3: a temporary, for a const lvalue reference or an
         // rvalue reference, from a value of another type.
@@ -152,25 +155,34 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         if at.is_class() && at.unqual().t == inner.unqual().t {
             return None;
         }
+        // ICS-4: a class object converts by a conversion function to a
+        // temporary that the reference binds.
+        if at.is_class() && !inner.is_class() {
+            return if *rv || (inner.c && !inner.v) { crate::classes::conversion_functions::check::user_sequence(cx, arg, &inner.unqual()) } else { None };
+        }
         if (*rv || (inner.c && !inner.v)) && !(compatible && lvalue && *rv) {
             let from = crate::declarations::auto::check::decay(&at);
             let (rank, qual) = rank_of(cx, &from, inner, null)?;
             // ICS-11: the sequence of the temporary, whose qualification
             // conversion loses to a direct binding's identity.
-            return Some(Ics { rank, qual, binds: Some((*rv, true, (**inner).clone())), ellipsis: false });
+            return Some(Ics { rank, qual, binds: Some((*rv, true, (**inner).clone())), ellipsis: false, user: None });
         }
         return None;
+    }
+    // ICS-4: a class object converts by a conversion function.
+    if arg.ty.nonref().is_class() && !param.is_class() {
+        return crate::classes::conversion_functions::check::user_sequence(cx, arg, param);
     }
     let from = crate::declarations::auto::check::decay(&arg.ty);
     // ICS-2: an object of a derived class initializes a base parameter
     // with the rank of a conversion.
     if let (Some(d), Some(b)) = (from.class(), param.class()) {
         if crate::classes::derived::check::is_base(cx, d, b) {
-            return (crate::classes::derived::check::paths(cx, d, b).len() == 1).then_some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: false });
+            return (crate::classes::derived::check::paths(cx, d, b).len() == 1).then_some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: false, user: None });
         }
     }
     let (rank, qual) = rank_of(cx, &from, param, null)?;
-    Some(Ics { rank, qual, binds: None, ellipsis: false })
+    Some(Ics { rank, qual, binds: None, ellipsis: false, user: None })
 }
 
 /// ICS-21 to ICS-30: whether `a` is better than `b`.
@@ -180,6 +192,14 @@ pub fn better(a: &Ics, b: &Ics) -> bool {
     }
     if a.rank != b.rank {
         return a.rank < b.rank;
+    }
+    // ICS-8: two sequences by one conversion function compare by the
+    // sequence after it; by two functions, neither is better.
+    if a.rank == Rank::User {
+        return match (a.user, b.user) {
+            (Some((f, x)), Some((g, y))) => f == g && x < y,
+            _ => false,
+        };
     }
     if a.qual != b.qual {
         return !a.qual;

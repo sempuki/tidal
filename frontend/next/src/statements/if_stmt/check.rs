@@ -64,6 +64,11 @@ pub fn condition(cx: &mut Check, n: &Node, rule: &'static str, as_bool: bool) ->
         let (name, span) = d.name.clone()?;
         let mut e = crate::sem::tree::Expr::new(crate::sem::tree::EK::Var(id), ty.nonref(), crate::sem::tree::Cat::L, span);
         let _ = name;
+        // CVF-8: a switch condition of class type converts by its
+        // conversion function, chosen by the object's cv-qualifiers.
+        if !as_bool {
+            e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
+        }
         e = if as_bool { conv::contextual_bool(cx, e, rule) } else { crate::foundations::values::check::rvalue(cx, e) };
         if e.ty.is_error() {
             return None;
@@ -74,6 +79,7 @@ pub fn condition(cx: &mut Check, n: &Node, rule: &'static str, as_bool: bool) ->
     if e.ty.is_error() {
         return None;
     }
+    let e = if as_bool { e } else { crate::classes::conversion_functions::check::builtin_operand(cx, e)? };
     let e = if as_bool { conv::contextual_bool(cx, e, rule) } else { crate::foundations::values::check::rvalue(cx, e) };
     if e.ty.is_error() {
         return None;

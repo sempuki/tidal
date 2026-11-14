@@ -24,6 +24,13 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
     if c.ty.is_error() || a.ty.is_error() || b.ty.is_error() {
         return bad(span);
     }
+    // COND-4: an operand converts to the other's type by a conversion
+    // function, which the front end does not weigh yet.
+    let converts = |cx: &Check, x: &Expr| crate::classes::conversion_functions::check::converting_class(cx, x).is_some();
+    if (converts(cx, &a) || converts(cx, &b)) && a.ty != b.ty {
+        let t = cx.unsupported(span, "a conditional operator whose class operand converts by a conversion function");
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    }
     let mk = |c: Expr, a: Expr, b: Expr, t: QType, cat: Cat| Expr::new(EK::Cond(Box::new(c), Box::new(a), Box::new(b)), t, cat, span);
     // COND-2: two glvalues of the same type and category give that.
     if a.cat == b.cat && a.cat != Cat::PR && a.ty == b.ty {

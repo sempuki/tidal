@@ -207,6 +207,8 @@ pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
         }
         return e;
     }
+    // CVF-2: a class operand converts by its conversion function.
+    let Some((l, r)) = crate::classes::conversion_functions::check::builtin_operands(cx, l, r) else { return bad(n.span) };
     crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
     operate(cx, op, l, r, n.span)
 }

@@ -233,7 +233,7 @@ fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
     let ok = crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| {
         cx.u.func(f).is_some_and(|x| !x.explicit && !x.deleted && x.ty.params.len() == 1 && sequence(cx, a, &x.ty.params[0]).is_some())
     });
-    ok.then(|| Ics { rank: crate::overloading::conversion_sequences::check::Rank::User, qual: false, binds: None, ellipsis: false })
+    ok.then(|| Ics { rank: crate::overloading::conversion_sequences::check::Rank::User, qual: false, binds: None, ellipsis: false, user: None })
 }
 
 /// OPR-15: the best viable candidate, or None after an error.
@@ -408,6 +408,13 @@ pub fn binary(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span) -> Optio
     if cands.is_empty() {
         return None;
     }
+    // OVL-9: the built-in candidates, which a conversion function can
+    // reach, are weighed against operator functions only with no
+    // conversion function in play.
+    if crate::classes::conversion_functions::check::converting_class(cx, l).is_some() || crate::classes::conversion_functions::check::converting_class(cx, r).is_some() {
+        let t = cx.unsupported(span, "an operator with operator functions and an operand whose class has conversion functions");
+        return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+    }
     let class = l.ty.nonref().is_class() || r.ty.nonref().is_class();
     if !class {
         // An enumeration operand: the built-in operator is a candidate
@@ -487,6 +494,10 @@ pub fn unary(cx: &mut Check, op: &str, e: &Expr, postfix: bool, span: Span) -> O
     let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false })).collect();
     if cands.is_empty() {
         return None;
+    }
+    if crate::classes::conversion_functions::check::converting_class(cx, e).is_some() {
+        let t = cx.unsupported(span, "an operator with operator functions and an operand whose class has conversion functions");
+        return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
     }
     if cands.iter().any(|c| cx.u.func(c.f).is_some_and(|f| f.unsupported.is_some())) {
         let t = cx.unsupported(span, "an operator function that the front end does not model");

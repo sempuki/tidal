@@ -586,6 +586,17 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
         }
         return crate::classes::copy_move::check::copy(cx, a, copy && !list, span).map(Init::Expr);
     }
+    // A conversion function to the class can make the argument of a copy
+    // or move constructor (OVL-40), which a later piece models.
+    let to_class = args.iter().any(|a| {
+        crate::classes::conversion_functions::check::converting_class(cx, a).is_some_and(|k| {
+            crate::classes::conversion_functions::check::functions(&cx.u, k).iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.ret.nonref().class().is_some_and(|r| crate::classes::derived::check::derives(cx, r, c))))
+        })
+    });
+    if to_class {
+        cx.unsupported(span, "a conversion function to the class in the argument of a constructor (build step 4)");
+        return None;
+    }
     // The copy and move constructors take no other argument here: their
     // parameter takes no user-defined conversion.
     cands.retain(|&f| crate::classes::copy_move::check::copy_or_move(cx, c, f).is_none());

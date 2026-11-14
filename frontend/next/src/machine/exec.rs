@@ -168,16 +168,21 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                         }
                         let f = run(m, body, seek.as_ref())?;
                         seek = None;
-                        Ok(loop_flow(f, *id))
+                        let flow = loop_flow(f, *id);
+                        // LOOP-3: the step runs before the variable of the
+                        // condition is destroyed.
+                        if flow.is_none() {
+                            if let Some(st) = step {
+                                let t = m.temps.len();
+                                eval_discard(m, st)?;
+                                end_temps(m, t)?;
+                            }
+                        }
+                        Ok(flow)
                     })();
                     end_block(m)?;
                     if let Some(f) = r? {
                         return Ok(f);
-                    }
-                    if let Some(st) = step {
-                        let t = m.temps.len();
-                        eval_discard(m, st)?;
-                        end_temps(m, t)?;
                     }
                 }
             })();

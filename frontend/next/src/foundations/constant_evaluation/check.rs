@@ -70,6 +70,8 @@ pub fn report(cx: &mut Check, span: crate::source::Span, rule: &'static str, why
 /// (CE-11), converted to `long long` range. `rule` is the place's rule.
 pub fn integral_constant(cx: &mut Check, n: &Node, rule: &'static str) -> Option<i128> {
     let e = expressions::check::expr(cx, n);
+    // CVF-2: a class object converts by its conversion function.
+    let e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
     let e = rvalue(cx, e);
     if e.ty.is_error() {
         return None;
@@ -114,6 +116,7 @@ pub fn bool_constant(cx: &mut Check, n: &Node, rule: &'static str) -> Option<boo
 /// enumeration type, greater than zero.
 pub fn array_bound(cx: &mut Check, n: &Node) -> Option<u64> {
     let e = expressions::check::expr(cx, n);
+    let e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
     let e = rvalue(cx, e);
     if e.ty.is_error() {
         return None;

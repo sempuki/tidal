@@ -70,7 +70,15 @@ pub fn declarator(cx: &mut Check, specs: &Specs, n: &Node) -> Declared {
         obj_cv: (false, false),
         ref_q: false,
     };
+    // CVF-1: a conversion function returns its target type.
+    let conversion = n.find("conversion_function_id");
     let base = match (&specs.ty, &specs.placeholder) {
+        (None, None) if conversion.is_some() => crate::classes::conversion_functions::check::target(cx, conversion.unwrap()),
+        (Some(_), _) if conversion.is_some() => {
+            d.unsupported = true;
+            cx.error(n.span, "CVF-7", "a conversion function with a return type before 'operator'");
+            QType::error()
+        }
         (Some(t), _) => t.clone(),
         (None, Some(_)) => QType::error(),
         (None, None) => {
@@ -259,6 +267,29 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
                 cx.unsupported(n.span, "an operator function of this form");
             }
         }
+        return;
+    }
+    // A conversion function (CVF-1), named by its target type.
+    if let Some(cf) = n.child("conversion_function_id") {
+        if let Some(nn) = n.child("nested_name") {
+            d.qual = names::nested_name(cx, nn);
+            if d.qual == Qual::Unsupported {
+                d.unsupported = true;
+                return;
+            }
+        }
+        let saved = cx.scope;
+        // After a qualifier, the target type is looked up in the class.
+        if let Qual::Scope(s) = d.qual {
+            cx.scope = s;
+        }
+        let t = crate::classes::conversion_functions::check::target(cx, cf);
+        cx.scope = saved;
+        if t.is_error() {
+            d.unsupported = true;
+            return;
+        }
+        d.name = Some((Rc::from(crate::classes::conversion_functions::check::name(&t).as_str()), cf.span));
         return;
     }
     let Some(id) = n.child("id_expression") else {

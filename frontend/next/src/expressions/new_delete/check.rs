@@ -228,6 +228,8 @@ fn array(cx: &mut Check, el: QType, first: Option<&Node>, fixed: Option<u64>, in
     let bound = match first {
         Some(b) => {
             let e = expr(cx, b);
+            // CVF-2: a class object converts by its conversion function.
+            let Some(e) = crate::classes::conversion_functions::check::builtin_operand(cx, e) else { return bad(span) };
             let e = rvalue(cx, e);
             if e.ty.is_error() {
                 return bad(span);

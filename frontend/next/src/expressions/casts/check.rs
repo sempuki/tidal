@@ -100,6 +100,11 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
         return Ok(Expr::new(EK::Conv(Conv::ToVoid, Box::new(deref_ref(e))), to.unqual(), Cat::PR, span));
     }
     let null = conv::is_null_constant(&e);
+    // CVF-3: a static_cast of a class object can use a conversion
+    // function, also an explicit one.
+    if matches!(k, Kind::Static) && crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && !to.is_class() {
+        return conv::implicit(cx, e, &to.unqual(), true).map_err(|m| (conv::rule_of(&m).unwrap_or("CAST-19"), m));
+    }
     let e = rvalue(cx, e);
     let from = e.ty.clone();
     let target = to.unqual();
