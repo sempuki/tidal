@@ -208,22 +208,24 @@ fn dtor_member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n No
     true
 }
 
+/// The destructor of class `c`, or of a member's class, is deleted or not
+/// accessible: from the point of use when `top` is set, and those of its
+/// members and bases from the class (DER-14: a base's protected one).
+pub fn dtor_blocked(cx: &Check, c: ClassId, top: bool, base: bool) -> bool {
+    let own = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|&d| {
+        let access = cx.u.access.get(&d).copied().unwrap_or(crate::sem::Access::Public);
+        let ok = if top { crate::classes::members::check::accessible(cx, d) } else { access == crate::sem::Access::Public || (base && access == crate::sem::Access::Protected) };
+        cx.u.func(d).is_some_and(|f| f.deleted) || !ok
+    });
+    own || cx.u.classes[c].fields.clone().iter().any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| dtor_blocked(cx, d, false, x.base))))
+}
+
 /// DTOR-3: the destructor of a class, or of a member's class, is
 /// deleted or not accessible, so no object of the class can end. True
 /// when it can.
 pub fn dtor_usable(cx: &mut Check, ty: &QType, span: Span) -> bool {
-    // The destructor of the class from the point of use, and those of its
-    // members and bases from the class (DER-14: a base's protected one).
-    fn blocked(cx: &Check, c: ClassId, top: bool, base: bool) -> bool {
-        let own = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|&d| {
-            let access = cx.u.access.get(&d).copied().unwrap_or(crate::sem::Access::Public);
-            let ok = if top { crate::classes::members::check::accessible(cx, d) } else { access == crate::sem::Access::Public || (base && access == crate::sem::Access::Protected) };
-            cx.u.func(d).is_some_and(|f| f.deleted) || !ok
-        });
-        own || cx.u.classes[c].fields.clone().iter().any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| blocked(cx, d, false, x.base))))
-    }
     let Some(c) = ty.base_elem().class() else { return true };
-    if blocked(cx, c, true, false) {
+    if dtor_blocked(cx, c, true, false) {
         let cause = if cx.unevaluated > 0 { "UNEV-5" } else { "VC-11" };
         cx.error_cause(span, "DTOR-3", Some(cause), format!("the destructor of '{}' is deleted or not accessible", cx.u.classes[c].name));
         return false;

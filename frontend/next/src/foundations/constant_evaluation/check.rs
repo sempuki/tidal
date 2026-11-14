@@ -18,6 +18,7 @@ pub fn evaluate(cx: &Check, e: &Expr) -> Result<Val, (&'static str, String)> {
     let mut m = Machine::new(&cx.u, true);
     let r = if e.cat == Cat::PR { crate::machine::eval::eval(&mut m, e) } else { crate::machine::eval::eval_any(&mut m, e) };
     let r = r.and_then(|v| {
+        crate::expressions::new_delete::run::leaked(&m)?;
         // CE-14: a pointer that is the value of a constant expression
         // must not point to an automatic or temporary object.
         if let Val::Ptr(p) = &v {
@@ -38,6 +39,7 @@ pub fn evaluate_ref(cx: &Check, e: &Expr, static_storage: bool) -> Result<(), (&
     let mut m = Machine::new(&cx.u, true);
     m.static_temps = static_storage;
     let r = crate::machine::eval::place(&mut m, e).and_then(|p| {
+        crate::expressions::new_delete::run::leaked(&m)?;
         if !m.objs[p.obj].is_static {
             return crate::machine::limit("CE-14", "the reference refers to an object that is not static");
         }

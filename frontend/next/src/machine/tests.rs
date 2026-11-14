@@ -1145,3 +1145,34 @@ fn virtual_functions() {
     assert_eq!(rule("virtual void f();"), Some("VIRT-2"));
     assert_eq!(rule("struct B { virtual void f(); }; struct D : virtual B {};"), Some("unsupported"));
 }
+
+#[test]
+fn new_and_delete() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // An object and an array with initializers; delete runs the
+    // destructors, the elements from the last to the first.
+    assert_eq!(run("int main() { int* p = new int(4); auto* q = new auto(3); int* a = new int[3]{1, 2}; int r = *p * 100 + *q * 10 + a[0] + a[1] + a[2]; delete p; delete q; delete[] a; return r; }"), RunOutcome::Result(433));
+    assert_eq!(run("int log_ = 0; struct S { int k; S(int k) : k(k) {} S() : k(9) {} ~S() { log_ = log_ * 10 + k; } }; int main() { int n = 2; S* a = new S[n + 1]{1, 2}; delete[] a; S* s = new S(5); delete s; return log_; }"), RunOutcome::Result(9215));
+    // delete through a base with a virtual destructor runs the derived one.
+    assert_eq!(run("int log_ = 0; struct B { virtual ~B() { log_ = log_ * 10 + 1; } }; struct D : B { ~D() { log_ = log_ * 10 + 2; } }; int main() { B* p = new D; delete p; return log_; }"), RunOutcome::Result(21));
+    let r = run("int main() { int* p = new int; int v = *p; delete p; return v; }");
+    assert!(matches!(r, RunOutcome::Undefined("NEW-3", ..)), "{:?}", r);
+    let r = run("int main() { int* p = new int[2]; delete p; return 0; }");
+    assert!(matches!(r, RunOutcome::Undefined("NEW-5", ..)), "{:?}", r);
+    let r = run("struct B { ~B() {} }; struct D : B {}; int main() { B* p = new D; delete p; return 0; }");
+    assert!(matches!(r, RunOutcome::Undefined("VIRT-12", ..)), "{:?}", r);
+    // Constant evaluation frees what it allocates.
+    assert_eq!(rule("constexpr int f() { int* p = new int(1); return *p; } static_assert(f() == 1);"), Some("SA-7"));
+    assert_eq!(rule("constexpr int f() { int* p = new int(1); int v = *p; delete p; return v; } static_assert(f() == 1);"), None);
+    assert_eq!(rule("constexpr bool f() { int* p = new int; delete p; delete p; return true; } static_assert(f());"), Some("SA-7"));
+    assert_eq!(rule("struct A { virtual void f() = 0; }; void g() { new A; }"), Some("NEW-7"));
+    assert_eq!(rule("void g(void* p) { delete p; }"), Some("NEW-8"));
+    assert_eq!(rule("void g() { new auto(1, 2); }"), Some("NEW-16"));
+    assert_eq!(rule("void g() { new int[2]{1, 2, 3}; }"), Some("NEW-17"));
+    assert_eq!(rule("void g(int n) { new int[2][n]; }"), Some("NEW-11"));
+    assert_eq!(rule("void g() { new const int; }"), Some("NEW-11"));
+}

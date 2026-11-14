@@ -138,6 +138,9 @@ pub struct Obj {
     /// that is not usable in constant expressions.
     pub usable: bool,
     pub name: Rc<str>,
+    /// Created by a `new` expression: whether it is an array, and whether
+    /// a `delete` has freed it (`expressions::new_delete::run`).
+    pub heap: Option<(bool, bool)>,
 }
 
 /// How a statement ended.
@@ -288,7 +291,7 @@ impl<'a> Machine<'a> {
     }
 
     pub fn new_obj(&mut self, ty: &QType, val: Val, name: &str) -> usize {
-        self.objs.push(Obj { val, ty: ty.clone(), alive: true, konst: ty.is_const(), own: true, is_static: false, string: false, usable: true, name: name.into() });
+        self.objs.push(Obj { val, ty: ty.clone(), alive: true, konst: ty.is_const(), own: true, is_static: false, string: false, usable: true, name: name.into(), heap: None });
         self.objs.len() - 1
     }
     /// The machine holds one value per element; a larger object is

@@ -59,6 +59,9 @@ pub fn end_life(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
 /// storage and no initializer is the case of INIT-1, which its page
 /// names.
 pub fn no_value(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
+    if let Some(r) = crate::expressions::new_delete::run::no_value(m, p) {
+        return r;
+    }
     let name = m.objs.get(p.obj).map(|o| o.name.to_string()).unwrap_or_default();
     // A member of a class object, read before its initialization.
     let class_member = m.objs.get(p.obj).is_some_and(|o| o.ty.base_elem().is_class()) && !p.path.is_empty();

@@ -81,6 +81,8 @@ pub fn can_throw(cx: &Check, e: &Expr) -> bool {
     }
     e.any(&|x| match &x.k {
         EK::List(i) => ctor_throws(cx, i),
+        // The allocation can fail (NEW-38).
+        EK::New(_) => true,
         EK::Call(f, _, _) => {
             let t = f.ty.nonref();
             let t = match &t.t {

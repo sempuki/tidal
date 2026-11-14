@@ -203,6 +203,27 @@ pub enum EK {
     Assume(Box<Expr>),
     /// An array prvalue from a braced list (`declarations/initialization/list`).
     List(Box<Init>),
+    /// A `new` expression (`expressions/new-delete`).
+    New(Box<New>),
+    /// A `delete` expression: the pointer, whether it is `delete[]`, and
+    /// whether the class it points to has a virtual destructor.
+    Delete(Box<Expr>, bool, bool),
+}
+
+/// A `new` expression: the object it creates and how the object gets
+/// its value (`expressions/new-delete`, NEW-1, NEW-2).
+#[derive(Clone, Debug)]
+pub struct New {
+    /// The type of the object, or of each element of an array.
+    pub ty: QType,
+    /// The first bound of an array, converted to the type of `sizeof`.
+    pub bound: Option<Expr>,
+    /// The initializer of the object, or a list of the initializers of
+    /// the first elements of an array.
+    pub init: Init,
+    /// How each element of an array after the listed ones is
+    /// initialized.
+    pub rest: Init,
 }
 
 /// An argument as the parameter receives it: a value for a parameter
@@ -239,6 +260,8 @@ impl Expr {
             EK::Cond(c, a, b) => c.any(f) || a.any(f) || b.any(f),
             EK::Call(c, args, _) => c.any(f) || args.iter().any(|a| a.e.any(f)),
             EK::List(i) => i.any(f),
+            EK::New(n) => n.bound.as_ref().is_some_and(|b| b.any(f)) || n.init.any(f),
+            EK::Delete(x, ..) => x.any(f),
             _ => false,
         }
     }

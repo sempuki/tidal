@@ -290,10 +290,11 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     match &e.k {
         EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
         EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This => None,
-        EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) => sub(x),
+        EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::Delete(x, ..) => sub(x),
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
         EK::Call(f, args, _) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
+        EK::New(n) => n.bound.as_ref().and_then(sub).or_else(|| local_in(cx, &Expr::new(EK::List(Box::new(n.init.clone())), n.ty.clone(), crate::sem::tree::Cat::PR, e.span))),
         EK::List(i) => {
             fn init(cx: &Check, i: &crate::sem::tree::Init) -> Option<EntityId> {
                 use crate::sem::tree::Init;

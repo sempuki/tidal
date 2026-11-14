@@ -523,13 +523,22 @@ abstract classes, and covariant return types. A call through a pointer
 or reference calls the final overrider for the class of the most
 derived object, or for the class whose constructor or destructor runs
 on the object. A polymorphic class holds a pointer at offset 0, which
-its first polymorphic base shares. The
+its first polymorphic base shares. A `new` expression creates an object
+or an array, with a bound known at run time, and initializes it as a
+variable's initializer does; `delete` and `delete[]` run the
+destructors, through a virtual destructor for a pointer to a base, and
+free the object. The machine stops at a read of an object that `new`
+left without a value, at a mismatched or repeated `delete`, and at a
+`delete` through a base without a virtual destructor, and constant
+evaluation rejects storage that it allocates and does not free. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a class, a literal operator, an
 `operator->`, a comparison that `<=>` rewrites, a virtual base,
-`dynamic_cast`, a union, a
+`dynamic_cast`, an allocation or deallocation function that the
+program declares or calls by name, a `new` expression with placement
+arguments, a union, a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with

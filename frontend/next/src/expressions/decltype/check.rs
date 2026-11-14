@@ -82,7 +82,7 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
 pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
     use crate::sem::tree::{Conv, EK};
     match &e.k {
-        EK::Call(..) | EK::Assign(..) | EK::Compound(..) | EK::IncDec(..) | EK::Assume(_) => true,
+        EK::Call(..) | EK::Assign(..) | EK::Compound(..) | EK::IncDec(..) | EK::Assume(_) | EK::New(_) | EK::Delete(..) => true,
         EK::Conv(Conv::ToVoid, _) => true,
         EK::Conv(_, x) => has_effect(x),
         EK::Comma(_, b) => has_effect(b),

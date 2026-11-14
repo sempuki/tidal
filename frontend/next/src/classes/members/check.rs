@@ -554,6 +554,11 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
     }
     for f in cx.u.classes[c].fields.clone() {
         let x = cx.u.field(f).unwrap().clone();
+        // A member whose destructor is deleted or not accessible.
+        if x.ty.base_elem().class().is_some_and(|d| crate::classes::constructors::check::dtor_blocked(cx, d, false, x.base)) {
+            cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the destructor of the member '{}' is deleted or not accessible", cx.u.entities[f].name));
+            return false;
+        }
         if x.init.is_some() {
             continue;
         }

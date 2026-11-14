@@ -303,7 +303,7 @@ pub fn qualified_func(t: &QType) -> bool {
     matches!(&t.t, Type::Func(f) if f.qualified)
 }
 
-fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
+pub fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
     let words = cx.words(n);
     if n.child("nested_name").is_some() {
         return cx.unsupported(n.span, "a pointer to member");

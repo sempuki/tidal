@@ -135,7 +135,7 @@ pub fn is_read(cx: &Check, id: EntityId) -> bool {
 
 /// The initializer of a variable from its `init` node (INIT-2 to INIT-8;
 /// lists in `list`, references in `references`).
-fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<Init> {
+pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<Init> {
     let words = cx.words(init);
     let ns = nodes(init);
     if ty.is_ref() {

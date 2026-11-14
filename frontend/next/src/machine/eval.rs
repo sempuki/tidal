@@ -164,6 +164,8 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             let p = place(m, x)?;
             crate::foundations::objects::run::end_life(m, &p)
         }
+        EK::New(n) => crate::expressions::new_delete::run::new(m, n),
+        EK::Delete(x, array, virtual_dtor) => crate::expressions::new_delete::run::delete(m, x, *array, *virtual_dtor),
     }
 }
 
@@ -211,7 +213,9 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
         }
         EK::Deref(x) => {
             let v = eval(m, x)?;
-            unary::run::indirection(m, v, &e.ty)
+            let p = unary::run::indirection(m, v, &e.ty)?;
+            crate::expressions::lambdas::run::dangling(m, x, &p)?;
+            Ok(p)
         }
         // PFX-10: the member of the object, by its position.
         EK::Member(x, i) => {

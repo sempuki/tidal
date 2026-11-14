@@ -25,16 +25,17 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
             let v = !crate::declarations::exception_specifications::check::can_throw(cx, &e);
             return Expr::int(v as i128, QType::bool(), span);
         }
-        "new" | "delete" | "::" | "co_await" => {
-            let t = cx.unsupported(span, "a new or delete expression (build step 4)");
+        "co_await" => {
+            let t = cx.unsupported(span, "a co_await expression");
             return Expr::new(EK::Int(0), t, Cat::PR, span);
         }
         _ => {}
     }
     if let Some(Kid::Node(c)) = n.kids.first() {
-        if matches!(c.prod, "new_expr" | "delete_expr") {
-            let t = cx.unsupported(span, "a new or delete expression (build step 4)");
-            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        match c.prod {
+            "new_expr" => return crate::expressions::new_delete::check::new_expr(cx, c),
+            "delete_expr" => return crate::expressions::new_delete::check::delete_expr(cx, c),
+            _ => {}
         }
     }
     let Some(operand) = nodes(n).last().copied() else { return bad(span) };

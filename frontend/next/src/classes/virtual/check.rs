@@ -244,6 +244,13 @@ pub fn after_bodies(cx: &mut Check, c: ClassId) {
     }
 }
 
+/// Whether the destructor of class `c` is virtual: declared virtual, or
+/// overriding the virtual destructor of a base (VIRT-7).
+pub fn virtual_dtor(cx: &Check, c: ClassId) -> bool {
+    let own = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, crate::classes::constructors::check::DTOR);
+    own.iter().any(|d| cx.u.virt.contains_key(d)) || cx.u.bases(c).into_iter().any(|(_, b)| virtual_dtor(cx, b))
+}
+
 /// VIRT-8: no object of an abstract class. True when `ty` is no
 /// abstract class or array of one.
 pub fn not_abstract(cx: &mut Check, ty: &QType, span: Span) -> bool {
