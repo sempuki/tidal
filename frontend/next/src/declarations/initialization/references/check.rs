@@ -20,6 +20,21 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     }
     let e = deref_ref(e);
     let span = e.span;
+    // BF-4: a reference binds no bit-field. A const reference that is not
+    // volatile binds a temporary that holds a copy of its value (REF-2).
+    let e = if crate::classes::unions::check::width_of(&cx.u, &e).is_some() && e.cat != Cat::PR {
+        if !inner.c && !rv {
+            cx.error(span, "BF-4", "a reference that is not const binds a bit-field");
+            return None;
+        }
+        if inner.v {
+            cx.error_cause(span, rule, Some("VOL-10"), "a volatile reference binds a bit-field");
+            return None;
+        }
+        crate::foundations::values::check::rvalue(cx, e)
+    } else {
+        e
+    };
     // DER-5: a reference to a base binds the base subobject.
     let e = match (e.ty.class(), inner.class()) {
         (Some(d), Some(b)) if crate::classes::derived::check::is_base(cx, d, b) => {

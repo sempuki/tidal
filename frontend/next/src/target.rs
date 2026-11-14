@@ -121,19 +121,27 @@ impl Target {
     /// The layout of a complete class (CLS rules, TYP-2): its size, its
     /// alignment, and the offset of each data member. Each member goes
     /// at the next multiple of its alignment, a union's members all at
-    /// 0, and the size is a multiple of the alignment, at least 1.
+    /// 0, and the size is a multiple of the alignment, at least 1. A
+    /// bit-field's offset is that of its first byte.
     pub fn layout(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u64, u64, Vec<u64>)> {
+        let (size, align, bits) = self.layout_bits(u, c)?;
+        Some((size, align, bits.iter().map(|b| (b / 8) as u64).collect()))
+    }
+    /// `layout`, with the offset of each data member in bits. Bit-fields
+    /// go as BF-9 says for the matrix's ABI.
+    pub fn layout_bits(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u64, u64, Vec<u128>)> {
         let info = u.classes.get(c)?;
         if !info.complete {
             return None;
         }
         let union = info.key == crate::sem::ClassKey::Union;
-        let (mut size, mut align) = (0u64, 1u64);
+        // The end of the members placed so far, in bits.
+        let (mut end, mut align) = (0u128, 1u64);
         // The empty classes among the subobjects placed so far, with their
         // offsets: two subobjects of one type never share an address.
         let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
         let fields: Vec<&crate::sem::Field> = info.fields.iter().filter_map(|&f| u.field(f)).collect();
-        let mut offs = vec![0u64; fields.len()];
+        let mut offs = vec![0u128; fields.len()];
         // A polymorphic class holds a pointer to its virtual functions at
         // offset 0, which its first polymorphic base shares (the matrix's
         // ABI, CLS-35).
@@ -145,7 +153,7 @@ impl Target {
                     order.insert(0, p);
                 }
                 None => {
-                    size = self.ptr_size();
+                    end = 8 * self.ptr_size() as u128;
                     align = self.ptr_size();
                 }
             }
@@ -153,6 +161,32 @@ impl Target {
         for k in order {
             let x = fields[k];
             let t = x.ty.clone();
+            // BF-9: a bit-field takes the next free bits within one unit
+            // of its type, or starts the next unit.
+            if let Some(w) = x.width {
+                let (s, a) = (self.size_of(u, &t)?, self.align_of(u, &t)?);
+                let named = !u.entities[info.fields[k]].name.is_empty();
+                let wide = w > 8 * s;
+                let ua = if wide { self.wide_unit(w) } else { a };
+                let (w, s, a8, u8_) = (w as u128, s as u128, 8 * a as u128, 8 * ua as u128);
+                let at = if union {
+                    0
+                } else if w == 0 {
+                    end.div_ceil(a8) * a8
+                } else if wide {
+                    end.div_ceil(u8_) * u8_
+                } else {
+                    let unit = end / a8 * a8;
+                    if end + w <= unit + 8 * s { end } else { end.div_ceil(a8) * a8 }
+                };
+                if named {
+                    align = align.max(ua);
+                }
+                offs[k] = at;
+                end = if union { end.max(w.div_ceil(8) * 8) } else { at + w };
+                continue;
+            }
+            let size = u64::try_from(end.div_ceil(8)).ok()?;
             let inner = t.base_elem().class().map(|k| self.empty_subobjects(u, k)).unwrap_or_default();
             let clash = |at: u64, placed: &[(crate::sem::types::ClassId, u64)]| inner.iter().any(|&(k, o)| placed.contains(&(k, at + o)));
             // An empty base takes no space (DER-2), at the first offset
@@ -162,11 +196,10 @@ impl Target {
                 while clash(at, &placed) {
                     at += 1;
                 }
-                offs[k] = at;
+                offs[k] = 8 * at as u128;
                 placed.extend(inner.iter().map(|&(e, o)| (e, at + o)));
-                size = size.max(at.min(size));
                 if at > 0 {
-                    size = size.max(at + 1);
+                    end = end.max(8 * (at as u128 + 1));
                 }
                 continue;
             }
@@ -179,19 +212,24 @@ impl Target {
             };
             align = align.max(a);
             if union {
-                size = size.max(s);
+                end = end.max(8 * s as u128);
             } else {
                 let mut at = size.div_ceil(a).checked_mul(a)?;
                 while clash(at, &placed) {
                     at = at.checked_add(a)?;
                 }
-                offs[k] = at;
+                offs[k] = 8 * at as u128;
                 placed.extend(inner.iter().map(|&(e, o)| (e, at + o)));
-                size = at.checked_add(s)?;
+                end = 8 * at.checked_add(s)? as u128;
             }
         }
-        let size = size.div_ceil(align).max(1).checked_mul(align)?;
+        let size = u64::try_from(end.div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
         Some((size.max(1), align, offs))
+    }
+    /// BF-9: the alignment of the largest integer type with at most `w`
+    /// bits, for a bit-field wider than its type.
+    fn wide_unit(self, w: u64) -> u64 {
+        [IntK::LongLong, IntK::Int, IntK::Short, IntK::Char].into_iter().find(|&k| 8 * self.int_size(k) <= w).map(|k| self.align_of(&Unit::default(), &QType::new(Type::Int(k))).unwrap_or(1)).unwrap_or(1)
     }
     /// The subobjects of empty class type in an object of class `c`, with
     /// their offsets, `c` itself included when it is empty.
@@ -211,11 +249,16 @@ impl Target {
     }
     /// The size of a class without its tail padding.
     fn data_size(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<u64> {
-        let (size, _, offs) = self.layout(u, c)?;
+        let (size, _, bits) = self.layout_bits(u, c)?;
+        let offs: Vec<u64> = bits.iter().map(|b| (b / 8) as u64).collect();
         let mut end = 0;
         for (k, &f) in u.classes[c].fields.iter().enumerate() {
             let x = u.field(f)?;
             if x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b)) {
+                continue;
+            }
+            if let Some(w) = x.width {
+                end = end.max(u64::try_from((bits[k] + w as u128).div_ceil(8)).ok()?);
                 continue;
             }
             let s = match x.ty.class() {

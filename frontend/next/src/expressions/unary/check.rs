@@ -74,6 +74,15 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
         }
     }
     match op {
+        "&" if crate::classes::unions::check::width_of(&cx.u, &e).is_some() => {
+            let rule = match &e.k {
+                EK::Assign(..) | EK::Compound(..) => "ASN-10",
+                EK::Cond(..) => "COND-9",
+                _ => "BF-4",
+            };
+            cx.error(span, rule, "the address of a bit-field");
+            bad(span)
+        }
         "&" => address_of(cx, e, span),
         "*" => indirection(cx, e, span),
         "++" | "--" => inc_dec(cx, e, true, op == "++", span, "UN-11"),
@@ -229,6 +238,10 @@ fn size_or_align(cx: &mut Check, n: &Node, align: bool) -> Expr {
         let e = expr(cx, c);
         cx.unevaluated -= 1;
         crate::expressions::decltype::check::unevaluated_effect_warning(cx, &e);
+        if crate::classes::unions::check::width_of(&cx.u, &e).is_some() {
+            cx.error(span, "BF-4", "sizeof applied to a bit-field");
+            return bad(span);
+        }
         if let EK::Var(id) = &e.k {
             if cx.array_params.contains(id) {
                 // UN-19: the parameter is a pointer (DCL-9).

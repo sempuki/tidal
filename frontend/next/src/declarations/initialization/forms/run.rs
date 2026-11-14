@@ -131,6 +131,7 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
 /// Store an initial value: no check of `const`, which an initialization
 /// does not modify.
 fn set(m: &mut Machine, p: &Ptr, v: Val) -> R<()> {
+    let v = crate::classes::unions::run::store(m, p, v);
     match m.slot(p) {
         Some(s) => {
             *s = v;
@@ -238,12 +239,19 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
             Ok(Val::Agg(out))
         }
         Init::List(items) if ty.is_class() => {
-            let tys = m.u.field_types(ty.class().unwrap());
+            let c = ty.class().unwrap();
+            let tys = m.u.field_types(c);
             let mut out = Vec::new();
             for (k, t) in tys.iter().enumerate() {
-                out.push(match items.get(k) {
+                let v = match items.get(k) {
                     Some(i) => value(m, t, i)?,
                     None => m.zero(t),
+                };
+                // BF-10: a bit-field holds the value wrapped to its width.
+                let width = m.u.classes[c].fields.get(k).and_then(|&f| m.u.field(f)).and_then(|x| x.width);
+                out.push(match width {
+                    Some(w) => crate::classes::unions::run::wrap(m, w, t, v),
+                    None => v,
                 });
             }
             Ok(Val::Agg(out))

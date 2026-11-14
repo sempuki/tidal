@@ -332,6 +332,7 @@ pub fn write(m: &mut Machine, p: &Ptr, ty: &QType, v: Val) -> R<()> {
         (Type::Float(k), v @ (Val::Float(_) | Val::Ext(_))) => conversions::run::to_float(v, *k),
         (_, v) => v,
     };
+    let v = crate::classes::unions::run::store(m, p, v);
     match m.slot(p) {
         Some(s) => {
             *s = v;

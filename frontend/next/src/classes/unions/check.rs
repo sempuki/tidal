@@ -1,14 +1,20 @@
 //! The check part of `classes/unions`: the limits on the members of a
 //! union (UNI-2, UNI-8) and the members that the rewrite models. A union
 //! whose member has a non-trivial special member function (UNI-3,
-//! UNI-11), an anonymous union (UNI-7, UNI-9), and a bit-field are
-//! unsupported.
+//! UNI-11) and an anonymous union (UNI-7, UNI-9) are unsupported. The
+//! page's bit-fields are here too (BF rules).
 
+use crate::expressions::check::{expr, nodes};
+use crate::foundations::constant_evaluation::check as ce;
+use crate::foundations::names::check as names;
+use crate::foundations::values::check::rvalue;
+use crate::machine::Val;
 use crate::sem::check::Check;
 use crate::sem::tree::Init;
 use crate::sem::types::{ClassId, QType, Type};
-use crate::sem::{ClassKey, Unit};
+use crate::sem::{ClassKey, EntKind, EntityId, Field, Linkage, Unit};
 use crate::source::Span;
+use crate::syntax::{Kid, Node};
 
 /// Whether class `c` is a union.
 pub fn is_union(cx: &Check, c: ClassId) -> bool {
@@ -78,5 +84,139 @@ pub fn without_inactive(cx: &Check, ty: &QType, init: &Init) -> Init {
         }
         (Init::List(xs), Type::Array(e, _)) => Init::List(xs.iter().map(|x| without_inactive(cx, e, x)).collect()),
         _ => init.clone(),
+    }
+}
+
+/// A `bitfield` member declarator of class `c` (BF-1, BF-2, BF-8): a
+/// named or unnamed bit-field of integral or enumeration type, whose
+/// width is a constant of integral or unscoped enumeration type. The
+/// field and its default member initializer go to the class. True when
+/// the declaration is valid; None after an unsupported form.
+pub fn bitfield<'n>(cx: &mut Check, c: ClassId, specs: &crate::declarations::check::Specs, n: &'n Node, access: crate::sem::Access, inits: &mut Vec<(EntityId, &'n Node)>) -> Option<bool> {
+    let span = n.span;
+    let name: String = match n.kids.first() {
+        Some(k @ Kid::Tok(_)) if cx.text(k) != ":" => cx.text(k).to_string(),
+        _ => String::new(),
+    };
+    if specs.typedef || specs.is_static {
+        cx.error(span, "BF-2", "a bit-field that is static or a typedef");
+        return Some(false);
+    }
+    let Some(ty) = specs.ty.clone() else {
+        cx.error(span, "BF-2", "a bit-field with a placeholder type");
+        return Some(false);
+    };
+    if ty.is_error() {
+        return Some(false);
+    }
+    if !(ty.is_integral() || ty.is_enum()) {
+        cx.error(span, "BF-2", format!("the bit-field has type {}, which is not integral or an enumeration", ty.show()));
+        return Some(false);
+    }
+    if name.is_empty() && (ty.c || ty.v) {
+        cx.error(span, "BF-2", "an unnamed bit-field with a cv-qualifier");
+        return Some(false);
+    }
+    let w = nodes(n).into_iter().find(|x| x.prod != "member_init")?;
+    let e = expr(cx, w);
+    let e = rvalue(cx, e);
+    if e.ty.is_error() {
+        return Some(false);
+    }
+    if e.ty.is_class() {
+        cx.unsupported(e.span, "a bit-field width of class type");
+        return None;
+    }
+    let unscoped = matches!(e.ty.t, Type::Enum(en) if !cx.u.enums[en].scoped);
+    if !(e.ty.is_integral() || unscoped) {
+        cx.error(e.span, "BF-2", format!("the width of a bit-field has type {}", e.ty.show()));
+        return Some(false);
+    }
+    let width = match ce::try_value(cx, &e) {
+        Some(Val::Int(v)) => v,
+        _ => {
+            cx.error(e.span, "BF-2", "the width of a bit-field is not a constant");
+            return Some(false);
+        }
+    };
+    if width < 0 {
+        cx.error(e.span, "BF-2", "the width of a bit-field is negative");
+        return Some(false);
+    }
+    if width == 0 && !name.is_empty() {
+        cx.error(span, "BF-2", format!("the bit-field '{}' has width 0", name));
+        return Some(false);
+    }
+    // BF-8: a width larger than the type.
+    let bits = type_bits(&cx.u, &ty);
+    if width as u64 > bits && !name.is_empty() {
+        cx.warning(span, "BF-8", format!("the width of the bit-field '{}' exceeds its type", name));
+    }
+    let index = cx.u.classes[c].fields.len();
+    let f = Field { ty, class: c, index, init: None, mutable: specs.mutable, access, base: false, width: Some(width as u64) };
+    let fid = if name.is_empty() {
+        let scope = cx.u.classes[c].scope;
+        cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Field(f), span, scope, linkage: Linkage::None, deprecated: None })
+    } else {
+        names::declare_in(cx, cx.scope, &name, EntKind::Field(f), span, Linkage::None)
+    };
+    cx.u.classes[c].fields.push(fid);
+    if let Some(i) = n.child("member_init") {
+        inits.push((fid, i));
+    }
+    Some(true)
+}
+
+/// The number of value bits of an integral or enumeration type.
+pub fn type_bits(u: &Unit, ty: &QType) -> u64 {
+    match &ty.t {
+        Type::Int(k) => u.target.int_bits(*k) as u64,
+        Type::Enum(e) => u.enums.get(*e).and_then(|i| i.underlying).map(|k| u.target.int_bits(k) as u64).unwrap_or(32),
+        _ => 0,
+    }
+}
+
+/// The width of the bit-field that an expression names, if any: a
+/// member access, also after the lvalue-to-rvalue conversion.
+pub fn width_of(u: &Unit, e: &crate::sem::tree::Expr) -> Option<u64> {
+    use crate::sem::tree::{Conv, EK};
+    match &e.k {
+        EK::Member(x, i) => x.ty.class().and_then(|c| u.classes[c].fields.get(*i).copied()).and_then(|f| u.field(f)).and_then(|f| f.width),
+        EK::Conv(Conv::LToR | Conv::NoOp, x) => width_of(u, x),
+        // The result of an assignment to a bit-field is the bit-field
+        // (ASN-10), and so is an lvalue result of `?:` or `,` that
+        // refers to one (COND-9).
+        EK::Assign(l, _) | EK::Compound(_, l, _, _) | EK::IncDec(true, _, l) if e.cat != crate::sem::tree::Cat::PR => width_of(u, l),
+        EK::Cond(_, a, b) if e.cat != crate::sem::tree::Cat::PR => width_of(u, a).or_else(|| width_of(u, b)),
+        EK::Comma(_, b) if e.cat != crate::sem::tree::Cat::PR => width_of(u, b),
+        _ => None,
+    }
+}
+
+/// An unnamed bit-field, which is no member (BF-12).
+pub fn is_unnamed_bitfield(u: &Unit, f: EntityId) -> bool {
+    u.field(f).is_some_and(|x| x.width.is_some()) && u.entities[f].name.is_empty()
+}
+
+/// BF-8: a constant stored in the bit-field `l` changes value because of
+/// the width.
+pub fn truncation_warning(cx: &mut Check, l: &crate::sem::tree::Expr, r: &crate::sem::tree::Expr, span: Span) {
+    let Some(w) = width_of(&cx.u, l) else { return };
+    warn_if_truncated(cx, w, &l.ty, r, span);
+}
+
+/// BF-8 for the value `r` stored in a bit-field of width `w` and type
+/// `ty`.
+pub fn warn_if_truncated(cx: &mut Check, w: u64, ty: &QType, r: &crate::sem::tree::Expr, span: Span) {
+    if ty.is_bool() || !ty.is_integral() {
+        return;
+    }
+    let Some(Val::Int(v)) = ce::try_value(cx, r) else { return };
+    let bits = type_bits(&cx.u, ty);
+    let n = w.min(bits).min(127) as u32;
+    let signed = ty.int_kind().is_some_and(|k| k.signed());
+    let fits = if n == 0 { v == 0 } else if signed { v >= -(1i128 << (n - 1)) && v < (1i128 << (n - 1)) } else { v >= 0 && v < (1i128 << n) };
+    if !fits {
+        cx.warning(span, "BF-8", format!("the value {} changes when it is stored in a bit-field of width {}", v, w));
     }
 }

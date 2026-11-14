@@ -150,3 +150,50 @@ pub fn is_chain(e: &crate::sem::tree::Expr) -> bool {
         _ => false,
     }
 }
+
+/// The width of the bit-field that the place `p` names, with its type.
+pub fn bitfield_at(m: &Machine, p: &Ptr) -> Option<(u64, QType)> {
+    if p.view.is_some() || p.path.is_empty() {
+        return None;
+    }
+    let parent = m.type_at(&Ptr { obj: p.obj, path: p.path[..p.path.len() - 1].to_vec(), array: false, view: None })?;
+    let c = parent.class()?;
+    let f = *m.u.classes[c].fields.get(*p.path.last()? as usize)?;
+    let x = m.u.field(f)?;
+    Some((x.width?, x.ty.clone()))
+}
+
+/// BF-10: the value that a bit-field of width `w` and type `ty` holds
+/// after a store of `v`: the value in its range that differs from `v` by
+/// a multiple of 2 to the width. Bits past the type's own are padding
+/// (BF-3).
+pub fn wrap(m: &Machine, w: u64, ty: &QType, v: Val) -> Val {
+    let Val::Int(x) = v else { return v };
+    let (bits, signed) = match &ty.t {
+        Type::Int(k) => (m.target.int_bits(*k) as u64, k.signed()),
+        Type::Enum(e) => match m.u.enums.get(*e).and_then(|i| i.underlying) {
+            Some(k) => (m.target.int_bits(k) as u64, k.signed()),
+            None => return Val::Int(x),
+        },
+        _ => return Val::Int(x),
+    };
+    let n = w.min(bits).min(127) as u32;
+    if n == 0 {
+        return Val::Int(0);
+    }
+    let modulus = 1i128 << n;
+    let mut r = x.rem_euclid(modulus);
+    if signed && r >= modulus / 2 {
+        r -= modulus;
+    }
+    Val::Int(r)
+}
+
+/// A value stored at the place `p`, wrapped to the width of the
+/// bit-field that `p` names (BF-10).
+pub fn store(m: &Machine, p: &Ptr, v: Val) -> Val {
+    match bitfield_at(m, p) {
+        Some((w, ty)) => wrap(m, w, &ty, v),
+        None => v,
+    }
+}

@@ -535,7 +535,11 @@ union holds one value per member, and the members that are not active
 hold no value; a list, a designator, a default member initializer, or a
 mem-init picks the active member, a built-in assignment through a
 chain of member accesses changes it, and a copy keeps it. The machine
-stops at an access to a member that is not active. The
+stops at an access to a member that is not active. A bit-field has its
+width in the layout, as the matrix's ABI places it, and a store wraps
+to the width; a narrow bit-field promotes to `int`, narrowing counts a
+bit-field source by its width, and no address or non-const reference
+reaches it. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -545,7 +549,8 @@ another entity. An explicit destructor call on a class, a literal operator, an
 program declares or calls by name, a `new` expression with placement
 arguments, an anonymous union, a union member whose class has special
 member functions that are not trivial, a read through the common
-initial sequence of two union members, a bit-field, a pointer to member, a member function of a local or nested
+initial sequence of two union members, the bytes of a class with a
+bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with
 several candidates are unsupported, so a unit that has one gives no

@@ -67,8 +67,30 @@ pub fn promoted(cx: &Check, t: &QType) -> QType {
     QType::new(Type::Int(k))
 }
 
+/// BF-6: a bit-field of integer type promotes to `int` if `int` holds
+/// every value of its width, or else to `unsigned int` if that type does.
+fn promote_bitfield(cx: &Check, e: Expr) -> Expr {
+    let Some(w) = crate::classes::unions::check::width_of(&cx.u, &e) else { return e };
+    let Some(k) = e.ty.int_kind() else { return e };
+    let tg = cx.u.target;
+    let n = w.min(tg.int_bits(k) as u64) as u32;
+    let (lo, hi) = if k.signed() && n > 0 { (-(1i128 << (n - 1)), (1i128 << (n - 1)) - 1) } else { (0, (1i128 << n) - 1) };
+    let to = if lo >= tg.int_min(IntK::Int) && hi <= tg.int_max(IntK::Int) {
+        IntK::Int
+    } else if lo >= 0 && hi <= tg.int_max(IntK::UInt) {
+        IntK::UInt
+    } else {
+        return e;
+    };
+    if k == to {
+        return e;
+    }
+    e.conv(Conv::Arith, QType::new(Type::Int(to)), Cat::PR)
+}
+
 /// Integer promotion of an operand that is already a prvalue.
 pub fn promote(cx: &mut Check, e: Expr) -> Expr {
+    let e = promote_bitfield(cx, e);
     let p = promoted(cx, &e.ty);
     if p.t == e.ty.t {
         return e;
@@ -107,6 +129,7 @@ pub fn common_type(cx: &Check, a: &QType, b: &QType) -> QType {
 /// The usual arithmetic conversions on two prvalue operands: both
 /// converted to their common type.
 pub fn arithmetic(cx: &mut Check, l: Expr, r: Expr) -> (Expr, Expr, QType) {
+    let (l, r) = (promote_bitfield(cx, l), promote_bitfield(cx, r));
     let t = common_type(cx, &l.ty, &r.ty);
     let to = |e: Expr| if e.ty.t == t.t { e } else { e.conv(Conv::Arith, t.clone(), Cat::PR) };
     (to(l), to(r), t)
@@ -293,6 +316,14 @@ pub fn is_narrowing(cx: &mut Check, e: &Expr, to: &QType) -> bool {
             }
             if tg.int_min(*a) >= tg.int_min(*b) && tg.int_max(*a) <= tg.int_max(*b) {
                 return false;
+            }
+            // A bit-field source counts by its width.
+            if let Some(w) = crate::classes::unions::check::width_of(&cx.u, e) {
+                let n = w.min(tg.int_bits(*a) as u64) as u32;
+                let (lo, hi) = if a.signed() && n > 0 { (-(1i128 << (n - 1)), (1i128 << (n - 1)) - 1) } else { (0, (1i128 << n) - 1) };
+                if tg.fits(*b, lo) && tg.fits(*b, hi) {
+                    return false;
+                }
             }
             match value() {
                 Some(crate::machine::Val::Int(v)) => !tg.fits(*b, v),

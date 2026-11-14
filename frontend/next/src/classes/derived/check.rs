@@ -78,7 +78,7 @@ pub fn base_clause(cx: &mut Check, c: ClassId, key: ClassKey, n: &Node) -> bool 
         let scope = cx.u.classes[c].scope;
         let f = cx.u.add(crate::sem::Entity {
             name: "".into(),
-            kind: EntKind::Field(Field { ty: QType::new(Type::Class(d)), class: c, index, init: None, mutable: false, access, base: true }),
+            kind: EntKind::Field(Field { ty: QType::new(Type::Class(d)), class: c, index, init: None, mutable: false, access, base: true, width: None }),
             span: bt.span,
             scope,
             linkage: Linkage::None,

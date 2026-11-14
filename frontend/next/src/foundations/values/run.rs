@@ -33,7 +33,8 @@ pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
         match (v, &ty.t) {
             (Val::Uninit, _) => true,
             (Val::Agg(_), crate::sem::types::Type::Class(c)) if m.u.classes[*c].key == crate::sem::ClassKey::Union => false,
-            (Val::Agg(xs), crate::sem::types::Type::Class(c)) => xs.iter().zip(m.u.field_types(*c)).any(|(x, t)| empty_part(m, &t, x)),
+            // An unnamed bit-field is not copied (BF-12).
+            (Val::Agg(xs), crate::sem::types::Type::Class(c)) => xs.iter().zip(m.u.field_types(*c)).zip(m.u.classes[*c].fields.iter()).any(|((x, t), &f)| !crate::classes::unions::check::is_unnamed_bitfield(m.u, f) && empty_part(m, &t, x)),
             (Val::Agg(xs), crate::sem::types::Type::Array(e, _)) => xs.iter().any(|x| empty_part(m, e, x)),
             (Val::Agg(xs), _) => xs.iter().any(|x| empty_part(m, ty, x)),
             _ => false,

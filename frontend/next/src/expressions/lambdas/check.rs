@@ -347,7 +347,7 @@ fn new_field(cx: &mut Check, class: ClassId, ty: QType) -> EntityId {
     let scope = cx.u.classes[class].scope;
     let f = cx.u.add(crate::sem::Entity {
         name: "".into(),
-        kind: EntKind::Field(Field { ty, class, index, init: None, mutable: false, access: crate::sem::Access::Public, base: false }),
+        kind: EntKind::Field(Field { ty, class, index, init: None, mutable: false, access: crate::sem::Access::Public, base: false, width: None }),
         span: Span::default(),
         scope,
         linkage: Linkage::None,

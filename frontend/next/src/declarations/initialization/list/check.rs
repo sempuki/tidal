@@ -220,13 +220,16 @@ pub fn aggregate_with(cx: &mut Check, b: &Node, ty: &QType, copy: bool) -> Optio
 /// The members of an aggregate: a class's data members with their
 /// default member initializers, or an array's elements (all of them, or
 /// as many as the values need for an unknown bound at the top).
-fn members(cx: &Check, ty: &QType, left: usize, top: bool) -> Option<Vec<(QType, Option<Init>)>> {
+/// The third part of each member says whether it is a bit-field, and
+/// whether an unnamed one, which takes no value (BF-7, BF-12).
+fn members(cx: &Check, ty: &QType, left: usize, top: bool) -> Option<Vec<(QType, Option<Init>, Option<bool>)>> {
+    let field = |f: crate::sem::EntityId| cx.u.field(f).map(|x| (x.ty.clone(), x.init.clone(), x.width.map(|_| crate::classes::unions::check::is_unnamed_bitfield(&cx.u, f))));
     match &ty.t {
         // A list initializes the first member of a union (UNI-4).
-        Type::Class(c) if crate::classes::unions::check::is_union(cx, *c) => Some(cx.u.classes[*c].fields.iter().take(1).filter_map(|&f| cx.u.field(f).map(|x| (x.ty.clone(), x.init.clone()))).collect()),
-        Type::Class(c) => Some(cx.u.classes[*c].fields.iter().filter_map(|&f| cx.u.field(f).map(|x| (x.ty.clone(), x.init.clone()))).collect()),
-        Type::Array(e, Some(n)) => Some((0..*n).map(|_| ((**e).clone(), None)).collect()),
-        Type::Array(e, None) if top => Some((0..left.max(1)).map(|_| ((**e).clone(), None)).collect()),
+        Type::Class(c) if crate::classes::unions::check::is_union(cx, *c) => Some(cx.u.classes[*c].fields.iter().copied().filter(|&f| !crate::classes::unions::check::is_unnamed_bitfield(&cx.u, f)).take(1).filter_map(field).collect()),
+        Type::Class(c) => Some(cx.u.classes[*c].fields.iter().copied().filter_map(field).collect()),
+        Type::Array(e, Some(n)) => Some((0..*n).map(|_| ((**e).clone(), None, None)).collect()),
+        Type::Array(e, None) if top => Some((0..left.max(1)).map(|_| ((**e).clone(), None, None)).collect()),
         _ => None,
     }
 }
@@ -252,7 +255,14 @@ fn item_value(cx: &mut Check, its: &[&Node], cache: &mut [Option<Expr>], k: usiz
 fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option<Expr>], pos: &mut usize, braced: bool) -> Option<(Init, QType)> {
     let ms = members(cx, ty, its.len() - (*pos).min(its.len()), braced)?;
     let mut out = Vec::new();
-    for (mty, dmi) in ms {
+    for (mty, dmi, bits) in ms {
+        // An unnamed bit-field takes no value (BF-12).
+        if bits == Some(true) {
+            out.push(Init::Default);
+            continue;
+        }
+        // BF-11: a braced initializer for a bit-field does not narrow.
+        let narrow = if bits.is_some() { "BF-11" } else { "LIST-2" };
         if *pos >= its.len() {
             if ty.is_array() && matches!(ty.t, Type::Array(_, None)) {
                 break;
@@ -270,7 +280,7 @@ fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option
         let c = first_node(its[*pos])?;
         if c.prod == "braced_init" {
             *pos += 1;
-            let v = if mty.is_array() || mty.is_class() { aggregate(cx, c, &mty)? } else if items(c).is_empty() { Init::Zero } else { Init::Expr(scalar_list(cx, c, &mty, "LIST-2")?) };
+            let v = if mty.is_array() || mty.is_class() { aggregate(cx, c, &mty)? } else if items(c).is_empty() { Init::Zero } else { Init::Expr(scalar_list(cx, c, &mty, narrow)?) };
             out.push(v);
             continue;
         }
@@ -310,7 +320,7 @@ fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option
         }
         let e = item_value(cx, its, cache, *pos)?;
         *pos += 1;
-        out.push(Init::Expr(braced_value(cx, e, &mty, "LIST-2")?));
+        out.push(Init::Expr(braced_value(cx, e, &mty, narrow)?));
     }
     let ty = match &ty.t {
         Type::Array(e, None) => QType::new(Type::Array(e.clone(), Some(out.len() as u64))).with_cv(ty.c, ty.v),

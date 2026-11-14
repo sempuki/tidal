@@ -908,8 +908,8 @@ fn classes_with_data_members() {
     // A class and a variable of one name in one scope: the variable hides
     // the class.
     assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
-    // Bit-fields wait for a later part.
-    assert_eq!(rule("struct B { int a : 3; };"), Some("unsupported"));
+    // Anonymous unions wait for a later part.
+    assert_eq!(rule("struct A { union { int a; }; };"), Some("unsupported"));
     // The bytes of a class, with padding.
     assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
 }
@@ -1203,4 +1203,36 @@ fn unions() {
     assert_eq!(rule("union U { int a; float b; U() : a(1), b(2) {} };"), Some("UNI-8"));
     assert_eq!(rule("struct S; union S { int i; };"), Some("TYN-10"));
     assert_eq!(rule("void f() { union { int a; }; }"), Some("unsupported"));
+}
+
+#[test]
+fn bit_fields() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A store wraps to the width; a narrow bit-field promotes to int.
+    assert_eq!(run("struct B { int a : 3; unsigned b : 5; }; int main() { B x{3, 31}; x.a = 5; x.b = x.b + 1; return x.a * 100 + x.b; }"), RunOutcome::Result(-300));
+    assert_eq!(run("struct B { unsigned x : 4; }; int main() { B b{15}; return (b.x - 16) < 0; }"), RunOutcome::Result(1));
+    // BF-9: units of the type, and an unnamed width 0 starts a new one;
+    // an unnamed bit-field takes no value.
+    assert_eq!(run("struct B { char a; int b : 4; int : 0; int c : 3; }; struct C { int x : 4, : 4, y : 4; }; int main() { C c{1, 2}; return sizeof(B) * 10 + c.y; }"), RunOutcome::Result(82));
+    assert_eq!(run("struct B { int x : 4; }; int main() { B b{7}; const int& r = b.x; b.x = 1; return r; }"), RunOutcome::Result(7));
+    assert_eq!(rule("struct B { int x : 4; }; int* f(B& b) { return &b.x; }"), Some("BF-4"));
+    assert_eq!(rule("struct B { int x : 4; }; int* f(B& b) { return &(b.x = 1); }"), Some("ASN-10"));
+    assert_eq!(rule("struct B { int x : 4; }; int& f(B& b) { return b.x; }"), Some("BF-4"));
+    assert_eq!(rule("struct B { int x : 4; }; auto n = sizeof(B{}.x);"), Some("BF-4"));
+    assert_eq!(rule("struct B { float x : 4; };"), Some("BF-2"));
+    assert_eq!(rule("struct B { int x : 0; };"), Some("BF-2"));
+    assert_eq!(rule("struct B { int x : -1; };"), Some("BF-2"));
+    let warned = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options { werror: true, ..Default::default() }).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(warned("struct B { unsigned char c : 12; };"), Some("BF-8"));
+    assert_eq!(warned("struct B { unsigned x : 3; }; void f(B& b) { b.x = 9; }"), Some("BF-8"));
+    assert_eq!(warned("struct B { unsigned x : 3; }; void f(B& b) { b.x = 7; }"), None);
+    // A bit-field source counts by its width for narrowing.
+    assert_eq!(rule("struct B { int x : 4; }; void f(B b) { char c{b.x}; (void)c; }"), None);
 }

@@ -224,6 +224,9 @@ pub struct Field {
     pub access: Access,
     /// The subobject of a direct base (DER-2), which has no name.
     pub base: bool,
+    /// The width of a bit-field (`classes/unions`, BF-1). An unnamed
+    /// bit-field has the empty name and is no member (BF-12).
+    pub width: Option<u64>,
 }
 
 #[derive(Clone, Debug)]

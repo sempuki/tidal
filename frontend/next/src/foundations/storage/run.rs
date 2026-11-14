@@ -261,12 +261,19 @@ pub fn encode(m: &mut Machine, ty: &QType, v: &Val) -> R<Vec<Option<u8>>> {
     let int = |x: u128, n: usize| (0..n).map(|k| Some((x >> (8 * k)) as u8)).collect::<Vec<_>>();
     Ok(match (&ty.t, v) {
         (Type::Class(c), Val::Agg(xs)) => {
+            if has_bitfield(m, *c) {
+                return unsup("the bytes of a class with a bit-field");
+            }
             let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
             let tys = m.u.field_types(*c);
             // Padding bytes have unspecified values, which a byte read
             // can copy (STG-26).
             let mut out = vec![Some(0); n];
             for (k, x) in xs.iter().enumerate() {
+                // A union member that is not active has no bytes of its own.
+                if *x == Val::Inactive {
+                    continue;
+                }
                 let b = encode(m, &tys[k], x)?;
                 let at = offs[k] as usize;
                 out[at..at + b.len()].clone_from_slice(&b);
@@ -301,6 +308,9 @@ pub fn encode(m: &mut Machine, ty: &QType, v: &Val) -> R<Vec<Option<u8>>> {
 /// when a byte has none.
 pub fn decode(m: &Machine, ty: &QType, bytes: &[Option<u8>]) -> R<Val> {
     if let Type::Class(c) = &ty.t {
+        if has_bitfield(m, *c) || m.u.classes[*c].key == crate::sem::ClassKey::Union {
+            return unsup("a value of a union or of a class with a bit-field from bytes");
+        }
         let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
         let mut out = Vec::new();
         for (k, t) in m.u.field_types(*c).iter().enumerate() {
@@ -341,4 +351,9 @@ pub fn decode(m: &Machine, ty: &QType, bytes: &[Option<u8>]) -> R<Val> {
 /// to storage that holds no object of its class.
 pub fn no_object_call<T>(m: &Machine, f: crate::sem::EntityId) -> R<T> {
     ub("STG-22", format!("a call of the member function '{}' on storage that holds no object of its class", m.u.entities[f].name))
+}
+
+/// Whether a class has a bit-field, in it or in a member.
+fn has_bitfield(m: &Machine, c: crate::sem::types::ClassId) -> bool {
+    m.u.classes[c].fields.iter().any(|&f| m.u.field(f).is_some_and(|x| x.width.is_some() || x.ty.base_elem().class().is_some_and(|d| has_bitfield(m, d))))
 }

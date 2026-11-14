@@ -129,6 +129,7 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
                 return bad(span);
             }
         };
+        crate::classes::unions::check::truncation_warning(cx, &l, &r, span);
         let t = l.ty.clone();
         return Expr::new(EK::Assign(Box::new(l), Box::new(r)), t, Cat::L, span);
     }

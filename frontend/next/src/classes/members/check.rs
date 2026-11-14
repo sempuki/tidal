@@ -283,13 +283,28 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
                 return false;
             }
-            if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator"))) {
-                cx.unsupported(m.span, "a bit-field or a member of this form (build step 4)");
+            if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator" | "bitfield"))) {
+                cx.unsupported(m.span, "a member of this form (build step 4)");
                 return false;
             }
             let specs = crate::declarations::check::decl_specifiers(cx, first, Default::default());
             if specs.unsupported {
                 return false;
+            }
+            // BF rules: the bit-fields of the declaration.
+            if m.child("bitfield").is_some() {
+                if m.child("member_declarator").is_some() {
+                    cx.unsupported(m.span, "a bit-field and another member in one declaration (build step 4)");
+                    return false;
+                }
+                for b in m.children("bitfield") {
+                    match crate::classes::unions::check::bitfield(cx, id, &specs, b, *access, inits) {
+                        Some(true) => {}
+                        Some(false) => return true,
+                        None => return false,
+                    }
+                }
+                return true;
             }
             if specs.typedef || specs.is_extern || specs.thread_local || specs.defines_type && m.children("member_declarator").next().is_none() {
                 cx.unsupported(m.span, "a member of this kind (a typedef or a nested type; build step 4)");
@@ -306,7 +321,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             }
             for md in m.children("member_declarator") {
                 let Some(dn) = md.child("declarator") else {
-                    cx.unsupported(md.span, "a bit-field (build step 4)");
+                    cx.unsupported(md.span, "a member declarator of this form (build step 4)");
                     return false;
                 };
                 if (specs.ty.is_none() && crate::classes::constructors::check::special_name(cx, id, dn).is_some()) || crate::classes::constructors::check::special_name(cx, id, dn) == Some(true) {
@@ -383,7 +398,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     return true;
                 }
                 let index = cx.u.classes[id].fields.len();
-                let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access, base: false };
+                let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access, base: false, width: None };
                 let fid = names::declare_in(cx, cx.scope, &name, EntKind::Field(f), span, Linkage::None);
                 cx.u.classes[id].fields.push(fid);
                 if let Some(i) = md.child("member_init") {
