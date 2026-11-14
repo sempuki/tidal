@@ -72,6 +72,14 @@ fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bo
         (_, Type::Ptr(_)) if null => Some((Rank::Conversion, false)),
         (_, Type::NullPtr) if null => Some((Rank::Exact, false)),
         (Type::Ptr(a), Type::Ptr(b)) => {
+            // ICS-2: a pointer to a derived class converts to a pointer to
+            // an unambiguous base.
+            if let (Some(d), Some(c)) = (a.class(), b.class()) {
+                if crate::classes::derived::check::is_base(cx, d, c) && (!a.c || b.c) && (!a.v || b.v) {
+                    let qual = (b.c && !a.c) || (b.v && !a.v);
+                    return (crate::classes::derived::check::paths(cx, d, c).len() == 1).then_some((Rank::Conversion, qual));
+                }
+            }
             if !conv::pointer_convertible(a, b) {
                 return None;
             }
@@ -117,6 +125,17 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         // type, which a qualification conversion of the inner levels of
         // a pointer type can reach. A prvalue of another pointer type is
         // converted, and the reference binds the temporary (ICS-11).
+        // ICS-11: a reference to a base binds an object of a derived
+        // class directly, with the rank of a conversion.
+        let to_base = matches!((at.class(), inner.class()), (Some(d), Some(b)) if crate::classes::derived::check::is_base(cx, d, b));
+        if to_base {
+            let cv_ok = (!at.c || inner.c) && (!at.v || inner.v);
+            let binds_ok = (lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)));
+            if cv_ok && binds_ok && crate::classes::derived::check::paths(cx, at.class().unwrap(), inner.class().unwrap()).len() == 1 {
+                return Some(Ics { rank: Rank::Conversion, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false });
+            }
+            return None;
+        }
         let same = at.unqual().t == inner.unqual().t || (lvalue && at.is_ptr() && inner.is_ptr() && conv::pointer_convertible(&at.unqual(), inner));
         let compatible = same && (!at.c || inner.c) && (!at.v || inner.v);
         if compatible && ((lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)))) {
@@ -143,6 +162,13 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         return None;
     }
     let from = crate::declarations::auto::check::decay(&arg.ty);
+    // ICS-2: an object of a derived class initializes a base parameter
+    // with the rank of a conversion.
+    if let (Some(d), Some(b)) = (from.class(), param.class()) {
+        if crate::classes::derived::check::is_base(cx, d, b) {
+            return (crate::classes::derived::check::paths(cx, d, b).len() == 1).then_some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: false });
+        }
+    }
     let (rank, qual) = rank_of(cx, &from, param, null)?;
     Some(Ics { rank, qual, binds: None, ellipsis: false })
 }

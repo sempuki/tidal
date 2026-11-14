@@ -255,7 +255,20 @@ pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
     }
     // ACC-2: a member named with its class as the qualifier.
     if let Some(&e) = found.iter().find(|&&e| cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Class) {
-        if !crate::classes::members::check::accessible(cx, e) {
+        // The naming class: the qualifier's, or for an unqualified name
+        // the class of the member function that names it (ACC-3).
+        let owner = cx.u.class_of_scope(cx.u.entities[e].scope);
+        let here = cx.func.as_ref().and_then(|f| f.this.clone()).and_then(|t| t.pointee().and_then(|p| p.class()));
+        let qualifier = match name_of(cx, n) {
+            Some((names::Qual::Scope(s), _, _)) => cx.u.class_of_scope(s),
+            _ => None,
+        };
+        let naming = qualifier.or(here.filter(|&h| owner.is_some_and(|o| crate::classes::derived::check::derives(cx, h, o)))).or(owner);
+        let ok = match naming {
+            Some(k) => crate::classes::derived::check::accessible_through(cx, e, k),
+            None => crate::classes::members::check::accessible(cx, e),
+        };
+        if !ok {
             cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
             return bad(span);
         }
@@ -307,7 +320,7 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, "a data member named in a lambda body (a capture of this, build step 4)");
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
-        EntKind::Field(x) => match cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()) == Some(x.class)) {
+        EntKind::Field(x) => match cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, x.class))) {
             Some(t) => {
                 let obj = Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, span))), t.pointee().unwrap().clone(), Cat::L, span);
                 crate::classes::members::check::field_of(cx, obj, pick, span)

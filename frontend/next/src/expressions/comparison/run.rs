@@ -50,6 +50,32 @@ fn flat(m: &Machine, p: &Ptr) -> Option<i64> {
     Some(off)
 }
 
+/// Two places of one object that part where one of them goes into a
+/// base subobject.
+fn base_and_member(m: &Machine, x: &Ptr, y: &Ptr) -> bool {
+    let Some(mut t) = m.objs.get(x.obj).map(|o| o.ty.clone()) else { return false };
+    for (k, (&a, &b)) in x.path.iter().zip(y.path.iter()).enumerate() {
+        let _ = k;
+        match t.t.clone() {
+            crate::sem::types::Type::Array(e, _) => t = (*e).clone(),
+            crate::sem::types::Type::Class(c) => {
+                let fields = &m.u.classes[c].fields;
+                let is_base = |i: i64| fields.get(i as usize).and_then(|&f| m.u.field(f)).is_some_and(|f| f.base);
+                if a != b {
+                    return is_base(a) || is_base(b);
+                }
+                let Some(f) = fields.get(a as usize).and_then(|&f| m.u.field(f)) else { return false };
+                t = f.ty.clone();
+            }
+            _ => return false,
+        }
+        if a != b {
+            return false;
+        }
+    }
+    false
+}
+
 /// A comparison of two values of the common type.
 pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, _ty: &QType) -> R<Val> {
     if op == BOp::Spaceship {
@@ -75,6 +101,11 @@ pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, _ty: &QType) -> R<Val> 
         (Val::Ptr(x), Val::Ptr(y)) => {
             let (x, y) = (norm(x), norm(y));
             if x.obj == y.obj {
+                // CMP-8: a base subobject and another part of the object
+                // have no specified order.
+                if m.constant && op != BOp::Eq && op != BOp::Ne && base_and_member(m, &x, &y) {
+                    return crate::foundations::constant_evaluation::run::unrelated_compare();
+                }
                 // Places in one object order by their addresses, also
                 // across members of a class (CMP-26).
                 if x.path.len() != y.path.len() || m.objs[x.obj].ty.base_elem().is_class() {

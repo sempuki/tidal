@@ -351,7 +351,14 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             cx.error(span, "PFX-11", format!("member access on {}, which is not a class", obj.ty.show()));
             return Some(bad(span));
         };
-        let found = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, &name);
+        let (found, decl) = match crate::classes::derived::check::member_lookup(cx, c, &name) {
+            Ok(Some(x)) => (x.ents, x.class),
+            Ok(None) => (Vec::new(), c),
+            Err(()) => {
+                cx.error(span, "DER-4", format!("the member '{}' is in more than one base", name));
+                return Some(bad(span));
+            }
+        };
         if found.is_empty() || !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
             // A data member that holds a function pointer, or no member.
             let m = crate::classes::members::check::member_access(cx, obj, false, id, span);
@@ -361,7 +368,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             let f = deref_ref(m);
             return Some(finish_call(cx, f, None, args.to_vec(), span, None));
         }
-        (Some(obj), cx.u.classes[c].scope, name, id.span)
+        (Some(obj), cx.u.classes[decl].scope, name, id.span)
     } else {
         let n = callee_name(callee)?;
         let (q, name, nspan) = primary::check::name_of(cx, n)?;
@@ -376,7 +383,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         }
         let class = cx.u.func(members[0]).unwrap().class.unwrap();
         // Inside a member function of the class, the object is `*this`.
-        let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()) == Some(class));
+        let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
         let obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
         if obj.is_none() && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static) && !members.iter().any(|&f| cx.u.func(f).unwrap().member_static) {
             let t = cx.unsupported(span, "a non-static member function called without an object (build step 4)");
@@ -386,7 +393,12 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     };
     let cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
     let f = ovl::resolve_with(cx, &cands, object.as_ref(), args, span, &name)?;
-    if !crate::classes::members::check::accessible(cx, f) {
+    let naming = object.as_ref().and_then(|o| o.ty.class()).or(cx.u.func(f).and_then(|x| x.class));
+    let ok = match naming {
+        Some(n) => crate::classes::derived::check::accessible_through(cx, f, n),
+        None => crate::classes::members::check::accessible(cx, f),
+    };
+    if !ok {
         cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
         return Some(bad(span));
     }
@@ -395,6 +407,23 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     let fty = QType::new(Type::Func(func.ty.clone()));
     let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
     let object = object.filter(|_| !func.member_static);
+    // DER-3: the object of a member of a base is the base subobject.
+    let object = match (object, func.class) {
+        (Some(o), Some(k)) if o.ty.class().is_some_and(|oc| oc != k) => {
+            let oc = o.ty.class().unwrap();
+            let ps = crate::classes::derived::check::paths(cx, oc, k);
+            if ps.len() != 1 {
+                cx.error(span, "DER-4", format!("the member '{}' is in more than one base subobject", name));
+                return Some(bad(span));
+            }
+            if !crate::classes::derived::check::accessible_through(cx, f, oc) {
+                cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
+                return Some(bad(span));
+            }
+            Some(crate::classes::derived::check::along(cx, o, oc, &ps[0]))
+        }
+        (o, _) => o,
+    };
     // ICS-13: the object binds the implicit object parameter.
     if let Some(o) = &object {
         if (o.ty.c && !func.obj_cv.0) || (o.ty.v && !func.obj_cv.1) {

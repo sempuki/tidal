@@ -508,12 +508,21 @@ code. An operator applied to an operand of class or enumeration type
 calls the operator function that overload resolution chooses among the
 members of the left operand's class and the non-members that lookup
 finds, with the reversed and rewritten candidates of `==` and `!=`; a
-converting constructor converts an operand of a non-member. The
+converting constructor converts an operand of a non-member. A class
+with non-virtual bases holds a subobject for each base before its
+declared members; an empty base takes no space, and a base that is not
+a POD lends its tail padding. Lookup and member access find the members
+of the bases, with ambiguity and access along each path, and the
+constructor initializes the bases first. A derived object converts to a
+reference or a pointer to an unambiguous, accessible base, in
+initialization, overload resolution, comparison, the conditional
+operator, and `static_cast`, which converts back too. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a class, a literal operator, an
-`operator->`, a comparison that `<=>` rewrites, a base, a union, a
+`operator->`, a comparison that `<=>` rewrites, a virtual base, a
+virtual function, a union, a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with

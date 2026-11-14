@@ -1092,3 +1092,25 @@ fn operator_functions() {
     assert_eq!(rule("enum C { r, b }; bool operator==(const C&, const C&); bool x = r == b;"), Some("OVL-36"));
     assert_eq!(rule("struct S { void operator=(const S&) = default; };"), Some("CPY-17"));
 }
+
+#[test]
+fn derived_classes() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A base is initialized first and destroyed last; its members are
+    // members of the derived class.
+    assert_eq!(run("int log_ = 0; struct B { int v; B(int x) : v(x) { log_ = log_ * 10 + 1; } ~B() { log_ = log_ * 10 + 3; } }; struct D : B { int w; D() : B(4), w(5) { log_ = log_ * 10 + 2; } ~D() { log_ = log_ * 10 + 4; } }; int main() { { D d; if (d.v + d.w != 9) return 1; } return log_ == 1243 ? 0 : 2; }"), RunOutcome::Result(0));
+    // A derived object converts to a reference and a pointer to its base,
+    // and the base's member functions take it as their object.
+    assert_eq!(run("struct A { int a = 1; int get() const { return a; } }; struct B { int b = 2; }; struct D : A, B { int d = 3; }; int f(const B& b) { return b.b; } int main() { D x; B* p = &x; return x.get() * 100 + f(x) * 10 + p->b + x.d; }"), RunOutcome::Result(125));
+    // An empty base takes no space.
+    assert_eq!(run("struct E {}; struct D : E { int v; }; int main() { return sizeof(D) == sizeof(int) ? 0 : 1; }"), RunOutcome::Result(0));
+    assert_eq!(rule("struct B {}; struct D : B, B {};"), Some("DER-1"));
+    assert_eq!(rule("struct A { int x; }; struct B { int x; }; struct D : A, B { int f() { return x; } };"), Some("DER-4"));
+    assert_eq!(rule("struct B { int x; }; struct D : private B {}; int f(D d) { return d.x; }"), Some("ACC-2"));
+    assert_eq!(rule("struct A {}; struct B : private A {}; struct C : B { void f() { A* p = nullptr; (void)p; } };"), Some("ACC-14"));
+    assert_eq!(rule("struct B {}; struct D : virtual B {};"), Some("unsupported"));
+}

@@ -20,6 +20,23 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     }
     let e = deref_ref(e);
     let span = e.span;
+    // DER-5: a reference to a base binds the base subobject.
+    let e = match (e.ty.class(), inner.class()) {
+        (Some(d), Some(b)) if crate::classes::derived::check::is_base(cx, d, b) => {
+            let e = if e.cat == Cat::PR {
+                let t = e.ty.clone();
+                e.conv(Conv::Materialize, t, Cat::X)
+            } else {
+                e
+            };
+            crate::classes::derived::check::to_base(cx, e, b, span)?
+        }
+        (Some(b), Some(d)) if crate::classes::derived::check::is_base(cx, d, b) => {
+            cx.error_cause(span, rule, Some("DER-10"), format!("a reference to {} does not bind an object of its base {}", inner.show(), e.ty.show()));
+            return None;
+        }
+        _ => e,
+    };
     let (compatible, cv_ok) = related(&e.ty, &inner);
     if compatible && e.cat == Cat::L {
         if rv && !inner.is_func() {
@@ -170,7 +187,7 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
             let probe = cx.u.diags.len();
             let e = expr(cx, c);
             cx.u.diags.truncate(probe);
-            e.ty.nonref().class() == ty.nonref().class()
+            e.ty.nonref().class().zip(ty.nonref().class()).is_some_and(|(a, b)| crate::classes::derived::check::derives(cx, a, b))
         });
         if ty.nonref().is_class() && !one_of_class {
             let inner = ty.nonref();

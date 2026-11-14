@@ -199,6 +199,20 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
             if null {
                 return Ok(e.conv(Conv::NullPtr, target, Cat::PR));
             }
+            // DER-5: a pointer to a derived class converts to a pointer to
+            // an unambiguous, accessible base.
+            if let (Type::Ptr(fp), Some(c)) = (&from.t, tp.class()) {
+                if fp.class().is_some_and(|d| crate::classes::derived::check::is_base(cx, d, c)) {
+                    if (fp.c && !tp.c) || (fp.v && !tp.v) {
+                        return Err(format!("no implicit conversion from {} to {} (CV-10, CONV-9)", from.show(), to.show()));
+                    }
+                    let span = e.span;
+                    return crate::classes::derived::check::ptr_to_base(cx, e, target, span).ok_or_else(|| "the base conversion failed (DER-10)".to_string());
+                }
+                if fp.class().is_some_and(|d| crate::classes::derived::check::is_base(cx, c, d)) {
+                    return Err(format!("no implicit conversion from {} to {}, a pointer to a derived class (DER-10)", from.show(), to.show()));
+                }
+            }
             match &from.t {
                 Type::Ptr(fp) if pointer_convertible(fp, tp) => Ok(e.conv(Conv::PtrNoOp, target, Cat::PR)),
                 // CONV-9: to or from a pointer to void. CV-10 with
@@ -239,7 +253,7 @@ pub fn rule_of(msg: &str) -> Option<&'static str> {
 /// cause, beside the rule of the context or of `rule_of`: the last rule
 /// in parentheses.
 pub fn cause_of(msg: &str) -> Option<&'static str> {
-    const CAUSES: [&str; 9] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25"];
+    const CAUSES: [&str; 10] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25", "DER-10"];
     CAUSES.iter().copied().filter(|r| msg.contains(&format!("{})", r))).max_by_key(|r| msg.rfind(&format!("{})", r)))
 }
 

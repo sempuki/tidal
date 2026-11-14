@@ -171,7 +171,12 @@ fn found(cx: &mut Check, name: &str, args: &[Expr], members_of: Option<&Expr>) -
     let mut members = Vec::new();
     if let Some(c) = members_of.and_then(|x| x.ty.nonref().class()) {
         if cx.u.classes[c].complete {
-            members = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, name).into_iter().filter(|&e| cx.u.func(e).is_some()).collect();
+            // DER-3: the members of the class or of its bases.
+            members = match crate::classes::derived::check::member_lookup(cx, c, name) {
+                Ok(Some(x)) => x.ents,
+                _ => Vec::new(),
+            };
+            members.retain(|&e| cx.u.func(e).is_some());
         }
     }
     let mut others: Vec<EntityId> = crate::foundations::names::check::lookup(cx, name).into_iter().filter(|&e| cx.u.func(e).is_some_and(|f| f.class.is_none())).collect();
@@ -303,7 +308,19 @@ fn build_call(cx: &mut Check, c: Cand, args: Vec<Expr>, span: Span) -> Expr {
     let callee = Expr::new(EK::Func(c.f), QType::new(Type::Func(func.ty.clone())), Cat::L, span);
     let call = if c.member {
         let mut args = args;
-        let obj = args.remove(0);
+        let mut obj = args.remove(0);
+        // DER-3: the object of a member of a base is the base subobject.
+        if let (Some(oc), Some(k)) = (obj.ty.nonref().class(), func.class) {
+            if oc != k {
+                let o = crate::foundations::values::check::deref_ref(obj);
+                let ps = crate::classes::derived::check::paths(cx, oc, k);
+                if ps.len() != 1 {
+                    cx.error(span, "DER-4", format!("the operator function '{}' is in more than one base subobject", cx.u.entities[c.f].name));
+                    return bad(span);
+                }
+                obj = crate::classes::derived::check::along(cx, o, oc, &ps[0]);
+            }
+        }
         let obj = if func.member_static { None } else { Some(obj) };
         crate::expressions::postfix::check::finish_call(cx, callee, Some(c.f), args, span, obj)
     } else {
@@ -443,7 +460,12 @@ pub fn binary(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span) -> Optio
 fn has_matching_ne(cx: &Check, f: EntityId) -> bool {
     let Some(func) = cx.u.func(f) else { return false };
     let scope = cx.u.entities[f].scope;
-    crate::foundations::names::check::declared_here(cx, scope, "operator!=").into_iter().any(|g| {
+    // For a member, member lookup in its class, which finds a base's.
+    let ne = match func.class.and_then(|c| crate::classes::derived::check::member_lookup(cx, c, "operator!=").ok().flatten()) {
+        Some(x) => x.ents,
+        None => crate::foundations::names::check::declared_here(cx, scope, "operator!="),
+    };
+    ne.into_iter().any(|g| {
         cx.u.func(g).is_some_and(|h| h.ty.params == func.ty.params && (h.class.is_some() && !h.member_static) == (func.class.is_some() && !func.member_static))
     })
 }

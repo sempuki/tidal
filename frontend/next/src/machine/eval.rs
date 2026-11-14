@@ -118,6 +118,29 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             _ => Ok(Val::Ptr(place(m, x)?)),
         },
         EK::Closure(id) => Ok(Val::Fn(*id)),
+        // DER-5: the base subobject's address; null stays null.
+        EK::BasePtr(p, path) => match eval(m, p)? {
+            Val::Ptr(mut q) if q.view.is_none() => {
+                q.path.extend(path.iter().map(|&i| i as i64));
+                q.array = false;
+                Ok(Val::Ptr(q))
+            }
+            Val::Null => Ok(Val::Null),
+            _ => unsup("a conversion to a base of a pointer of this form"),
+        },
+        EK::DerivedPtr(p, path) => match eval(m, p)? {
+            Val::Ptr(mut q) if q.view.is_none() => {
+                let tail: Vec<i64> = path.iter().map(|&i| i as i64).collect();
+                if q.path.len() < tail.len() || q.path[q.path.len() - tail.len()..] != tail[..] {
+                    return crate::machine::ub("DER-17", "a static_cast to a derived class of an object that is not its base subobject");
+                }
+                let n = q.path.len() - tail.len();
+                q.path.truncate(n);
+                Ok(Val::Ptr(q))
+            }
+            Val::Null => Ok(Val::Null),
+            _ => unsup("a conversion to a derived class of a pointer of this form"),
+        },
         EK::Unevaluated(_) => Ok(Val::Void),
         EK::List(i) => {
             let v = init_value(m, &e.ty, i)?;

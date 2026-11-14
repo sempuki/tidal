@@ -42,6 +42,24 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
             return mk(c, a, b, t, Cat::L);
         }
     }
+    // COND-3: glvalues of a derived class and its base give a glvalue of
+    // the base.
+    if a.cat != Cat::PR && a.cat == b.cat {
+        if let (Some(x), Some(y)) = (a.ty.class(), b.ty.class()) {
+            let flip = crate::classes::derived::check::is_base(cx, y, x);
+            if flip || crate::classes::derived::check::is_base(cx, x, y) {
+                let (d, base) = if flip { (b.clone(), a.clone()) } else { (a.clone(), b.clone()) };
+                let bc = base.ty.class().unwrap();
+                let Some(d) = crate::classes::derived::check::to_base(cx, d, bc, span) else { return bad(span) };
+                let t = base.ty.with_cv(d.ty.c || base.ty.c, d.ty.v || base.ty.v);
+                let cat = a.cat;
+                let d = d.conv(Conv::NoOp, t.clone(), cat);
+                let base = base.conv(Conv::NoOp, t.clone(), cat);
+                let (a, b) = if flip { (base, d) } else { (d, base) };
+                return mk(c, a, b, t, cat);
+            }
+        }
+    }
     if a.ty.is_void() || b.ty.is_void() {
         if a.ty.is_void() && b.ty.is_void() {
             return mk(c, a, b, QType::void(), Cat::PR);
@@ -78,6 +96,20 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
         return mk(c, a, b, t, Cat::PR);
     }
     if let (Some(pa), Some(pb)) = (a.ty.pointee(), b.ty.pointee()) {
+        if let (Some(x), Some(y)) = (pa.class(), pb.class()) {
+            let flip = crate::classes::derived::check::is_base(cx, y, x);
+            if flip || crate::classes::derived::check::is_base(cx, x, y) {
+                let t = QType::ptr_to(if flip { pa.clone() } else { pb.clone() }.with_cv(pa.c || pb.c, pa.v || pb.v));
+                let (a, b) = if flip {
+                    let Some(b) = crate::classes::derived::check::ptr_to_base(cx, b, t.clone(), span) else { return bad(span) };
+                    (a.conv(Conv::PtrNoOp, t.clone(), Cat::PR), b)
+                } else {
+                    let Some(a) = crate::classes::derived::check::ptr_to_base(cx, a, t.clone(), span) else { return bad(span) };
+                    (a, b.conv(Conv::PtrNoOp, t.clone(), Cat::PR))
+                };
+                return mk(c, a, b, t, Cat::PR);
+            }
+        }
         if conv::pointer_convertible(pa, pb) {
             let t = b.ty.clone();
             let a = a.conv(Conv::PtrNoOp, t.clone(), Cat::PR);

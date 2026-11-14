@@ -154,7 +154,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     // The closure type, with its member scope inside the current scope.
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), "");
     let class = cx.u.classes.len();
-    cx.u.classes.push(ClassInfo { name: format!("(lambda at line {})", span.line).into(), key: ClassKey::Class, scope, fields: Vec::new(), complete: false });
+    cx.u.classes.push(ClassInfo { name: format!("(lambda at line {})", span.line).into(), key: ClassKey::Class, scope, fields: Vec::new(), complete: false, is_final: false });
     let mut ctx = LambdaCtx { class, default, mutable, caps: Vec::new(), init_vars: Vec::new(), inits: Vec::new(), constants: Vec::new() };
     // The explicit captures, initialized in the enclosing context.
     for w in &written {
@@ -343,7 +343,7 @@ fn new_field(cx: &mut Check, class: ClassId, ty: QType) -> EntityId {
     let scope = cx.u.classes[class].scope;
     let f = cx.u.add(crate::sem::Entity {
         name: "".into(),
-        kind: EntKind::Field(Field { ty, class, index, init: None, mutable: false, access: crate::sem::Access::Public }),
+        kind: EntKind::Field(Field { ty, class, index, init: None, mutable: false, access: crate::sem::Access::Public, base: false }),
         span: Span::default(),
         scope,
         linkage: Linkage::None,

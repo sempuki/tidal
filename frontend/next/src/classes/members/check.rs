@@ -27,7 +27,7 @@ fn declared_class(cx: &Check, name: &str) -> Option<ClassId> {
 fn new_class(cx: &mut Check, name: &str, key: ClassKey, span: Span) -> ClassId {
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), name);
     let id = cx.u.classes.len();
-    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false });
+    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false });
     if !name.is_empty() {
         names::declare_in(cx, cx.scope, name, EntKind::Class(id), span, Linkage::None);
     }
@@ -82,8 +82,8 @@ pub fn elaborated_class(cx: &mut Check, n: &Node) -> QType {
 /// (CLS-2).
 pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     let Some(head) = n.child("class_head") else { return QType::error() };
-    if head.child("base_clause").is_some() || head.child("nested_name").is_some() || head.child("template_id").is_some() || cx.has_word(head, "final") {
-        return cx.unsupported(head.span, "a class with a base, a qualified name, or 'final' (build step 4)");
+    if head.child("nested_name").is_some() || head.child("template_id").is_some() {
+        return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
     if head.kids.iter().any(|k| matches!(k, Kid::Node(x) if matches!(x.prod, "attribute_spec" | "alignment_specifier"))) {
         return cx.unsupported(head.span, "an attribute or alignas on a class (build step 4)");
@@ -102,6 +102,14 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         None => new_class(cx, &name, key, head.span),
     };
     cx.u.classes[id].key = key;
+    cx.u.classes[id].is_final = cx.has_word(head, "final");
+    // DER-1, DER-2: the base subobjects come first.
+    if let Some(bc) = head.child("base_clause") {
+        if !crate::classes::derived::check::base_clause(cx, id, key, bc) {
+            cx.u.classes[id].complete = true;
+            return QType::error();
+        }
+    }
     let saved = cx.scope;
     cx.scope = cx.u.classes[id].scope;
     let mut access = if key == ClassKey::Class { Access::Private } else { Access::Public };
@@ -168,6 +176,11 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
 #[allow(clippy::too_many_arguments)]
 fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>, ctor_bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
     let Some(first) = first_node(m) else { return true };
+    // VIRT rules: override and final belong to virtual functions.
+    if m.find("virt_specifiers").is_some() {
+        cx.unsupported(m.span, "a virt-specifier (override or final; virtual functions, build step 4)");
+        return false;
+    }
     // A constructor or destructor: a declarator with the class's name.
     if first.prod == "member_declarator" {
         return match first.child("declarator") {
@@ -335,7 +348,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     return true;
                 }
                 let index = cx.u.classes[id].fields.len();
-                let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access };
+                let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access, base: false };
                 let fid = names::declare_in(cx, cx.scope, &name, EntKind::Field(f), span, Linkage::None);
                 cx.u.classes[id].fields.push(fid);
                 if let Some(i) = md.child("member_init") {
@@ -523,7 +536,8 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
         let base = x.ty.base_elem();
         // CTOR-3: a member whose class has no usable default constructor.
         if let Some(d) = base.class().filter(|&d| crate::classes::constructors::check::has_ctors(cx, d)) {
-            let ok = crate::classes::constructors::check::ctors(cx, d).into_iter().any(|g| cx.u.func(g).is_some_and(|y| y.ty.params.is_empty() && !y.deleted) && accessible_from(cx, g, c));
+            // DER-14: a base's protected constructor is accessible.
+            let ok = crate::classes::constructors::check::ctors(cx, d).into_iter().any(|g| cx.u.func(g).is_some_and(|y| y.ty.params.is_empty() && !y.deleted) && (accessible_from(cx, g, c) || (x.base && cx.u.access.get(&g) == Some(&Access::Protected))));
             if !ok {
                 cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the member '{}' has no usable default constructor", cx.u.entities[f].name));
                 return false;
@@ -619,8 +633,14 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
         Some(u) if u.prod == "unqualified_id" && u.kids.len() == 1 => cx.source(u),
         _ => return cx_unsupported(cx, span, "a member name of this form"),
     };
-    let scope = cx.u.classes[c].scope;
-    let found = names::declared_here(cx, scope, &name);
+    let found = match crate::classes::derived::check::member_lookup(cx, c, &name) {
+        Ok(Some(x)) => x.ents,
+        Ok(None) => Vec::new(),
+        Err(()) => {
+            cx.error(span, "DER-4", format!("the member '{}' is in more than one base", name));
+            return bad(span);
+        }
+    };
     let Some(&f) = found.first() else {
         cx.error(span, "PFX-11", format!("no member named '{}'", name));
         return bad(span);
@@ -629,7 +649,7 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
         EntKind::Field(_) => field_of(cx, obj, f, span),
         // A static data member: the object is not read.
         EntKind::Var(_) => {
-            if !accessible(cx, f) {
+            if !crate::classes::derived::check::accessible_through(cx, f, c) {
                 cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
                 return bad(span);
             }
@@ -670,13 +690,26 @@ pub fn accessible(cx: &Check, f: EntityId) -> bool {
 /// ACC-2.
 pub fn field_of(cx: &mut Check, obj: Expr, f: EntityId, span: Span) -> Expr {
     let Some(field) = cx.u.field(f).cloned() else { return bad(span) };
-    if !accessible(cx, f) {
+    let naming = obj.ty.class().unwrap_or(field.class);
+    let ok = if naming == field.class { accessible(cx, f) } else { crate::classes::derived::check::accessible_through(cx, f, naming) };
+    if !ok {
         cx.error(span, "ACC-2", format!("the member '{}' is not public", cx.u.entities[f].name));
         return bad(span);
     }
     let obj = if obj.cat == Cat::PR {
         let t = obj.ty.clone();
         obj.conv(Conv::Materialize, t, Cat::X)
+    } else {
+        obj
+    };
+    // DER-3: a member of a base is a member of the base subobject.
+    let obj = if naming != field.class {
+        let ps = crate::classes::derived::check::paths(cx, naming, field.class);
+        if ps.len() != 1 {
+            cx.error(span, "DER-4", format!("the member '{}' is in more than one base subobject", cx.u.entities[f].name));
+            return bad(span);
+        }
+        crate::classes::derived::check::along(cx, obj, naming, &ps[0])
     } else {
         obj
     };

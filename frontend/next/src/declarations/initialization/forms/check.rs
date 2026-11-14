@@ -24,6 +24,22 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
     if e.ty.is_error() || to.is_error() {
         return None;
     }
+    // DER-5: an object of a derived class initializes a base object from
+    // its base part.
+    let e = match (e.ty.nonref().class(), to.class()) {
+        (Some(d), Some(b)) if crate::classes::derived::check::is_base(cx, d, b) => {
+            let e = crate::foundations::values::check::deref_ref(e);
+            let e = if e.cat == crate::sem::tree::Cat::PR {
+                let t = e.ty.clone();
+                e.conv(crate::sem::tree::Conv::Materialize, t, crate::sem::tree::Cat::X)
+            } else {
+                e
+            };
+            let span = e.span;
+            crate::classes::derived::check::to_base(cx, e, b, span)?
+        }
+        _ => e,
+    };
     // CTOR-10: a converting constructor makes the object.
     if let Some(c) = to.class().filter(|&c| crate::classes::constructors::check::has_ctors(cx, c)) {
         if e.ty.nonref().unqual().t != Type::Class(c) {

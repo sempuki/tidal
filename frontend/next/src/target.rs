@@ -129,20 +129,102 @@ impl Target {
         }
         let union = info.key == crate::sem::ClassKey::Union;
         let (mut size, mut align, mut offs) = (0u64, 1u64, Vec::new());
-        for t in u.field_types(c) {
+        // The empty classes among the subobjects placed so far, with their
+        // offsets: two subobjects of one type never share an address.
+        let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
+        let fields: Vec<&crate::sem::Field> = info.fields.iter().filter_map(|&f| u.field(f)).collect();
+        for x in fields.iter() {
+            let t = x.ty.clone();
+            let inner = t.base_elem().class().map(|k| self.empty_subobjects(u, k)).unwrap_or_default();
+            let clash = |at: u64, placed: &[(crate::sem::types::ClassId, u64)]| inner.iter().any(|&(k, o)| placed.contains(&(k, at + o)));
+            // An empty base takes no space (DER-2), at the first offset
+            // where it shares no address with a subobject of its type.
+            if x.base && t.class().is_some_and(|b| self.is_empty(u, b)) {
+                let mut at = 0;
+                while clash(at, &placed) {
+                    at += 1;
+                }
+                offs.push(at);
+                placed.extend(inner.iter().map(|&(k, o)| (k, at + o)));
+                size = size.max(at.min(size));
+                if at > 0 {
+                    size = size.max(at + 1);
+                }
+                continue;
+            }
             let (s, a) = (self.size_of(u, &t)?, self.align_of(u, &t)?);
+            // The tail padding of a base that is not a POD holds the
+            // members that follow (the matrix's ABI, CLS-35).
+            let s = match t.class() {
+                Some(b) if x.base && !self.pod(u, b) => self.data_size(u, b)?,
+                _ => s,
+            };
             align = align.max(a);
             if union {
                 offs.push(0);
                 size = size.max(s);
             } else {
-                let at = size.div_ceil(a).checked_mul(a)?;
+                let mut at = size.div_ceil(a).checked_mul(a)?;
+                while clash(at, &placed) {
+                    at = at.checked_add(a)?;
+                }
                 offs.push(at);
+                placed.extend(inner.iter().map(|&(k, o)| (k, at + o)));
                 size = at.checked_add(s)?;
             }
         }
         let size = size.div_ceil(align).max(1).checked_mul(align)?;
         Some((size.max(1), align, offs))
+    }
+    /// The subobjects of empty class type in an object of class `c`, with
+    /// their offsets, `c` itself included when it is empty.
+    fn empty_subobjects(self, u: &Unit, c: crate::sem::types::ClassId) -> Vec<(crate::sem::types::ClassId, u64)> {
+        let mut out = Vec::new();
+        if self.is_empty(u, c) {
+            out.push((c, 0));
+        }
+        let Some((_, _, offs)) = self.layout(u, c) else { return out };
+        for (k, &f) in u.classes[c].fields.iter().enumerate() {
+            let Some(x) = u.field(f) else { continue };
+            if let Some(d) = x.ty.class() {
+                out.extend(self.empty_subobjects(u, d).into_iter().map(|(e, o)| (e, o + offs[k])));
+            }
+        }
+        out
+    }
+    /// The size of a class without its tail padding.
+    fn data_size(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<u64> {
+        let (size, _, offs) = self.layout(u, c)?;
+        let mut end = 0;
+        for (k, &f) in u.classes[c].fields.iter().enumerate() {
+            let x = u.field(f)?;
+            if x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b)) {
+                continue;
+            }
+            let s = match x.ty.class() {
+                Some(b) if x.base && !self.pod(u, b) => self.data_size(u, b)?,
+                _ => self.size_of(u, &x.ty)?,
+            };
+            end = end.max(offs[k] + s);
+        }
+        Some(if end == 0 { size } else { end })
+    }
+    /// A POD class for the layout: no constructor, destructor, or
+    /// assignment other than defaulted ones, no base, and public members
+    /// of POD types.
+    fn pod(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
+        let names = &u.scopes[u.classes[c].scope].names;
+        let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !u.defaulted.contains(f)));
+        if provided("{ctor}") || provided("{dtor}") || provided("operator=") {
+            return false;
+        }
+        u.classes[c].fields.iter().all(|&f| {
+            u.field(f).is_some_and(|x| !x.base && x.init.is_none() && x.access == crate::sem::Access::Public && x.ty.base_elem().class().is_none_or(|d| self.pod(u, d)))
+        })
+    }
+    /// A class with no data member other than empty bases.
+    pub fn is_empty(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
+        u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b))))
     }
     pub fn align_of(self, u: &Unit, q: &QType) -> Option<u64> {
         Some(match &q.t {

@@ -199,6 +199,8 @@ pub struct ClassInfo {
     pub scope: ScopeId,
     pub fields: Vec<EntityId>,
     pub complete: bool,
+    /// Declared `final` (DER-1).
+    pub is_final: bool,
 }
 
 /// The closure type of a lambda expression (`expressions/lambdas`): its
@@ -220,6 +222,8 @@ pub struct Field {
     pub init: Option<tree::Init>,
     pub mutable: bool,
     pub access: Access,
+    /// The subobject of a direct base (DER-2), which has no name.
+    pub base: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -318,6 +322,18 @@ impl Unit {
             EntKind::Field(f) => Some(f),
             _ => None,
         }
+    }
+    /// The class whose member scope a scope is.
+    pub fn class_of_scope(&self, s: ScopeId) -> Option<types::ClassId> {
+        if self.scopes.get(s)?.kind != ScopeKind::Class {
+            return None;
+        }
+        self.classes.iter().position(|c| c.scope == s)
+    }
+    /// The direct bases of a class: the position of each base subobject
+    /// among the data members, and its class.
+    pub fn bases(&self, c: types::ClassId) -> Vec<(usize, types::ClassId)> {
+        self.classes[c].fields.iter().filter_map(|&f| self.field(f).filter(|x| x.base).and_then(|x| Some((x.index, x.ty.class()?)))).collect()
     }
     /// The types of a class's data members, in order.
     pub fn field_types(&self, c: types::ClassId) -> Vec<QType> {

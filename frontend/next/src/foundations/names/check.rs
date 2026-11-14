@@ -88,9 +88,38 @@ pub fn lookup(cx: &Check, name: &str) -> Vec<EntityId> {
         if !found.is_empty() {
             return found;
         }
+        // DER-3: the members of a class's bases.
+        let inherited = in_bases(cx, sc, name);
+        if !inherited.is_empty() {
+            return inherited;
+        }
         s = cx.u.scopes[sc].parent;
     }
     Vec::new()
+}
+
+/// The members named `name` that the bases of the class of scope `s`
+/// declare (DER-3); for an ambiguity (DER-4), those of every path.
+pub fn in_bases(cx: &Check, s: ScopeId, name: &str) -> Vec<EntityId> {
+    let Some(c) = cx.u.class_of_scope(s) else { return Vec::new() };
+    if cx.u.bases(c).is_empty() {
+        return Vec::new();
+    }
+    match crate::classes::derived::check::member_lookup(cx, c, name) {
+        Ok(Some(f)) => f.ents,
+        Ok(None) => Vec::new(),
+        Err(()) => {
+            let mut all = Vec::new();
+            for (_, b) in cx.u.bases(c) {
+                for e in in_bases(cx, cx.u.classes[b].scope, name).into_iter().chain(declared_here(cx, cx.u.classes[b].scope, name)) {
+                    if !all.contains(&e) {
+                        all.push(e);
+                    }
+                }
+            }
+            all
+        }
+    }
 }
 
 /// NAM-13, NAM-19: lookup of `x` in the scope a qualifier names: its
@@ -118,6 +147,16 @@ pub fn lookup_in(cx: &Check, s: ScopeId, name: &str) -> Vec<EntityId> {
     if !found.is_empty() {
         return found;
     }
+    let inherited = in_bases(cx, s, name);
+    if !inherited.is_empty() {
+        return inherited;
+    }
+    // NAM-33: a class's own name in its scope.
+    if let Some(c) = cx.u.class_of_scope(s).filter(|&c| *cx.u.classes[c].name == *name) {
+        if let Some(e) = crate::classes::derived::check::injected(cx, c) {
+            return vec![e];
+        }
+    }
     in_scope(cx, s, name, &mut Vec::new())
 }
 
@@ -129,6 +168,10 @@ pub fn lookup_where(cx: &Check, name: &str, keep: impl Fn(&EntKind) -> bool) -> 
         let found: Vec<EntityId> = in_scope(cx, sc, name, &mut Vec::new()).into_iter().filter(|&e| keep(&cx.u.entities[e].kind)).collect();
         if !found.is_empty() {
             return found;
+        }
+        let inherited: Vec<EntityId> = in_bases(cx, sc, name).into_iter().filter(|&e| keep(&cx.u.entities[e].kind)).collect();
+        if !inherited.is_empty() {
+            return inherited;
         }
         s = cx.u.scopes[sc].parent;
     }
@@ -151,6 +194,11 @@ pub fn check_ambiguous(cx: &mut Check, found: &[EntityId], name: &str, span: Spa
         // NS-17: the names come from namespaces that using-directives
         // bring in.
         let scopes: std::collections::HashSet<_> = others.iter().map(|&&e| cx.u.entities[e].scope).collect();
+        // DER-4: members of several bases.
+        if scopes.iter().all(|&s| cx.u.scopes[s].kind == ScopeKind::Class) {
+            cx.error(span, "DER-4", format!("'{}' is found in several bases", name));
+            return true;
+        }
         // NS-12 for an inline namespace, and NS-13 for an unnamed one.
         let cause = if scopes.iter().any(|&s| cx.u.scopes[s].inline) {
             Some("NS-12")
@@ -325,6 +373,10 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
                     Some(p) => ns = cx.u.enclosing_namespace(p),
                     None => break,
                 }
+            }
+            // NAM-27: the namespaces of the bases too.
+            for (_, b) in cx.u.bases(*c) {
+                associated(cx, &crate::sem::types::QType::new(Type::Class(b)), out);
             }
         }
         Type::Enum(e) => {

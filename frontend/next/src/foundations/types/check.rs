@@ -90,6 +90,9 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
         names::check::Qual::Scope(s) => names::check::lookup_in(cx, s, name),
         _ => return QType::error(),
     };
+    if matches!(qual, names::check::Qual::None) && !crate::classes::derived::check::injected_accessible(cx, name) {
+        return cx.error(span, "ACC-14", format!("the name '{}' of a base is inaccessible here", name));
+    }
     for e in found {
         crate::declarations::attributes::check::use_entity(cx, e, span);
         match &cx.u.entities[e].kind {

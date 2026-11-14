@@ -208,12 +208,18 @@ fn dtor_member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n No
 /// deleted or not accessible, so no object of the class can end. True
 /// when it can.
 pub fn dtor_usable(cx: &mut Check, ty: &QType, span: Span) -> bool {
-    fn blocked(cx: &Check, c: ClassId) -> bool {
-        let own = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|&d| cx.u.func(d).is_some_and(|f| f.deleted) || !crate::classes::members::check::accessible(cx, d));
-        own || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| blocked(cx, d)))
+    // The destructor of the class from the point of use, and those of its
+    // members and bases from the class (DER-14: a base's protected one).
+    fn blocked(cx: &Check, c: ClassId, top: bool, base: bool) -> bool {
+        let own = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|&d| {
+            let access = cx.u.access.get(&d).copied().unwrap_or(crate::sem::Access::Public);
+            let ok = if top { crate::classes::members::check::accessible(cx, d) } else { access == crate::sem::Access::Public || (base && access == crate::sem::Access::Protected) };
+            cx.u.func(d).is_some_and(|f| f.deleted) || !ok
+        });
+        own || cx.u.classes[c].fields.clone().iter().any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| blocked(cx, d, false, x.base))))
     }
     let Some(c) = ty.base_elem().class() else { return true };
-    if blocked(cx, c) {
+    if blocked(cx, c, true, false) {
         let cause = if cx.unevaluated > 0 { "UNEV-5" } else { "VC-11" };
         cx.error_cause(span, "DTOR-3", Some(cause), format!("the destructor of '{}' is deleted or not accessible", cx.u.classes[c].name));
         return false;
@@ -441,7 +447,16 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
             }
             return Some(MemInits::Delegate(i));
         }
-        let Some(k) = fields.iter().position(|&x| *cx.u.entities[x].name == *name) else {
+        // CTOR-5: a mem-init that names a direct base initializes its
+        // subobject.
+        // The name can be a type alias of the base (DER-1).
+        let named_class = names::lookup_where(cx, &name, |k| matches!(k, crate::sem::EntKind::Class(_) | crate::sem::EntKind::Typedef(_))).first().and_then(|&e| match &cx.u.entities[e].kind {
+            crate::sem::EntKind::Class(k) => Some(*k),
+            crate::sem::EntKind::Typedef(t) => t.class(),
+            _ => None,
+        });
+        let base_k = fields.iter().position(|&x| cx.u.field(x).is_some_and(|y| y.base && (y.ty.class().is_some_and(|b| *cx.u.classes[b].name == *name) || (named_class.is_some() && y.ty.class() == named_class))));
+        let Some(k) = base_k.or_else(|| fields.iter().position(|&x| *cx.u.entities[x].name == *name)) else {
             cx.error(mi.span, "CTOR-15", format!("'{}' is not a non-static data member of the class", name));
             return None;
         };
@@ -479,7 +494,7 @@ pub fn direct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, span
         if args.is_empty() {
             return Some(crate::classes::members::check::value_init(cx, ty));
         }
-        if args.len() == 1 && args[0].ty.nonref().unqual().t == ty.unqual().t {
+        if args.len() == 1 && args[0].ty.nonref().class().is_some_and(|d| crate::classes::derived::check::derives(cx, d, c)) {
             return crate::declarations::initialization::forms::check::copy_init(cx, args[0].clone(), ty, "INIT-7").map(Init::Expr);
         }
         cx.unsupported(span, "an aggregate from a member initializer of this form (build step 4)");
@@ -532,8 +547,19 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     }
     // CPY-9, CPY-10: an object of the class itself is copied or moved,
     // and a prvalue initializes the object directly.
-    if args.len() == 1 && args[0].ty.nonref().class() == Some(c) {
+    if args.len() == 1 && args[0].ty.nonref().class().is_some_and(|d| crate::classes::derived::check::derives(cx, d, c)) {
         let a = crate::foundations::values::check::deref_ref(args[0].clone());
+        let a = if a.ty.class() != Some(c) {
+            let a = if a.cat == Cat::PR {
+                let t = a.ty.clone();
+                a.conv(crate::sem::tree::Conv::Materialize, t, Cat::X)
+            } else {
+                a
+            };
+            crate::classes::derived::check::to_base(cx, a, c, span)?
+        } else {
+            a
+        };
         if a.cat == Cat::PR {
             return Some(Init::Expr(a));
         }
@@ -548,7 +574,10 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     }
     let name = cx.u.classes[c].name.to_string();
     let f = crate::overloading::overload_resolution::check::resolve(cx, &cands, &args, span, &name)?;
-    let func = cx.u.func(f).unwrap().clone();
+    let Some(func) = cx.u.func(f).cloned() else {
+        cx.unsupported(span, format!("a constructor of '{}' that the front end does not model", name));
+        return None;
+    };
     if copy && list && func.explicit {
         cx.error_cause(span, "CTOR-9", Some("ILC-8"), format!("copy-list-initialization of '{}' chooses an explicit constructor", name));
         return None;
@@ -557,7 +586,7 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
         cx.error(span, "DEL-1", format!("the constructor of '{}' that the initialization chooses is deleted", name));
         return None;
     }
-    if !crate::classes::members::check::accessible(cx, f) {
+    if !crate::classes::derived::check::accessible_through(cx, f, c) {
         cx.error(span, "ACC-2", format!("the constructor of '{}' is not public", name));
         return None;
     }

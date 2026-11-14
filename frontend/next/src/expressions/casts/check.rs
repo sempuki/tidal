@@ -46,6 +46,35 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
         let e = deref_ref(e);
         let cat = if *rv && !inner.is_func() { Cat::X } else { Cat::L };
         let same = e.ty.unqual().t == inner.unqual().t;
+        // DER-5, CAST rules: a static_cast between a class and its base.
+        if matches!(k, Kind::Static) {
+            if let (Some(d), Some(b)) = (e.ty.class(), inner.class()) {
+                let cv_ok = (!e.ty.c || inner.c) && (!e.ty.v || inner.v);
+                if crate::classes::derived::check::is_base(cx, d, b) && cv_ok {
+                    let e = if e.cat == Cat::PR {
+                        let t = e.ty.clone();
+                        e.conv(Conv::Materialize, t, Cat::X)
+                    } else {
+                        e
+                    };
+                    let Some(x) = crate::classes::derived::check::to_base(cx, e, b, span) else { return Ok(bad(span)) };
+                    return Ok(Expr::new(EK::Conv(Conv::NoOp, Box::new(x)), (**inner).clone(), cat, span));
+                }
+                if crate::classes::derived::check::is_base(cx, b, d) && cv_ok && e.cat != Cat::PR {
+                    if !crate::classes::derived::check::base_is_accessible(cx, b, d) {
+                        return Err(("CAST-2", format!("static_cast from {} to {}, whose base is not accessible", e.ty.show(), inner.show())));
+                    }
+                    let ps = crate::classes::derived::check::paths(cx, b, d);
+                    if ps.len() != 1 {
+                        return Err(("DER-10", format!("the base {} occurs as more than one subobject of {}", e.ty.show(), inner.show())));
+                    }
+                    let from = QType::ptr_to(e.ty.clone());
+                    let addr = Expr::new(EK::AddrOf(Box::new(e)), from, Cat::PR, span);
+                    let p = Expr::new(EK::DerivedPtr(Box::new(addr), ps[0].clone()), QType::ptr_to((**inner).clone()), Cat::PR, span);
+                    return Ok(Expr::new(EK::Deref(Box::new(p)), (**inner).clone(), cat, span));
+                }
+            }
+        }
         return match k {
             Kind::Const if same && e.cat != Cat::PR => Ok(Expr::new(EK::Conv(Conv::NoOp, Box::new(e)), (**inner).clone(), cat, span)),
             Kind::Static if same && (!e.ty.c || inner.c) && (!e.ty.v || inner.v) && (e.cat != Cat::PR || *rv || inner.c) => {
@@ -106,6 +135,21 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
                 }
                 if fp.is_void() && !tp.is_func() {
                     return Ok(e.conv(Conv::PtrNoOp, target, Cat::PR));
+                }
+                if let (Some(d), Some(b)) = (fp.class(), tp.class()) {
+                    if crate::classes::derived::check::is_base(cx, d, b) {
+                        return Ok(crate::classes::derived::check::ptr_to_base(cx, e, target, span).unwrap_or_else(|| bad(span)));
+                    }
+                    if crate::classes::derived::check::is_base(cx, b, d) {
+                        if !crate::classes::derived::check::base_is_accessible(cx, b, d) {
+                            return Err(("CAST-2", format!("static_cast from {} to {}, whose base is not accessible", from.show(), to.show())));
+                        }
+                        let ps = crate::classes::derived::check::paths(cx, b, d);
+                        if ps.len() != 1 {
+                            return Err(("DER-10", format!("the base {} occurs as more than one subobject of {}", fp.show(), tp.show())));
+                        }
+                        return Ok(Expr::new(EK::DerivedPtr(Box::new(e), ps[0].clone()), target, Cat::PR, span));
+                    }
                 }
                 if conv::pointer_convertible(fp, tp) {
                     return Ok(e.conv(Conv::PtrNoOp, target, Cat::PR));

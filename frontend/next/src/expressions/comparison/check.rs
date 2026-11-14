@@ -91,6 +91,23 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
             let r = if r.ty.is_nullptr() { r.conv(Conv::NullPtr, t, Cat::PR) } else { r };
             return mk(l, r);
         }
+        // CMP-3: a pointer to a derived class converts to a pointer to
+        // the base.
+        if let (Some(a), Some(b)) = (l.ty.pointee().and_then(|p| p.class()), r.ty.pointee().and_then(|p| p.class())) {
+            let (lp, rp) = (l.ty.pointee().unwrap().clone(), r.ty.pointee().unwrap().clone());
+            if crate::classes::derived::check::is_base(cx, a, b) {
+                let t = QType::ptr_to(rp.with_cv(lp.c || rp.c, lp.v || rp.v));
+                let Some(l) = crate::classes::derived::check::ptr_to_base(cx, l, t.clone(), span) else { return bad(span) };
+                let r = r.conv(Conv::PtrNoOp, t, Cat::PR);
+                return mk(l, r);
+            }
+            if crate::classes::derived::check::is_base(cx, b, a) {
+                let t = QType::ptr_to(lp.with_cv(lp.c || rp.c, lp.v || rp.v));
+                let Some(r) = crate::classes::derived::check::ptr_to_base(cx, r, t.clone(), span) else { return bad(span) };
+                let l = l.conv(Conv::PtrNoOp, t, Cat::PR);
+                return mk(l, r);
+            }
+        }
         if composite(&l.ty, &r.ty).is_none() {
             cx.error(span, "CMP-9", format!("a comparison of unrelated pointers {} and {}", l.ty.show(), r.ty.show()));
             return bad(span);
