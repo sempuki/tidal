@@ -610,6 +610,9 @@ fn unused_locals(cx: &mut Check, fs: crate::sem::ScopeId) {
     for (span, name) in found {
         crate::declarations::attributes::check::unused_variable(cx, span, &name);
     }
+    // ATTR-6: a structured binding declaration with no name read.
+    let bindings: Vec<EntityId> = (cx.u.first_entity..cx.u.entities.len()).filter(|&id| cx.bindings.contains(&id) && inside(cx, cx.u.entities[id].scope)).collect();
+    crate::statements::blocks::check::unused_bindings(cx, &bindings);
 }
 
 /// Whether control can reach the end of a statement (the analysis of

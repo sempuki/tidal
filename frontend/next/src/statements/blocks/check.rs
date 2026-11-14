@@ -68,6 +68,7 @@ pub fn redeclared_from(cx: &mut Check, cond: ScopeId, body: ScopeId, rule: &'sta
 /// ATTR-6: the variables of a block that the program never reads.
 fn unused_variables(cx: &mut Check, s: ScopeId) {
     let ids: Vec<usize> = cx.u.scopes[s].names.values().flatten().copied().collect();
+    unused_bindings(cx, &ids);
     for id in ids {
         let read = crate::declarations::initialization::forms::check::is_read(cx, id);
         if let EntKind::Var(v) = &cx.u.entities[id].kind {
@@ -76,6 +77,41 @@ fn unused_variables(cx: &mut Check, s: ScopeId) {
                 crate::declarations::attributes::check::unused_variable(cx, span, &name);
             }
         }
+    }
+}
+
+/// ATTR-6: a structured binding declaration among `ids` none of whose
+/// names the program reads; its names share the hidden variable.
+pub fn unused_bindings(cx: &mut Check, ids: &[usize]) {
+    let mut groups: Vec<(usize, Vec<usize>)> = Vec::new();
+    for &id in ids {
+        if !cx.bindings.contains(&id) {
+            continue;
+        }
+        let Some(crate::sem::tree::Init::Ref(at)) = cx.u.var(id).and_then(|v| v.init.clone()) else { continue };
+        let Some(h) = hidden_of(&at) else { continue };
+        match groups.iter_mut().find(|g| g.0 == h) {
+            Some(g) => g.1.push(id),
+            None => groups.push((h, vec![id])),
+        }
+    }
+    for (h, names) in groups {
+        let automatic = cx.u.var(h).is_some_and(|v| v.storage == crate::sem::Storage::Automatic);
+        if automatic && !names.iter().any(|&id| crate::declarations::initialization::forms::check::is_read(cx, id)) {
+            let first = names.iter().copied().min_by_key(|&id| cx.u.entities[id].span.col).unwrap_or(names[0]);
+            let (name, span) = (cx.u.entities[first].name.clone(), cx.u.entities[first].span);
+            crate::declarations::attributes::check::unused_variable(cx, span, &name);
+        }
+    }
+}
+
+/// The hidden variable that a structured binding's name refers into.
+fn hidden_of(e: &crate::sem::tree::Expr) -> Option<usize> {
+    use crate::sem::tree::EK;
+    match &e.k {
+        EK::Var(v) => Some(*v),
+        EK::Member(x, _) | EK::Conv(_, x) | EK::Deref(x) | EK::Index(x, _) => hidden_of(x),
+        _ => None,
     }
 }
 

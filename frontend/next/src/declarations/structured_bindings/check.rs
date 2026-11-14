@@ -1,6 +1,6 @@
 //! The check part of `declarations/structured-bindings`, for an array
-//! (SB-1, SB-2, SB-4, SB-7, SB-8, SB-12, SB-13). A class type comes
-//! with build step 4.
+//! and for a class with public data members (SB-1, SB-2, SB-3, SB-4,
+//! SB-7, SB-8, SB-12, SB-13).
 
 use crate::expressions::check::{expr, first_node};
 use crate::foundations::names::check as names;
@@ -39,7 +39,11 @@ pub fn sb_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     let span = n.span;
     let words = cx.words(n);
     let head: Vec<&str> = words.iter().copied().take_while(|w| *w != "[").collect();
-    let (c, v) = (head.contains(&"const"), head.contains(&"volatile"));
+    let cvs: Vec<&str> = n.children("cv").map(|x| cx.first_word(x)).collect();
+    let (c, v) = (head.contains(&"const") || cvs.contains(&"const"), head.contains(&"volatile") || cvs.contains(&"volatile"));
+    if v {
+        crate::declarations::volatile::check::structured_binding(cx, span);
+    }
     let reference = head.iter().find(|w| matches!(**w, "&" | "&&")).copied();
     let storage = if head.contains(&"thread_local") {
         Storage::Thread
@@ -87,9 +91,12 @@ pub fn sb_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     let Type::Array(el, Some(bound)) = et.t.clone() else {
         if et.is_scalar() {
             cx.error(e.span, "SB-13", format!("a structured binding of the scalar type {}", et.show()));
-        } else {
-            cx.unsupported(e.span, "a structured binding of a class type (build step 4)");
+            return failed(local, span);
         }
+        if let Some(k) = et.class() {
+            return class_bindings(cx, e, k, &ids, (c, v), reference, storage, local, span, init.span);
+        }
+        cx.unsupported(e.span, "a structured binding of this type");
         return failed(local, span);
     };
     // SB-2: one name for each element.
@@ -126,7 +133,102 @@ pub fn sb_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
         let ptr = base.conv(Conv::ArrayDecay, QType::ptr_to(elem.clone()), Cat::PR);
         let at = Expr::new(EK::Index(Box::new(ptr), Box::new(Expr::int(k as i128, size_t.clone(), *sp))), elem.clone(), Cat::L, *sp);
         let i = Init::Ref(at);
-        let id = names::declare_in(cx, scope, name, EntKind::Var(var(QType::lref(elem.clone()), storage, Some(i.clone()))), *sp, Linkage::None);
+        let id = names::declare_in(cx, scope, name, EntKind::Var(Var { used: false, ..var(QType::lref(elem.clone()), storage, Some(i.clone())) }), *sp, Linkage::None);
+        cx.bindings.insert(id);
+        decls.push((id, i));
+    }
+    if !local {
+        cx.u.statics.extend(decls.iter().map(|(id, _)| *id));
+        return None;
+    }
+    if storage != Storage::Automatic {
+        return Some(Stmt::new(SK::Decl(decls), span));
+    }
+    if let Some(f) = cx.func.as_mut() {
+        f.live.extend(decls.iter().map(|(id, _)| *id));
+    }
+    Some(Stmt::new(SK::Decl(decls), span))
+}
+
+/// SB-3, SB-13: a structured binding of an object of class `k`. The
+/// names bind the non-static data members, which one class of `k` and
+/// its bases declares, in their order.
+#[allow(clippy::too_many_arguments)]
+fn class_bindings(cx: &mut Check, e: Expr, k: crate::sem::types::ClassId, ids: &[(Rc<str>, Span)], cv: (bool, bool), reference: Option<&str>, storage: Storage, local: bool, span: Span, init_span: Span) -> Option<Stmt> {
+    if crate::classes::unions::check::is_union(cx, k) {
+        cx.error(e.span, "SB-13", "a structured binding of a union");
+        return failed(local, span);
+    }
+    if !cx.u.classes[k].complete {
+        cx.error(e.span, "SB-13", "a structured binding of an incomplete class");
+        return failed(local, span);
+    }
+    // The classes of the hierarchy that declare data members.
+    fn holders(cx: &Check, c: crate::sem::types::ClassId, out: &mut Vec<crate::sem::types::ClassId>) {
+        let own = cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f).map(|x| (f, x))).any(|(f, x)| !x.base && !(x.width.is_some() && cx.u.entities[f].name.is_empty()));
+        if own && !out.contains(&c) {
+            out.push(c);
+        }
+        for (_, b) in cx.u.bases(c) {
+            holders(cx, b, out);
+        }
+    }
+    let mut hs = Vec::new();
+    holders(cx, k, &mut hs);
+    if hs.len() > 1 {
+        cx.error(e.span, "SB-13", "the data members of the class are in more than one class of its hierarchy");
+        return failed(local, span);
+    }
+    let members: Vec<EntityId> = hs.first().map(|&h| cx.u.classes[h].fields.iter().copied().filter(|&f| cx.u.field(f).is_some_and(|x| !x.base && !(x.width.is_some() && cx.u.entities[f].name.is_empty()))).collect()).unwrap_or_default();
+    for &f in &members {
+        let name = cx.u.entities[f].name.clone();
+        if name.is_empty() {
+            cx.error(e.span, "SB-13", "a structured binding of a class with an anonymous union member");
+            return failed(local, span);
+        }
+        if !crate::classes::derived::check::accessible_through(cx, f, k) {
+            cx.error(e.span, "SB-13", format!("the member '{}' that the structured binding names is not accessible", name));
+            return failed(local, span);
+        }
+        if cx.u.field(f).is_some_and(|x| x.width.is_some()) {
+            cx.unsupported(e.span, "a structured binding of a bit-field (build step 4)");
+            return failed(local, span);
+        }
+    }
+    // SB-2: one name for each data member.
+    if members.len() != ids.len() {
+        cx.error(span, "SB-2", format!("{} names for a class with {} data members", ids.len(), members.len()));
+        return failed(local, span);
+    }
+    // SB-1: the hidden variable has the written cv-qualifiers and
+    // reference. Without a reference it is copied from the initializer.
+    let et = e.ty.nonref();
+    let hidden_ty = et.unqual().with_cv(cv.0, cv.1);
+    let (hidden_ty, hidden_init) = match reference {
+        None => {
+            let x = crate::declarations::initialization::forms::check::copy_init(cx, e, &hidden_ty, "INIT-7")?;
+            (hidden_ty, Init::Expr(x))
+        }
+        Some(r) => {
+            let rv = r == "&&" && e.cat != Cat::L;
+            let rt = QType::new(Type::Ref(Rc::new(hidden_ty.clone()), rv));
+            let x = crate::declarations::initialization::references::check::bind(cx, e, &rt, "INIT-7")?;
+            (rt, Init::Ref(x))
+        }
+    };
+    let _ = init_span;
+    let scope = cx.scope;
+    let hidden = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(var(hidden_ty.clone(), storage, Some(hidden_init.clone()))), span, scope, linkage: Linkage::None, deprecated: None });
+    let mut decls = vec![(hidden, hidden_init)];
+    for ((name, sp), &f) in ids.iter().zip(members.iter()) {
+        // SB-3: each name is an lvalue of a member of the hidden variable.
+        let base = Expr::new(EK::Var(hidden), hidden_ty.nonref(), Cat::L, *sp);
+        let at = crate::classes::members::check::field_of(cx, base, f, *sp);
+        if at.ty.is_error() {
+            return failed(local, span);
+        }
+        let i = Init::Ref(at.clone());
+        let id = names::declare_in(cx, scope, name, EntKind::Var(Var { used: false, ..var(QType::lref(at.ty.clone()), storage, Some(i.clone())) }), *sp, Linkage::None);
         cx.bindings.insert(id);
         decls.push((id, i));
     }

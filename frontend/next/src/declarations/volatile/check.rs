@@ -17,6 +17,13 @@ pub fn assignment(cx: &mut Check, t: &QType, span: Span) {
     let _ = (cx, t, span);
 }
 
+/// VOL-5: a volatile structured binding declaration is deprecated.
+pub fn structured_binding(cx: &mut Check, span: Span) {
+    if on(cx) {
+        cx.warning(span, "VOL-5", "a volatile structured binding declaration is deprecated");
+    }
+}
+
 /// The flags that turn on the deprecation warnings of VOL-5 and CV-9.
 fn on(cx: &Check) -> bool {
     cx.wflag(&["-Wall", "-Wdeprecated", "-Wvolatile", "-Wdeprecated-volatile"])

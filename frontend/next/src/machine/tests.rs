@@ -1515,3 +1515,20 @@ fn const_objects_without_initializers() {
     // are.
     assert_eq!(rule("struct B { constexpr virtual ~B() {} }; struct D : B { int v = 1; }; constexpr D d;"), None);
 }
+
+#[test]
+fn structured_bindings_of_classes() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // SB-3: the names bind the data members, also those of a base.
+    assert_eq!(run("struct B { int a; int b; }; struct D : B {}; int main() { D d{{3, 4}}; auto& [x, y] = d; y = 9; return x * 10 + d.b; }"), RunOutcome::Result(39));
+    // SB-6: a const reference keeps the temporary alive.
+    assert_eq!(run("struct T { int a; int b; }; int main() { const auto& [x, y] = T{1, 2}; return x + y; }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct P { int x; int y; }; void f(P p) { auto [a] = p; }"), Some("SB-2"));
+    assert_eq!(rule("struct B { int a; }; struct D : B { int b; }; void f(D d) { auto [x, y] = d; }"), Some("SB-13"));
+    assert_eq!(rule("class P { int x; }; void f(P p) { auto [a] = p; }"), Some("SB-13"));
+    assert_eq!(rule("union U { int a; }; void f(U u) { auto [a] = u; }"), Some("SB-13"));
+}
