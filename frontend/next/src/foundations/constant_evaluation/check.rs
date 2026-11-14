@@ -80,8 +80,7 @@ pub fn integral_constant(cx: &mut Check, n: &Node, rule: &'static str) -> Option
     // is constexpr.
     let t = e.ty.nonref();
     if let Some(c) = t.class() {
-        let user = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, crate::classes::constructors::check::DTOR).first().copied();
-        if crate::classes::constructors::run::needs_in(&cx.u, &t) && !user.is_some_and(|d| cx.u.func(d).is_some_and(|f| f.constexpr)) {
+        if crate::classes::constructors::run::needs_in(&cx.u, &t) && !crate::classes::constructors::check::dtor_constexpr(cx, c) {
             cx.error_cause(e.span, rule, Some("CE-23"), format!("the operand has type {}, whose destructor is not constexpr", t.show()));
             return None;
         }

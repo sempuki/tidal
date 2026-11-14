@@ -1493,3 +1493,25 @@ fn inheriting_constructors() {
     assert_eq!(rule("struct A { A(int) {} }; struct B : A { using A::A; }; struct D : B { using A::A; };"), Some("DER-9"));
     assert_eq!(rule("class B { B(int) {} public: B() {} friend struct D; }; struct D : B { using B::B; }; D d(1);"), Some("DER-20"));
 }
+
+#[test]
+fn const_objects_without_initializers() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // CTOR-4: default-initialization gives each member a value.
+    assert_eq!(rule("struct S { int v = 1; }; const S s;"), None);
+    assert_eq!(rule("struct B { int v = 0; }; struct D : B {}; const D d;"), None);
+    assert_eq!(rule("struct S { int v; }; const S s;"), Some("CTOR-4"));
+    assert_eq!(rule("struct S { S() = default; int v; }; const S s;"), Some("CTOR-4"));
+    // CTOR-24: an anonymous union member with no default member
+    // initializer.
+    assert_eq!(rule("struct C { int tag = 1; union { int w; float f; }; }; const C c;"), Some("CTOR-24"));
+    // CLS-5: a mutable member of a const object can change.
+    assert_eq!(run("struct C { mutable int hits = 0; int get() const { return ++hits; } }; int main() { const C c; c.get(); return c.get(); }"), RunOutcome::Result(2));
+    // CE-23: an implicit destructor is constexpr when those of its bases
+    // are.
+    assert_eq!(rule("struct B { constexpr virtual ~B() {} }; struct D : B { int v = 1; }; constexpr D d;"), None);
+}

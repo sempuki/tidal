@@ -581,7 +581,10 @@ hides one it brings with the same parameters. `using B::B;` inherits the
 constructors of a direct base, other than copy and move constructors
 and those of a copy's shape: one constructs the base subobject, the
 other members get their default initialization, and a constructor of
-the class wins a tie against an inherited one. The
+the class wins a tie against an inherited one. A `const` or `constexpr`
+object of class type needs no initializer when default-initialization
+gives each member a value, and a write to a `mutable` member of a
+`const` object is allowed. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -593,7 +596,7 @@ program declares or calls by name, a `new` expression with placement
 arguments, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
-bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a member function with a noexcept operand, a call without an object
+bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a member function with a noexcept operand, a call without an object
 among ref-qualified member functions or among static and non-static
 ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload

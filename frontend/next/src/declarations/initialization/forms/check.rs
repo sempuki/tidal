@@ -529,16 +529,22 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 crate::declarations::declarators::check::reference_needs_init(cx, span, &name);
                 return None;
             }
-            if constexpr && ty.base_elem().is_class() {
-                cx.unsupported(span, "a constexpr object of class type with no initializer (build step 4)");
+            // A literal type with a volatile member, and a union without
+            // an initializer, wait for a later part (CE-23).
+            if constexpr && ty.base_elem().class().is_some_and(|c| crate::classes::unions::check::is_union(cx, c) || volatile_member(cx, c)) {
+                cx.unsupported(span, "a constexpr object of a union or of a class with a volatile member, with no initializer (build step 4)");
                 return None;
             }
-            if constexpr {
+            // CTOR-4, CTOR-24: a const object of class type that default-
+            // initialization gives a value.
+            if let Some(c) = ty.base_elem().class().filter(|_| (constexpr || ty.is_const()) && !s.is_extern) {
+                if let Err(rule) = crate::classes::constructors::check::const_default(cx, c) {
+                    cx.error(span, rule, format!("the const object '{}' has no initializer, and its class does not give each member a value", name));
+                    return None;
+                }
+            }
+            if constexpr && !ty.base_elem().is_class() {
                 constexpr::check::needs_initializer(cx, span, &name);
-                return None;
-            }
-            if ty.base_elem().is_class() && ty.is_const() && !s.is_extern {
-                cx.unsupported(span, "a const object of class type with no initializer (build step 4)");
                 return None;
             }
             if ty.is_const() && !s.is_extern && ty.base_elem().is_scalar() {
@@ -598,8 +604,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     // constexpr.
     if constexpr {
         if let Some(c) = ty.base_elem().class() {
-            let user = names::declared_here(cx, cx.u.classes[c].scope, crate::classes::constructors::check::DTOR).first().copied();
-            if crate::classes::constructors::run::needs_in(&cx.u, &ty) && !user.is_some_and(|d| cx.u.func(d).is_some_and(|f| f.constexpr)) {
+            if crate::classes::constructors::run::needs_in(&cx.u, &ty) && !crate::classes::constructors::check::dtor_constexpr(cx, c) {
                 cx.error_cause(span, "CX-1", Some("CE-23"), format!("the constexpr variable '{}' has a type whose destructor is not constexpr", name));
                 return None;
             }
@@ -626,7 +631,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     if constexpr || s.constinit {
         let rule = if constexpr { constexpr::check::VARIABLE } else { constexpr::check::CONSTINIT };
         let checked = crate::classes::unions::check::without_inactive(cx, &ty, &init_value);
-        check_constant_initializer(cx, &checked, span, rule, storage != Storage::Automatic);
+        check_constant_initializer(cx, &checked, &ty, span, rule, storage != Storage::Automatic);
     }
     if storage != Storage::Automatic && !local || (storage != Storage::Automatic && local && false) {
         if !cx.u.statics.contains(&id) && init.is_some() || (!cx.u.statics.contains(&id) && !s.is_extern) {
@@ -663,7 +668,7 @@ fn has_default_part(i: &Init) -> bool {
     }
 }
 
-fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'static str, static_storage: bool) {
+fn check_constant_initializer(cx: &mut Check, init: &Init, ty: &QType, span: Span, rule: &'static str, static_storage: bool) {
     // A constructor call: the value it gives has a value in each part
     // (CE-21).
     if let Init::Ctor(f, _) = init {
@@ -680,6 +685,22 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'s
         if has_default_part(init) {
             ce::report(cx, span, rule, ("CE-21", "a part of the value has no value".into()));
             return;
+        }
+        // A constructor call inside the list, as for a base or a member
+        // of a class without constructors, runs in the evaluation.
+        fn has_ctor(i: &Init) -> bool {
+            match i {
+                Init::Ctor(..) => true,
+                Init::List(xs) => xs.iter().any(has_ctor),
+                _ => false,
+            }
+        }
+        if has_ctor(init) && ty.is_class() {
+            let e = Expr::new(EK::List(Box::new(init.clone())), ty.unqual(), crate::sem::tree::Cat::PR, span);
+            if let Err(why) = ce::evaluate(cx, &e) {
+                ce::report(cx, span, rule, why);
+                return;
+            }
         }
     }
     // CX-2: a constexpr reference or pointer refers to an object with
@@ -707,6 +728,12 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, span: Span, rule: &'s
             return;
         }
     }
+}
+
+/// A data member of class `c`, or of a member or base of class type, is
+/// volatile.
+fn volatile_member(cx: &Check, c: crate::sem::types::ClassId) -> bool {
+    cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f)).any(|x| x.ty.is_volatile() || x.ty.base_elem().class().is_some_and(|d| volatile_member(cx, d)))
 }
 
 /// The declarator node, whose shape a placeholder's deduction reads.

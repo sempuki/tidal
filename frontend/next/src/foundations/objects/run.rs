@@ -26,10 +26,32 @@ pub fn check_write(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
         constant_evaluation::run::check_write(m, p)?;
     }
     let _ = ty;
+    if konst && !string && through_mutable(m, p) {
+        return Ok(());
+    }
     if konst || string {
         return crate::declarations::declarators::run::write_const(m, p);
     }
     Ok(())
+}
+
+/// CLS-5: the place is in a `mutable` member, which a `const` object
+/// does not make const.
+fn through_mutable(m: &Machine, p: &Ptr) -> bool {
+    let mut t = m.objs[p.obj].ty.clone();
+    for &i in &p.path {
+        if let Some(e) = t.elem().cloned() {
+            t = e;
+            continue;
+        }
+        let Some(c) = t.class() else { return false };
+        let Some(x) = m.u.classes[c].fields.get(i as usize).and_then(|&f| m.u.field(f)) else { return false };
+        if x.mutable {
+            return true;
+        }
+        t = x.ty.clone();
+    }
+    false
 }
 
 /// DTOR-6: a pseudo-destructor call ends the life of a whole object.

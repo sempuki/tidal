@@ -24,6 +24,50 @@ pub const CTOR: &str = "{ctor}";
 /// The name under which a class holds its destructor.
 pub const DTOR: &str = "{dtor}";
 
+/// CTOR-4, CTOR-24: default-initialization gives each member of an
+/// object of class `c` a value: the class has a user-provided default
+/// constructor, or each base and data member has a default member
+/// initializer or such a class, and a union one member with a default
+/// member initializer. Err names the rule that fails.
+pub fn const_default(cx: &Check, c: ClassId) -> Result<(), &'static str> {
+    let provided = ctors(cx, c).iter().any(|&f| cx.u.func(f).is_some_and(|x| x.takes_no_argument()) && !cx.u.defaulted.contains(&f));
+    if provided {
+        return Ok(());
+    }
+    let fields: Vec<crate::sem::Field> = cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f).cloned()).collect();
+    if crate::classes::unions::check::is_union(cx, c) {
+        return if fields.is_empty() || fields.iter().any(|x| x.init.is_some()) { Ok(()) } else { Err("CTOR-24") };
+    }
+    for (k, x) in fields.iter().enumerate() {
+        let unnamed = cx.u.entities[cx.u.classes[c].fields[k]].name.is_empty();
+        let anonymous = unnamed && x.width.is_none();
+        // An unnamed bit-field is no member (BF-12).
+        if x.init.is_some() || (unnamed && x.width.is_some()) {
+            continue;
+        }
+        match x.ty.base_elem().class() {
+            Some(d) => {
+                let r = const_default(cx, d);
+                if r.is_err() {
+                    return if anonymous { Err("CTOR-24") } else { Err("CTOR-4") };
+                }
+            }
+            None => return Err("CTOR-4"),
+        }
+    }
+    Ok(())
+}
+
+/// CE-23: the destructor of class `c` is constexpr: a declared one is
+/// declared constexpr, and an implicit one is when the destructors of
+/// its bases and members are.
+pub fn dtor_constexpr(cx: &Check, c: ClassId) -> bool {
+    match names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().copied() {
+        Some(d) if !cx.u.defaulted.contains(&d) => cx.u.func(d).is_some_and(|f| f.constexpr),
+        _ => cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f)).all(|x| x.ty.base_elem().class().is_none_or(|k| !crate::classes::constructors::run::needs_in(&cx.u, &QType::new(Type::Class(k))) || dtor_constexpr(cx, k))),
+    }
+}
+
 /// The constructors of a class.
 pub fn ctors(cx: &Check, c: ClassId) -> Vec<EntityId> {
     names::declared_here(cx, cx.u.classes[c].scope, CTOR)
