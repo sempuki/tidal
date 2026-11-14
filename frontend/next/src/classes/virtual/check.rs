@@ -41,7 +41,7 @@ pub fn overridden(cx: &Check, c: ClassId, f: EntityId) -> Vec<EntityId> {
         seen.push(b);
         for g in crate::foundations::names::check::declared_here(cx, cx.u.classes[b].scope, &name) {
             let Some(gf) = cx.u.func(g) else { continue };
-            let same = func.special == Special::Dtor || (gf.ty.params == func.ty.params && gf.ty.variadic == func.ty.variadic && gf.obj_cv == func.obj_cv);
+            let same = func.special == Special::Dtor || (gf.ty.params == func.ty.params && gf.ty.variadic == func.ty.variadic && gf.obj_cv == func.obj_cv && gf.ref_q == func.ref_q);
             if cx.u.virt.contains_key(&g) && same && !out.contains(&g) {
                 out.push(g);
             }

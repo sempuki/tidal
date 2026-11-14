@@ -156,6 +156,16 @@ fn candidates(cx: &Check, e: &Expr, to: &QType, direct: bool) -> Vec<Cand> {
         if (obj.c && !func.obj_cv.0) || (obj.v && !func.obj_cv.1) {
             continue;
         }
+        // CVF-4: the ref-qualifier takes the object by its category.
+        let lvalue = e.cat == Cat::L;
+        let binds = match func.ref_q {
+            Some(true) => !lvalue,
+            Some(false) => lvalue || (func.obj_cv.0 && !func.obj_cv.1),
+            None => true,
+        };
+        if !binds {
+            continue;
+        }
         let r = result_of(cx, f, e.span);
         // A class target takes a result of the class itself.
         let second = if let Some(d) = to.nonref().class() {
@@ -173,7 +183,8 @@ fn candidates(cx: &Check, e: &Expr, to: &QType, direct: bool) -> Vec<Cand> {
                 None => continue,
             }
         };
-        out.push(Cand { f, exact_object: obj.c == func.obj_cv.0 && obj.v == func.obj_cv.1, second });
+        let exact_ref = func.ref_q.is_none_or(|rv| rv != lvalue);
+        out.push(Cand { f, exact_object: obj.c == func.obj_cv.0 && obj.v == func.obj_cv.1 && exact_ref, second });
     }
     out
 }

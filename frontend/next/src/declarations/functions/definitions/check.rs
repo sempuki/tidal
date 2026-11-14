@@ -127,7 +127,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             EntKind::Func(f) => {
                 // Member functions that differ in the qualifiers of their
                 // object are overloads.
-                if f.ty.params != fty.params || f.ty.variadic != fty.variadic || (f.class.is_some() && f.obj_cv != d.obj_cv) {
+                if f.ty.params != fty.params || f.ty.variadic != fty.variadic || (f.class.is_some() && (f.obj_cv != d.obj_cv || f.ref_q != d.ref_kind)) {
                     if f.c_linkage && cx.lang_c {
                         cx.error(span, "LSP-7", format!("two C functions named '{}'", name));
                         return None;
@@ -263,6 +263,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 explicit: s.explicit,
                 member_static: cx.member_of.is_some() && s.is_static,
                 obj_cv: d.obj_cv,
+                ref_q: d.ref_kind,
             };
             let id = names::declare_in(cx, scope, &name, EntKind::Func(f), span, linkage);
             cx.u.entities[id].deprecated = s.attrs.deprecated.clone();

@@ -52,6 +52,8 @@ pub struct Declared {
     /// function.
     pub obj_cv: (bool, bool),
     pub ref_q: bool,
+    /// The kind of the ref-qualifier: `&&` (true) or `&` (false).
+    pub ref_kind: Option<bool>,
 }
 
 /// The declarator of a declaration with these specifiers.
@@ -69,6 +71,7 @@ pub fn declarator(cx: &mut Check, specs: &Specs, n: &Node) -> Declared {
         node: n.clone(),
         obj_cv: (false, false),
         ref_q: false,
+        ref_kind: None,
     };
     // CVF-1: a conversion function returns its target type.
     let conversion = n.find("conversion_function_id");
@@ -111,6 +114,7 @@ pub fn with_base(cx: &mut Check, base: QType, n: &Node) -> QType {
         node: n.clone(),
         obj_cv: (false, false),
         ref_q: false,
+        ref_kind: None,
     };
     let marks = cx.u.diags.len();
     let t = apply(cx, base, n, &mut d, false);
@@ -146,6 +150,7 @@ pub fn type_id(cx: &mut Check, n: &Node) -> QType {
                 node: a.clone(),
                 obj_cv: (false, false),
                 ref_q: false,
+            ref_kind: None,
             };
             apply(cx, base, a, &mut d, false)
         }
@@ -449,6 +454,7 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
             }
         }
         d.ref_q = n.child("ref_qualifier").is_some();
+        d.ref_kind = n.child("ref_qualifier").map(|r| cx.first_word(r) == "&&");
     }
     let not_member = !qualified && !member;
     if not_member && n.children("cv").next().is_some() {
@@ -542,6 +548,7 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             node: (*p).clone(),
             obj_cv: (false, false),
             ref_q: false,
+            ref_kind: None,
         };
         let base = specs.ty.clone().unwrap_or_else(QType::error);
         let decl = p.child("declarator").or_else(|| p.child("abstract_declarator"));

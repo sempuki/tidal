@@ -1345,3 +1345,19 @@ fn anonymous_unions() {
     assert_eq!(rule("struct S { union { int S; }; };"), Some("CLS-9"));
     assert_eq!(rule("struct S { union { int a; float b; }; S() : a(1), b(2) {} };"), Some("UNI-8"));
 }
+
+#[test]
+fn ref_qualifiers() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // CLS-6: an lvalue object selects `&`, an rvalue `&&`.
+    assert_eq!(run("struct S { int f() & { return 1; } int f() && { return 2; } }; int main() { S s; return s.f() * 10 + S{}.f(); }"), RunOutcome::Result(12));
+    assert_eq!(run("struct S { operator int() & { return 1; } operator int() && { return 2; } }; int main() { S s; int a = s; int b = S{}; return a * 10 + b; }"), RunOutcome::Result(12));
+    assert_eq!(rule("struct S { int f() && { return 2; } }; int g() { S s; return s.f(); }"), Some("OVL-35"));
+    assert_eq!(rule("struct S { int f() &; int f(); };"), Some("CLS-26"));
+    assert_eq!(rule("struct S { static int f() &; };"), Some("CLS-27"));
+    assert_eq!(rule("struct B { virtual int f() &; }; struct D : B { int f() && override; };"), Some("VIRT-3"));
+}

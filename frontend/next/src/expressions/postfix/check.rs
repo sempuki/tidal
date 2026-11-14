@@ -401,6 +401,10 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         // Inside a member function of the class, the object is `*this`.
         let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
         let obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
+        if obj.is_none() && members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) {
+            let t = cx.unsupported(span, "a call without an object among ref-qualified member functions (build step 4)");
+            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
         if obj.is_none() && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static) && !members.iter().any(|&f| cx.u.func(f).unwrap().member_static) {
             let t = cx.unsupported(span, "a non-static member function called without an object (build step 4)");
             return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
@@ -445,6 +449,18 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     if let Some(o) = &object {
         if (o.ty.c && !func.obj_cv.0) || (o.ty.v && !func.obj_cv.1) {
             cx.error_cause(span, "OVL-35", Some("ICS-13"), format!("the member function '{}' does not take a {} object", name, if o.ty.c { "const" } else { "volatile" }));
+            return Some(bad(span));
+        }
+        // CLS-6: `&&` takes an rvalue object, and `&` an lvalue unless it
+        // is also const.
+        let lvalue = o.cat == Cat::L;
+        let binds = match func.ref_q {
+            Some(true) => !lvalue,
+            Some(false) => lvalue || (func.obj_cv.0 && !func.obj_cv.1),
+            None => true,
+        };
+        if !binds {
+            cx.error_cause(span, "OVL-35", Some("ICS-40"), format!("the member function '{}' does not take an {} object", name, if lvalue { "lvalue" } else { "rvalue" }));
             return Some(bad(span));
         }
     }

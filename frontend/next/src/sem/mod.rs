@@ -99,6 +99,8 @@ pub struct Func {
     pub explicit: bool,
     pub member_static: bool,
     pub obj_cv: (bool, bool),
+    /// The ref-qualifier: `&&` (true) or `&` (false) (CLS-6).
+    pub ref_q: Option<bool>,
 }
 
 #[derive(Clone, Debug)]

@@ -241,6 +241,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         explicit: false,
         member_static: is_static,
         obj_cv: (!mutable && !is_static, false),
+        ref_q: None,
     };
     let op = names::declare_in(cx, scope, CALL, EntKind::Func(op), span, Linkage::None);
     cx.u.access.insert(op, crate::sem::Access::Public);
@@ -258,6 +259,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         node: n.clone(),
         obj_cv: (!mutable && !is_static, false),
         ref_q: false,
+        ref_kind: None,
     };
     cx.lambdas.push(ctx);
     let saved_default = std::mem::replace(&mut cx.default_arg, false);

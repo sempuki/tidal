@@ -551,7 +551,7 @@ fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarati
     let defaults = d.params.iter().any(|p| p.default.is_some());
     let operand = dn.find("exception_spec").is_some_and(|e| first_node(e).is_some());
     let qualified = d.ty.func().is_some_and(|f| f.qualified);
-    if local || defaults || operand || qualified || d.ref_q {
+    if local || defaults || operand || qualified {
         cx.unsupported(dn.span, "a member function of a local class, with a default argument, a noexcept operand, or a ref-qualifier (build step 4)");
         return false;
     }
@@ -567,8 +567,16 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
         cx.error_cause(span, "CTOR-1", Some("CLS-9"), "a member function with the class's name, which only a constructor has");
         return false;
     }
-    if specs.is_static && (d.obj_cv.0 || d.obj_cv.1) {
-        cx.error(span, "CLS-27", "a static member function with cv-qualifiers");
+    if specs.is_static && (d.obj_cv.0 || d.obj_cv.1 || d.ref_q) {
+        cx.error(span, "CLS-27", "a static member function with cv-qualifiers or a ref-qualifier");
+        return false;
+    }
+    // CLS-26: overloads with the same parameters and cv-qualifiers all
+    // have ref-qualifiers or none.
+    let fty0 = d.ty.func().cloned();
+    let mixed = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&f.ty.params) == fty0.as_ref().map(|t| &t.params) && f.obj_cv == d.obj_cv && f.ref_q.is_some() != d.ref_kind.is_some()));
+    if mixed {
+        cx.error(span, "CLS-26", format!("the overloads of '{}' mix a ref-qualifier and none", name));
         return false;
     }
     let conversion = name.starts_with("operator ");
@@ -576,7 +584,7 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
         return false;
     }
     let fty = d.ty.func().cloned();
-    let twice = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref() && f.obj_cv == d.obj_cv));
+    let twice = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref() && f.obj_cv == d.obj_cv && f.ref_q == d.ref_kind));
     if twice {
         let rule = if conversion { "CVF-7" } else { "CLS-9" };
         cx.error(span, rule, format!("the member function '{}' is declared twice in its class", name));

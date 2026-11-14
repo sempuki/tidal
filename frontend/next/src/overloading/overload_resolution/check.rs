@@ -92,10 +92,17 @@ pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
     let Some(c) = func.class.filter(|_| !func.member_static) else {
         return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
     };
-    let param = QType::lref(QType::new(crate::sem::types::Type::Class(c)).with_cv(func.obj_cv.0, func.obj_cv.1));
-    let mut o = object.clone();
-    o.cat = crate::sem::tree::Cat::L;
-    sequence(cx, &o, &param)
+    let class = QType::new(crate::sem::types::Type::Class(c)).with_cv(func.obj_cv.0, func.obj_cv.1);
+    // CLS-6, ICS-40: with a ref-qualifier, the object binds as an
+    // argument of that reference type; without one, an rvalue binds too.
+    match func.ref_q {
+        Some(rv) => sequence(cx, object, &QType::new(crate::sem::types::Type::Ref(std::rc::Rc::new(class), rv))),
+        None => {
+            let mut o = object.clone();
+            o.cat = crate::sem::tree::Cat::L;
+            sequence(cx, &o, &QType::lref(class))
+        }
+    }
 }
 
 /// Overload resolution with the object of a member call, if any.

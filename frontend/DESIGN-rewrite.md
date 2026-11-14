@@ -556,7 +556,9 @@ enclosing namespace, and only argument-dependent lookup through the
 class finds it until the namespace declares it. An anonymous union is
 an unnamed member of its class, or an unnamed variable of its block or
 namespace, and its members are names of the enclosing scope; a list, a
-designator, and a mem-init can name them directly. The
+designator, and a mem-init can name them directly. A member function
+can have a ref-qualifier, which takes the object by its value category,
+in overload resolution and in a conversion function's choice. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -569,7 +571,7 @@ member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
-operand, a user-defined conversion by a constructor in overload
+operand, a call without an object among ref-qualified member functions, a user-defined conversion by a constructor in overload
 resolution with several candidates, a conversion function to a class
 type in overload resolution or a constructor's argument, a conversion
 function in the operand of `?:` or with an operator function in play,
