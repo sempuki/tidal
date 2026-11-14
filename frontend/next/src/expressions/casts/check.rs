@@ -322,7 +322,7 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
             return Expr::new(EK::Int(0), t, Cat::PR, span);
         }
     }
-    if to.is_class() && !crate::classes::constructors::check::dtor_usable(cx, &to, span) {
+    if to.is_class() && (!crate::classes::r#virtual::check::not_abstract(cx, &to, span) || !crate::classes::constructors::check::dtor_usable(cx, &to, span)) {
         return bad(span);
     }
     // A class with constructors: one of them makes the object (CTOR-25).

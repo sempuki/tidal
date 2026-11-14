@@ -128,12 +128,30 @@ impl Target {
             return None;
         }
         let union = info.key == crate::sem::ClassKey::Union;
-        let (mut size, mut align, mut offs) = (0u64, 1u64, Vec::new());
+        let (mut size, mut align) = (0u64, 1u64);
         // The empty classes among the subobjects placed so far, with their
         // offsets: two subobjects of one type never share an address.
         let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
         let fields: Vec<&crate::sem::Field> = info.fields.iter().filter_map(|&f| u.field(f)).collect();
-        for x in fields.iter() {
+        let mut offs = vec![0u64; fields.len()];
+        // A polymorphic class holds a pointer to its virtual functions at
+        // offset 0, which its first polymorphic base shares (the matrix's
+        // ABI, CLS-35).
+        let mut order: Vec<usize> = (0..fields.len()).collect();
+        if !union && u.polymorphic(c) {
+            match (0..fields.len()).find(|&k| fields[k].base && fields[k].ty.class().is_some_and(|b| u.polymorphic(b))) {
+                Some(p) => {
+                    order.remove(p);
+                    order.insert(0, p);
+                }
+                None => {
+                    size = self.ptr_size();
+                    align = self.ptr_size();
+                }
+            }
+        }
+        for k in order {
+            let x = fields[k];
             let t = x.ty.clone();
             let inner = t.base_elem().class().map(|k| self.empty_subobjects(u, k)).unwrap_or_default();
             let clash = |at: u64, placed: &[(crate::sem::types::ClassId, u64)]| inner.iter().any(|&(k, o)| placed.contains(&(k, at + o)));
@@ -144,8 +162,8 @@ impl Target {
                 while clash(at, &placed) {
                     at += 1;
                 }
-                offs.push(at);
-                placed.extend(inner.iter().map(|&(k, o)| (k, at + o)));
+                offs[k] = at;
+                placed.extend(inner.iter().map(|&(e, o)| (e, at + o)));
                 size = size.max(at.min(size));
                 if at > 0 {
                     size = size.max(at + 1);
@@ -161,15 +179,14 @@ impl Target {
             };
             align = align.max(a);
             if union {
-                offs.push(0);
                 size = size.max(s);
             } else {
                 let mut at = size.div_ceil(a).checked_mul(a)?;
                 while clash(at, &placed) {
                     at = at.checked_add(a)?;
                 }
-                offs.push(at);
-                placed.extend(inner.iter().map(|&(k, o)| (k, at + o)));
+                offs[k] = at;
+                placed.extend(inner.iter().map(|&(e, o)| (e, at + o)));
                 size = at.checked_add(s)?;
             }
         }
@@ -215,7 +232,7 @@ impl Target {
     fn pod(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
         let names = &u.scopes[u.classes[c].scope].names;
         let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !u.defaulted.contains(f)));
-        if provided("{ctor}") || provided("{dtor}") || provided("operator=") {
+        if u.polymorphic(c) || provided("{ctor}") || provided("{dtor}") || provided("operator=") {
             return false;
         }
         u.classes[c].fields.iter().all(|&f| {
@@ -224,7 +241,7 @@ impl Target {
     }
     /// A class with no data member other than empty bases.
     pub fn is_empty(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
-        u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b))))
+        !u.polymorphic(c) && u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b))))
     }
     pub fn align_of(self, u: &Unit, q: &QType) -> Option<u64> {
         Some(match &q.t {

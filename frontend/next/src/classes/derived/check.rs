@@ -123,17 +123,7 @@ fn base_type(cx: &mut Check, n: &Node) -> Option<QType> {
 /// The paths from a class to the subobjects of class `to` in it: each a
 /// list of positions among the data members.
 pub fn paths(cx: &Check, from: ClassId, to: ClassId) -> Vec<Vec<usize>> {
-    if from == to {
-        return vec![Vec::new()];
-    }
-    let mut out = Vec::new();
-    for (i, b) in cx.u.bases(from) {
-        for mut p in paths(cx, b, to) {
-            p.insert(0, i);
-            out.push(p);
-        }
-    }
-    out
+    cx.u.base_paths(from, to)
 }
 
 /// `to` is a base of `from`, direct or not, or `from` itself.
@@ -356,7 +346,11 @@ pub fn injected_accessible(cx: &Check, name: &str) -> bool {
         if let Some(c) = cx.u.class_of_scope(sc) {
             match member_lookup(cx, c, name) {
                 Ok(Some(f)) if !f.path.is_empty() && f.ents.iter().any(|&e| injected(cx, f.class) == Some(e)) => {
-                    return base_accessible(cx, c, &f.path);
+                    // In a member declaration, the class being defined.
+                    return match here(cx).or(cx.member_of) {
+                        Some(h) => base_accessible_in(cx, c, &f.path, h),
+                        None => base_accessible(cx, c, &f.path),
+                    };
                 }
                 Ok(None) => {}
                 _ => return true,
@@ -365,6 +359,17 @@ pub fn injected_accessible(cx: &Check, name: &str) -> bool {
         s = cx.u.scopes[sc].parent;
     }
     true
+}
+
+/// ACC-3 from inside class `inside`: the base subobject at the end of
+/// `path` from class `naming` is accessible there (VIRT-4).
+pub fn base_accessible_in(cx: &Check, naming: ClassId, path: &[usize], inside: ClassId) -> bool {
+    match access_as_member(cx, naming, path, Access::Public) {
+        Some(Access::Public) => true,
+        Some(Access::Protected) => derives(cx, inside, naming),
+        Some(Access::Private) => inside == naming,
+        None => false,
+    }
 }
 
 /// The class entity of a class's injected name (NAM-33, NAM-35): the

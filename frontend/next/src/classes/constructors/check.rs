@@ -62,6 +62,10 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         return dtor_member(cx, c, specs, dn, def, access, bodies);
     }
     let mut specs = specs.cloned().unwrap_or_default();
+    if specs.is_virtual {
+        cx.error(dn.span, "CTOR-1", "a constructor declared virtual");
+        return true;
+    }
     if specs.unsupported || specs.is_static || specs.typedef || specs.ty.is_some() {
         cx.unsupported(dn.span, "a constructor declaration of this form (build step 4)");
         return false;

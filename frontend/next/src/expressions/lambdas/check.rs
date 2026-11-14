@@ -190,6 +190,10 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
             return unsupported(cx, w.span, "a capture of a structured binding");
         }
         let Some(e) = enclosing_use(cx, v, w.span) else { return bad(span) };
+        // VIRT-8: a capture by copy makes an object of the type.
+        if !w.by_ref && !crate::classes::r#virtual::check::not_abstract(cx, &e.ty.nonref(), w.span) {
+            return bad(span);
+        }
         add_capture(cx, &mut ctx, v, w.by_ref, e);
     }
     // The parameters, declared as those of any function (LAM-18).

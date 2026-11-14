@@ -157,6 +157,7 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             }
         }
         if ok {
+            crate::classes::r#virtual::check::complete(cx, id, head.span);
             for b in bodies {
                 crate::declarations::functions::definitions::check::function_definition(cx, b);
             }
@@ -164,6 +165,7 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
                 crate::classes::constructors::check::define(cx, f, b);
             }
             crate::classes::constructors::check::end_of_class(cx, id, head.span);
+            crate::classes::r#virtual::check::after_bodies(cx, id);
         }
     }
     cx.member_of = outer;
@@ -176,15 +178,16 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
 #[allow(clippy::too_many_arguments)]
 fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>, ctor_bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
     let Some(first) = first_node(m) else { return true };
-    // VIRT rules: override and final belong to virtual functions.
-    if m.find("virt_specifiers").is_some() {
-        cx.unsupported(m.span, "a virt-specifier (override or final; virtual functions, build step 4)");
-        return false;
-    }
     // A constructor or destructor: a declarator with the class's name.
     if first.prod == "member_declarator" {
         return match first.child("declarator") {
-            Some(dn) if crate::classes::constructors::check::special_name(cx, id, dn).is_some() => crate::classes::constructors::check::member(cx, id, None, dn, None, *access, ctor_bodies),
+            Some(dn) if crate::classes::constructors::check::special_name(cx, id, dn).is_some() => {
+                let ok = crate::classes::constructors::check::member(cx, id, None, dn, None, *access, ctor_bodies);
+                if ok {
+                    virtual_dtor(cx, id, false, first, dn);
+                }
+                ok
+            }
             _ => {
                 cx.unsupported(m.span, "a member declaration of this form (build step 4)");
                 false
@@ -205,7 +208,11 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 None => Some(Default::default()),
             };
             if let Some(specs) = specs {
-                return crate::classes::constructors::check::member(cx, id, Some(&specs), dn, Some(first), *access, ctor_bodies);
+                let ok = crate::classes::constructors::check::member(cx, id, Some(&specs), dn, Some(first), *access, ctor_bodies);
+                if ok {
+                    virtual_dtor(cx, id, specs.is_virtual, first, dn);
+                }
+                return ok;
             }
         }
     }
@@ -246,6 +253,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             }
             let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None) else { return true };
             cx.u.access.insert(f, *access);
+            crate::classes::r#virtual::check::member_function(cx, id, f, specs.is_virtual, first, None, dn.span);
             cx.deferred.insert(f);
             // CLS rules: a member function defined in its class is inline.
             if let Some(x) = cx.u.func_mut(f) {
@@ -293,9 +301,10 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     if !crate::classes::constructors::check::member(cx, id, Some(&specs), dn, None, *access, ctor_bodies) {
                         return false;
                     }
+                    virtual_dtor(cx, id, specs.is_virtual, md, dn);
                     continue;
                 }
-                if md.kids.len() > 1 && md.child("member_init").is_none() {
+                if md.kids.iter().skip(1).any(|k| !matches!(k, Kid::Node(x) if matches!(x.prod, "member_init" | "pure_specifier" | "virt_specifiers"))) {
                     cx.unsupported(md.span, "a member declarator of this form (build step 4)");
                     return false;
                 }
@@ -316,8 +325,14 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     }
                     if let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None) {
                         cx.u.access.insert(f, *access);
+                        crate::classes::r#virtual::check::member_function(cx, id, f, specs.is_virtual, md, md.child("pure_specifier"), dn.span);
                     }
                     continue;
+                }
+                // VIRT-2: only a member function is virtual.
+                if specs.is_virtual {
+                    cx.error(d.name.as_ref().map(|n| n.1).unwrap_or(md.span), "VIRT-2", "a data member declared virtual");
+                    return true;
                 }
                 if specs.is_static {
                     if !static_member(cx, id, &specs, &d, md.child("member_init"), *access) {
@@ -345,6 +360,9 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 // CLS-1: a data member has a complete type.
                 if d.ty.is_incomplete() || d.ty.class().is_some_and(|c| !cx.u.classes[c].complete) {
                     cx.error(span, "CLS-1", format!("the data member '{}' has an incomplete type", name));
+                    return true;
+                }
+                if !crate::classes::r#virtual::check::not_abstract(cx, &d.ty, span) {
                     return true;
                 }
                 let index = cx.u.classes[id].fields.len();
@@ -502,6 +520,12 @@ pub fn trivial_default(i: &Init) -> bool {
     }
 }
 
+/// An object of type `ty` holds a polymorphic class object, whose
+/// default constructor runs code (CTOR-23, VIRT-11).
+pub fn has_polymorphic_part(cx: &Check, ty: &QType) -> bool {
+    ty.base_elem().class().is_some_and(|c| cx.u.polymorphic(c) || cx.u.field_types(c).iter().any(|t| has_polymorphic_part(cx, t)))
+}
+
 /// A class whose default-initialization initializes each member: a
 /// default member initializer for each, or a member of such a class
 /// (CTOR-3, const-default-constructible).
@@ -555,11 +579,21 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
     true
 }
 
+/// The virtual functions page for a destructor just declared: `n` holds
+/// its virt-specifiers and pure specifier.
+fn virtual_dtor(cx: &mut Check, id: ClassId, declared_virtual: bool, n: &Node, dn: &Node) {
+    if crate::classes::constructors::check::special_name(cx, id, dn) != Some(true) {
+        return;
+    }
+    let Some(&f) = names::declared_here(cx, cx.u.classes[id].scope, crate::classes::constructors::check::DTOR).last() else { return };
+    crate::classes::r#virtual::check::member_function(cx, id, f, declared_virtual, n, n.child("pure_specifier"), dn.span);
+}
+
 /// A class is an aggregate when every data member is public: build step
 /// 4 part a has no constructors, bases, or virtual functions (LIST
 /// rules).
 pub fn is_aggregate(cx: &Check, c: ClassId) -> bool {
-    !crate::classes::constructors::check::has_ctors(cx, c) && cx.u.classes[c].fields.iter().all(|&f| cx.u.field(f).is_some_and(|x| x.access == Access::Public))
+    !crate::classes::constructors::check::has_ctors(cx, c) && !cx.u.polymorphic(c) && cx.u.classes[c].fields.iter().all(|&f| cx.u.field(f).is_some_and(|x| x.access == Access::Public))
 }
 
 /// Default-initialization of an object of type `ty`: each data member

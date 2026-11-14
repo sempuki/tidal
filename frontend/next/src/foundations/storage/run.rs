@@ -336,3 +336,9 @@ pub fn decode(m: &Machine, ty: &QType, bytes: &[Option<u8>]) -> R<Val> {
         _ => return unsup(format!("a value of type {} from bytes", ty.show())),
     })
 }
+
+/// STG-22: a call of a non-static member function `f` through a pointer
+/// to storage that holds no object of its class.
+pub fn no_object_call<T>(m: &Machine, f: crate::sem::EntityId) -> R<T> {
+    ub("STG-22", format!("a call of the member function '{}' on storage that holds no object of its class", m.u.entities[f].name))
+}

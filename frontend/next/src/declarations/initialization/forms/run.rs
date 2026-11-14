@@ -133,7 +133,16 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
         crate::sem::MemInits::Fields(inits) => {
             // Each member's initializer is a full expression (VC-9).
             let tys = m.u.field_types(c);
+            // CTOR-12: until the last base is initialized, no member
+            // function runs on the object.
+            let last_base = m.u.bases(c).last().map(|&(i, _)| i);
+            if last_base.is_some() {
+                m.early.push((this.obj, this.path.clone()));
+            }
             for (k, t) in tys.iter().enumerate() {
+                if Some(k) == last_base.map(|i| i + 1) {
+                    m.early.pop();
+                }
                 let mut q = this.clone();
                 q.path.push(k as i64);
                 q.array = false;
@@ -143,6 +152,9 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
                     None => set(m, &q, m.zero(t))?,
                 }
                 crate::machine::exec::end_temps(m, from)?;
+            }
+            if last_base.is_some_and(|i| i + 1 == tys.len()) {
+                m.early.pop();
             }
             Ok(())
         }
@@ -212,4 +224,10 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
 /// value.
 pub fn read_no_value<T>(name: &str) -> R<T> {
     ub("INIT-1", format!("a read of {} before it has a value", name))
+}
+
+/// CTOR-12: a call of the member function `f` on an object whose
+/// constructor has not initialized all its bases yet.
+pub fn before_bases<T>(m: &Machine, f: crate::sem::EntityId) -> R<T> {
+    ub("CTOR-12", format!("a call of the member function '{}' before the bases of its object are initialized", m.u.entities[f].name))
 }

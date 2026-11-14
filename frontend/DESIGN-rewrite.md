@@ -516,13 +516,20 @@ of the bases, with ambiguity and access along each path, and the
 constructor initializes the bases first. A derived object converts to a
 reference or a pointer to an unambiguous, accessible base, in
 initialization, overload resolution, comparison, the conditional
-operator, and `static_cast`, which converts back too. The
+operator, and `static_cast`, which converts back too. A member
+function declared `virtual`, or one that overrides a virtual function
+of a base, is virtual, with `override`, `final`, pure functions,
+abstract classes, and covariant return types. A call through a pointer
+or reference calls the final overrider for the class of the most
+derived object, or for the class whose constructor or destructor runs
+on the object. A polymorphic class holds a pointer at offset 0, which
+its first polymorphic base shares. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a class, a literal operator, an
-`operator->`, a comparison that `<=>` rewrites, a virtual base, a
-virtual function, a union, a
+`operator->`, a comparison that `<=>` rewrites, a virtual base,
+`dynamic_cast`, a union, a
 bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with

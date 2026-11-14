@@ -289,7 +289,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     let sub = |x: &Expr| local_in(cx, x);
     match &e.k {
         EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
-        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Closure(_) | EK::This => None,
+        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This => None,
         EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) => sub(x),
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
@@ -360,6 +360,11 @@ pub fn function_definition(cx: &mut Check, n: &Node) {
     if specs.unsupported {
         return;
     }
+    // VIRT-3: virt-specifiers only on the declaration in the class.
+    if let Some(vs) = n.child("virt_specifiers").filter(|_| cx.member_of.is_none()) {
+        cx.error(vs.span, "VIRT-3", "a virt-specifier on a definition outside its class");
+        return;
+    }
     let Some(dn) = n.child("declarator") else { return };
     let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
     if d.unsupported {
@@ -413,6 +418,8 @@ pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
         if cx.u.is_incomplete(&ty) && !ty.is_void() {
             let class = ty.base_elem().is_class().then_some("TYN-7");
             cx.error_cause(p.span, "FN-12", class, "a function definition with a parameter of incomplete type");
+        } else {
+            crate::classes::r#virtual::check::not_abstract(cx, &ty, p.span);
         }
         let v = Var {
             ty,
@@ -446,6 +453,9 @@ pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
     // TYN-7: a definition does not return an incomplete class.
     if ret.class().is_some_and(|c| !cx.u.classes[c].complete) {
         cx.error(cx.u.entities[id].span, "TYN-7", "a function definition whose return type is an incomplete class");
+    } else {
+        let at = cx.u.entities[id].span;
+        crate::classes::r#virtual::check::not_abstract(cx, &ret, at);
     }
     let deduce = d.placeholder.is_some();
     let ctx = FnCtx {

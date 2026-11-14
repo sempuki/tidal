@@ -305,7 +305,9 @@ fn build_call(cx: &mut Check, c: Cand, args: Vec<Expr>, span: Span) -> Expr {
         return bad(span);
     }
     crate::declarations::functions::definitions::check::note_use(cx, c.f, span);
-    let callee = Expr::new(EK::Func(c.f), QType::new(Type::Func(func.ty.clone())), Cat::L, span);
+    // VIRT-1: a virtual operator function calls its final overrider.
+    let kind = if c.member && cx.u.virt.contains_key(&c.f) { EK::Virtual(c.f) } else { EK::Func(c.f) };
+    let callee = Expr::new(kind, QType::new(Type::Func(func.ty.clone())), Cat::L, span);
     let call = if c.member {
         let mut args = args;
         let mut obj = args.remove(0);

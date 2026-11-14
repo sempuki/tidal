@@ -164,6 +164,9 @@ pub enum EK {
     /// DER-17 when it is no such subobject); null stays null.
     DerivedPtr(Box<Expr>, Vec<usize>),
     Func(EntityId),
+    /// The callee of a virtual call: the final overrider of the function
+    /// for the call's object (`classes/virtual`, VIRT-1).
+    Virtual(EntityId),
     Conv(Conv, Box<Expr>),
     Unary(UOp, Box<Expr>),
     /// Both operands converted to the common type, or the promoted left

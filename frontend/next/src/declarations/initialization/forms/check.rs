@@ -495,6 +495,9 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 cx.error(span, "INIT-7", format!("the variable '{}' has an incomplete type", name));
                 return None;
             }
+            if !crate::classes::r#virtual::check::not_abstract(cx, &ty, span) {
+                return None;
+            }
             let r = initializer(cx, &ty, i, &name);
             match r {
                 Some(x) => {
@@ -536,6 +539,9 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
             }
             if ty.is_const() && !s.is_extern && ty.base_elem().is_scalar() {
                 crate::declarations::declarators::check::const_needs_init(cx, span, &name);
+                return None;
+            }
+            if defined && !crate::classes::r#virtual::check::not_abstract(cx, &ty, span) {
                 return None;
             }
             if defined && cx.u.is_incomplete(&ty) {

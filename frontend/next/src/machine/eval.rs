@@ -38,7 +38,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         }
         // A function of another unit's declaration is its definition
         // (linking), so that its address compares equal.
-        EK::Func(id) => Ok(Val::Fn(postfix::run::defining(m, *id))),
+        EK::Func(id) | EK::Virtual(id) => Ok(Val::Fn(postfix::run::defining(m, *id))),
         EK::Conv(c, x) => conv(m, *c, x, &e.ty),
         EK::Unary(op, x) => {
             let v = eval(m, x)?;
@@ -136,6 +136,11 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
                 }
                 let n = q.path.len() - tail.len();
                 q.path.truncate(n);
+                // The object that holds the base must be of the derived
+                // class, not another class with a base on the same path.
+                if m.type_at(&q).and_then(|t| t.class()) != e.ty.pointee().and_then(|t| t.class()) {
+                    return crate::machine::ub("DER-17", "a static_cast to a derived class of an object that is not its base subobject");
+                }
                 Ok(Val::Ptr(q))
             }
             Val::Null => Ok(Val::Null),
@@ -407,8 +412,13 @@ pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
 /// A call whose arguments are evaluated from the last to the first when
 /// `rev` holds (OPR-7).
 pub fn call_expr_in(m: &mut Machine, f: &Expr, args: &[Arg], rev: bool) -> R<Ret> {
-    let callee = eval(m, f)?;
-    let id = postfix::run::callee(m, callee, &f.ty)?;
+    let id = match &f.k {
+        EK::Virtual(id) => *id,
+        _ => {
+            let callee = eval(m, f)?;
+            postfix::run::callee(m, callee, &f.ty)?
+        }
+    };
     let mut vals = Vec::new();
     let order: Vec<usize> = if rev { (0..args.len()).rev().collect() } else { (0..args.len()).collect() };
     for k in order {
@@ -432,6 +442,15 @@ pub fn call_expr_in(m: &mut Machine, f: &Expr, args: &[Arg], rev: bool) -> R<Ret
     }
     if rev {
         vals.reverse();
+    }
+    if let EK::Virtual(_) = f.k {
+        if vals.is_empty() {
+            return unsup("a virtual call without its object");
+        }
+        let (g, obj) = crate::classes::r#virtual::run::dispatch(m, id, vals.remove(0))?;
+        vals.insert(0, obj);
+        let r = call(m, g, vals)?;
+        return crate::classes::r#virtual::run::covariant(m, g, id, r);
     }
     call(m, id, vals)
 }
@@ -488,6 +507,29 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
         }
     }
     frame.blocks.push(made);
+    let special = func.special;
+    if let (Some(p), crate::sem::Special::None) = (&frame.this, special) {
+        if !func.member_static && func.class.is_some() {
+            if m.early.iter().any(|(o, q)| *o == p.obj && p.path.starts_with(q)) {
+                return crate::declarations::initialization::forms::run::before_bases(m, id);
+            }
+            // STG-22: no object of a polymorphic class is at the address.
+            if p.view.is_some() && func.class.is_some_and(|c| m.u.polymorphic(c)) {
+                return crate::foundations::storage::run::no_object_call(m, id);
+            }
+        }
+    }
+    // A constructor's bases see their own initializers only.
+    let early = (special == crate::sem::Special::Ctor).then(|| std::mem::take(&mut m.early));
+    // VIRT-6: while a constructor or destructor runs, its object is of
+    // its class.
+    let structor = match (&frame.this, func.special) {
+        (Some(p), crate::sem::Special::Ctor | crate::sem::Special::Dtor) => {
+            m.structors.push((p.obj, p.path.clone()));
+            true
+        }
+        _ => false,
+    };
     m.frames.push(frame);
     m.depth += 1;
     // CTOR-6: a constructor initializes the members before its body.
@@ -496,6 +538,12 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
         None => super::exec::exec(m, &body),
     };
     m.depth -= 1;
+    if structor {
+        m.structors.pop();
+    }
+    if let Some(e) = early {
+        m.early = e;
+    }
     let mut frame = m.frames.pop().unwrap_or_default();
     for b in frame.blocks.drain(..).rev() {
         if r.is_ok() {

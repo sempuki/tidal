@@ -32,6 +32,8 @@ pub struct Specs {
     pub constexpr: bool,
     /// `explicit` on a constructor (CTOR-9).
     pub explicit: bool,
+    /// `virtual` on a member function (`classes/virtual`).
+    pub is_virtual: bool,
     pub consteval: bool,
     pub constinit: bool,
     pub inline: bool,
@@ -142,7 +144,12 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
             ("constinit", _) => s.constinit = true,
             ("inline", _) => s.inline = true,
             ("explicit", _) if cx.member_of.is_some() && !cx.has_word(d, "(") => s.explicit = true,
-            ("friend" | "virtual" | "explicit", _) => {
+            // VIRT-2: `virtual` only in a class definition.
+            ("virtual", _) if cx.member_of.is_some() => s.is_virtual = true,
+            ("virtual", _) => {
+                cx.error(d.span, "VIRT-2", "'virtual' outside a class definition");
+            }
+            ("friend" | "explicit", _) => {
                 s.unsupported = true;
                 cx.unsupported(d.span, format!("the specifier '{}'", word));
             }
@@ -303,7 +310,9 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
         if let Some((id, i)) = initialization::forms::check::declare_variable(cx, &specs, &declared, init, &aligns, &mut first_auto) {
             if local {
                 let automatic = cx.u.var(id).is_some_and(|v| v.storage == crate::sem::Storage::Automatic);
-                if automatic && !matches!(i, Init::Default) && !crate::classes::members::check::trivial_default(&i) {
+                let ty = cx.u.var(id).map(|v| v.ty.clone()).unwrap_or_else(QType::error);
+                let trivial = crate::classes::members::check::trivial_default(&i) && !crate::classes::members::check::has_polymorphic_part(cx, &ty);
+                if automatic && !matches!(i, Init::Default) && !trivial {
                     if let Some(f) = cx.func.as_mut() {
                         f.live.push(id);
                     }

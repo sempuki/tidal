@@ -1114,3 +1114,34 @@ fn derived_classes() {
     assert_eq!(rule("struct A {}; struct B : private A {}; struct C : B { void f() { A* p = nullptr; (void)p; } };"), Some("ACC-14"));
     assert_eq!(rule("struct B {}; struct D : virtual B {};"), Some("unsupported"));
 }
+
+#[test]
+fn virtual_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A call through a reference or pointer reaches the final overrider;
+    // a qualified call does not.
+    assert_eq!(run("struct B { virtual int f() const { return 1; } }; struct M : B {}; struct D : M { int f() const override { return 2; } int base() const { return B::f(); } }; int g(const B& b) { return b.f(); } int main() { D d; B b; const B* p = &d; return g(d) * 100 + g(b) * 10 + d.base() + p->f(); }"), RunOutcome::Result(213));
+    // During the constructor and destructor of a base, the object is of
+    // the base's class.
+    assert_eq!(run("int log_ = 0; struct B { B() { log_ = log_ * 10 + id(); } virtual ~B() { log_ = log_ * 10 + id(); } virtual int id() const { return 1; } }; struct D : B { D() { log_ = log_ * 10 + id(); } ~D() { log_ = log_ * 10 + id(); } int id() const override { return 2; } }; int main() { { D d; } return log_ == 1221 ? 0 : 1; }"), RunOutcome::Result(0));
+    // A covariant result converts to the base's type; an override in a
+    // second base overrides both.
+    assert_eq!(run("struct L { int l = 1; }; struct R { int r = 2; virtual R* self() { return this; } }; struct D : L, R { int d = 3; D* self() override { return this; } }; int main() { D d; R& r = d; return r.self()->r; }"), RunOutcome::Result(2));
+    // A polymorphic class holds a pointer before its members.
+    assert_eq!(run("struct S { virtual void f() {} int v; }; int main() { return sizeof(S) == 2 * sizeof(void*) ? 0 : 1; }"), RunOutcome::Result(0));
+    let r = run("struct B { B() { f(); } virtual void f() = 0; }; void B::f() {} struct D : B { void f() override {} }; int main() { D d; return 0; }");
+    assert!(matches!(r, RunOutcome::Undefined("VIRT-12", ..)), "{:?}", r);
+    assert_eq!(rule("struct A { virtual void f() = 0; }; A a;"), Some("VIRT-8"));
+    assert_eq!(rule("struct A { virtual void f() = 0; }; struct B : A {}; void g() { B b; }"), Some("VIRT-8"));
+    assert_eq!(rule("struct B { virtual void f(); }; struct D : B { void f(int) override; };"), Some("VIRT-3"));
+    assert_eq!(rule("struct B { virtual void f() final; }; struct D : B { void f(); };"), Some("VIRT-3"));
+    assert_eq!(rule("struct B { virtual int f(); }; struct D : B { long f(); };"), Some("VIRT-15"));
+    assert_eq!(rule("struct B { virtual void f(); }; struct D : B { static void f(); };"), Some("VIRT-21"));
+    assert_eq!(rule("struct S { void f() = 0; };"), Some("VIRT-9"));
+    assert_eq!(rule("virtual void f();"), Some("VIRT-2"));
+    assert_eq!(rule("struct B { virtual void f(); }; struct D : virtual B {};"), Some("unsupported"));
+}

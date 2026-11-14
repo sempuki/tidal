@@ -273,6 +273,21 @@ pub struct Unit {
     pub defaulted: std::collections::HashSet<EntityId>,
     /// The closure types, by class.
     pub closures: HashMap<types::ClassId, Closure>,
+    /// The virtual functions (`classes/virtual`).
+    pub virt: HashMap<EntityId, Virt>,
+    /// The abstract classes (VIRT-8).
+    pub abstract_classes: std::collections::HashSet<types::ClassId>,
+}
+
+/// A virtual function: pure, final, and the functions of the bases that
+/// it overrides (VIRT-1).
+#[derive(Clone, Debug, Default)]
+pub struct Virt {
+    pub pure: bool,
+    pub is_final: bool,
+    /// Marked `override`.
+    pub marked: bool,
+    pub overrides: Vec<EntityId>,
 }
 
 impl Default for Unit {
@@ -293,6 +308,8 @@ impl Default for Unit {
             mem_inits: HashMap::new(),
             defaulted: Default::default(),
             closures: HashMap::new(),
+            virt: HashMap::new(),
+            abstract_classes: Default::default(),
         }
     }
 }
@@ -334,6 +351,26 @@ impl Unit {
     /// among the data members, and its class.
     pub fn bases(&self, c: types::ClassId) -> Vec<(usize, types::ClassId)> {
         self.classes[c].fields.iter().filter_map(|&f| self.field(f).filter(|x| x.base).and_then(|x| Some((x.index, x.ty.class()?)))).collect()
+    }
+    /// A polymorphic class declares or inherits a virtual function
+    /// (VIRT-11).
+    pub fn polymorphic(&self, c: types::ClassId) -> bool {
+        self.scopes[self.classes[c].scope].names.values().flatten().any(|e| self.virt.contains_key(e)) || self.bases(c).iter().any(|&(_, b)| self.polymorphic(b))
+    }
+    /// The positions from class `from` down to each base subobject of
+    /// class `to`, `from` itself included.
+    pub fn base_paths(&self, from: types::ClassId, to: types::ClassId) -> Vec<Vec<usize>> {
+        if from == to {
+            return vec![Vec::new()];
+        }
+        let mut out = Vec::new();
+        for (i, b) in self.bases(from) {
+            for mut p in self.base_paths(b, to) {
+                p.insert(0, i);
+                out.push(p);
+            }
+        }
+        out
     }
     /// The types of a class's data members, in order.
     pub fn field_types(&self, c: types::ClassId) -> Vec<QType> {

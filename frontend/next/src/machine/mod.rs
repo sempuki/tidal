@@ -207,6 +207,12 @@ pub struct Machine<'a> {
     /// The objects whose constructors run, which are not const or
     /// volatile yet (VOL-2, CTOR-11).
     pub constructing: Vec<usize>,
+    /// The objects whose constructor runs the initializers of their bases,
+    /// before the last base is initialized (CTOR-12).
+    pub early: Vec<(usize, Vec<i64>)>,
+    /// The places whose constructor or destructor runs, innermost last
+    /// (`classes::virtual::run`, VIRT-6).
+    pub structors: Vec<(usize, Vec<i64>)>,
     /// The objects that an explicit destructor call destroyed (DTOR-7).
     pub destroyed: std::collections::HashSet<usize>,
     /// The prvalue being evaluated initializes an object, which owns it;
@@ -259,6 +265,8 @@ impl<'a> Machine<'a> {
             addrs: HashMap::new(),
             next_addr: 0x1_0000,
             constructing: Vec::new(),
+            structors: Vec::new(),
+            early: Vec::new(),
             destroyed: Default::default(),
             elide: false,
             keep_temps: false,

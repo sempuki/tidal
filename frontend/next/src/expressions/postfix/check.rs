@@ -321,6 +321,9 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
 /// or a name that finds member functions inside a member function of
 /// their class, whose object is `*this`. None for any other callee.
 fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Option<Expr> {
+    // A qualified name calls the function it names, not its final
+    // overrider (VIRT-1).
+    let mut qualified = false;
     let (object, scope, name, nspan) = if callee.prod == "postfix_expr" && matches!(callee.kids.get(1).map(|k| cx.text(k)), Some("." | "->")) {
         let (Some(Kid::Node(base)), Some(Kid::Node(id))) = (callee.kids.first(), callee.kids.get(2)) else { return None };
         let arrow = cx.text(&callee.kids[1]) == "->";
@@ -372,6 +375,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     } else {
         let n = callee_name(callee)?;
         let (q, name, nspan) = primary::check::name_of(cx, n)?;
+        qualified = !matches!(q, crate::foundations::names::check::Qual::None);
         let found = match q {
             crate::foundations::names::check::Qual::None => crate::foundations::names::check::lookup(cx, name),
             crate::foundations::names::check::Qual::Scope(s) => crate::foundations::names::check::lookup_in(cx, s, name),
@@ -405,7 +409,8 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
     let func = cx.u.func(f).unwrap().clone();
     let fty = QType::new(Type::Func(func.ty.clone()));
-    let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
+    let kind = if cx.u.virt.contains_key(&f) && !qualified { EK::Virtual(f) } else { EK::Func(f) };
+    let callee = Expr::new(kind, fty, Cat::L, nspan);
     let object = object.filter(|_| !func.member_static);
     // DER-3: the object of a member of a base is the base subobject.
     let object = match (object, func.class) {
@@ -455,6 +460,10 @@ pub fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<
     let incomplete = |cx: &Check, t: &QType| t.class().is_some_and(|c| !cx.u.classes[c].complete);
     if cx.unevaluated == 0 && (incomplete(cx, &fty.ret) || fty.params.iter().any(|p| incomplete(cx, p))) {
         cx.error(span, "PFX-14", "a call of a function whose parameter or return type is an incomplete class");
+        return bad(span);
+    }
+    // VIRT-8: the call makes its result and its arguments as objects.
+    if cx.unevaluated == 0 && (!crate::classes::r#virtual::check::not_abstract(cx, &fty.ret, span) || fty.params.iter().any(|p| !crate::classes::r#virtual::check::not_abstract(cx, p, span))) {
         return bad(span);
     }
     let n = fty.params.len();
