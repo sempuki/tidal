@@ -210,7 +210,7 @@ pub fn aggregate_with(cx: &mut Check, b: &Node, ty: &QType, copy: bool) -> Optio
     let (init, ty2) = aggregate_from(cx, ty, &its, &mut cache, &mut pos, true)?;
     let _ = ty2;
     if pos < its.len() {
-        let rule = if ty.is_array() { "DCL-19" } else { "LIST-12" };
+        let rule = if ty.is_array() { "DCL-19" } else if ty.class().is_some_and(|c| crate::classes::unions::check::is_union(cx, c)) { "UNI-8" } else { "LIST-12" };
         cx.error(its[pos].span, rule, "the list has more values than the aggregate has members");
         return None;
     }
@@ -222,6 +222,8 @@ pub fn aggregate_with(cx: &mut Check, b: &Node, ty: &QType, copy: bool) -> Optio
 /// as many as the values need for an unknown bound at the top).
 fn members(cx: &Check, ty: &QType, left: usize, top: bool) -> Option<Vec<(QType, Option<Init>)>> {
     match &ty.t {
+        // A list initializes the first member of a union (UNI-4).
+        Type::Class(c) if crate::classes::unions::check::is_union(cx, *c) => Some(cx.u.classes[*c].fields.iter().take(1).filter_map(|&f| cx.u.field(f).map(|x| (x.ty.clone(), x.init.clone()))).collect()),
         Type::Class(c) => Some(cx.u.classes[*c].fields.iter().filter_map(|&f| cx.u.field(f).map(|x| (x.ty.clone(), x.init.clone()))).collect()),
         Type::Array(e, Some(n)) => Some((0..*n).map(|_| ((**e).clone(), None)).collect()),
         Type::Array(e, None) if top => Some((0..left.max(1)).map(|_| ((**e).clone(), None)).collect()),
@@ -333,6 +335,11 @@ fn designated(cx: &mut Check, b: &Node, c: crate::sem::types::ClassId) -> Option
             cx.error(d.span, "LIST-14", format!("the designator names no member '{}'", name));
             return None;
         };
+        // UNI-8: a list for a union names one member.
+        if last.is_some() && crate::classes::unions::check::is_union(cx, c) {
+            cx.error(d.span, "UNI-8", "a list for a union has two designators");
+            return None;
+        }
         if last.is_some_and(|l| k <= l) {
             cx.error(d.span, "LIST-14", "the designators do not follow the order of the members");
             return None;
@@ -356,6 +363,10 @@ fn designated(cx: &mut Check, b: &Node, c: crate::sem::types::ClassId) -> Option
             None => return None,
         };
         given[k] = Some(v);
+    }
+    // The other members of a union are not active (UNI-4).
+    if crate::classes::unions::check::is_union(cx, c) {
+        return Some(Init::List(given.into_iter().map(|g| g.unwrap_or(Init::Default)).collect()));
     }
     let list = Init::List(fields.iter().zip(given).map(|(&f, g)| {
         let x = cx.u.field(f).unwrap();

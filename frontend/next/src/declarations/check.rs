@@ -228,6 +228,12 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
         cx.unsupported(n.span, "a declaration without decl-specifiers");
         return None;
     };
+    // UNI-7: an anonymous union, whose members belong to the enclosing
+    // scope.
+    if n.child("init_declarator").is_none() && ds.find("union_def").is_some_and(|u| u.child("class_name").is_none() && u.child("template_id").is_none()) {
+        cx.unsupported(n.span, "an anonymous union (build step 4)");
+        return None;
+    }
     let specs = decl_specifiers(cx, ds, attrs);
     let local = cx.in_function();
     let mut vars: Vec<(EntityId, Init)> = Vec::new();

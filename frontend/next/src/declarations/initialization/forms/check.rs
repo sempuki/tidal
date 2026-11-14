@@ -578,7 +578,10 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         Init::Expr(e) => ce::is_constant(cx, e),
         Init::Ref(e) => ce::evaluate_ref(cx, e, storage != Storage::Automatic).is_ok(),
         Init::Zero => true,
-        Init::List(items) => items.iter().all(|i| constant_part(cx, i, ty.base_elem().is_class())),
+        Init::List(_) => match crate::classes::unions::check::without_inactive(cx, &ty, &init_value) {
+            Init::List(items) => items.iter().all(|i| constant_part(cx, i, ty.base_elem().is_class())),
+            _ => false,
+        },
         Init::Default => storage != Storage::Automatic,
         Init::Ctor(..) => ce::is_constant(cx, &Expr::new(EK::List(Box::new(init_value.clone())), ty.unqual(), crate::sem::tree::Cat::PR, span)),
     };
@@ -618,7 +621,8 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     }
     if constexpr || s.constinit {
         let rule = if constexpr { constexpr::check::VARIABLE } else { constexpr::check::CONSTINIT };
-        check_constant_initializer(cx, &init_value, span, rule, storage != Storage::Automatic);
+        let checked = crate::classes::unions::check::without_inactive(cx, &ty, &init_value);
+        check_constant_initializer(cx, &checked, span, rule, storage != Storage::Automatic);
     }
     if storage != Storage::Automatic && !local || (storage != Storage::Automatic && local && false) {
         if !cx.u.statics.contains(&id) && init.is_some() || (!cx.u.statics.contains(&id) && !s.is_extern) {

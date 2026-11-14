@@ -86,6 +86,24 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
             let crate::sem::tree::EK::List(i) = &e.k else { unreachable!() };
             construct(m, p, ty, i)
         }
+        // UNI-4: a union with the listed member active; a member whose
+        // initializer is default-initialization stays inactive.
+        Init::List(items) if crate::classes::unions::run::union_of(m.u, ty).is_some() => {
+            let c = ty.class().unwrap();
+            set(m, p, m.uninit(ty))?;
+            let tys = m.u.field_types(c);
+            for (k, i) in items.iter().enumerate() {
+                if matches!(i, Init::Default) || k >= tys.len() {
+                    continue;
+                }
+                crate::classes::unions::run::begin_member(m, p, c, k)?;
+                let mut q = p.clone();
+                q.path.push(k as i64);
+                q.array = false;
+                construct(m, &q, &tys[k], i)?;
+            }
+            Ok(())
+        }
         Init::List(items) if ty.is_class() || ty.is_array() => {
             let tys: Vec<QType> = match &ty.t {
                 Type::Class(c) => m.u.field_types(*c),
@@ -139,6 +157,7 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
             if last_base.is_some() {
                 m.early.push((this.obj, this.path.clone()));
             }
+            let union = crate::classes::unions::run::union_of(m.u, &ty).is_some();
             for (k, t) in tys.iter().enumerate() {
                 if Some(k) == last_base.map(|i| i + 1) {
                     m.early.pop();
@@ -147,6 +166,19 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
                 q.path.push(k as i64);
                 q.array = false;
                 let from = m.temps.len();
+                // UNI-4: a union's member without an initializer stays
+                // inactive.
+                if union {
+                    match inits.get(k) {
+                        Some(i) if !matches!(i, Init::Default) => {
+                            crate::classes::unions::run::begin_member(m, &this, c, k)?;
+                            construct(m, &q, t, i)?;
+                        }
+                        _ => {}
+                    }
+                    crate::machine::exec::end_temps(m, from)?;
+                    continue;
+                }
                 match inits.get(k) {
                     Some(i) => construct(m, &q, t, i)?,
                     None => set(m, &q, m.zero(t))?,
@@ -194,6 +226,16 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
         Init::Ref(e) => {
             let p = place(m, e)?;
             Ok(Val::Ptr(p))
+        }
+        Init::List(items) if crate::classes::unions::run::union_of(m.u, ty).is_some() => {
+            let tys = m.u.field_types(ty.class().unwrap());
+            let mut out = vec![Val::Inactive; tys.len()];
+            for (k, i) in items.iter().enumerate() {
+                if !matches!(i, Init::Default) && k < tys.len() {
+                    out[k] = value(m, &tys[k], i)?;
+                }
+            }
+            Ok(Val::Agg(out))
         }
         Init::List(items) if ty.is_class() => {
             let tys = m.u.field_types(ty.class().unwrap());

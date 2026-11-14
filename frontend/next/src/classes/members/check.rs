@@ -81,7 +81,13 @@ pub fn elaborated_class(cx: &mut Check, n: &Node) -> QType {
 /// then the default member initializers, where the class is complete
 /// (CLS-2).
 pub fn class_def(cx: &mut Check, n: &Node) -> QType {
-    let Some(head) = n.child("class_head") else { return QType::error() };
+    // A `union_def` is its own head, with no bases (`classes/unions`).
+    let head = if n.prod == "union_def" { n } else {
+        match n.child("class_head") {
+            Some(h) => h,
+            None => return QType::error(),
+        }
+    };
     if head.child("nested_name").is_some() || head.child("template_id").is_some() {
         return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
@@ -101,6 +107,11 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         Some(c) => c,
         None => new_class(cx, &name, key, head.span),
     };
+    // TYN-10: `union` and the other class keys do not name one class.
+    if (cx.u.classes[id].key == ClassKey::Union) != (key == ClassKey::Union) {
+        cx.error(head.span, "TYN-10", format!("'{}' was declared with another class key", name));
+        return QType::error();
+    }
     cx.u.classes[id].key = key;
     cx.u.classes[id].is_final = cx.has_word(head, "final");
     // DER-1, DER-2: the base subobjects come first.
@@ -165,6 +176,7 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
                 crate::classes::constructors::check::define(cx, f, b);
             }
             crate::classes::constructors::check::end_of_class(cx, id, head.span);
+            crate::classes::unions::check::end_of_union(cx, id, head.span);
             crate::classes::r#virtual::check::after_bodies(cx, id);
         }
     }
@@ -353,6 +365,11 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     return true;
                 }
                 let Some((name, span)) = d.name.clone() else { continue };
+                match crate::classes::unions::check::member(cx, id, &d.ty, &name, span) {
+                    Some(true) => {}
+                    Some(false) => return true,
+                    None => return false,
+                }
                 if d.ty.is_ref() {
                     cx.unsupported(span, "a reference data member (build step 4)");
                     return false;
@@ -608,6 +625,11 @@ pub fn default_init(cx: &Check, ty: &QType) -> Init {
     if ty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
         return value_init(cx, ty);
     }
+    // A union: the member with a default member initializer, or none
+    // (UNI-4).
+    if let Some(c) = ty.class().filter(|&c| crate::classes::unions::check::is_union(cx, c)) {
+        return Init::List(cx.u.classes[c].fields.iter().map(|&f| cx.u.field(f).and_then(|x| x.init.clone()).unwrap_or(Init::Default)).collect());
+    }
     match &ty.t {
         Type::Class(c) => Init::List(cx.u.classes[*c].fields.iter().map(|&f| {
             let x = cx.u.field(f).unwrap();
@@ -629,6 +651,15 @@ pub fn value_init(cx: &Check, ty: &QType) -> Init {
             Some(f) => Init::Ctor(f, Vec::new()),
             None => Init::Default,
         };
+    }
+    // A union: the member with a default member initializer, or else the
+    // first member, value-initialized (UNI-4).
+    if let Some(c) = ty.class().filter(|&c| crate::classes::unions::check::is_union(cx, c)) {
+        let fields = &cx.u.classes[c].fields;
+        if fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
+            return default_init(cx, ty);
+        }
+        return Init::List(fields.iter().take(1).map(|&f| value_init(cx, &cx.u.field(f).unwrap().ty)).collect());
     }
     match &ty.t {
         Type::Class(c) => Init::List(cx.u.classes[*c].fields.iter().map(|&f| {

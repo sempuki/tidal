@@ -33,10 +33,21 @@ pub fn check_read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     }
     // CE-3: a mutable member of an object that the evaluation did not
     // create is not usable.
-    if !o.own && through_mutable(m, p) {
+    if !o.own && through_mutable(m, p) && !inactive_mutable(m, p) {
         return limit("CE-3", "a read of a mutable member of an object from outside the evaluation");
     }
     Ok(())
+}
+
+/// CE-22: a copy of a whole union whose active member is not mutable,
+/// which reads none of its members.
+fn inactive_mutable(m: &mut Machine, p: &Ptr) -> bool {
+    let Some(c) = m.type_at(p).and_then(|t| crate::classes::unions::run::union_of(m.u, &t)) else { return false };
+    let active = match m.slot(p) {
+        Some(crate::machine::Val::Agg(xs)) => xs.iter().position(|x| *x != crate::machine::Val::Inactive),
+        _ => None,
+    };
+    !active.and_then(|k| m.u.classes[c].fields.get(k)).and_then(|&f| m.u.field(f)).is_some_and(|x| x.mutable)
 }
 
 /// The place goes through a mutable data member, or reads a whole class

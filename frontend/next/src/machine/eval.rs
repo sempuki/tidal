@@ -240,6 +240,9 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
                 None => eval(m, r)?,
             };
             let p = place(m, l)?;
+            if crate::classes::unions::run::is_chain(l) {
+                crate::classes::unions::run::activate(m, &p)?;
+            }
             write(m, &p, &l.ty, v)?;
             Ok(p)
         }
@@ -324,6 +327,7 @@ pub fn write(m: &mut Machine, p: &Ptr, ty: &QType, v: Val) -> R<()> {
     }
     crate::declarations::volatile::run::check_access(m, p, ty)?;
     m.record(p, true);
+    crate::classes::unions::run::check_active(m, p)?;
     let v = match (&ty.t, v) {
         (Type::Float(k), v @ (Val::Float(_) | Val::Ext(_))) => conversions::run::to_float(v, *k),
         (_, v) => v,

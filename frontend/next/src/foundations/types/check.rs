@@ -141,7 +141,7 @@ pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<Q
                 // `struct S;` declares the class.
                 defines = cx.first_word(x) != "enum";
             }
-            "class_def" => {
+            "class_def" | "union_def" => {
                 ty = Some(crate::classes::members::check::class_def(cx, x));
                 defines = true;
             }

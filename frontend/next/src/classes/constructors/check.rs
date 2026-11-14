@@ -294,11 +294,13 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
             return;
         }
         let fields = cx.u.classes[c].fields.clone();
+        let union = crate::classes::unions::check::is_union(cx, c);
         let mut inits = Vec::new();
         for fid in fields {
             let x = cx.u.field(fid).unwrap().clone();
             inits.push(match x.init {
                 Some(i) => i,
+                None if union => Init::Default,
                 None => default_init(cx, &x.ty, def.span).unwrap_or(Init::Default),
             });
         }
@@ -470,12 +472,25 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
             cx.error(mi.span, "CTOR-15", format!("the member '{}' has two initializers", name));
             return None;
         }
+        // UNI-8: one mem-init for the members of a union.
+        if crate::classes::unions::check::is_union(cx, c) && given.iter().any(|g| g.is_some()) {
+            cx.error(mi.span, "UNI-8", "a constructor of a union initializes two members");
+            return None;
+        }
         let fty = cx.u.field(fields[k]).unwrap().ty.clone();
         given[k] = Some(direct_init(cx, &fty, args, braced.is_some(), mi.span)?);
     }
     let mut out = Vec::new();
+    // A union: the member that a mem-init names, or else the one with a
+    // default member initializer, is active; the others are not (UNI-4).
+    let union = crate::classes::unions::check::is_union(cx, c);
+    let named = given.iter().any(|g| g.is_some());
     for (k, g) in given.into_iter().enumerate() {
         let x = cx.u.field(fields[k]).unwrap().clone();
+        if union {
+            out.push(g.or(if named { None } else { x.init.clone() }).unwrap_or(Init::Default));
+            continue;
+        }
         out.push(match g.or(x.init.clone()) {
             Some(i) => i,
             None => {
@@ -622,11 +637,14 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
 /// member initializer or default-initialization.
 fn implicit_default(cx: &mut Check, c: ClassId, span: Span) -> Option<Init> {
     let fields = cx.u.classes[c].fields.clone();
+    let union = crate::classes::unions::check::is_union(cx, c);
     let mut out = Vec::new();
     for f in fields {
         let x = cx.u.field(f).unwrap().clone();
         out.push(match x.init {
             Some(i) => i,
+            // A union's member without an initializer stays inactive (UNI-4).
+            None if union => Init::Default,
             None => default_init(cx, &x.ty, span)?,
         });
     }

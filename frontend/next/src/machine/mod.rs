@@ -93,6 +93,9 @@ pub enum Val {
     Agg(Vec<Val>),
     /// A scalar with no value yet.
     Uninit,
+    /// A member of a union that is not its active member
+    /// (`classes::unions::run`).
+    Inactive,
     Void,
 }
 
@@ -101,6 +104,8 @@ impl Val {
     pub fn has_empty_part(&self) -> bool {
         match self {
             Val::Uninit => true,
+            // A union with no active member.
+            Val::Agg(xs) if !xs.is_empty() && xs.iter().all(|x| *x == Val::Inactive) => true,
             Val::Agg(xs) => xs.iter().any(|x| x.has_empty_part()),
             _ => false,
         }
@@ -313,6 +318,8 @@ impl<'a> Machine<'a> {
     pub fn uninit(&self, ty: &QType) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.uninit(e)).collect()),
+            // A union has no active member.
+            Type::Class(c) if self.u.classes[*c].key == crate::sem::ClassKey::Union => Val::Agg(self.u.field_types(*c).iter().map(|_| Val::Inactive).collect()),
             Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.uninit(t)).collect()),
             _ => Val::Uninit,
         }
@@ -324,6 +331,8 @@ impl<'a> Machine<'a> {
         match (v, &ty.t) {
             (Val::Uninit, _) => self.zero(ty),
             (Val::Agg(xs), Type::Array(e, _)) => Val::Agg(xs.into_iter().map(|x| self.fill_zero(e, x)).collect()),
+            // A union with no active member gets its first member zero.
+            (Val::Agg(xs), Type::Class(_)) if !xs.is_empty() && xs.iter().all(|x| *x == Val::Inactive) => self.zero(ty),
             (Val::Agg(xs), Type::Class(c)) => {
                 let tys = self.u.field_types(*c);
                 Val::Agg(xs.into_iter().zip(tys.iter()).map(|(x, t)| self.fill_zero(t, x)).collect())
@@ -335,6 +344,8 @@ impl<'a> Machine<'a> {
     pub fn zero(&self, ty: &QType) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(e)).collect()),
+            // A union's first member is zero and active.
+            Type::Class(c) if self.u.classes[*c].key == crate::sem::ClassKey::Union => Val::Agg(self.u.field_types(*c).iter().enumerate().map(|(k, t)| if k == 0 { self.zero(t) } else { Val::Inactive }).collect()),
             Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.zero(t)).collect()),
             Type::Float(crate::sem::types::FloatK::LongDouble) => Val::Ext(crate::foundations::types::run::F80::ZERO),
             Type::Float(_) => Val::Float(0.0),

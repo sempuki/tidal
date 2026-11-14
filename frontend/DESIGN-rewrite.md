@@ -530,7 +530,12 @@ destructors, through a virtual destructor for a pointer to a base, and
 free the object. The machine stops at a read of an object that `new`
 left without a value, at a mismatched or repeated `delete`, and at a
 `delete` through a base without a virtual destructor, and constant
-evaluation rejects storage that it allocates and does not free. The
+evaluation rejects storage that it allocates and does not free. A
+union holds one value per member, and the members that are not active
+hold no value; a list, a designator, a default member initializer, or a
+mem-init picks the active member, a built-in assignment through a
+chain of member accesses changes it, and a copy keeps it. The machine
+stops at an access to a member that is not active. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -538,8 +543,9 @@ another entity. An explicit destructor call on a class, a literal operator, an
 `operator->`, a comparison that `<=>` rewrites, a virtual base,
 `dynamic_cast`, an allocation or deallocation function that the
 program declares or calls by name, a `new` expression with placement
-arguments, a union, a
-bit-field, a pointer to member, a member function of a local or nested
+arguments, an anonymous union, a union member whose class has special
+member functions that are not trivial, a read through the common
+initial sequence of two union members, a bit-field, a pointer to member, a member function of a local or nested
 class, a member function with a default argument or a noexcept
 operand, and a user-defined conversion in overload resolution with
 several candidates are unsupported, so a unit that has one gives no

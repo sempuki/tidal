@@ -908,8 +908,8 @@ fn classes_with_data_members() {
     // A class and a variable of one name in one scope: the variable hides
     // the class.
     assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
-    // Unions wait for a later part.
-    assert_eq!(rule("union U { int a; float b; };"), Some("unsupported"));
+    // Bit-fields wait for a later part.
+    assert_eq!(rule("struct B { int a : 3; };"), Some("unsupported"));
     // The bytes of a class, with padding.
     assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
 }
@@ -1175,4 +1175,32 @@ fn new_and_delete() {
     assert_eq!(rule("void g() { new int[2]{1, 2, 3}; }"), Some("NEW-17"));
     assert_eq!(rule("void g(int n) { new int[2][n]; }"), Some("NEW-11"));
     assert_eq!(rule("void g() { new const int; }"), Some("NEW-11"));
+}
+
+#[test]
+fn unions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // The members share the first byte; an assignment changes the active
+    // member, and a copy keeps it.
+    assert_eq!(run("union U { int a; float b; }; int main() { U u{1}; u.b = 2.0f; U v = u; return (int)v.b * 10 + (sizeof(U) == 4) + ((void*)&u.a == (void*)&u.b); }"), RunOutcome::Result(22));
+    assert_eq!(run("struct P { int x, y; }; union U { int a; P p; }; int main() { U u{1}; u.p.y = 3; return u.p.y; }"), RunOutcome::Result(3));
+    // A designator, a default member initializer, or a mem-init picks the
+    // active member.
+    assert_eq!(run("union U { int a; float b; }; union V { int a; float b = 1.5f; }; union W { int a; float b; W() : b(4) {} }; int main() { U u = {.b = 2.5f}; V v; W w; return (int)u.b * 100 + (int)(v.b * 2) * 10 + (int)w.b; }"), RunOutcome::Result(234));
+    let r = run("union U { int a; float b; }; int main() { U u{1}; u.b = 2.0f; return u.a; }");
+    assert!(matches!(r, RunOutcome::Undefined("UNI-6", ..)), "{:?}", r);
+    let r = run("union U { int a; float b; }; int main() { U u; return u.a; }");
+    assert!(matches!(r, RunOutcome::Undefined("UNI-6", ..)), "{:?}", r);
+    assert_eq!(rule("union U { int a; float b; }; constexpr U u{.b = 2.0f}; constexpr U v = u; static_assert(v.b == 2.0f);"), None);
+    assert_eq!(rule("union U { int a; float b; }; constexpr int f() { U u{1}; u.b = 2; return u.a; } static_assert(f() == 1);"), Some("SA-7"));
+    assert_eq!(rule("union U { int& r; };"), Some("UNI-2"));
+    assert_eq!(rule("union U { int a; float b; }; U u = {1, 2};"), Some("UNI-8"));
+    assert_eq!(rule("union U { int a = 1; float b = 2; };"), Some("UNI-8"));
+    assert_eq!(rule("union U { int a; float b; U() : a(1), b(2) {} };"), Some("UNI-8"));
+    assert_eq!(rule("struct S; union S { int i; };"), Some("TYN-10"));
+    assert_eq!(rule("void f() { union { int a; }; }"), Some("unsupported"));
 }
