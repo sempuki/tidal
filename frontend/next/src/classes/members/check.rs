@@ -138,7 +138,12 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         }
     }
     cx.defer_defaults = outer_defer;
-    let pending = std::mem::replace(&mut cx.pending_defaults, outer_pending);
+    let mut pending = std::mem::replace(&mut cx.pending_defaults, outer_pending);
+    // DEFARG-3: in a nested class, the default arguments wait for the
+    // outermost class.
+    if outer.is_some() {
+        cx.pending_defaults.append(&mut pending);
+    }
     cx.u.classes[id].complete = true;
     // STG-1: the size fits in std::size_t.
     if ok {
@@ -155,7 +160,14 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     // complete class.
     if ok {
         for (f, params) in pending {
+            // Each in the scope of its own class.
+            let own = cx.u.func(f).and_then(|x| x.class).unwrap_or(id);
+            let (saved_scope, saved_member) = (cx.scope, cx.member_of);
+            cx.scope = cx.u.classes[own].scope;
+            cx.member_of = Some(own);
             let ds = crate::declarations::functions::definitions::check::default_arguments(cx, &params);
+            cx.scope = saved_scope;
+            cx.member_of = saved_member;
             if let Some(x) = cx.u.func_mut(f) {
                 for (k, d) in ds.into_iter().enumerate() {
                     if params[k].default.is_some() && k < x.defaults.len() {
@@ -187,29 +199,80 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         }
         if ok {
             crate::classes::r#virtual::check::complete(cx, id, head.span);
-            for b in bodies {
-                if b.prod == "friend_decl" {
-                    crate::classes::access::check::definition(cx, b);
-                } else {
-                    crate::declarations::functions::definitions::check::function_definition(cx, b);
+            // CLS-2: in a class nested in a class definition, the bodies
+            // wait for the outermost class.
+            if outer.is_some() {
+                for b in bodies {
+                    cx.nested_bodies.push(crate::sem::check::NestedBody::Body(id, b.clone()));
                 }
+                for (f, b) in ctor_bodies {
+                    cx.nested_bodies.push(crate::sem::check::NestedBody::Ctor(id, f, b.clone()));
+                }
+                cx.nested_bodies.push(crate::sem::check::NestedBody::End(id, head.span));
+            } else {
+                for b in bodies {
+                    if b.prod == "friend_decl" {
+                        crate::classes::access::check::definition(cx, b);
+                    } else {
+                        crate::declarations::functions::definitions::check::function_definition(cx, b);
+                    }
+                }
+                for (f, b) in ctor_bodies {
+                    crate::classes::constructors::check::define(cx, f, b);
+                }
+                run_nested_bodies(cx);
             }
-            for (f, b) in ctor_bodies {
-                crate::classes::constructors::check::define(cx, f, b);
+            if outer.is_none() {
+                crate::classes::constructors::check::end_of_class(cx, id, head.span);
             }
-            crate::classes::constructors::check::end_of_class(cx, id, head.span);
             crate::classes::unions::check::end_of_union(cx, id, head.span);
             // CLS-9: no member type or enumerator with the class's name.
             let own = cx.u.scopes[cx.u.classes[id].scope].names.get(name.as_str()).cloned().unwrap_or_default();
             if !name.is_empty() && own.iter().any(|&e| !matches!(cx.u.entities[e].kind, EntKind::Field(_) | EntKind::Func(_) | EntKind::Var(_))) {
                 cx.error(head.span, "CLS-9", format!("a member type or enumerator has the name of the class '{}'", name));
             }
-            crate::classes::r#virtual::check::after_bodies(cx, id);
+            if outer.is_none() {
+                crate::classes::r#virtual::check::after_bodies(cx, id);
+            }
         }
     }
     cx.member_of = outer;
     cx.scope = saved;
     QType::new(Type::Class(id))
+}
+
+/// The bodies of the member functions of nested classes, now that the
+/// outermost class is complete, each in its own class's scope, with the
+/// checks at the end of each nested class.
+fn run_nested_bodies(cx: &mut Check) {
+    let work = std::mem::take(&mut cx.nested_bodies);
+    let (saved_scope, saved_member) = (cx.scope, cx.member_of);
+    for w in work {
+        match w {
+            crate::sem::check::NestedBody::Body(c, b) => {
+                cx.scope = cx.u.classes[c].scope;
+                cx.member_of = Some(c);
+                if b.prod == "friend_decl" {
+                    crate::classes::access::check::definition(cx, &b);
+                } else {
+                    crate::declarations::functions::definitions::check::function_definition(cx, &b);
+                }
+            }
+            crate::sem::check::NestedBody::Ctor(c, f, b) => {
+                cx.scope = cx.u.classes[c].scope;
+                cx.member_of = Some(c);
+                crate::classes::constructors::check::define(cx, f, &b);
+            }
+            crate::sem::check::NestedBody::End(c, span) => {
+                cx.scope = cx.u.classes[c].scope;
+                cx.member_of = Some(c);
+                crate::classes::constructors::check::end_of_class(cx, c, span);
+                crate::classes::r#virtual::check::after_bodies(cx, c);
+            }
+        }
+    }
+    cx.scope = saved_scope;
+    cx.member_of = saved_member;
 }
 
 /// One `member_decl`. False after an unsupported member. A member
@@ -363,6 +426,23 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator" | "bitfield"))) {
                 cx.unsupported(m.span, "a member of this form (build step 4)");
                 return false;
+            }
+            // `class X;` alone declares a nested class (CLS rules).
+            if m.children("member_declarator").next().is_none() && m.child("bitfield").is_none() {
+                if let Some(et) = first.find("elaborated_type").filter(|e| e.child("nested_name").is_none() && e.child("template_id").is_none() && cx.first_word(e) != "enum") {
+                    let name = et.find("class_name").map(|c| cx.source(c)).or_else(|| et.kids.iter().rev().find_map(|k| cx.token(k).filter(|t| t.kind == crate::lex::TK::Ident).map(|t| t.text.clone())));
+                    if let Some(name) = name {
+                        let existing = declared_class(cx, &name);
+                        let c = match existing {
+                            Some(c) => c,
+                            None => new_class(cx, &name, key_of(cx, et), et.span),
+                        };
+                        if let Some(&e) = names::declared_here(cx, cx.scope, &name).iter().find(|&&e| matches!(cx.u.entities[e].kind, EntKind::Class(k) if k == c)) {
+                            cx.u.access.entry(e).or_insert(*access);
+                        }
+                        return true;
+                    }
+                }
             }
             let specs = crate::declarations::check::decl_specifiers(cx, first, Default::default());
             if specs.unsupported {
@@ -563,13 +643,13 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
 /// unsupported diagnostic is out.
 fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarations::declarators::check::Declared) -> bool {
     let parent = cx.u.scopes[cx.u.classes[id].scope].parent.unwrap_or(0);
-    // A member function of a local or nested class waits for a later
-    // part (access to the enclosing class, locals of the function).
-    let local = cx.u.is_local(parent) || cx.u.scopes[parent].kind == ScopeKind::Class;
+    // A member function of a local class waits for a later part (the
+    // locals of the enclosing function).
+    let local = cx.u.is_local(parent);
     let operand = dn.find("exception_spec").is_some_and(|e| first_node(e).is_some());
     let qualified = d.ty.func().is_some_and(|f| f.qualified);
     if local || operand || qualified {
-        cx.unsupported(dn.span, "a member function of a local or nested class, with a noexcept operand, or of a qualified function type (build step 4)");
+        cx.unsupported(dn.span, "a member function of a local class, with a noexcept operand, or of a qualified function type (build step 4)");
         return false;
     }
     true

@@ -1398,3 +1398,21 @@ fn explicit_destructor_calls() {
     assert_eq!(rule("struct B {}; struct D : B {}; void f(D d) { d.~B(); }"), Some("DTOR-8"));
     assert_eq!(rule("struct S {}; void f(S s) { s.~S(1); }"), Some("DTOR-8"));
 }
+
+#[test]
+fn nested_class_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A nested class's member functions see the complete enclosing class
+    // and its private members (ACC-10, CLS-2).
+    assert_eq!(run("class Q { int items[3] = {4, 5, 6}; public: struct C { const Q* o; int at(int k) const { return o->items[k]; } }; C cursor() const { return {this}; } }; int main() { Q q; return q.cursor().at(1); }"), RunOutcome::Result(5));
+    // DEFARG-3: and so do their default arguments.
+    assert_eq!(run("struct O { struct I { int get(int n = depth) { return n; } }; static const int depth = 7; }; int main() { return O::I{}.get(); }"), RunOutcome::Result(7));
+    // `struct L;` declares a nested class, which a later definition
+    // completes.
+    assert_eq!(run("struct O { struct L; struct I { L make() const { return L{4}; } }; struct L { int k; }; }; int main() { return O::I{}.make().k; }"), RunOutcome::Result(4));
+    assert_eq!(rule("typedef struct { struct P { int size() const; } part; } W;"), Some("TYN-9"));
+}

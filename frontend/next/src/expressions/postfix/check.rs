@@ -447,8 +447,9 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
         let obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
         let mixed = members.iter().any(|&f| cx.u.func(f).unwrap().member_static) && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static);
-        if obj.is_none() && (members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) || (mixed && members.iter().any(|&f| cx.u.func(f).unwrap().defaults.iter().any(|d| d.is_some())))) {
-            let t = cx.unsupported(span, "a call without an object among ref-qualified member functions (build step 4)");
+        let other_this = cx.func.as_ref().is_some_and(|f| f.this.is_some());
+        if obj.is_none() && (members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) || (mixed && (other_this || members.iter().any(|&f| cx.u.func(f).unwrap().defaults.iter().any(|d| d.is_some()))))) {
+            let t = cx.unsupported(span, "a call without an object among ref-qualified, or static and non-static, member functions (build step 4)");
             return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
         }
         if obj.is_none() && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static) && !members.iter().any(|&f| cx.u.func(f).unwrap().member_static) {
@@ -459,6 +460,11 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     };
     let cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
     let f = ovl::resolve_with(cx, &cands, object.as_ref(), args, span, &name)?;
+    // OVL-3: a non-static member function chosen with no object.
+    if object.is_none() && cx.u.func(f).is_some_and(|x| !x.member_static) {
+        let t = cx.unsupported(span, "a non-static member function chosen without an object (build step 4)");
+        return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+    }
     let naming = object.as_ref().and_then(|o| o.ty.class()).or(cx.u.func(f).and_then(|x| x.class));
     let ok = match naming {
         Some(n) => crate::classes::derived::check::accessible_through(cx, f, n),

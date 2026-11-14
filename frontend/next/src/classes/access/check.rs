@@ -42,8 +42,8 @@ pub fn friend_decl(cx: &mut Check, c: ClassId, n: &Node) -> bool {
     // A friend defined in a nested or local class waits, as the class's
     // member functions do.
     let parent = cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0);
-    if fd.is_some() && (cx.u.is_local(parent) || cx.u.scopes[parent].kind == ScopeKind::Class) {
-        cx.unsupported(n.span, "a friend function defined in a nested or local class (build step 4)");
+    if fd.is_some() && cx.u.is_local(parent) {
+        cx.unsupported(n.span, "a friend function defined in a local class (build step 4)");
         return false;
     }
     let Some(dn) = fd.unwrap_or(n).child("declarator") else {
