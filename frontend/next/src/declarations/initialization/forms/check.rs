@@ -75,6 +75,9 @@ pub fn select_overload(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
     if let EK::AddrOf(inner) = &e.k {
         if crate::expressions::primary::check::unresolved_set(&e) {
             let f = select_overload(cx, (**inner).clone(), to)?;
+            if let (true, EK::Func(id)) = (to.is_member_ptr(), &f.k) {
+                return Some(crate::expressions::member_pointers::check::func_ptr(cx, *id, e.span));
+            }
             let t = QType::ptr_to(f.ty.clone());
             return Some(Expr::new(EK::AddrOf(Box::new(f)), t, Cat::PR, e.span));
         }
@@ -87,6 +90,7 @@ pub fn select_overload(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
     let want = match &to.t {
         Type::Ptr(p) => p.func().cloned(),
         Type::Ref(p, _) => p.func().cloned(),
+        Type::MemPtr(_, p) => p.func().cloned(),
         _ => None,
     };
     let Some(want) = want else {

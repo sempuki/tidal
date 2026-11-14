@@ -128,6 +128,18 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
             return mk(c, a, b, t, Cat::PR);
         }
     }
+    // MPTR-4: a pointer to member and a null pointer constant or another
+    // pointer to member that converts to its type.
+    for flip in [false, true] {
+        let (x, y, yn) = if flip { (&b, &a, an) } else { (&a, &b, bn) };
+        if x.ty.is_member_ptr() {
+            let t = x.ty.unqual();
+            if let Some(Ok(y2)) = crate::expressions::member_pointers::check::implicit(cx, y.clone(), yn || y.ty.is_nullptr(), &t) {
+                let (a, b) = if flip { (y2, b) } else { (a, y2) };
+                return mk(c, a, b, t, Cat::PR);
+            }
+        }
+    }
     let converts = |cx: &Check, t: &QType| t.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c));
     if converts(cx, &a.ty) || converts(cx, &b.ty) {
         // COND-16: a conversion by a constructor between the operands.

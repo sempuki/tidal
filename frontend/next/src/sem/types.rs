@@ -56,6 +56,9 @@ pub enum Type {
     /// An array: the element type and the bound, if known.
     Array(Rc<QType>, Option<u64>),
     Func(Rc<FnType>),
+    /// A pointer to member (`expressions/member-pointers`): the class and
+    /// the member type.
+    MemPtr(ClassId, Rc<QType>),
     Enum(EnumId),
     /// A class, a struct, or a union (`classes` pages).
     Class(ClassId),
@@ -80,6 +83,10 @@ pub struct FnType {
     /// A cv-qualifier or a ref-qualifier after the parameters, which only
     /// an alias or a typedef can name (DCL-15, DCL-16).
     pub qualified: bool,
+    /// The cv-qualifiers and the ref-qualifier of the object, for the
+    /// function type of a pointer to member function.
+    pub obj_cv: (bool, bool),
+    pub ref_q: Option<bool>,
 }
 
 impl IntK {
@@ -257,7 +264,17 @@ impl QType {
     /// A scalar type (TYP rules): arithmetic, enumeration, pointer, and
     /// `std::nullptr_t`.
     pub fn is_scalar(&self) -> bool {
-        matches!(self.t, Type::Int(_) | Type::Float(_) | Type::Enum(_) | Type::Ptr(_) | Type::NullPtr)
+        matches!(self.t, Type::Int(_) | Type::Float(_) | Type::Enum(_) | Type::Ptr(_) | Type::NullPtr | Type::MemPtr(..))
+    }
+    pub fn is_member_ptr(&self) -> bool {
+        matches!(self.t, Type::MemPtr(..))
+    }
+    /// The class and the member type of a pointer to member.
+    pub fn member_ptr(&self) -> Option<(ClassId, &QType)> {
+        match &self.t {
+            Type::MemPtr(c, m) => Some((*c, m)),
+            _ => None,
+        }
     }
     /// The pointed-to type of a pointer.
     pub fn pointee(&self) -> Option<&QType> {
@@ -363,10 +380,20 @@ fn show(q: &QType, inner: &str) -> String {
                 show(p, &format!(" {}", s))
             }
         }
+        Type::MemPtr(c, m) => {
+            let c2 = cv(q).trim_end();
+            let s = if c2.is_empty() { format!("class#{}::*{}", c, inner) } else { format!("class#{}::* {}{}", c, c2, inner) };
+            if matches!(m.t, Type::Array(..) | Type::Func(_)) {
+                show(m, &format!("({})", s))
+            } else {
+                show(m, &format!(" {}", s))
+            }
+        }
         Type::Array(e, n) => show(e, &format!("{}[{}]", inner, n.map(|n| n.to_string()).unwrap_or_default())),
         Type::Func(f) => {
             let ps: Vec<String> = f.params.iter().map(|p| p.show()).collect();
-            show(&f.ret, &format!("{}({}{})", inner, ps.join(", "), if f.variadic { ", ..." } else { "" }))
+            let q = format!("{}{}{}", if f.obj_cv.0 { " const" } else { "" }, if f.obj_cv.1 { " volatile" } else { "" }, match f.ref_q { Some(true) => " &&", Some(false) => " &", None => "" });
+            show(&f.ret, &format!("{}({}{}){}", inner, ps.join(", "), if f.variadic { ", ..." } else { "" }, q))
         }
     }
 }

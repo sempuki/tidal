@@ -178,6 +178,8 @@ pub struct Check<'a> {
     pub decltype_call: Option<crate::source::Span>,
     /// The call being checked is that outermost call.
     pub no_temporary: bool,
+    /// The member access being checked is the operand of `&` (MPTR-9).
+    pub address_operand: bool,
     /// The names that the parser's declare pass recorded in any scope.
     pub parser_names: std::collections::HashSet<String>,
     /// The entities with C language linkage, by name (LSP-4).
@@ -203,7 +205,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

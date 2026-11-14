@@ -289,7 +289,7 @@ fn access_as_member(cx: &Check, naming: ClassId, path: &[usize], access: Access)
 }
 
 /// The class of the function being checked.
-fn here(cx: &Check) -> Option<ClassId> {
+pub fn here(cx: &Check) -> Option<ClassId> {
     cx.func.as_ref().and_then(|f| f.id).and_then(|id| cx.u.func(id)).and_then(|f| f.class)
 }
 

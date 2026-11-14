@@ -144,12 +144,13 @@ fn related(e: &QType, r: &QType) -> (bool, bool) {
     match (&e.t, &r.t) {
         (Type::Array(a, n), Type::Array(b, m)) if n == m || m.is_none() => {
             let (x, y) = (a.base_elem(), b.base_elem());
-            let same = a.unqual_deep() == b.unqual_deep() || (x.unqual().t == y.unqual().t && !a.is_array() && !b.is_array());
+            let same = a.unqual_deep() == b.unqual_deep() || (x.unqual().t == y.unqual().t && !a.is_array() && !b.is_array()) || (x.is_ptr() && conv::qual_level(&e.unqual(), r, true));
             (same, (!x.c || y.c) && (!x.v || y.v))
         }
         // A pointer type is related to a pointer type that a
         // qualification conversion of its inner levels reaches (REF-1).
         (Type::Ptr(_), Type::Ptr(_)) => (conv::pointer_convertible(&e.unqual(), r), (!e.c || r.c) && (!e.v || r.v)),
+        (Type::MemPtr(..), Type::MemPtr(..)) => (conv::qual_level(&e.unqual(), r, true), (!e.c || r.c) && (!e.v || r.v)),
         _ => (e.unqual().t == r.unqual().t, (!e.c || r.c) && (!e.v || r.v)),
     }
 }

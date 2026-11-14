@@ -39,6 +39,12 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
         }
     }
     let Some(operand) = nodes(n).last().copied() else { return bad(span) };
+    if op == "&" {
+        if let Some(x) = crate::expressions::member_pointers::check::address(cx, operand, span) {
+            return x;
+        }
+    }
+    let parenthesized = operand.prod == "primary" && matches!(operand.kids.first(), Some(k @ Kid::Tok(_)) if cx.text(k) == "(");
     if op == "&" && operand.find("qualified_name").is_some() && operand.prod != "postfix_expr" {
         if let Some(q) = operand.find("qualified_name").and_then(|q| q.child("nested_name")) {
             let mut toks = Vec::new();
@@ -51,7 +57,9 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
                 _ => None,
             }).zip(member).is_some_and(|(s, m)| {
                 let found = crate::foundations::names::check::declared_here(cx, s, &m);
-                !found.is_empty() && found.iter().all(|&e| cx.u.func(e).is_some_and(|f| f.member_static) || cx.u.var(e).is_some())
+                // `&(C::m)` names the data member of `*this` (MPTR-2).
+                let field = |e: crate::sem::EntityId| parenthesized && matches!(cx.u.entities[e].kind, crate::sem::EntKind::Field(_));
+                !found.is_empty() && found.iter().all(|&e| cx.u.func(e).is_some_and(|f| f.member_static) || cx.u.var(e).is_some() || field(e))
             });
             if !classes.is_empty() && !all_static {
                 let t = cx.unsupported(span, "the address of a member, a pointer to member (build step 4)");
@@ -59,7 +67,9 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
             }
         }
     }
+    cx.address_operand = op == "&" && operand.prod == "postfix_expr";
     let e = expr(cx, operand);
+    cx.address_operand = false;
     if op == "&" && crate::expressions::primary::check::unresolved_set(&e) {
         return address_of(cx, e, span);
     }

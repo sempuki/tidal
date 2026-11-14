@@ -341,9 +341,6 @@ pub fn qualified_func(t: &QType) -> bool {
 
 pub fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
     let words = cx.words(n);
-    if n.child("nested_name").is_some() {
-        return cx.unsupported(n.span, "a pointer to member");
-    }
     let (mut c, mut v) = (0, 0);
     for k in n.children("cv") {
         match cx.first_word(k) {
@@ -353,6 +350,9 @@ pub fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
     }
     if c > 1 || v > 1 {
         duplicate_cv(cx, n.span);
+    }
+    if let Some(nn) = n.child("nested_name") {
+        return member_ptr(cx, t, nn, n.span).with_cv(c > 0, v > 0);
     }
     if qualified_func(&t) && matches!(words.first().copied(), Some("*" | "&" | "&&")) {
         return cx.error(n.span, "DCL-16", "a pointer or a reference to a function type with a cv-qualifier or a ref-qualifier");
@@ -378,6 +378,30 @@ pub fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
         }
         _ => cx.unsupported(n.span, "a pointer declarator of this form"),
     }
+}
+
+/// MPTR-1, MPTR-8: a pointer to member of the class that `nn` names, to
+/// a member of type `t`.
+fn member_ptr(cx: &mut Check, t: QType, nn: &Node, span: Span) -> QType {
+    let class = match names::nested_name(cx, nn) {
+        Qual::Scope(s) => cx.u.class_of_scope(s),
+        Qual::Unsupported => return QType::error(),
+        Qual::Error => return QType::error(),
+        Qual::None => None,
+    };
+    let Some(class) = class else {
+        return cx.error(span, "MPTR-8", "the qualifier of a pointer to member does not name a class");
+    };
+    if t.is_error() {
+        return t;
+    }
+    if t.is_ref() {
+        return cx.error(span, "MPTR-8", "a pointer to member of reference type");
+    }
+    if t.is_void() {
+        return cx.error(span, "MPTR-8", "a pointer to member of type void");
+    }
+    QType::new(Type::MemPtr(class, Rc::new(t)))
 }
 
 fn suffix(cx: &mut Check, t: QType, s: &Node, d: &mut Declared, top: bool) -> QType {
@@ -442,19 +466,27 @@ fn names_class_member(cx: &Check, n: &Node) -> bool {
 fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: bool) -> QType {
     let mut ret = ret;
     // DCL-15: an alias or a typedef can name a qualified function type.
-    let qualified = cx.naming_type && (n.children("cv").next().is_some() || n.child("ref_qualifier").is_some());
+
     // A member function: declared in its class, or named with its class
     // as the qualifier. Its qualifiers belong to its object.
     let member = (top && (cx.member_of.is_some() || names_class_member(cx, &d.node))) || d.node.find("ptr_part").is_some_and(|p| p.find("nested_name").is_some());
-    if member {
-        for c in n.children("cv") {
-            match cx.first_word(c) {
-                "const" => d.obj_cv.0 = true,
-                _ => d.obj_cv.1 = true,
-            }
+    let qualified = cx.naming_type && !member && (n.children("cv").next().is_some() || n.child("ref_qualifier").is_some());
+    let mut obj_cv = (false, false);
+    for c in n.children("cv") {
+        match cx.first_word(c) {
+            "const" => obj_cv.0 = true,
+            _ => obj_cv.1 = true,
         }
-        d.ref_q = n.child("ref_qualifier").is_some();
-        d.ref_kind = n.child("ref_qualifier").map(|r| cx.first_word(r) == "&&");
+    }
+    let ref_kind = n.child("ref_qualifier").map(|r| cx.first_word(r) == "&&");
+    // The qualifiers of a declared member function belong to the
+    // function; those of the function type of a pointer to member, or
+    // of an alias, belong to the type.
+    let declared = top && !cx.naming_type;
+    if member && declared {
+        d.obj_cv = obj_cv;
+        d.ref_q = ref_kind.is_some();
+        d.ref_kind = ref_kind;
     }
     let not_member = !qualified && !member;
     if not_member && n.children("cv").next().is_some() {
@@ -491,7 +523,7 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
     } else if ret.is_func() {
         cx.error(n.span, "DCL-21", "a function returns a function");
     }
-    let f = FnType { ret, params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept, qualified };
+    let f = FnType { ret, params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept, qualified, obj_cv: if declared { (false, false) } else { obj_cv }, ref_q: if declared { None } else { ref_kind } };
     if top {
         d.params = params;
     }

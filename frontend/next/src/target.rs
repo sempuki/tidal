@@ -111,6 +111,10 @@ impl Target {
             Type::Int(k) => self.int_size(*k),
             Type::Float(k) => self.float_size(*k),
             Type::NullPtr | Type::Ptr(_) => self.ptr_size(),
+            // The matrix's ABI: an offset for a data member, and a pointer
+            // and an adjustment for a member function.
+            Type::MemPtr(_, m) if m.is_func() => 2 * self.ptr_size(),
+            Type::MemPtr(..) => self.ptr_size(),
             Type::Ref(r, _) => return self.size_of(u, r),
             Type::Array(e, Some(n)) => self.size_of(u, e)?.checked_mul(*n)?,
             Type::Enum(e) => self.int_size(u.enums.get(*e)?.underlying?),
@@ -301,6 +305,7 @@ impl Target {
             Type::Array(e, _) => return self.align_of(u, e),
             Type::Ref(r, _) => return self.align_of(u, r),
             Type::Class(c) => self.layout(u, *c)?.1,
+            Type::MemPtr(..) => self.ptr_size(),
             _ => self.size_of(u, q)?,
         })
     }

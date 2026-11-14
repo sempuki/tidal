@@ -22,6 +22,7 @@ pub fn expr(cx: &mut Check, n: &Node) -> Expr {
         "postfix_expr" => postfix::check::postfix_expr(cx, n),
         "unary_expr" => unary::check::unary_expr(cx, n),
         "cast_expr" => casts::check::cast_expr(cx, n),
+        "pm_expr" => crate::expressions::member_pointers::check::pm_expr(cx, n, false),
         "named_cast" => casts::check::named_cast(cx, n),
         "functional_cast" => casts::check::functional_cast(cx, n),
         "mul_expr" => multiplicative::check::mul_expr(cx, n),

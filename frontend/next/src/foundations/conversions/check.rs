@@ -169,7 +169,7 @@ fn similar(a: &QType, b: &QType) -> bool {
 }
 
 /// CV-10: one level of a qualification conversion.
-fn qual_level(from: &QType, to: &QType, const_above: bool) -> bool {
+pub fn qual_level(from: &QType, to: &QType, const_above: bool) -> bool {
     if (from.c && !to.c) || (from.v && !to.v) {
         return false;
     }
@@ -179,6 +179,7 @@ fn qual_level(from: &QType, to: &QType, const_above: bool) -> bool {
     }
     match (&from.t, &to.t) {
         (Type::Ptr(a), Type::Ptr(b)) => qual_level(a, b, const_above && to.c),
+        (Type::MemPtr(x, a), Type::MemPtr(y, b)) => x == y && qual_level(a, b, const_above && to.c),
         (Type::Array(a, n), Type::Array(b, m)) => (n == m || m.is_none()) && qual_level(a, b, const_above),
         (a, b) => a == b,
     }
@@ -219,6 +220,9 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
         return Ok(e);
     }
     let from = e.ty.clone();
+    if let Some(r) = crate::expressions::member_pointers::check::implicit(cx, e.clone(), null, &target) {
+        return r;
+    }
     match (&from.t, &target.t) {
         (_, Type::Void) => Ok(e.conv(Conv::ToVoid, target, Cat::PR)),
         (Type::Void, _) => Err("a void value does not convert".into()),
@@ -266,6 +270,7 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
                 // CONV-10: a function pointer gains no `noexcept`.
                 Type::Ptr(fp) if fp.is_func() && tp.is_func() => Err(format!("no implicit conversion from {} to {} (CONV-10)", from.show(), to.show())),
                 Type::Ptr(_) => Err(format!("no implicit conversion from {} to {}", from.show(), to.show())),
+                Type::MemPtr(..) => Err(format!("no implicit conversion from {} to {} (MPTR-11)", from.show(), to.show())),
                 _ => Err(format!("no implicit conversion from {} to a pointer (CONV-8)", from.show())),
             }
         }
@@ -297,7 +302,7 @@ pub fn rule_of(msg: &str) -> Option<&'static str> {
 /// cause, beside the rule of the context or of `rule_of`: the last rule
 /// in parentheses.
 pub fn cause_of(msg: &str) -> Option<&'static str> {
-    const CAUSES: [&str; 12] = ["CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25", "DER-10", "CVF-12", "CVF-11"];
+    const CAUSES: [&str; 13] = ["MPTR-11", "CONV-9", "CONV-8", "CONV-10", "CONV-12", "CONV-18", "ENUM-15", "PRIM-19", "VOL-10", "LAM-25", "DER-10", "CVF-12", "CVF-11"];
     CAUSES.iter().copied().filter(|r| msg.contains(&format!("{})", r))).max_by_key(|r| msg.rfind(&format!("{})", r)))
 }
 
@@ -351,7 +356,7 @@ pub fn is_narrowing(cx: &mut Check, e: &Expr, to: &QType) -> bool {
                 _ => true,
             }
         }
-        (Type::Ptr(_), Type::Int(IntK::Bool)) => true,
+        (Type::Ptr(_) | Type::MemPtr(..), Type::Int(IntK::Bool)) => true,
         _ => false,
     }
 }

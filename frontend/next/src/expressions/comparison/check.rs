@@ -51,6 +51,9 @@ pub fn operate(cx: &mut Check, op: BOp, l: Expr, r: Expr, span: Span) -> Expr {
     if l.ty.is_error() || r.ty.is_error() {
         return bad(span);
     }
+    if l.ty.is_member_ptr() || r.ty.is_member_ptr() {
+        return crate::expressions::member_pointers::check::compare(cx, op, l, r, (ln, rn), span);
+    }
     let eq = matches!(op, BOp::Eq | BOp::Ne);
     let mk = |l: Expr, r: Expr| Expr::new(EK::Binary(op, Box::new(l), Box::new(r)), QType::bool(), Cat::PR, span);
     // CMP-23: a scoped enumeration compares only with its own type.

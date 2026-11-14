@@ -14,7 +14,7 @@ pub fn reads_volatile(e: &Expr) -> bool {
     }
     fn form(e: &Expr) -> bool {
         match &e.k {
-            EK::Var(_) | EK::Index(..) | EK::Deref(_) => true,
+            EK::Var(_) | EK::Index(..) | EK::Deref(_) | EK::PtrMem(..) => true,
             EK::Cond(_, a, b) => form(a) && form(b),
             EK::Comma(_, b) => form(b),
             _ => false,

@@ -15,7 +15,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
     m.step()?;
     m.line = e.span.line;
     match &e.k {
-        EK::Int(_) if e.ty.is_nullptr() || e.ty.is_ptr() => Ok(Val::Null),
+        EK::Int(_) if e.ty.is_nullptr() || e.ty.is_ptr() || e.ty.is_member_ptr() => Ok(Val::Null),
         EK::Int(v) => Ok(Val::Int(*v)),
         EK::Float(f) if e.ty.t == Type::Float(crate::sem::types::FloatK::LongDouble) => Ok(Val::Ext(crate::foundations::types::run::F80::from_f64(*f))),
         EK::Float(f) => Ok(Val::Float(*f)),
@@ -29,7 +29,9 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             Val::Fn(id) => Ok(Val::Fn(id)),
             v => unary::run::indirection(m, v, &e.ty).and_then(|_| unsup("indirection through this value")),
         },
-        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) => {
+        EK::MemberPtr(c, r) => Ok(Val::Mem(crate::expressions::member_pointers::run::MemVal { anchor: *c, path: Vec::new(), member: *r })),
+        EK::PtrMemFn(_) => unsup("a pointer to member function applied outside a call"),
+        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) | EK::PtrMem(..) => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
             // an array or function that decays.
@@ -237,6 +239,7 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
             let iv = eval(m, i)?;
             postfix::run::subscript(m, pv, iv)
         }
+        EK::PtrMem(o, pm) => crate::expressions::member_pointers::run::place(m, o, pm),
         EK::Assign(l, r) => {
             // The right operand is sequenced before the left (ASN rules).
             let v = match crate::declarations::initialization::forms::run::indeterminate_copy(m, &l.ty, r) {
@@ -375,6 +378,10 @@ fn conv(m: &mut Machine, c: Conv, x: &Expr, to: &QType) -> R<Val> {
         }
         // A pointer converted to another pointee type names the place of
         // that type at its address, or a view (STG-29).
+        Conv::PtrNoOp if to.is_member_ptr() => {
+            let v = eval_any(m, x)?;
+            Ok(crate::expressions::member_pointers::run::convert(m, v, &x.ty, to))
+        }
         Conv::PtrNoOp => match eval_any(m, x)? {
             Val::Ptr(p) => match to.pointee() {
                 Some(t) if x.ty.pointee().is_some_and(|f| f.unqual().t != t.unqual().t) => Ok(Val::Ptr(crate::foundations::storage::run::convert(m, p, t))),
@@ -401,6 +408,10 @@ pub fn binary(m: &mut Machine, op: BOp, a: Val, b: Val, lt: &QType, rt: &QType, 
         BOp::Mul | BOp::Div | BOp::Rem => multiplicative::run::binary(m, op, a, b, lt),
         BOp::Add | BOp::Sub => additive::run::binary(m, op, a, b, lt),
         BOp::Shl | BOp::Shr => shift::run::shift(m, op == BOp::Shl, a, b, lt, rt),
+        BOp::Eq | BOp::Ne if lt.is_member_ptr() => {
+            let eq = crate::expressions::member_pointers::run::equal(m, &a, &b)?;
+            Ok(Val::Int((eq == (op == BOp::Eq)) as i128))
+        }
         BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne | BOp::Spaceship => comparison::run::compare(m, op, a, b, lt),
         BOp::BitAnd | BOp::BitXor | BOp::BitOr => {
             let (Val::Int(x), Val::Int(y)) = (a, b) else { return unsup("a bitwise operator on values that are not integers") };
@@ -425,8 +436,14 @@ pub fn call_expr(m: &mut Machine, f: &Expr, args: &[Arg]) -> R<Ret> {
 /// A call whose arguments are evaluated from the last to the first when
 /// `rev` holds (OPR-7).
 pub fn call_expr_in(m: &mut Machine, f: &Expr, args: &[Arg], rev: bool) -> R<Ret> {
+    let mut home = None;
     let id = match &f.k {
         EK::Virtual(id) => *id,
+        EK::PtrMemFn(pm) => {
+            let (x, id) = crate::expressions::member_pointers::run::callee(m, pm)?;
+            home = Some(x);
+            id
+        }
         _ => {
             let callee = eval(m, f)?;
             postfix::run::callee(m, callee, &f.ty)?
@@ -455,6 +472,20 @@ pub fn call_expr_in(m: &mut Machine, f: &Expr, args: &[Arg], rev: bool) -> R<Ret
     }
     if rev {
         vals.reverse();
+    }
+    // MPTR-3: the object of a call through a pointer to member function
+    // is the subobject of the function's class, and a virtual function
+    // calls its final overrider.
+    if let Some(x) = home {
+        let Some(Ret::Place(p)) = vals.first() else { return unsup("the object of a call through a pointer to member function") };
+        let q = crate::expressions::member_pointers::run::object(m, p, &x)?;
+        vals[0] = Ret::Place(q);
+        if m.u.virt.contains_key(&id) {
+            let (g, obj) = crate::classes::r#virtual::run::dispatch(m, id, vals.remove(0))?;
+            vals.insert(0, obj);
+            let r = call(m, g, vals)?;
+            return crate::classes::r#virtual::run::covariant(m, g, id, r);
+        }
     }
     if let EK::Virtual(_) = f.k {
         if vals.is_empty() {

@@ -567,7 +567,12 @@ runs the destructor and ends the object's life, and a second
 destruction stops the run. The member function bodies, constructor
 bodies, and default arguments of a nested class wait for the outermost
 class to be complete, and `class X;` as a member declares a nested
-class. The
+class. A pointer to member holds its member and the path of base
+subobjects from a class to the member's class, so a conversion to a
+derived class or a `static_cast` back keeps the member. `.*` and `->*`
+find that subobject in the object, a call through a pointer to a
+virtual function calls the final overrider, and the machine stops at a
+null pointer to member or an object that does not have the member. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -579,7 +584,7 @@ program declares or calls by name, a `new` expression with placement
 arguments, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
-bit-field, a pointer to member, a member function of a local class, a member function with a noexcept operand, a call without an object
+bit-field, a member function of a local class, a member function with a noexcept operand, a call without an object
 among ref-qualified member functions or among static and non-static
 ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload

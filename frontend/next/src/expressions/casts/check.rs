@@ -108,10 +108,22 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
     let e = rvalue(cx, e);
     let from = e.ty.clone();
     let target = to.unqual();
+    if !matches!(k, Kind::Const) {
+        if let Some(r) = crate::expressions::member_pointers::check::cast(cx, matches!(k, Kind::Reinterpret), e.clone(), null, &target) {
+            return r;
+        }
+    }
     match k {
         Kind::Const => {
             if target.pointee().is_some_and(|p| p.is_func()) {
                 return Err(("CAST-4", format!("const_cast to {}, a pointer to a function", to.show())));
+            }
+            // A pointer to data member of the same class whose member types
+            // differ in cv-qualifiers.
+            if let (Some((fc, fm)), Some((tc, tm))) = (from.member_ptr(), target.member_ptr()) {
+                if fc == tc && !fm.is_func() && strip(fm).t == strip(tm).t {
+                    return Ok(e.conv(Conv::PtrNoOp, target, Cat::PR));
+                }
             }
             if !target.is_ptr() {
                 return Err(("CAST-4", format!("const_cast to {}, which is not a pointer or reference", to.show())));

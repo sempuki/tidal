@@ -105,7 +105,7 @@ pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
         EK::Conv(_, x) => has_effect(x),
         EK::Comma(_, b) => has_effect(b),
         EK::Cond(_, a, b) => has_effect(a) || has_effect(b),
-        EK::Var(_) | EK::Index(..) | EK::Deref(_) => e.ty.is_volatile(),
+        EK::Var(_) | EK::Index(..) | EK::Deref(_) | EK::PtrMem(..) => e.ty.is_volatile(),
         _ => false,
     }
 }

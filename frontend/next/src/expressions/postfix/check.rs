@@ -342,10 +342,18 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
             }
         }
     }
-    let f = expr(cx, callee);
+    let f = match crate::expressions::member_pointers::check::called(callee) {
+        Some(pm) => crate::expressions::member_pointers::check::pm_expr(cx, pm, true),
+        None => expr(cx, callee),
+    };
     if f.ty.is_error() {
         return bad(span);
     }
+    // MPTR-3: a call through a pointer to member function.
+    let f = match crate::expressions::member_pointers::check::split_call(f) {
+        Ok((callee, object)) => return finish_call(cx, callee, None, args, span, Some(object)),
+        Err(f) => f,
+    };
     let f = deref_ref(f);
     // OVL-6: a conversion function to a pointer or reference to function
     // gives a surrogate call function, which the front end does not
@@ -529,6 +537,10 @@ pub fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<
             _ => return not_callable(cx, &f, span),
         },
         Type::Int(_) | Type::Float(_) | Type::Enum(_) | Type::NullPtr | Type::Array(..) | Type::Void => return not_callable(cx, &f, span),
+        Type::MemPtr(..) => {
+            cx.error(span, "MPTR-10", format!("a call of {}, a pointer to member, without '.*' or '->*'", f.ty.show()));
+            return bad(span);
+        }
         _ => {
             let t = cx.unsupported(span, "a call of an object of this type");
             return Expr::new(EK::Int(0), t, Cat::PR, span);

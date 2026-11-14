@@ -1001,6 +1001,11 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
             }
             v
         }
+        // MPTR-9: `&o.f` is no pointer to member.
+        EntKind::Func(x) if !x.member_static && std::mem::take(&mut cx.address_operand) => {
+            cx.error(span, "MPTR-9", "the address of a member function of an object, which only '&C::f' forms");
+            bad(span)
+        }
         _ => cx_unsupported(cx, span, "a member function named outside a call, or a member of this kind"),
     }
 }

@@ -293,7 +293,7 @@ pub fn builtin_operand(cx: &mut Check, e: Expr) -> Option<Expr> {
     let fs: Vec<EntityId> = functions(&cx.u, c).into_iter().filter(|&f| {
         cx.u.func(f).is_some_and(|x| {
             let r = x.ty.ret.nonref();
-            !x.explicit && (!obj.c || x.obj_cv.0) && (r.is_arithmetic() || r.is_enum() || r.is_ptr())
+            !x.explicit && (!obj.c || x.obj_cv.0) && (r.is_arithmetic() || r.is_enum() || r.is_ptr() || r.is_member_ptr() || r.is_nullptr())
         })
     }).collect();
     // Functions with one result type differ in their object binding only

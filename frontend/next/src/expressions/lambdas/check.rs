@@ -214,7 +214,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         return bad(span);
     }
     let deduce = trailing.is_none();
-    let fty = FnType { ret: trailing.clone().unwrap_or_else(QType::error), params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept, qualified: false };
+    let fty = FnType { ret: trailing.clone().unwrap_or_else(QType::error), params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept, qualified: false, obj_cv: (false, false), ref_q: None };
     // LAM-3, LAM-12: the call operator is const unless the lambda is
     // mutable, and constexpr when its body permits; constant evaluation
     // stops at what the body does not permit.

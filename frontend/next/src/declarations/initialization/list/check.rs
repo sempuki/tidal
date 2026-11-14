@@ -24,7 +24,7 @@ pub fn braced_value(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> 
     let span = e.span;
     let narrow = {
         let r = rvalue(cx, e.clone());
-        (r.ty.is_arithmetic() || r.ty.is_enum() || r.ty.is_ptr() || r.ty.is_nullptr()) && (to.is_arithmetic() || to.is_enum()) && conv::is_narrowing(cx, &r, to)
+        (r.ty.is_arithmetic() || r.ty.is_enum() || r.ty.is_ptr() || r.ty.is_member_ptr() || r.ty.is_nullptr()) && (to.is_arithmetic() || to.is_enum()) && conv::is_narrowing(cx, &r, to)
     };
     if narrow {
         cx.error(span, if rule == "INIT-7" { "LIST-2" } else { rule }, format!("a narrowing conversion to {} in braces", to.show()));

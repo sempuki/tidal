@@ -1416,3 +1416,25 @@ fn nested_class_members() {
     assert_eq!(run("struct O { struct L; struct I { L make() const { return L{4}; } }; struct L { int k; }; }; int main() { return O::I{}.make().k; }"), RunOutcome::Result(4));
     assert_eq!(rule("typedef struct { struct P { int size() const; } part; } W;"), Some("TYN-9"));
 }
+
+#[test]
+fn pointers_to_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // MPTR-3: `.*` and `->*` reach the member of the object, and a call
+    // through a pointer to a virtual function calls the final overrider.
+    assert_eq!(run("struct S { int a = 1, b = 2; }; int main() { S s; int S::* p = &S::b; S* q = &s; q->*p = 5; return s.*p; }"), RunOutcome::Result(5));
+    assert_eq!(run("struct B { virtual int f() { return 1; } }; struct D : B { int f() override { return 2; } }; int main() { int (B::* pf)() = &B::f; D d; B& b = d; return (b.*pf)(); }"), RunOutcome::Result(2));
+    // MPTR-4, MPTR-5: a conversion to a derived class keeps the path to
+    // the member's subobject, so two paths give unequal pointers.
+    assert_eq!(run("struct A { int x; }; struct B : A {}; struct C : A {}; struct D : B, C {}; int main() { int B::* pb = &A::x; int C::* pc = &A::x; int D::* p = pb; int D::* q = pc; return p != q; }"), RunOutcome::Result(1));
+    // MPTR-6: an object without the member.
+    let r = run("struct B { int x = 0; }; struct D : B { int y = 5; }; int main() { B b; int B::* pm = static_cast<int B::*>(&D::y); return b.*pm; }");
+    assert!(matches!(r, RunOutcome::Undefined("MPTR-6", ..)), "{:?}", r);
+    assert_eq!(rule("struct S { int m; }; int S::* p = &S::m; bool b = p < p;"), Some("MPTR-12"));
+    assert_eq!(rule("struct S { int f(); }; int g(S s) { int (S::* p)() = &S::f; return s.*p(); }"), Some("MPTR-10"));
+    assert_eq!(rule("struct B { int m; }; struct D : B {}; int B::* p = static_cast<int D::*>(nullptr); int D::* q = &B::m; int B::* r = q;"), Some("INIT-7"));
+}

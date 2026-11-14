@@ -6,7 +6,7 @@
 //! The dependence marks of model section 1 come with step 5. Build step 3
 //! makes nodes for constructs outside classes and templates.
 
-use super::types::QType;
+use super::types::{ClassId, QType};
 use super::EntityId;
 use crate::source::Span;
 use std::rc::Rc;
@@ -211,6 +211,23 @@ pub enum EK {
     /// A `delete` expression: the pointer, whether it is `delete[]`, and
     /// whether the class it points to has a virtual destructor.
     Delete(Box<Expr>, bool, bool),
+    /// A pointer to member that `&C::m` forms (`expressions/member-pointers`):
+    /// the class that declares the member, and the member.
+    MemberPtr(ClassId, MemberRef),
+    /// `o.*p`: the object, a glvalue, and the pointer to member. For a
+    /// pointer to member function the node is the callee of a call.
+    PtrMem(Box<Expr>, Box<Expr>),
+    /// The callee of a call through a pointer to member function, whose
+    /// first argument is the object.
+    PtrMemFn(Box<Expr>),
+}
+
+/// The member that a pointer to member names: a data member by its
+/// position in its class, or a member function.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MemberRef {
+    Field(usize),
+    Func(EntityId),
 }
 
 /// A `new` expression: the object it creates and how the object gets
@@ -258,8 +275,8 @@ impl Expr {
             return true;
         }
         match &self.k {
-            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) => x.any(f),
-            EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) => a.any(f) || b.any(f),
+            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::PtrMemFn(x) => x.any(f),
+            EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => a.any(f) || b.any(f),
             EK::Cond(c, a, b) => c.any(f) || a.any(f) || b.any(f),
             EK::Call(c, args, _) => c.any(f) || args.iter().any(|a| a.e.any(f)),
             EK::List(i) => i.any(f),

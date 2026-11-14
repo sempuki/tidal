@@ -89,6 +89,8 @@ pub enum Val {
     /// A pointer that holds an address where no object is.
     Addr(u64),
     Fn(EntityId),
+    /// A pointer to member that is not null (`expressions::member_pointers::run`).
+    Mem(crate::expressions::member_pointers::run::MemVal),
     /// An array: one value per element.
     Agg(Vec<Val>),
     /// A scalar with no value yet.
@@ -349,7 +351,7 @@ impl<'a> Machine<'a> {
             Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.zero(t)).collect()),
             Type::Float(crate::sem::types::FloatK::LongDouble) => Val::Ext(crate::foundations::types::run::F80::ZERO),
             Type::Float(_) => Val::Float(0.0),
-            Type::Ptr(_) | Type::NullPtr => Val::Null,
+            Type::Ptr(_) | Type::NullPtr | Type::MemPtr(..) => Val::Null,
             _ => Val::Int(0),
         }
     }

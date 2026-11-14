@@ -403,6 +403,11 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
             }
         }
         Type::Ptr(x) | Type::Array(x, _) | Type::Ref(x, _) => associated(cx, x, out),
+        // A pointer to member: its class and its member type.
+        Type::MemPtr(c, x) => {
+            associated(cx, &crate::sem::types::QType::new(Type::Class(*c)), out);
+            associated(cx, x, out);
+        }
         Type::Func(f) => {
             associated(cx, &f.ret, out);
             for p in &f.params {
@@ -454,6 +459,10 @@ pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QTy
             }
             Type::Enum(e) => enclosing(cx.u.enums[*e].scope, out),
             Type::Ptr(x) | Type::Ref(x, _) | Type::Array(x, _) => classes_of(cx, x, out),
+            Type::MemPtr(c, x) => {
+                classes_of(cx, &crate::sem::types::QType::new(Type::Class(*c)), out);
+                classes_of(cx, x, out);
+            }
             _ => {}
         }
     }
