@@ -1532,3 +1532,22 @@ fn structured_bindings_of_classes() {
     assert_eq!(rule("class P { int x; }; void f(P p) { auto [a] = p; }"), Some("SB-13"));
     assert_eq!(rule("union U { int a; }; void f(U u) { auto [a] = u; }"), Some("SB-13"));
 }
+
+#[test]
+fn dynamic_casts() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // VIRT-10: a cast down, a cross cast, and a failed cast to a null
+    // pointer.
+    assert_eq!(run("struct B { virtual ~B() {} }; struct D : B { int v = 3; }; int main() { D d; B* b = &d; return dynamic_cast<D*>(b)->v; }"), RunOutcome::Result(3));
+    assert_eq!(run("struct A { virtual ~A() {} }; struct B { virtual ~B() {} }; struct D : A, B {}; int main() { D d; A* a = &d; return dynamic_cast<B*>(a) == static_cast<B*>(&d) ? 0 : 1; }"), RunOutcome::Result(0));
+    assert_eq!(run("struct B { virtual ~B() {} }; struct D : B {}; struct E : B {}; int main() { E e; B* b = &e; return dynamic_cast<D*>(b) == nullptr ? 0 : 1; }"), RunOutcome::Result(0));
+    // During B's constructor the object is a B.
+    assert_eq!(run("struct D; bool f(struct B*); struct B { bool s; B() { s = f(this); } virtual ~B() {} }; struct D : B {}; bool f(B* p) { return dynamic_cast<D*>(p) == nullptr; } int main() { D d; return d.s ? 0 : 1; }"), RunOutcome::Result(0));
+    assert_eq!(rule("struct B {}; struct D : B {}; D* f(B* b) { return dynamic_cast<D*>(b); }"), Some("VIRT-18"));
+    assert_eq!(rule("struct B { virtual ~B() {} }; int* f(B* b) { return dynamic_cast<int*>(b); }"), Some("VIRT-18"));
+    assert_eq!(rule("struct B { constexpr virtual ~B() {} }; struct D : B {}; constexpr D d; constexpr const B& r = d; static_assert(&dynamic_cast<const D&>(r) == &d);"), None);
+}

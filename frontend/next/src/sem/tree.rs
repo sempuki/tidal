@@ -220,6 +220,11 @@ pub enum EK {
     /// The callee of a call through a pointer to member function, whose
     /// first argument is the object.
     PtrMemFn(Box<Expr>),
+    /// `dynamic_cast` that checks at run time (`classes/virtual`,
+    /// VIRT-10): the operand, a pointer or a glvalue of polymorphic class
+    /// type; the target class, or None for `void*`; and whether the
+    /// target is a reference.
+    DynCast(Box<Expr>, Option<ClassId>, bool),
 }
 
 /// The member that a pointer to member names: a data member by its
@@ -275,7 +280,7 @@ impl Expr {
             return true;
         }
         match &self.k {
-            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::PtrMemFn(x) => x.any(f),
+            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::PtrMemFn(x) | EK::DynCast(x, ..) => x.any(f),
             EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => a.any(f) || b.any(f),
             EK::Cond(c, a, b) => c.any(f) || a.any(f) || b.any(f),
             EK::Call(c, args, _) => c.any(f) || args.iter().any(|a| a.e.any(f)),

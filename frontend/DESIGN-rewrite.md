@@ -586,14 +586,18 @@ object of class type needs no initializer when default-initialization
 gives each member a value, and a write to a `mutable` member of a
 `const` object is allowed. A structured binding of a class object
 binds its data members, which one class of its hierarchy declares, and
-the declaration warns when no name is read. The
+the declaration warns when no name is read. `dynamic_cast` to the same
+class or a base converts as an implicit conversion does; any other cast
+finds its target from the most derived object, or from the object whose
+constructor or destructor runs, and gives a null pointer when the check
+fails. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a subobject or with a qualified name, a
 literal operator, an
 `operator->`, a comparison that `<=>` rewrites, a virtual base,
-`dynamic_cast`, an allocation or deallocation function that the
+a failed `dynamic_cast` to a reference outside constant evaluation, an allocation or deallocation function that the
 program declares or calls by name, a `new` expression with placement
 arguments, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common

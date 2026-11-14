@@ -31,7 +31,8 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         },
         EK::MemberPtr(c, r) => Ok(Val::Mem(crate::expressions::member_pointers::run::MemVal { anchor: *c, path: Vec::new(), member: *r })),
         EK::PtrMemFn(_) => unsup("a pointer to member function applied outside a call"),
-        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) | EK::PtrMem(..) => {
+        EK::DynCast(x, t, false) => crate::classes::r#virtual::run::dynamic_cast_ptr(m, x, *t),
+        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) | EK::PtrMem(..) | EK::DynCast(_, _, true) => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
             // an array or function that decays.
@@ -240,6 +241,7 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
             postfix::run::subscript(m, pv, iv)
         }
         EK::PtrMem(o, pm) => crate::expressions::member_pointers::run::place(m, o, pm),
+        EK::DynCast(x, t, true) => crate::classes::r#virtual::run::dynamic_cast_ref(m, x, *t),
         EK::Assign(l, r) => {
             // The right operand is sequenced before the left (ASN rules).
             let v = match crate::declarations::initialization::forms::run::indeterminate_copy(m, &l.ty, r) {

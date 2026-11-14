@@ -3,8 +3,8 @@
 //! virtual when it is declared `virtual` or overrides a virtual function
 //! of a base (VIRT-1). `Unit::virt` records each virtual function with
 //! the functions it overrides, and the machine's dispatch finds the
-//! final overrider of a call. Virtual bases and `dynamic_cast` are
-//! unsupported.
+//! final overrider of a call. `dynamic_cast` converts with a check at
+//! run time (VIRT-10, VIRT-18). Virtual bases are unsupported.
 
 use crate::sem::check::Check;
 use crate::sem::types::{ClassId, QType, Type};
@@ -261,4 +261,83 @@ pub fn not_abstract(cx: &mut Check, ty: &QType, span: Span) -> bool {
         }
         _ => true,
     }
+}
+
+/// `dynamic_cast` (VIRT-10, VIRT-18). A cast to the same class or to an
+/// accessible, unambiguous base converts as an implicit conversion does;
+/// any other cast checks at run time and needs a polymorphic operand.
+pub fn dynamic_cast(cx: &mut Check, n: &crate::syntax::Node) -> crate::sem::tree::Expr {
+    use crate::expressions::check::{bad, expr, nodes};
+    use crate::sem::tree::{Cat, Conv, Expr, EK};
+    let span = n.span;
+    let Some(tn) = n.child("type_id") else { return bad(span) };
+    let to = crate::declarations::declarators::check::type_id(cx, tn);
+    let Some(en) = nodes(n).into_iter().find(|c| c.prod != "type_id") else { return bad(span) };
+    let e = expr(cx, en);
+    if to.is_error() || e.ty.is_error() {
+        return bad(span);
+    }
+    let fail = |cx: &mut Check, m: String| {
+        cx.error(span, "VIRT-18", m);
+        bad(span)
+    };
+    let complete = |cx: &Check, c: ClassId| cx.u.classes[c].complete;
+    // The target's class, or None for `void`, and the operand's object.
+    let (reference, rv, target) = match &to.t {
+        Type::Ref(t, rv) => (true, *rv, (**t).clone()),
+        Type::Ptr(t) => (false, false, (**t).clone()),
+        _ => return fail(cx, format!("dynamic_cast to {}, which is not a pointer or a reference", to.show())),
+    };
+    let tc = target.class();
+    if tc.is_none() && !(target.is_void() && !reference) {
+        return fail(cx, format!("dynamic_cast to {}, which is not a class or void", to.show()));
+    }
+    if tc.is_some_and(|c| !complete(cx, c)) {
+        return fail(cx, "dynamic_cast to an incomplete class".into());
+    }
+    let obj = if reference {
+        let e = crate::foundations::values::check::deref_ref(e);
+        if e.cat == Cat::PR {
+            return fail(cx, "dynamic_cast of a prvalue to a reference".into());
+        }
+        e
+    } else {
+        let e = crate::foundations::values::check::rvalue(cx, e);
+        if !e.ty.is_ptr() {
+            return fail(cx, format!("dynamic_cast to a pointer of {}, which is not a pointer", e.ty.show()));
+        }
+        e
+    };
+    let src = if reference { obj.ty.clone() } else { obj.ty.pointee().cloned().unwrap_or_else(QType::error) };
+    let Some(sc) = src.class() else {
+        return fail(cx, format!("dynamic_cast of {}, which is not a class", src.show()));
+    };
+    if !complete(cx, sc) {
+        return fail(cx, "dynamic_cast of an incomplete class".into());
+    }
+    if (src.c && !target.c) || (src.v && !target.v) {
+        return fail(cx, "dynamic_cast removes a cv-qualifier".into());
+    }
+    let out_ty = if reference { target.clone() } else { to.unqual() };
+    let cat = if reference { if rv { Cat::X } else { Cat::L } } else { Cat::PR };
+    // To the same class, or up to a base.
+    if let Some(t) = tc {
+        if t == sc {
+            return if reference { Expr::new(EK::Conv(Conv::NoOp, Box::new(obj)), out_ty, cat, span) } else { obj.conv(Conv::PtrNoOp, out_ty, Cat::PR) };
+        }
+        if crate::classes::derived::check::is_base(cx, sc, t) {
+            if crate::classes::derived::check::paths(cx, sc, t).len() != 1 || !crate::classes::derived::check::base_is_accessible(cx, sc, t) {
+                return fail(cx, format!("dynamic_cast to the base '{}', which is ambiguous or not accessible", cx.u.classes[t].name));
+            }
+            if reference {
+                let Some(x) = crate::classes::derived::check::to_base(cx, obj, t, span) else { return bad(span) };
+                return Expr::new(EK::Conv(Conv::NoOp, Box::new(x)), out_ty, cat, span);
+            }
+            return crate::classes::derived::check::ptr_to_base(cx, obj, out_ty, span).unwrap_or_else(|| bad(span));
+        }
+    }
+    if !cx.u.polymorphic(sc) {
+        return fail(cx, format!("dynamic_cast of '{}', which is not a polymorphic class", cx.u.classes[sc].name));
+    }
+    Expr::new(EK::DynCast(Box::new(obj), tc, reference), out_ty, cat, span)
 }

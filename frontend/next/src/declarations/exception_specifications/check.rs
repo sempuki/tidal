@@ -83,6 +83,8 @@ pub fn can_throw(cx: &Check, e: &Expr) -> bool {
         EK::List(i) => ctor_throws(cx, i),
         // The allocation can fail (NEW-38).
         EK::New(_) => true,
+        // A failed cast to a reference throws (VIRT-10).
+        EK::DynCast(_, _, true) => true,
         EK::Call(f, _, _) => {
             let t = f.ty.nonref();
             let t = match &t.t {
