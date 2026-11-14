@@ -1379,3 +1379,22 @@ fn member_default_arguments() {
     assert_eq!(run("int trace = 0; struct A { ~A() { trace = trace * 10 + 9; } }; struct E { E(const A& = A{}) { trace = trace * 10 + 1; } }; int main() { E arr[2]; return trace == 1919 ? 0 : 1; }"), RunOutcome::Result(0));
     assert_eq!(rule("struct S { void f(int a = 1, int b); };"), Some("DEFARG-8"));
 }
+
+#[test]
+fn explicit_destructor_calls() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DTOR-6: the destructor runs and the object's life ends.
+    assert_eq!(run("int n = 0; struct S { ~S() { ++n; } }; int main() { S* p = new S; p->~S(); return n; }"), RunOutcome::Result(1));
+    // DTOR-7: the end of the block destroys it again, also with a trivial
+    // destructor.
+    let r = run("int n = 0; struct S { ~S() { ++n; } }; int main() { { S s; s.~S(); } return n; }");
+    assert!(matches!(r, RunOutcome::Undefined("DTOR-7", ..)), "{:?}", r);
+    let r = run("struct S { int v; }; int main() { S s{1}; s.~S(); return 0; }");
+    assert!(matches!(r, RunOutcome::Undefined("DTOR-7", ..)), "{:?}", r);
+    assert_eq!(rule("struct B {}; struct D : B {}; void f(D d) { d.~B(); }"), Some("DTOR-8"));
+    assert_eq!(rule("struct S {}; void f(S s) { s.~S(1); }"), Some("DTOR-8"));
+}

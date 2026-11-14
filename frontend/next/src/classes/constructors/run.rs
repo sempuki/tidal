@@ -70,6 +70,10 @@ pub fn destroy(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
 pub fn end_objects(m: &mut Machine, objs: Vec<usize>) -> R<()> {
     for o in objs.into_iter().rev() {
         let ty = m.objs[o].ty.clone();
+        // DTOR-7: also a trivial destructor runs a second time.
+        if m.destroyed.contains(&o) && ty.base_elem().is_class() && !needs(m, &ty) {
+            return ub("DTOR-7", format!("{} is destroyed a second time", m.objs[o].name));
+        }
         if needs(m, &ty) {
             if m.destroyed.contains(&o) {
                 return ub("DTOR-7", format!("{} is destroyed a second time", m.objs[o].name));
@@ -81,4 +85,26 @@ pub fn end_objects(m: &mut Machine, objs: Vec<usize>) -> R<()> {
         m.objs[o].alive = false;
     }
     Ok(())
+}
+
+/// DTOR-6: an explicit destructor call runs the destructor of the object
+/// at `p` and ends its life; DTOR-7: a second destruction is undefined,
+/// also at the end of its block.
+pub fn destroy_explicitly(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
+    if !p.path.is_empty() || p.view.is_some() {
+        return crate::machine::unsup("an explicit destructor call on a subobject");
+    }
+    if m.destroyed.contains(&p.obj) || m.objs.get(p.obj).is_some_and(|o| !o.alive) {
+        return ub("DTOR-7", format!("{} is destroyed a second time", m.objs[p.obj].name));
+    }
+    if m.constant {
+        crate::foundations::constant_evaluation::run::check_write(m, p)?;
+    }
+    let ty = m.objs[p.obj].ty.clone();
+    if needs(m, &ty) {
+        destroy(m, p, &ty)?;
+    }
+    m.objs[p.obj].alive = false;
+    m.destroyed.insert(p.obj);
+    Ok(crate::machine::Val::Void)
 }

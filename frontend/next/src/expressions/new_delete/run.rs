@@ -109,6 +109,10 @@ pub fn delete(m: &mut Machine, e: &Expr, array: bool, virtual_dtor: bool) -> R<V
         crate::foundations::constant_evaluation::run::check_write(m, &Ptr::whole(p.obj))?;
     }
     let whole = m.objs[p.obj].ty.clone();
+    // DTOR-7: an explicit destructor call already destroyed the object.
+    if m.destroyed.contains(&p.obj) {
+        return ub("DTOR-7", format!("{} is destroyed a second time", m.objs[p.obj].name));
+    }
     if crate::classes::constructors::run::needs(m, &whole) {
         crate::classes::constructors::run::destroy(m, &Ptr::whole(p.obj), &whole)?;
     }

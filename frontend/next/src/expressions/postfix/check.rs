@@ -191,13 +191,16 @@ fn pseudo_destructor(cx: &mut Check, base: &Node, arrow: bool, id: &Node, args: 
     if obj.ty.is_error() {
         return bad(span);
     }
-    if !obj.ty.is_scalar() {
-        let t = cx.unsupported(span, "a destructor call on a class (build step 4)");
-        return Expr::new(EK::Int(0), t, Cat::PR, span);
-    }
     if args {
         cx.error(span, "DTOR-8", "a destructor call with arguments");
         return bad(span);
+    }
+    if let Some(c) = obj.ty.class() {
+        return class_destructor_call(cx, obj, c, id, span);
+    }
+    if !obj.ty.is_scalar() {
+        let t = cx.unsupported(span, "a destructor call on an object of this type");
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
     }
     let mut parts: Vec<&Node> = Vec::new();
     match first_node(id) {
@@ -222,6 +225,48 @@ fn pseudo_destructor(cx: &mut Check, base: &Node, arrow: bool, id: &Node, args: 
         }
     }
     Expr::new(EK::EndLife(Box::new(obj)), QType::void(), Cat::PR, span)
+}
+
+/// An explicit destructor call on an object of class `c` (DTOR-6,
+/// DTOR-8): the name after `~` names the class, by its name, a type
+/// alias, or `decltype`.
+fn class_destructor_call(cx: &mut Check, obj: Expr, c: crate::sem::types::ClassId, id: &Node, span: Span) -> Expr {
+    let u = match first_node(id) {
+        Some(q) if q.prod == "qualified_name" => {
+            let t = cx.unsupported(span, "a qualified destructor name in a destructor call");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        }
+        Some(u) => u,
+        None => return bad(span),
+    };
+    if u.find("decltype_expr").is_some() || u.find("decltype_spec").is_some() {
+        match named_type(cx, u) {
+            Some(t) if t.unqual() == obj.ty.unqual() => {}
+            Some(t) => {
+                cx.error(u.span, "DTOR-8", format!("the destructor name names {}, and the object has type {}", t.show(), obj.ty.show()));
+                return bad(span);
+            }
+            None => return bad(span),
+        }
+    } else {
+        let mut toks = Vec::new();
+        u.tokens(&mut toks);
+        let Some(name) = toks.iter().map(|&t| cx.toks[t].text.clone()).rfind(|w| w != "~") else { return bad(span) };
+        let found = names::lookup_where(cx, &name, |k| matches!(k, EntKind::Class(_) | EntKind::Typedef(_)));
+        let named = found.first().and_then(|&e| match &cx.u.entities[e].kind {
+            EntKind::Class(k) => Some(*k),
+            EntKind::Typedef(t) => t.class(),
+            _ => None,
+        });
+        if named != Some(c) && *name != *cx.u.classes[c].name {
+            cx.error(u.span, "DTOR-8", format!("the destructor name '~{}' does not name the class of the object", name));
+            return bad(span);
+        }
+    }
+    if !crate::classes::constructors::check::dtor_usable(cx, &obj.ty, span) {
+        return bad(span);
+    }
+    Expr::new(EK::Destroy(Box::new(obj)), QType::void(), Cat::PR, span)
 }
 
 /// A call (PFX-3 to PFX-8, OVL rules for a name with several functions).

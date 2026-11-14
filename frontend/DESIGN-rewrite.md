@@ -562,11 +562,14 @@ in overload resolution and in a conversion function's choice. The
 default arguments of member functions and constructors are checked where
 the class is complete, a constructor whose parameters all have default
 arguments is a default constructor, and the machine evaluates a default
-argument in the caller. The
+argument in the caller. An explicit destructor call on a class object
+runs the destructor and ends the object's life, and a second
+destruction stops the run. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. An explicit destructor call on a class, a literal operator, an
+another entity. An explicit destructor call on a subobject or with a qualified name, a
+literal operator, an
 `operator->`, a comparison that `<=>` rewrites, a virtual base,
 `dynamic_cast`, an allocation or deallocation function that the
 program declares or calls by name, a `new` expression with placement
