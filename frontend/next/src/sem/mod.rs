@@ -103,6 +103,14 @@ pub struct Func {
     pub ref_q: Option<bool>,
 }
 
+impl Func {
+    /// A function that a call with no argument can call, such as a
+    /// default constructor: each parameter has a default argument.
+    pub fn takes_no_argument(&self) -> bool {
+        (0..self.ty.params.len()).all(|k| self.defaults.get(k).is_some_and(|d| d.is_some()))
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum EntKind {
     Var(Var),

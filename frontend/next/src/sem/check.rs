@@ -151,6 +151,10 @@ pub struct Check<'a> {
     /// this namespace when it is set.
     pub friend_decl: bool,
     pub friend_scope: Option<ScopeId>,
+    /// Inside a class definition, the default arguments of member
+    /// functions wait for the complete class (DEFARG-3).
+    pub defer_defaults: bool,
+    pub pending_defaults: Vec<(EntityId, Vec<crate::declarations::declarators::check::Param>)>,
     /// Member functions defined in their class, which the class declared
     /// before their bodies are checked.
     pub deferred: std::collections::HashSet<EntityId>,
@@ -187,7 +191,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, pending_defaults: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

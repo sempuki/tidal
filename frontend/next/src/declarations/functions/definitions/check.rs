@@ -82,8 +82,15 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         names::declare_unsupported(cx, &name, span);
         return None;
     }
-    // Default arguments (DEFARG-8, DEFARG-10): checked at the declaration.
-    let defaults = default_arguments(cx, &d.params);
+    // Default arguments (DEFARG-8, DEFARG-10): checked at the declaration,
+    // or, in a class, where the class is complete (DEFARG-3), with a
+    // stand-in until then.
+    let deferred = cx.defer_defaults && cx.friend_scope.is_none() && d.params.iter().any(|p| p.default.is_some());
+    let defaults = if deferred {
+        d.params.iter().map(|p| p.default.as_ref().map(|_| Expr::new(crate::sem::tree::EK::Int(0), p.ty.nonref(), crate::sem::tree::Cat::PR, span))).collect()
+    } else {
+        default_arguments(cx, &d.params)
+    };
     let linkage = if s.is_static && cx.member_of.is_none() { Linkage::Internal } else { stl::linkage(cx, s, false, false, false) };
     let deleted = body.is_some_and(|b| cx.words(b).contains(&"delete"));
     let defaulted = body.is_some_and(|b| cx.words(b).contains(&"default"));
@@ -292,6 +299,9 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     }
     if s.attrs.noreturn && earlier.is_some() && !cx.u.func(id).unwrap().noreturn {
         cx.error(span, "ATTR-2", "'noreturn' on a later declaration of a function first declared without it");
+    }
+    if deferred {
+        cx.pending_defaults.push((id, d.params.clone()));
     }
     // ACC-7: a declaration in the namespace makes a friend function that
     // a class first declared visible to lookup.

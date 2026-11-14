@@ -84,7 +84,7 @@ pub fn trivial_default(u: &Unit, ty: &QType) -> bool {
                 return false;
             }
             let own = u.scopes[u.classes[*c].scope].names.get(crate::classes::constructors::check::CTOR).into_iter().flatten().copied();
-            let provided = own.filter_map(|f| u.func(f).map(|x| (f, x))).any(|(f, x)| x.ty.params.is_empty() && !x.deleted && !u.defaulted.contains(&f));
+            let provided = own.filter_map(|f| u.func(f).map(|x| (f, x))).any(|(f, x)| x.takes_no_argument() && !x.deleted && !u.defaulted.contains(&f));
             let dmi = u.classes[*c].fields.iter().any(|&f| u.field(f).is_some_and(|x| x.init.is_some()));
             !provided && !dmi && u.field_types(*c).iter().all(|t| trivial_default(u, t))
         }

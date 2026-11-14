@@ -501,6 +501,15 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
             _ => return unsup("the object of a member function call"),
         }
     }
+    // The parameters after the arguments take their default arguments,
+    // evaluated in the caller (DEFARG rules), as for a constructor that
+    // a default-initialization calls.
+    while args.len() < params.len() {
+        let k = args.len();
+        let Some(Some(d)) = func.defaults.get(k) else { break };
+        let r = if ptys[k].is_ref() { Ret::Place(place(m, d)?) } else { Ret::Val(eval_any(m, d)?) };
+        args.push(r);
+    }
     for (k, a) in args.into_iter().enumerate() {
         let Some(&pid) = params.get(k) else { break };
         match a {

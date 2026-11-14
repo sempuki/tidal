@@ -114,9 +114,15 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                 let mut q = p.clone();
                 q.path.push(k as i64);
                 q.array = ty.is_array();
+                // VC-9: the initialization of each element of an array is a
+                // full expression, whose temporaries end with it.
+                let from = m.temps.len();
                 match items.get(k) {
                     Some(i) => construct(m, &q, t, i)?,
                     None => set(m, &q, m.zero(t))?,
+                }
+                if ty.is_array() {
+                    crate::machine::exec::end_temps(m, from)?;
                 }
             }
             Ok(())

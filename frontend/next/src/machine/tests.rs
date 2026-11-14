@@ -1361,3 +1361,21 @@ fn ref_qualifiers() {
     assert_eq!(rule("struct S { static int f() &; };"), Some("CLS-27"));
     assert_eq!(rule("struct B { virtual int f() &; }; struct D : B { int f() && override; };"), Some("VIRT-3"));
 }
+
+#[test]
+fn member_default_arguments() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DEFARG-3: a default argument sees members declared after it.
+    assert_eq!(run("struct G { int level(int n = full) { return n; } static const int full = 9; }; int main() { G g; return g.level() + g.level(1); }"), RunOutcome::Result(10));
+    // A constructor whose parameters have default arguments is a default
+    // constructor, also for each element of an array.
+    assert_eq!(run("struct R { int n, d; constexpr R(int a = 0, int b = 1) : n(a), d(b) {} }; struct S { R t; }; int main() { R p; R list[2]; S s; return p.d + list[1].d + s.t.d + R(5).n; }"), RunOutcome::Result(8));
+    // VC-9: the temporaries of each element's default argument end with
+    // the element.
+    assert_eq!(run("int trace = 0; struct A { ~A() { trace = trace * 10 + 9; } }; struct E { E(const A& = A{}) { trace = trace * 10 + 1; } }; int main() { E arr[2]; return trace == 1919 ? 0 : 1; }"), RunOutcome::Result(0));
+    assert_eq!(rule("struct S { void f(int a = 1, int b); };"), Some("DEFARG-8"));
+}

@@ -16,7 +16,8 @@ use crate::source::Span;
 /// the second place.
 pub fn copy_or_move(cx: &Check, c: ClassId, f: EntityId) -> Option<bool> {
     let func = cx.u.func(f)?;
-    if func.ty.params.len() != 1 {
+    // Later parameters with default arguments do not count (CPY-1).
+    if func.ty.params.is_empty() || (1..func.ty.params.len()).any(|k| func.defaults.get(k).is_none_or(|d| d.is_none())) {
         return None;
     }
     match &func.ty.params[0].t {

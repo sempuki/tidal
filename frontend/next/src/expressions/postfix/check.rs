@@ -401,7 +401,8 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         // Inside a member function of the class, the object is `*this`.
         let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
         let obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
-        if obj.is_none() && members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) {
+        let mixed = members.iter().any(|&f| cx.u.func(f).unwrap().member_static) && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static);
+        if obj.is_none() && (members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) || (mixed && members.iter().any(|&f| cx.u.func(f).unwrap().defaults.iter().any(|d| d.is_some())))) {
             let t = cx.unsupported(span, "a call without an object among ref-qualified member functions (build step 4)");
             return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
         }

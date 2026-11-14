@@ -559,6 +559,10 @@ namespace, and its members are names of the enclosing scope; a list, a
 designator, and a mem-init can name them directly. A member function
 can have a ref-qualifier, which takes the object by its value category,
 in overload resolution and in a conversion function's choice. The
+default arguments of member functions and constructors are checked where
+the class is complete, a constructor whose parameters all have default
+arguments is a default constructor, and the machine evaluates a default
+argument in the caller. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -570,8 +574,9 @@ arguments, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
 bit-field, a pointer to member, a member function of a local or nested
-class, a member function with a default argument or a noexcept
-operand, a call without an object among ref-qualified member functions, a user-defined conversion by a constructor in overload
+class, a member function with a noexcept operand, a call without an object
+among ref-qualified member functions or among static and non-static
+ones with default arguments, a user-defined conversion by a constructor in overload
 resolution with several candidates, a conversion function to a class
 type in overload resolution or a constructor's argument, a conversion
 function in the operand of `?:` or with an operator function in play,

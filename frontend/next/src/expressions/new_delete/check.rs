@@ -347,7 +347,7 @@ fn value_rest(cx: &mut Check, el: &QType, span: Span) -> Option<Init> {
 /// with constructors needs one that takes no argument and is not deleted.
 fn has_default(cx: &Check, ty: &QType) -> bool {
     match ty.base_elem().class() {
-        Some(c) if crate::classes::constructors::check::has_ctors(cx, c) => crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| cx.u.func(f).is_some_and(|x| x.ty.params.is_empty() && !x.deleted)),
+        Some(c) if crate::classes::constructors::check::has_ctors(cx, c) => crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| cx.u.func(f).is_some_and(|x| x.takes_no_argument() && !x.deleted)),
         _ => true,
     }
 }

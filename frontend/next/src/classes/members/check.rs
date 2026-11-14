@@ -129,12 +129,16 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     let mut ctor_bodies: Vec<(EntityId, &Node)> = Vec::new();
     let mut ok = true;
     let outer = cx.member_of.replace(id);
+    let outer_defer = std::mem::replace(&mut cx.defer_defaults, true);
+    let outer_pending = std::mem::take(&mut cx.pending_defaults);
     for m in n.children("member_decl") {
         if !member(cx, id, m, &mut access, &mut inits, &mut bodies, &mut ctor_bodies) {
             ok = false;
             break;
         }
     }
+    cx.defer_defaults = outer_defer;
+    let pending = std::mem::replace(&mut cx.pending_defaults, outer_pending);
     cx.u.classes[id].complete = true;
     // STG-1: the size fits in std::size_t.
     if ok {
@@ -144,6 +148,20 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             _ => {
                 cx.error(head.span, "STG-1", format!("the size of the class '{}' does not fit in std::size_t", name));
                 ok = false;
+            }
+        }
+    }
+    // DEFARG-3: the default arguments of member functions see the
+    // complete class.
+    if ok {
+        for (f, params) in pending {
+            let ds = crate::declarations::functions::definitions::check::default_arguments(cx, &params);
+            if let Some(x) = cx.u.func_mut(f) {
+                for (k, d) in ds.into_iter().enumerate() {
+                    if params[k].default.is_some() && k < x.defaults.len() {
+                        x.defaults[k] = d;
+                    }
+                }
             }
         }
     }
@@ -548,11 +566,10 @@ fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarati
     // A member function of a local or nested class waits for a later
     // part (access to the enclosing class, locals of the function).
     let local = cx.u.is_local(parent) || cx.u.scopes[parent].kind == ScopeKind::Class;
-    let defaults = d.params.iter().any(|p| p.default.is_some());
     let operand = dn.find("exception_spec").is_some_and(|e| first_node(e).is_some());
     let qualified = d.ty.func().is_some_and(|f| f.qualified);
-    if local || defaults || operand || qualified {
-        cx.unsupported(dn.span, "a member function of a local class, with a default argument, a noexcept operand, or a ref-qualifier (build step 4)");
+    if local || operand || qualified {
+        cx.unsupported(dn.span, "a member function of a local or nested class, with a noexcept operand, or of a qualified function type (build step 4)");
         return false;
     }
     true
@@ -756,7 +773,7 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
         // CTOR-3: a member whose class has no usable default constructor.
         if let Some(d) = base.class().filter(|&d| crate::classes::constructors::check::has_ctors(cx, d)) {
             // DER-14: a base's protected constructor is accessible.
-            let ok = crate::classes::constructors::check::ctors(cx, d).into_iter().any(|g| cx.u.func(g).is_some_and(|y| y.ty.params.is_empty() && !y.deleted) && (accessible_from(cx, g, c) || (x.base && cx.u.access.get(&g) == Some(&Access::Protected))));
+            let ok = crate::classes::constructors::check::ctors(cx, d).into_iter().any(|g| cx.u.func(g).is_some_and(|y| y.takes_no_argument() && !y.deleted) && (accessible_from(cx, g, c) || (x.base && cx.u.access.get(&g) == Some(&Access::Protected))));
             if !ok {
                 cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the member '{}' has no usable default constructor", cx.u.entities[f].name));
                 return false;
@@ -819,7 +836,7 @@ pub fn value_init(cx: &Check, ty: &QType) -> Init {
     if let Some(c) = ty.class().filter(|&c| crate::classes::constructors::check::has_ctors(cx, c)) {
         // The default constructor (CTOR-19 reports a missing one where
         // the class is initialized).
-        let d = crate::classes::constructors::check::ctors(cx, c).into_iter().find(|&f| cx.u.func(f).is_some_and(|x| x.ty.params.is_empty() && !x.deleted));
+        let d = crate::classes::constructors::check::ctors(cx, c).into_iter().find(|&f| cx.u.func(f).is_some_and(|x| x.takes_no_argument() && !x.deleted));
         return match d {
             Some(f) => Init::Ctor(f, Vec::new()),
             None => Init::Default,

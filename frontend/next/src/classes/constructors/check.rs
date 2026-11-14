@@ -76,8 +76,8 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         cx.unsupported(dn.span, "a constructor declaration of this form (build step 4)");
         return false;
     }
-    if d.params.iter().any(|p| p.default.is_some()) || dn.find("exception_spec").is_some_and(|e| first_node(e).is_some()) {
-        cx.unsupported(dn.span, "a constructor with a default argument or a noexcept operand (build step 4)");
+    if dn.find("exception_spec").is_some_and(|e| first_node(e).is_some()) {
+        cx.unsupported(dn.span, "a constructor with a noexcept operand (build step 4)");
         return false;
     }
     let local = cx.u.is_local(cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0));
@@ -644,7 +644,9 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
         cx.error(span, "ACC-2", format!("the constructor of '{}' is not public", name));
         return None;
     }
-    if args.len() > func.ty.params.len() || args.len() < func.ty.params.len() {
+    // The parameters after the arguments take their default arguments.
+    let given = args.len();
+    if given > func.ty.params.len() || (given..func.ty.params.len()).any(|k| func.defaults.get(k).is_none_or(|d| d.is_none())) {
         cx.error(span, "CTOR-25", format!("the constructor of '{}' takes {} arguments", name, func.ty.params.len()));
         return None;
     }
@@ -661,6 +663,11 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
             return None;
         }
         out.push(crate::declarations::initialization::forms::check::init_parameter(cx, a, p)?);
+    }
+    for k in given..func.ty.params.len() {
+        if let Some(Some(d)) = func.defaults.get(k) {
+            out.push(crate::sem::tree::Arg { e: d.clone(), by_ref: func.ty.params[k].is_ref() });
+        }
     }
     crate::declarations::functions::definitions::check::note_use(cx, f, span);
     Some(Init::Ctor(f, out))
@@ -697,7 +704,7 @@ fn implicit_default(cx: &mut Check, c: ClassId, span: Span) -> Option<Init> {
 pub fn default_init(cx: &mut Check, ty: &QType, span: Span) -> Option<Init> {
     match &ty.t {
         Type::Class(c) if has_ctors(cx, *c) => {
-            let defaults: Vec<EntityId> = ctors(cx, *c).into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.ty.params.is_empty())).collect();
+            let defaults: Vec<EntityId> = ctors(cx, *c).into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.takes_no_argument())).collect();
             if defaults.is_empty() {
                 cx.error(span, "CTOR-19", format!("the class '{}' has no default constructor", cx.u.classes[*c].name));
                 return None;
