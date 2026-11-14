@@ -325,7 +325,14 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, "a data member named in a lambda body (a capture of this, build step 4)");
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
-        EntKind::Field(x) => match cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, x.class))) {
+        // UNI-7: a member of an anonymous union of a block or a namespace
+        // names the member of the union's variable.
+        EntKind::Field(x) if cx.u.anon_objects.contains_key(&x.class) => {
+            let var = cx.u.anon_objects[&x.class];
+            let obj = entity_expr(cx, &[var], "", span);
+            crate::classes::members::check::field_of(cx, obj, pick, span)
+        }
+        EntKind::Field(x) => match cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, x.class) || crate::classes::unions::check::holder(&cx.u, k, x.class).is_some())) {
             Some(t) => {
                 let obj = Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, span))), t.pointee().unwrap().clone(), Cat::L, span);
                 crate::classes::members::check::field_of(cx, obj, pick, span)

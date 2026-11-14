@@ -908,8 +908,8 @@ fn classes_with_data_members() {
     // A class and a variable of one name in one scope: the variable hides
     // the class.
     assert_eq!(rule("struct node { int v = 4; }; int node = 3; int main() { struct node n; return n.v + node; }"), None);
-    // Anonymous unions wait for a later part.
-    assert_eq!(rule("struct A { union { int a; }; };"), Some("unsupported"));
+    // A nested named union waits for a later part.
+    assert_eq!(rule("struct A { union U { int a; } u; };"), Some("unsupported"));
     // The bytes of a class, with padding.
     assert_eq!(run("struct R { char t; int c; }; int main() { R a{'a', 3}, b{}; auto* s = reinterpret_cast<unsigned char*>(&a); auto* d = reinterpret_cast<unsigned char*>(&b); for (unsigned i = 0; i < sizeof(R); ++i) d[i] = s[i]; return b.c; }"), RunOutcome::Result(3));
 }
@@ -1202,7 +1202,7 @@ fn unions() {
     assert_eq!(rule("union U { int a = 1; float b = 2; };"), Some("UNI-8"));
     assert_eq!(rule("union U { int a; float b; U() : a(1), b(2) {} };"), Some("UNI-8"));
     assert_eq!(rule("struct S; union S { int i; };"), Some("TYN-10"));
-    assert_eq!(rule("void f() { union { int a; }; }"), Some("unsupported"));
+    assert_eq!(rule("void f() { union { int a; }; a = 1; }"), None);
 }
 
 #[test]
@@ -1323,4 +1323,25 @@ fn friends() {
     assert_eq!(rule("namespace n { class C { friend int g(C) { return 1; } }; } int h() { return n::g(n::C{}); }"), Some("ACC-17"));
     assert_eq!(rule("namespace n { struct S {}; struct H { friend int probe(S) { return 1; } }; } int r() { return probe(n::S{}); }"), Some("NAM-8"));
     assert_eq!(rule("struct K { friend void open(K, int = 1); };"), Some("DEFARG-11"));
+}
+
+#[test]
+fn anonymous_unions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A member of a class, of a block, and of a namespace.
+    assert_eq!(run("struct V { int k; union { int i; float f; }; int get() { return i; } }; int main() { V v{1, 2}; v.i = v.get() + 3; return v.i * 10 + v.k; }"), RunOutcome::Result(51));
+    assert_eq!(run("static union { int s; float t; }; int main() { union { int i; float f; }; i = 4; s = 2; return i + s; }"), RunOutcome::Result(6));
+    // A designator and a mem-init name a member directly.
+    assert_eq!(run("struct V { int k; union { int i; float f; }; V() : f(2.5f) {} }; struct W { int k; union { int i; float f; }; }; int main() { V v; W w{.f = 1.5f}; return (int)(v.f * 2) + (int)(w.f * 2); }"), RunOutcome::Result(8));
+    let r = run("struct V { union { int i; float f; }; }; int main() { V v{3}; return (int)v.f; }");
+    assert!(matches!(r, RunOutcome::Undefined("UNI-6", ..)), "{:?}", r);
+    assert_eq!(rule("union { int i; };"), Some("UNI-9"));
+    assert_eq!(rule("struct S { union { private: int x; }; };"), Some("UNI-9"));
+    assert_eq!(rule("struct S { int i; union { int i; }; };"), Some("UNI-9"));
+    assert_eq!(rule("struct S { union { int S; }; };"), Some("CLS-9"));
+    assert_eq!(rule("struct S { union { int a; float b; }; S() : a(1), b(2) {} };"), Some("UNI-8"));
 }

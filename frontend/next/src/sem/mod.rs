@@ -286,6 +286,9 @@ pub struct Unit {
     /// Friend functions first declared in a class, which ordinary and
     /// qualified lookup do not find (ACC-7, ACC-17).
     pub hidden: std::collections::HashSet<EntityId>,
+    /// The variable that holds each anonymous union of a block or a
+    /// namespace (`classes/unions`, UNI-7).
+    pub anon_objects: HashMap<types::ClassId, EntityId>,
 }
 
 /// A virtual function: pure, final, and the functions of the bases that
@@ -322,6 +325,7 @@ impl Default for Unit {
             friends: Default::default(),
             friend_classes: Default::default(),
             hidden: Default::default(),
+            anon_objects: Default::default(),
         }
     }
 }

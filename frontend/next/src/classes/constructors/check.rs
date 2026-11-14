@@ -464,6 +464,20 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
             _ => None,
         });
         let base_k = fields.iter().position(|&x| cx.u.field(x).is_some_and(|y| y.base && (y.ty.class().is_some_and(|b| *cx.u.classes[b].name == *name) || (named_class.is_some() && y.ty.class() == named_class))));
+        // UNI-7: a member of an anonymous union member.
+        if base_k.is_none() && !fields.iter().any(|&x| *cx.u.entities[x].name == *name) {
+            if let Some((k, j)) = crate::classes::unions::check::variant_member(&cx.u, c, &name) {
+                if given[k].is_some() {
+                    cx.error(mi.span, "UNI-8", "a constructor initializes two members of one anonymous union");
+                    return None;
+                }
+                let anon = cx.u.field(fields[k]).and_then(|x| x.ty.class()).unwrap();
+                let vty = cx.u.field(cx.u.classes[anon].fields[j]).unwrap().ty.clone();
+                let i = direct_init(cx, &vty, args, braced.is_some(), mi.span)?;
+                given[k] = Some(crate::classes::unions::check::variant_init(&cx.u, c, k, j, i));
+                continue;
+            }
+        }
         let Some(k) = base_k.or_else(|| fields.iter().position(|&x| *cx.u.entities[x].name == *name)) else {
             cx.error(mi.span, "CTOR-15", format!("'{}' is not a non-static data member of the class", name));
             return None;

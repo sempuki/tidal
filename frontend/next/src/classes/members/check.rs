@@ -311,9 +311,32 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
             true
         }
         "decl_specifiers" => {
-            if first.find("union_def").is_some() {
-                cx.unsupported(m.span, "a nested union (build step 4)");
-                return false;
+            if let Some(ud) = crate::classes::unions::check::own_union(first) {
+                // UNI-7: an anonymous union is an unnamed member whose
+                // members are members of the class.
+                let anonymous = ud.child("class_name").is_none() && ud.child("template_id").is_none() && m.children("member_declarator").next().is_none();
+                if !anonymous {
+                    cx.unsupported(m.span, "a nested union (build step 4)");
+                    return false;
+                }
+                let specs = crate::declarations::check::decl_specifiers(cx, first, Default::default());
+                if specs.unsupported {
+                    return false;
+                }
+                let Some(u) = specs.ty.as_ref().and_then(|t| t.class()) else { return true };
+                if specs.is_static {
+                    cx.error(m.span, "UNI-9", "a static anonymous union member");
+                    return true;
+                }
+                if !crate::classes::unions::check::anonymous(cx, u, m.span) {
+                    return true;
+                }
+                let index = cx.u.classes[id].fields.len();
+                let f = Field { ty: QType::new(Type::Class(u)), class: id, index, init: None, mutable: false, access: *access, base: false, width: None };
+                let scope = cx.u.classes[id].scope;
+                let fid = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Field(f), span: m.span, scope, linkage: Linkage::None, deprecated: None });
+                cx.u.classes[id].fields.push(fid);
+                return true;
             }
             if let Some(e) = m.find("exception_spec").filter(|e| first_node(e).is_some()) {
                 cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
@@ -925,6 +948,16 @@ pub fn field_of(cx: &mut Check, obj: Expr, f: EntityId, span: Span) -> Expr {
     } else {
         obj
     };
+    // UNI-7: a member of an anonymous union member is a member of that
+    // union.
+    if naming != field.class {
+        if let Some(k) = crate::classes::unions::check::holder(&cx.u, naming, field.class) {
+            let ut = QType::new(Type::Class(field.class)).with_cv(obj.ty.c, obj.ty.v);
+            let cat = obj.cat;
+            let inner = Expr::new(EK::Member(Box::new(obj), k), ut, cat, span);
+            return field_of(cx, inner, f, span);
+        }
+    }
     // DER-3: a member of a base is a member of the base subobject.
     let obj = if naming != field.class {
         let ps = crate::classes::derived::check::paths(cx, naming, field.class);

@@ -553,7 +553,10 @@ assignment; an rvalue reference member deletes the implicit copy
 constructor. A friend function or class has a member's access; a friend
 function that a class first declares, or defines, belongs to the
 enclosing namespace, and only argument-dependent lookup through the
-class finds it until the namespace declares it. The
+class finds it until the namespace declares it. An anonymous union is
+an unnamed member of its class, or an unnamed variable of its block or
+namespace, and its members are names of the enclosing scope; a list, a
+designator, and a mem-init can name them directly. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -561,7 +564,7 @@ another entity. An explicit destructor call on a class, a literal operator, an
 `operator->`, a comparison that `<=>` rewrites, a virtual base,
 `dynamic_cast`, an allocation or deallocation function that the
 program declares or calls by name, a `new` expression with placement
-arguments, an anonymous union, a union member whose class has special
+arguments, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
 bit-field, a pointer to member, a member function of a local or nested

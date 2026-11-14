@@ -220,3 +220,90 @@ pub fn warn_if_truncated(cx: &mut Check, w: u64, ty: &QType, r: &crate::sem::tre
         cx.warning(span, "BF-8", format!("the value {} changes when it is stored in a bit-field of width {}", v, w));
     }
 }
+
+/// UNI-7, UNI-9: the union `u` of an anonymous union. Its members must be
+/// public non-static data members, with no nested type and no name that
+/// the enclosing scope has; they become names of the enclosing scope.
+/// True when the union is valid.
+pub fn anonymous(cx: &mut Check, u: ClassId, span: Span) -> bool {
+    let scope = cx.u.classes[u].scope;
+    let mut members: Vec<(std::rc::Rc<str>, EntityId)> = cx.u.scopes[scope].names.iter().flat_map(|(n, es)| es.iter().map(move |&e| (n.clone(), e))).collect();
+    members.sort_by_key(|x| x.1);
+    for (n, e) in &members {
+        let bad = match &cx.u.entities[*e].kind {
+            EntKind::Field(x) => x.access != crate::sem::Access::Public,
+            _ => true,
+        };
+        if bad {
+            cx.error(span, "UNI-9", format!("the anonymous union has the member '{}', which is not a public non-static data member", n));
+            return false;
+        }
+    }
+    // An unnamed class member, such as a nested anonymous union, and a
+    // class that the union defines, also an unnamed one.
+    let nested = cx.u.classes.iter().any(|k| cx.u.scopes[k.scope].parent == Some(scope));
+    if nested || cx.u.classes[u].fields.iter().any(|&f| cx.u.entities[f].name.is_empty() && cx.u.field(f).is_some_and(|x| x.width.is_none())) {
+        cx.error(span, "UNI-9", "an anonymous union with a nested type or an unnamed class member");
+        return false;
+    }
+    // CLS-9: in a class, no member has the class's name.
+    if let Some(k) = cx.u.class_of_scope(cx.scope) {
+        if members.iter().any(|(n, _)| **n == *cx.u.classes[k].name) {
+            cx.error(span, "CLS-9", format!("a member of an anonymous union has the name of the class '{}'", cx.u.classes[k].name));
+            return false;
+        }
+    }
+    for (n, _) in &members {
+        if !names::declared_here(cx, cx.scope, n).is_empty() {
+            cx.error(span, "UNI-9", format!("a member of the anonymous union has the name '{}', which the enclosing scope has", n));
+            return false;
+        }
+    }
+    let here = cx.scope;
+    for (n, e) in members {
+        cx.u.scopes[here].names.entry(n).or_default().push(e);
+    }
+    true
+}
+
+/// The position of the unnamed member of class `k` that holds the
+/// anonymous union `u` (UNI-7).
+pub fn holder(u: &Unit, k: ClassId, anon: ClassId) -> Option<usize> {
+    u.classes[k].fields.iter().position(|&f| u.entities[f].name.is_empty() && u.field(f).is_some_and(|x| !x.base && x.width.is_none() && x.ty.class() == Some(anon)))
+}
+
+/// The `union_def` that is a type specifier of these decl-specifiers
+/// itself, not one inside a class that they define.
+pub fn own_union(ds: &Node) -> Option<&Node> {
+    fn walk(n: &Node) -> Option<&Node> {
+        if n.prod == "union_def" {
+            return Some(n);
+        }
+        if n.prod == "class_def" {
+            return None;
+        }
+        n.kids.iter().find_map(|k| match k {
+            Kid::Node(c) => walk(c),
+            _ => None,
+        })
+    }
+    walk(ds)
+}
+
+/// A name of a member of an anonymous union member of class `c`: the
+/// position of the holding member and of the union's member (UNI-7).
+pub fn variant_member(u: &Unit, c: ClassId, name: &str) -> Option<(usize, usize)> {
+    u.classes[c].fields.iter().enumerate().find_map(|(k, &f)| {
+        let anon = u.field(f).and_then(|x| x.ty.class()).filter(|&a| u.entities[f].name.is_empty() && holder(u, c, a) == Some(k))?;
+        let j = u.classes[anon].fields.iter().position(|&g| &*u.entities[g].name == name)?;
+        Some((k, j))
+    })
+}
+
+/// The initializer of an anonymous union member with its member `j`
+/// active.
+pub fn variant_init(u: &Unit, c: ClassId, k: usize, j: usize, i: Init) -> Init {
+    let n = u.field(u.classes[c].fields[k]).and_then(|x| x.ty.class()).map(|a| u.classes[a].fields.len()).unwrap_or(0);
+    let mut i = Some(i);
+    Init::List((0..n).map(|x| if x == j { i.take().unwrap_or(Init::Default) } else { Init::Default }).collect())
+}

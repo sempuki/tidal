@@ -367,10 +367,17 @@ fn designated(cx: &mut Check, b: &Node, c: crate::sem::types::ClassId) -> Option
             return None;
         };
         let name = d.kids.iter().filter_map(|k| cx.token(k)).find(|t| t.kind == crate::lex::TK::Ident).map(|t| t.text.clone()).unwrap_or_default();
-        let Some(k) = fields.iter().position(|&f| &*cx.u.entities[f].name == name) else {
+        // UNI-7: a member of an anonymous union member is designated
+        // directly, and the union is one element.
+        let variant = if fields.iter().any(|&f| &*cx.u.entities[f].name == name) { None } else { crate::classes::unions::check::variant_member(&cx.u, c, &name) };
+        let Some(k) = fields.iter().position(|&f| &*cx.u.entities[f].name == name).or(variant.map(|v| v.0)) else {
             cx.error(d.span, "LIST-14", format!("the designator names no member '{}'", name));
             return None;
         };
+        if variant.is_some() && given[k].is_some() {
+            cx.error(d.span, "LIST-14", "two designators for members of one anonymous union");
+            return None;
+        }
         // UNI-8: a list for a union names one member.
         if last.is_some() && crate::classes::unions::check::is_union(cx, c) {
             cx.error(d.span, "UNI-8", "a list for a union has two designators");
@@ -381,7 +388,13 @@ fn designated(cx: &mut Check, b: &Node, c: crate::sem::types::ClassId) -> Option
             return None;
         }
         last = Some(k);
-        let fty = cx.u.field(fields[k]).unwrap().ty.clone();
+        let fty = match variant {
+            Some((_, j)) => {
+                let anon = cx.u.field(fields[k]).and_then(|x| x.ty.class()).unwrap();
+                cx.u.field(cx.u.classes[anon].fields[j]).unwrap().ty.clone()
+            }
+            None => cx.u.field(fields[k]).unwrap().ty.clone(),
+        };
         let v = match d.kids.iter().filter_map(|k| match k {
             crate::syntax::Kid::Node(x) if x.prod != "designator" => Some(x),
             _ => None,
@@ -398,7 +411,10 @@ fn designated(cx: &mut Check, b: &Node, c: crate::sem::types::ClassId) -> Option
             }
             None => return None,
         };
-        given[k] = Some(v);
+        given[k] = Some(match variant {
+            Some((_, j)) => crate::classes::unions::check::variant_init(&cx.u, c, k, j, v),
+            None => v,
+        });
     }
     // The other members of a union are not active (UNI-4).
     if crate::classes::unions::check::is_union(cx, c) {

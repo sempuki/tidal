@@ -230,9 +230,8 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     };
     // UNI-7: an anonymous union, whose members belong to the enclosing
     // scope.
-    if n.child("init_declarator").is_none() && ds.find("union_def").is_some_and(|u| u.child("class_name").is_none() && u.child("template_id").is_none()) {
-        cx.unsupported(n.span, "an anonymous union (build step 4)");
-        return None;
+    if n.child("init_declarator").is_none() && crate::classes::unions::check::own_union(ds).is_some_and(|u| u.child("class_name").is_none() && u.child("template_id").is_none()) {
+        return anonymous_union(cx, n, ds, attrs);
     }
     let specs = decl_specifiers(cx, ds, attrs);
     let local = cx.in_function();
@@ -333,4 +332,41 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     } else {
         None
     }
+}
+
+/// UNI-7, UNI-9: an anonymous union of a block or a namespace: an unnamed
+/// variable of the union, whose members the scope names. At namespace
+/// scope outside an unnamed namespace, the union is static (STO-11).
+fn anonymous_union(cx: &mut Check, n: &Node, ds: &Node, attrs: crate::declarations::attributes::check::Attrs) -> Option<Stmt> {
+    let specs = decl_specifiers(cx, ds, attrs);
+    if specs.unsupported {
+        return None;
+    }
+    let u = specs.ty.as_ref().and_then(|t| t.class())?;
+    let local = cx.in_function();
+    let ns = cx.u.scopes[cx.scope].kind == crate::sem::ScopeKind::Namespace;
+    let unnamed = ns && cx.scope != cx.u.root && cx.u.scopes[cx.scope].name.is_empty();
+    if ns && !specs.is_static && !unnamed {
+        cx.error_cause(n.span, "UNI-9", Some("STO-11"), "an anonymous union at namespace scope that is not static");
+        return None;
+    }
+    if specs.is_extern || specs.thread_local || specs.constexpr || specs.constinit || specs.typedef {
+        cx.unsupported(n.span, "an anonymous union with this specifier");
+        return None;
+    }
+    if !crate::classes::unions::check::anonymous(cx, u, n.span) {
+        return None;
+    }
+    let storage = if local && !specs.is_static { crate::sem::Storage::Automatic } else { crate::sem::Storage::Static };
+    let ty = QType::new(crate::sem::types::Type::Class(u));
+    let init = crate::classes::members::check::default_init(cx, &ty);
+    let v = crate::sem::Var { ty, storage, constexpr: false, constinit: false, inline: false, is_extern: false, is_static: specs.is_static, param: false, defined: true, init: Some(init.clone()), const_init: false, used: false, maybe_unused: false, align: None };
+    let scope = cx.scope;
+    let id = cx.u.add(crate::sem::Entity { name: "".into(), kind: crate::sem::EntKind::Var(v), span: n.span, scope, linkage: crate::sem::Linkage::None, deprecated: None });
+    cx.u.anon_objects.insert(u, id);
+    if !local {
+        cx.u.statics.push(id);
+        return None;
+    }
+    Some(Stmt::new(SK::Decl(vec![(id, init)]), n.span))
 }
