@@ -1264,3 +1264,23 @@ fn conversion_functions() {
     };
     assert_eq!(warned("struct S { operator S() const; };"), Some("CVF-6"));
 }
+
+#[test]
+fn member_types() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A member alias, typedef, nested class, and enumeration, named with
+    // the class's qualifier.
+    assert_eq!(run("struct S { using T = int; typedef long L; struct N { int v; }; enum E { a, b }; }; int main() { S::T x = 2; S::L y = 3; S::N n{4}; return x + y + n.v + S::b; }"), RunOutcome::Result(10));
+    // ACC-2: a private member type in a function body outside the class.
+    assert_eq!(rule("class O { struct H { int v; }; public: static int f(); }; int g() { O::H h{1}; return h.v; }"), Some("ACC-2"));
+    // ACC-19: the enclosing class has no access to the nested class's
+    // private members.
+    assert_eq!(rule("class Outer { class Inner { int secret = 1; }; int look(const Inner& i) { return i.secret; } };"), Some("ACC-2"));
+    assert_eq!(rule("struct S { struct { int a; }; };"), Some("CLS-9"));
+    assert_eq!(rule("struct S { using S = int; };"), Some("CLS-9"));
+    assert_eq!(rule("struct S { using T = int; using T = int; };"), Some("TYN-2"));
+}

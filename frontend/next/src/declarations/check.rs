@@ -290,7 +290,8 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
                     }
                     false
                 });
-                if functions || lambda || !cx.u.bases(c).is_empty() || cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
+                let aliases = cx.u.scopes[scope].names.values().flatten().any(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Typedef(_)));
+                if functions || lambda || aliases || !cx.u.bases(c).is_empty() || cx.u.classes[c].fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
                     cx.error(d.span, "TYN-9", "a class named by a typedef for linkage has a member function, a default member initializer, or a lambda");
                     continue;
                 }

@@ -302,6 +302,16 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         return bad(span);
     }
     let f = deref_ref(f);
+    // OVL-6: a conversion function to a pointer or reference to function
+    // gives a surrogate call function, which the front end does not
+    // model yet.
+    if let Some(c) = crate::classes::conversion_functions::check::converting_class(cx, &f) {
+        let surrogate = crate::classes::conversion_functions::check::functions(&cx.u, c).iter().any(|&g| cx.u.func(g).is_some_and(|x| { let r = x.ty.ret.nonref(); r.is_func() || r.pointee().is_some_and(|p| p.is_func()) }));
+        if surrogate {
+            let t = cx.unsupported(span, "a call of a class object through a conversion function to a function pointer");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        }
+    }
     // LAM-1, OPR-3: a call of a class object calls its call operator.
     let ops = crate::expressions::lambdas::check::call_operators(cx, &f);
     if !ops.is_empty() {

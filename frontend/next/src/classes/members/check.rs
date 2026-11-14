@@ -177,6 +177,11 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             }
             crate::classes::constructors::check::end_of_class(cx, id, head.span);
             crate::classes::unions::check::end_of_union(cx, id, head.span);
+            // CLS-9: no member type or enumerator with the class's name.
+            let own = cx.u.scopes[cx.u.classes[id].scope].names.get(name.as_str()).cloned().unwrap_or_default();
+            if !name.is_empty() && own.iter().any(|&e| !matches!(cx.u.entities[e].kind, EntKind::Field(_) | EntKind::Func(_) | EntKind::Var(_))) {
+                cx.error(head.span, "CLS-9", format!("a member type or enumerator has the name of the class '{}'", name));
+            }
             crate::classes::r#virtual::check::after_bodies(cx, id);
         }
     }
@@ -333,9 +338,46 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 }
                 return true;
             }
-            if specs.typedef || specs.is_extern || specs.thread_local || specs.defines_type && m.children("member_declarator").next().is_none() {
-                cx.unsupported(m.span, "a member of this kind (a typedef or a nested type; build step 4)");
+            if specs.is_extern || specs.thread_local {
+                cx.unsupported(m.span, "a member of this kind (extern or thread_local; build step 4)");
                 return false;
+            }
+            // A nested class or enumeration: a member type with its access.
+            if specs.defines_type && m.children("member_declarator").next().is_none() {
+                // CLS-9: an unnamed class that declares no member.
+                if specs.ty.as_ref().and_then(|t| t.class()).is_some_and(|c| cx.u.classes[c].name.is_empty()) {
+                    cx.error(m.span, "CLS-9", "an unnamed class member that declares nothing");
+                    return true;
+                }
+                if let Some(t) = &specs.ty {
+                    let e = names::declared_here(cx, cx.scope, &type_name(cx, t)).into_iter().find(|&e| matches!(cx.u.entities[e].kind, EntKind::Class(_) | EntKind::Enum(_)));
+                    if let Some(e) = e {
+                        cx.u.access.insert(e, *access);
+                    }
+                }
+                return true;
+            }
+            // A typedef member (TYN rules).
+            if specs.typedef {
+                for md in m.children("member_declarator") {
+                    let Some(dn) = md.child("declarator") else { continue };
+                    let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+                    if d.unsupported {
+                        return false;
+                    }
+                    // TYN-2: a member typedef is declared once in its class.
+                    if d.name.as_ref().is_some_and(|(n, _)| !names::declared_here(cx, cx.scope, n).is_empty()) {
+                        cx.error(d.span, "TYN-2", "a member typedef declared again in its class");
+                        return true;
+                    }
+                    crate::declarations::type_names::check::typedef_name(cx, &d);
+                    if let Some((name, _)) = &d.name {
+                        if let Some(e) = names::declared_here(cx, cx.scope, name).into_iter().find(|&e| matches!(cx.u.entities[e].kind, EntKind::Typedef(_))) {
+                            cx.u.access.insert(e, *access);
+                        }
+                    }
+                }
+                return true;
             }
             if specs.explicit && specs.ty.is_some() {
                 cx.error(m.span, "CTOR-9", "explicit on a member that is not a constructor");
@@ -436,6 +478,23 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
         }
         "static_assert_decl" => {
             crate::declarations::static_assert::check::static_assert_decl(cx, first);
+            true
+        }
+        // An alias member (TYN rules), with its access.
+        "alias_decl" => {
+            // TYN-2: a member alias is declared once in its class.
+            let name = first.kids.iter().filter(|k| matches!(k, Kid::Tok(_))).map(|k| cx.text(k)).nth(1).unwrap_or("");
+            if !name.is_empty() && !names::declared_here(cx, cx.scope, name).is_empty() {
+                cx.error(first.span, "TYN-2", format!("the member alias '{}' is declared again in its class", name));
+                return true;
+            }
+            let before = cx.u.entities.len();
+            crate::declarations::type_names::check::alias_decl(cx, first);
+            for e in before..cx.u.entities.len() {
+                if matches!(cx.u.entities[e].kind, EntKind::Typedef(_)) {
+                    cx.u.access.insert(e, *access);
+                }
+            }
             true
         }
         _ => {
@@ -797,9 +856,16 @@ pub fn accessible(cx: &Check, f: EntityId) -> bool {
     if access == Access::Public {
         return true;
     }
-    let class = cx.u.scopes[cx.u.entities[f].scope].clone();
-    let inside = cx.func.as_ref().and_then(|x| x.id).and_then(|id| cx.u.func(id)).and_then(|x| x.class).is_some_and(|c| cx.u.classes[c].scope == cx.u.entities[f].scope);
-    let _ = class;
+    let home = cx.u.entities[f].scope;
+    let inside = cx.func.as_ref().and_then(|x| x.id).and_then(|id| cx.u.func(id)).and_then(|x| x.class).is_some_and(|c| cx.u.classes[c].scope == home);
+    // A declaration in the class, or in a class nested in it (ACC-19).
+    let mut s = Some(cx.scope);
+    while let Some(x) = s {
+        if x == home {
+            return true;
+        }
+        s = cx.u.scopes[x].parent;
+    }
     inside
 }
 
@@ -840,4 +906,13 @@ pub fn field_of(cx: &mut Check, obj: Expr, f: EntityId, span: Span) -> Expr {
 fn cx_unsupported(cx: &mut Check, span: Span, why: &str) -> Expr {
     let t = cx.unsupported(span, why.to_string());
     Expr::new(EK::Int(0), t, Cat::PR, span)
+}
+
+/// The name of a class or enumeration type, for its entity.
+fn type_name(cx: &Check, t: &QType) -> String {
+    match &t.t {
+        Type::Class(c) => cx.u.classes[*c].name.to_string(),
+        Type::Enum(e) => cx.u.enums[*e].name.to_string(),
+        _ => String::new(),
+    }
 }

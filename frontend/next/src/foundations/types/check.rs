@@ -95,6 +95,15 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
     }
     for e in found {
         crate::declarations::attributes::check::use_entity(cx, e, span);
+        // ACC-2: a member type is named where its access allows. Outside a
+        // function body, the declaration can be a member's own (ACC-11),
+        // which the front end does not tell apart yet.
+        if cx.u.access.contains_key(&e) && matches!(cx.u.entities[e].kind, EntKind::Typedef(_) | EntKind::Enum(_) | EntKind::Class(_)) && !crate::classes::members::check::accessible(cx, e) {
+            if cx.in_function() {
+                return cx.error(span, "ACC-2", format!("the member type '{}' is not accessible here", name));
+            }
+            return cx.unsupported(span, format!("the member type '{}' outside its access, outside a function body", name));
+        }
         match &cx.u.entities[e].kind {
             EntKind::Typedef(t) => return t.clone(),
             EntKind::Enum(en) => return QType::new(Type::Enum(*en)),
