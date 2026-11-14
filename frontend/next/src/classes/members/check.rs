@@ -664,6 +664,7 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
             ok
         }
         // An alias member (TYN rules), with its access.
+        "using_decl" => using_member(cx, id, first, *access),
         "alias_decl" => {
             // TYN-2: a member alias is declared once in its class.
             let name = first.kids.iter().filter(|k| matches!(k, Kid::Tok(_))).map(|k| cx.text(k)).nth(1).unwrap_or("");
@@ -685,6 +686,66 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
             false
         }
     }
+}
+
+/// `using B::m;` in a class (DER-3, DER-9, ACC-9, ACC-13): the members
+/// named `m` of the base `B` become members of the class too, with the
+/// access of the place. False after an unsupported form.
+fn using_member(cx: &mut Check, id: ClassId, n: &Node, access: Access) -> bool {
+    for q in n.children("qualified_name") {
+        let Some(nn) = q.child("nested_name") else { continue };
+        let Some(Kid::Tok(t)) = q.child("unqualified_id").and_then(|u| u.kids.first()) else {
+            cx.unsupported(q.span, "a using-declaration of an operator or a template in a class (build step 4)");
+            return false;
+        };
+        let (name, span) = (cx.toks[*t].text.clone(), cx.toks[*t].span);
+        let base = match names::nested_name(cx, nn) {
+            names::Qual::Scope(s) => cx.u.class_of_scope(s),
+            names::Qual::Unsupported => return false,
+            _ => continue,
+        };
+        let Some(b) = base.filter(|&b| crate::classes::derived::check::is_base(cx, id, b)) else {
+            cx.error(span, "DER-9", format!("a using-declaration in a class names '{}' of a class that is not a base", name));
+            continue;
+        };
+        // An inheriting constructor waits for a later part.
+        if *cx.u.classes[b].name == *name {
+            cx.unsupported(span, "an inheriting constructor (build step 4)");
+            return false;
+        }
+        let found = match crate::classes::derived::check::member_lookup(cx, b, &name) {
+            Ok(Some(f)) => f.ents,
+            Ok(None) => {
+                cx.error(span, "NAM-14", format!("'{}' is not a member of the base", name));
+                continue;
+            }
+            Err(()) => {
+                cx.error(span, "DER-4", format!("the member '{}' is in more than one base", name));
+                continue;
+            }
+        };
+        // ACC-13: a private member of the base is not accessible here.
+        let private = |cx: &Check, e: EntityId| {
+            let a = match &cx.u.entities[e].kind {
+                EntKind::Field(x) => x.access,
+                _ => cx.u.access.get(&e).copied().unwrap_or(Access::Public),
+            };
+            let owner = cx.u.class_of_scope(cx.u.entities[e].scope);
+            a == Access::Private && !owner.is_some_and(|o| cx.u.friend_classes.get(&o).is_some_and(|fs| fs.contains(&id)))
+        };
+        if found.iter().any(|&e| private(cx, e)) {
+            cx.error(span, "ACC-13", format!("a using-declaration names the private member '{}' of a base", name));
+            continue;
+        }
+        let here = cx.scope;
+        for e in found {
+            if !names::declared_here(cx, here, &name).contains(&e) {
+                cx.u.scopes[here].names.entry(name.clone().into()).or_default().push(e);
+            }
+            cx.u.using_access.insert((id, e), access);
+        }
+    }
+    true
 }
 
 /// A member function declaration that build step 4's first pieces model:
@@ -721,7 +782,10 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
     // CLS-26: overloads with the same parameters and cv-qualifiers all
     // have ref-qualifiers or none.
     let fty0 = d.ty.func().cloned();
-    let mixed = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&f.ty.params) == fty0.as_ref().map(|t| &t.params) && f.obj_cv == d.obj_cv && f.ref_q.is_some() != d.ref_kind.is_some()));
+    // A member of a base that a using-declaration brings is no
+    // declaration of this class.
+    let own = |cx: &Check, e: EntityId| cx.u.class_of_scope(cx.u.entities[e].scope) == Some(id);
+    let mixed = names::declared_here(cx, cx.scope, &name).into_iter().filter(|&e| own(cx, e)).any(|e| cx.u.func(e).is_some_and(|f| Some(&f.ty.params) == fty0.as_ref().map(|t| &t.params) && f.obj_cv == d.obj_cv && f.ref_q.is_some() != d.ref_kind.is_some()));
     if mixed {
         cx.error(span, "CLS-26", format!("the overloads of '{}' mix a ref-qualifier and none", name));
         return false;
@@ -731,7 +795,7 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
         return false;
     }
     let fty = d.ty.func().cloned();
-    let twice = names::declared_here(cx, cx.scope, &name).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref() && f.obj_cv == d.obj_cv && f.ref_q == d.ref_kind));
+    let twice = names::declared_here(cx, cx.scope, &name).into_iter().filter(|&e| own(cx, e)).any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref() && f.obj_cv == d.obj_cv && f.ref_q == d.ref_kind));
     if twice {
         let rule = if conversion { "CVF-7" } else { "CLS-9" };
         cx.error(span, rule, format!("the member function '{}' is declared twice in its class", name));

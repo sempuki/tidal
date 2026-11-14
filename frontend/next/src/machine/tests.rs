@@ -1457,3 +1457,21 @@ fn alignment_of_classes_and_members() {
     assert_eq!(rule("struct S { alignas(4) int b : 3; };"), Some("ALN-2"));
     assert_eq!(rule("struct alignas(1 << 29) H { char c; };"), Some("ALN-5"));
 }
+
+#[test]
+fn using_declarations_in_classes() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DER-3: a using-declaration brings the base's overloads, and a
+    // function of the class with the same parameters hides one.
+    assert_eq!(run("struct B { int f(int) { return 1; } }; struct D : B { using B::f; int f(const char*) { return 2; } }; int main() { D d; return d.f(0) * 10 + d.f(\"x\"); }"), RunOutcome::Result(12));
+    assert_eq!(run("struct B { int f(int) { return 1; } }; struct D : B { using B::f; int f(int) { return 2; } }; int main() { D d; return d.f(0); }"), RunOutcome::Result(2));
+    // ACC-9: the member has the access of the using-declaration.
+    assert_eq!(rule("class B { protected: int x = 1; }; class D : public B { public: using B::x; }; int f(D& d) { return d.x; }"), None);
+    assert_eq!(rule("struct B { int x; }; class D : public B { using B::x; }; int f(D& d) { return d.x; }"), Some("ACC-2"));
+    assert_eq!(rule("class B { int x; }; class D : public B { public: using B::x; };"), Some("ACC-13"));
+    assert_eq!(rule("struct X { int f(); }; struct B {}; struct D : B { using X::f; };"), Some("DER-9"));
+}

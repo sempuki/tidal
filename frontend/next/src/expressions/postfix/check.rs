@@ -466,7 +466,10 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         }
         (obj, cx.u.classes[class].scope, name.to_string(), nspan)
     };
-    let cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+    let mut cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+    if let Some(c) = cx.u.class_of_scope(scope) {
+        crate::classes::derived::check::hide_brought(cx, c, &mut cands);
+    }
     let f = ovl::resolve_with(cx, &cands, object.as_ref(), args, span, &name)?;
     // OVL-3: a non-static member function chosen with no object.
     if object.is_none() && cx.u.func(f).is_some_and(|x| !x.member_static) {

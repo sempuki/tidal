@@ -283,6 +283,9 @@ pub struct Unit {
     pub links: HashMap<EntityId, EntityId>,
     /// The access of each member that is not a data member.
     pub access: HashMap<EntityId, Access>,
+    /// The access that a using-declaration in a class gives a member of
+    /// a base, as a member of that class (ACC-9).
+    pub using_access: HashMap<(types::ClassId, EntityId), Access>,
     /// The member initializers of each constructor with a body.
     pub mem_inits: HashMap<EntityId, MemInits>,
     /// The constructors defaulted on their first declaration, which act
@@ -331,6 +334,7 @@ impl Default for Unit {
             first_entity: 0,
             links: HashMap::new(),
             access: HashMap::new(),
+            using_access: HashMap::new(),
             mem_inits: HashMap::new(),
             defaulted: Default::default(),
             closures: HashMap::new(),

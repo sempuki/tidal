@@ -92,6 +92,9 @@ pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
     let Some(c) = func.class.filter(|_| !func.member_static) else {
         return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
     };
+    // OVL rules: a function that a using-declaration brings into the
+    // object's class takes that class as its object type.
+    let c = object.ty.nonref().class().filter(|&o| cx.u.using_access.contains_key(&(o, f))).unwrap_or(c);
     let class = QType::new(crate::sem::types::Type::Class(c)).with_cv(func.obj_cv.0, func.obj_cv.1);
     // CLS-6, ICS-40: with a ref-qualifier, the object binds as an
     // argument of that reference type; without one, an rvalue binds too.

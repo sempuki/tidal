@@ -574,7 +574,10 @@ find that subobject in the object, a call through a pointer to a
 virtual function calls the final overrider, and the machine stops at a
 null pointer to member or an object that does not have the member.
 `alignas` on a class or a data member raises the alignment in the
-layout, and an object's address is a multiple of its type's alignment. The
+layout, and an object's address is a multiple of its type's alignment.
+A using-declaration in a class makes the members of a base members of
+the class, with the access of its place; a member function of the class
+hides one it brings with the same parameters. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -586,7 +589,7 @@ program declares or calls by name, a `new` expression with placement
 arguments, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
-bit-field, an attribute on a class, `[[no_unique_address]]`, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a member function with a noexcept operand, a call without an object
+bit-field, an attribute on a class, `[[no_unique_address]]`, an inheriting constructor, a using-declaration in a class of an operator or a template, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a member function with a noexcept operand, a call without an object
 among ref-qualified member functions or among static and non-static
 ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload

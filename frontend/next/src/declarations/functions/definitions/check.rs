@@ -130,6 +130,11 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     }
     let mut earlier = None;
     for e in names::declared_here(cx, scope, &name) {
+        // A member of a base that a using-declaration brings into a class
+        // is no earlier declaration (DER-3).
+        if cx.u.scopes[scope].kind == crate::sem::ScopeKind::Class && cx.u.entities[e].scope != scope {
+            continue;
+        }
         match cx.u.entities[e].kind.clone() {
             EntKind::Func(f) => {
                 // Member functions that differ in the qualifiers of their

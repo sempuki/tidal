@@ -218,6 +218,16 @@ pub struct Found {
     pub path: Vec<usize>,
 }
 
+/// DER-3: a member function of class `c` hides a function of a base,
+/// which a using-declaration brings, with the same parameters and
+/// qualifiers.
+pub fn hide_brought(cx: &Check, c: ClassId, ents: &mut Vec<EntityId>) {
+    let home = |e: EntityId| cx.u.class_of_scope(cx.u.entities[e].scope);
+    let sig = |e: EntityId| cx.u.func(e).map(|f| (f.ty.params.clone(), f.obj_cv, f.ref_q));
+    let mine: Vec<_> = ents.iter().copied().filter(|&e| home(e) == Some(c)).filter_map(sig).collect();
+    ents.retain(|&e| home(e) == Some(c) || sig(e).is_none_or(|s| !mine.contains(&s)));
+}
+
 pub fn member_lookup(cx: &Check, c: ClassId, name: &str) -> Result<Option<Found>, ()> {
     let mut own = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, name);
     // NAM-35: a base's name is a member of it.
@@ -225,6 +235,7 @@ pub fn member_lookup(cx: &Check, c: ClassId, name: &str) -> Result<Option<Found>
         own.extend(injected(cx, c));
     }
     if !own.is_empty() {
+        hide_brought(cx, c, &mut own);
         return Ok(Some(Found { ents: own, class: c, path: Vec::new() }));
     }
     let mut results: Vec<Found> = Vec::new();
@@ -297,6 +308,17 @@ pub fn here(cx: &Check) -> Option<ClassId> {
 /// the class of the member or a class derived from it, is accessible
 /// where the function being checked is.
 pub fn accessible_through(cx: &Check, member: EntityId, naming: ClassId) -> bool {
+    // ACC-9: a using-declaration in the naming class gives the member
+    // the access of its place there.
+    if let Some(&a) = cx.u.using_access.get(&(naming, member)) {
+        let x = here(cx);
+        let inside = { let home = cx.u.classes[naming].scope; let mut s = Some(cx.scope); let mut f = false; while let Some(k) = s { if k == home { f = true; break; } s = cx.u.scopes[k].parent; } f };
+        return inside || x == Some(naming) || crate::classes::access::check::befriended(cx, naming) || match a {
+            Access::Public => true,
+            Access::Protected => x.is_some_and(|h| derives(cx, h, naming) || derives(cx, naming, h)),
+            Access::Private => false,
+        };
+    }
     let access = match &cx.u.entities[member].kind {
         EntKind::Field(x) => x.access,
         _ => cx.u.access.get(&member).copied().unwrap_or(Access::Public),
