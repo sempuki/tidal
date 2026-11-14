@@ -211,6 +211,8 @@ pub struct ClassInfo {
     pub complete: bool,
     /// Declared `final` (DER-1).
     pub is_final: bool,
+    /// The alignment that `alignas` on the class asks for (ALN-1).
+    pub align: Option<u64>,
 }
 
 /// The closure type of a lambda expression (`expressions/lambdas`): its
@@ -237,6 +239,8 @@ pub struct Field {
     /// The width of a bit-field (`classes/unions`, BF-1). An unnamed
     /// bit-field has the empty name and is no member (BF-12).
     pub width: Option<u64>,
+    /// The alignment that `alignas` on the member asks for (ALN-1).
+    pub align: Option<u64>,
 }
 
 #[derive(Clone, Debug)]

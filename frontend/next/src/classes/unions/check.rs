@@ -152,8 +152,13 @@ pub fn bitfield<'n>(cx: &mut Check, c: ClassId, specs: &crate::declarations::che
     if width as u64 > bits && !name.is_empty() {
         cx.warning(span, "BF-8", format!("the width of the bit-field '{}' exceeds its type", name));
     }
+    // ALN-2: `alignas` does not apply to a bit-field.
+    if !cx.member_aligns.is_empty() {
+        cx.error(span, "ALN-2", "alignas on a bit-field");
+        return Some(false);
+    }
     let index = cx.u.classes[c].fields.len();
-    let f = Field { ty, class: c, index, init: None, mutable: specs.mutable, access, base: false, width: Some(width as u64) };
+    let f = Field { ty, class: c, index, init: None, mutable: specs.mutable, access, base: false, width: Some(width as u64), align: None };
     let fid = if name.is_empty() {
         let scope = cx.u.classes[c].scope;
         cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Field(f), span, scope, linkage: Linkage::None, deprecated: None })

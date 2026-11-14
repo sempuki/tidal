@@ -1438,3 +1438,22 @@ fn pointers_to_members() {
     assert_eq!(rule("struct S { int f(); }; int g(S s) { int (S::* p)() = &S::f; return s.*p(); }"), Some("MPTR-10"));
     assert_eq!(rule("struct B { int m; }; struct D : B {}; int B::* p = static_cast<int D::*>(nullptr); int D::* q = &B::m; int B::* r = q;"), Some("INIT-7"));
 }
+
+#[test]
+fn alignment_of_classes_and_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // ALN-1: `alignas` on a class and on a member raises the alignment,
+    // also of a class that derives from it.
+    assert_eq!(rule("struct alignas(32) L { char d[4]; }; static_assert(alignof(L) == 32 && sizeof(L) == 32);"), None);
+    assert_eq!(rule("struct S { char c; alignas(8) int v; }; static_assert(sizeof(S) == 16);"), None);
+    assert_eq!(rule("struct alignas(32) T {}; struct H : T { char x; }; static_assert(alignof(H) == 32);"), None);
+    // ALN-4: an object's address is a multiple of its alignment.
+    assert_eq!(run("struct alignas(256) B { int v; }; int main() { B b; return reinterpret_cast<unsigned long>(&b) % 256; }"), RunOutcome::Result(0));
+    assert_eq!(rule("struct alignas(1) S { int v; };"), Some("ALN-2"));
+    assert_eq!(rule("struct S { alignas(4) int b : 3; };"), Some("ALN-2"));
+    assert_eq!(rule("struct alignas(1 << 29) H { char c; };"), Some("ALN-5"));
+}

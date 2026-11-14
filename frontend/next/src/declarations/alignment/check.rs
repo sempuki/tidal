@@ -31,6 +31,11 @@ pub fn alignas(cx: &mut Check, specs: &[Node], ty: &QType) -> Option<u64> {
             cx.error(a.span, "ALN-2", format!("the alignment {} is not a power of two", v));
             continue;
         }
+        // ALN-5: the largest extended alignment of Clang and GCC.
+        if v > 1 << 28 {
+            cx.error(a.span, "ALN-5", format!("the alignment {} exceeds the largest extended alignment, 2^28", v));
+            continue;
+        }
         best = Some(best.map_or(v as u64, |b| b.max(v as u64)));
     }
     if let (Some(b), Some(own)) = (best, cx.u.target.align_of(&cx.u, ty)) {

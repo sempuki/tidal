@@ -13,6 +13,7 @@ pub struct Attrs {
     pub nodiscard: bool,
     pub noreturn: bool,
     pub maybe_unused: bool,
+    pub no_unique_address: bool,
     pub carries_dependency: bool,
     pub fallthrough: bool,
     pub likely: bool,
@@ -81,6 +82,7 @@ pub fn attribute_spec(cx: &mut Check, n: &Node, a: &mut Attrs) {
                     "likely" => a.likely = true,
                     "unlikely" => a.unlikely = true,
                     "maybe_unused" => a.maybe_unused = true,
+                    "no_unique_address" => a.no_unique_address = true,
                     _ => {}
                 }
             }

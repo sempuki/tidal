@@ -196,6 +196,7 @@ impl Target {
             // An empty base takes no space (DER-2), at the first offset
             // where it shares no address with a subobject of its type.
             if x.base && t.class().is_some_and(|b| self.is_empty(u, b)) {
+                align = align.max(self.align_of(u, &t)?);
                 let mut at = 0;
                 while clash(at, &placed) {
                     at += 1;
@@ -208,6 +209,7 @@ impl Target {
                 continue;
             }
             let (s, a) = self.member_size(u, &t)?;
+            let a = a.max(x.align.unwrap_or(1));
             // The tail padding of a base that is not a POD holds the
             // members that follow (the matrix's ABI, CLS-35).
             let s = match t.class() {
@@ -227,6 +229,7 @@ impl Target {
                 end = 8 * at.checked_add(s)? as u128;
             }
         }
+        let align = align.max(info.align.unwrap_or(1));
         let size = u64::try_from(end.div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
         Some((size.max(1), align, offs))
     }

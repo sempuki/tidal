@@ -194,12 +194,14 @@ fn no_object<T>(ty: &QType) -> R<T> {
 // Addresses
 
 /// The address of an object, which it gets when the program first needs
-/// one. Objects lie apart, each at a multiple of 16.
+/// one. Objects lie apart, each at a multiple of 16, or of its type's
+/// alignment where that is larger (ALN-4).
 pub fn base(m: &mut Machine, obj: usize) -> u64 {
     if let Some(&a) = m.addrs.get(&obj) {
         return a;
     }
-    let a = m.next_addr;
+    let align = m.target.align_of(m.u, &m.objs[obj].ty).unwrap_or(1).max(16);
+    let a = m.next_addr.div_ceil(align) * align;
     let n = size(m, &m.objs[obj].ty).max(1) as u64;
     m.next_addr = a + (n + 1).div_ceil(16) * 16;
     m.addrs.insert(obj, a);

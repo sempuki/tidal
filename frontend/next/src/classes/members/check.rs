@@ -27,7 +27,7 @@ fn declared_class(cx: &Check, name: &str) -> Option<ClassId> {
 fn new_class(cx: &mut Check, name: &str, key: ClassKey, span: Span) -> ClassId {
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), name);
     let id = cx.u.classes.len();
-    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false });
+    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false, align: None });
     if !name.is_empty() {
         names::declare_in(cx, cx.scope, name, EntKind::Class(id), span, Linkage::None);
     }
@@ -91,9 +91,10 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     if head.child("nested_name").is_some() || head.child("template_id").is_some() {
         return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
-    if head.kids.iter().any(|k| matches!(k, Kid::Node(x) if matches!(x.prod, "attribute_spec" | "alignment_specifier"))) {
-        return cx.unsupported(head.span, "an attribute or alignas on a class (build step 4)");
+    if head.kids.iter().any(|k| matches!(k, Kid::Node(x) if x.prod == "attribute_spec")) {
+        return cx.unsupported(head.span, "an attribute on a class (build step 4)");
     }
+    let aligns: Vec<Node> = head.children("alignment_specifier").cloned().collect();
     // The classes of namespace std have rules of their own (LSUP).
     if cx.u.scopes[cx.scope].name.as_ref() == "std" {
         return cx.unsupported(head.span, "a class of namespace std (build step 4)");
@@ -145,6 +146,17 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         cx.pending_defaults.append(&mut pending);
     }
     cx.u.classes[id].complete = true;
+    // ALN-1, ALN-2: `alignas` on the class, not weaker than the
+    // alignment that its members give it.
+    if ok && !aligns.is_empty() {
+        let want = crate::declarations::alignment::check::alignas(cx, &aligns, &QType::error());
+        if let (Some(w), Some((_, own, _))) = (want, cx.u.target.layout(&cx.u, id)) {
+            if w < own {
+                cx.error(aligns[0].span, "ALN-2", "the alignment is weaker than the class's own alignment");
+            }
+        }
+        cx.u.classes[id].align = want;
+    }
     // STG-1: the size fits in std::size_t.
     if ok {
         let max = cx.u.target.int_max(cx.u.target.size_t()) as u128;
@@ -279,7 +291,43 @@ fn run_nested_bodies(cx: &mut Check) {
 /// function's body waits in `bodies` for the complete class.
 #[allow(clippy::too_many_arguments)]
 fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>, ctor_bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
-    let Some(first) = first_node(m) else { return true };
+    let lead = |x: &Node| matches!(x.prod, "attribute_spec" | "alignment_specifier");
+    let mut attrs = crate::declarations::attributes::check::Attrs::default();
+    let mut aligns = Vec::new();
+    for k in &m.kids {
+        match k {
+            Kid::Node(x) if x.prod == "attribute_spec" => crate::declarations::attributes::check::attribute_spec(cx, x, &mut attrs),
+            Kid::Node(x) if x.prod == "alignment_specifier" => aligns.push(x.clone()),
+            Kid::Node(_) => break,
+            _ => {}
+        }
+    }
+    let Some(first) = m.kids.iter().find_map(|k| match k {
+        Kid::Node(x) if !lead(x) => Some(x),
+        _ => None,
+    }) else {
+        return true;
+    };
+    if attrs.any || !aligns.is_empty() {
+        // An attribute of a data member (ATTR-2); those of member
+        // functions and `[[no_unique_address]]` wait for a later part.
+        let function = first.prod == "function_definition" || m.find("function_suffix").is_some();
+        if function || attrs.no_unique_address || (first.prod == "decl_specifiers" && cx.words(first).contains(&"static")) {
+            cx.unsupported(m.span, "an attribute or alignas on a member function or a static member, or [[no_unique_address]] (build step 4)");
+            return false;
+        }
+        crate::declarations::attributes::check::on_variable(cx, &attrs);
+    }
+    let saved = std::mem::replace(&mut cx.member_aligns, aligns);
+    let r = member_after(cx, id, m, first, access, inits, bodies, ctor_bodies);
+    cx.member_aligns = saved;
+    r
+}
+
+/// `member`, after the attributes and `alignas` specifiers that come
+/// first.
+#[allow(clippy::too_many_arguments)]
+fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, access: &mut Access, inits: &mut Vec<(EntityId, &'n Node)>, bodies: &mut Vec<&'n Node>, ctor_bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
     // A constructor or destructor: a declarator with the class's name.
     if first.prod == "member_declarator" {
         return match first.child("declarator") {
@@ -413,7 +461,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     return true;
                 }
                 let index = cx.u.classes[id].fields.len();
-                let f = Field { ty: QType::new(Type::Class(u)), class: id, index, init: None, mutable: false, access: *access, base: false, width: None };
+                let f = Field { ty: QType::new(Type::Class(u)), class: id, index, init: None, mutable: false, access: *access, base: false, width: None, align: None };
                 let scope = cx.u.classes[id].scope;
                 let fid = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Field(f), span: m.span, scope, linkage: Linkage::None, deprecated: None });
                 cx.u.classes[id].fields.push(fid);
@@ -423,7 +471,7 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                 cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
                 return false;
             }
-            if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator" | "bitfield"))) {
+            if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator" | "bitfield" | "attribute_spec" | "alignment_specifier"))) {
                 cx.unsupported(m.span, "a member of this form (build step 4)");
                 return false;
             }
@@ -593,7 +641,9 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
                     return true;
                 }
                 let index = cx.u.classes[id].fields.len();
-                let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access, base: false, width: None };
+                let aligns = cx.member_aligns.clone();
+                let align = if aligns.is_empty() { None } else { crate::declarations::alignment::check::alignas(cx, &aligns, &d.ty) };
+                let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access, base: false, width: None, align };
                 let fid = names::declare_in(cx, cx.scope, &name, EntKind::Field(f), span, Linkage::None);
                 cx.u.classes[id].fields.push(fid);
                 if let Some(i) = md.child("member_init") {

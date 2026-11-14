@@ -76,6 +76,16 @@ pub fn report(cx: &mut Check, span: crate::source::Span, rule: &'static str, why
 /// (CE-11), converted to `long long` range. `rule` is the place's rule.
 pub fn integral_constant(cx: &mut Check, n: &Node, rule: &'static str) -> Option<i128> {
     let e = expressions::check::expr(cx, n);
+    // ALN-8, CE-23: a class operand has a literal type, whose destructor
+    // is constexpr.
+    let t = e.ty.nonref();
+    if let Some(c) = t.class() {
+        let user = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, crate::classes::constructors::check::DTOR).first().copied();
+        if crate::classes::constructors::run::needs_in(&cx.u, &t) && !user.is_some_and(|d| cx.u.func(d).is_some_and(|f| f.constexpr)) {
+            cx.error_cause(e.span, rule, Some("CE-23"), format!("the operand has type {}, whose destructor is not constexpr", t.show()));
+            return None;
+        }
+    }
     // CVF-2: a class object converts by its conversion function.
     let e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
     let e = rvalue(cx, e);
