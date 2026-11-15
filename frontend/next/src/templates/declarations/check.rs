@@ -425,6 +425,14 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         // later piece); `catch (...)` and a C ellipsis are not.
         || words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x)))
         || words.windows(2).any(|w| w[1] == "::" && params.iter().any(|(p, _, _)| p.as_ref() == w[0]))
+        // A type named after a template-id qualifier, which can need
+        // `typename` (DEP-19).
+        || words.windows(4).any(|w| w[0] == ">" && w[1] == "::" && is_word(w[2]) && is_word(w[3]))
+}
+
+/// An identifier or a keyword.
+fn is_word(w: &str) -> bool {
+    w.chars().next().is_some_and(|c| c.is_alphabetic() || c == '_')
 }
 
 /// TARG-1, DED-P3: the specialization of the function template `t` for
@@ -438,6 +446,10 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         return Some(f);
     }
     let tpl = cx.u.templates[t].clone();
+    if cx.instantiating >= cx.depth_limit {
+        cx.depth_exceeded = true;
+        return None;
+    }
     let saved_scope = cx.scope;
     let saved_func = cx.func.take();
     let saved_limit = cx.lookup_limit.replace(tpl.limit);
@@ -482,12 +494,29 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     // An error in a specialization can come from a part of the model that
     // the first piece does not have (the points of instantiation, the
     // definition checks), so it leaves the unit unsupported.
-    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) || cx.depth_exceeded {
         let tail = cx.u.diags.split_off(marks);
         cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
-        cx.unsupported(tpl.span, format!("an error in a specialization of the function template '{}' (the first piece of build step 5 does not tell it from a gap of its model)", tpl.name));
+        if !depth_failed(cx, tpl.span) {
+            cx.unsupported(tpl.span, format!("an error in a specialization of the function template '{}' (the first piece of build step 5 does not tell it from a gap of its model)", tpl.name));
+        }
+        return None;
     }
     r
+}
+
+/// TR-13: a chain of instantiations went past the limit. Inside the
+/// chain the failure is quiet; the use that began it reports the error.
+fn depth_failed(cx: &mut Check, span: Span) -> bool {
+    if !cx.depth_exceeded {
+        return false;
+    }
+    if cx.instantiating == 0 {
+        cx.depth_exceeded = false;
+        let limit = cx.depth_limit;
+        cx.error(span, "TR-13", format!("the instantiations nest deeper than the limit of {}", limit));
+    }
+    true
 }
 
 /// The function templates that a call by name finds, after their
@@ -521,6 +550,10 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
 /// specialized: their definitions are not checked yet, so the unit is
 /// unsupported.
 pub fn end_of_unit(cx: &mut Check) {
+    // The templates that a chain past the limit used are specialized.
+    if cx.u.diags.iter().any(|d| d.rule == Some("TR-13")) {
+        return;
+    }
     let mut unused: Vec<(Rc<str>, Span)> = cx.u.templates.iter().filter(|t| t.specs.iter().all(|(_, f)| t.explicit.contains(f))).map(|t| (t.name.clone(), t.span)).collect();
     // An explicit specialization does not check the primary's definition.
     unused.extend(cx.u.class_templates.iter().filter(|t| t.specs.iter().all(|(_, c)| t.explicit.contains(c))).map(|t| (t.name.clone(), t.span)));
@@ -707,6 +740,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
                     cx.u.var_templates[v].specs.push((source, bound, id));
                     id
                 }
+                None if depth_failed(cx, span) => return Some(crate::expressions::check::bad(span)),
                 None => return unsupported(cx, "a specialization of a variable template that the first pieces of build step 5 do not make"),
             }
         }
@@ -722,6 +756,10 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
 fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], node: &Node) -> Option<EntityId> {
     let vt = cx.u.var_templates[v].clone();
     let (ds, _, init, _) = var_parts(node)?;
+    if cx.instantiating >= cx.depth_limit {
+        cx.depth_exceeded = true;
+        return None;
+    }
     let saved_scope = cx.scope;
     let saved_func = cx.func.take();
     let saved_member = cx.member_of.take();
@@ -753,7 +791,7 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], 
     cx.unevaluated = saved_unevaluated;
     cx.lookup_limit = saved_limit;
     cx.instantiating -= 1;
-    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported) {
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported) || cx.depth_exceeded {
         let tail = cx.u.diags.split_off(marks);
         cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
         return None;
@@ -844,6 +882,7 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     }
     match instantiate_class(cx, v, &args) {
         Some(c) => Some(QType::new(Type::Class(c))),
+        None if depth_failed(cx, span) => Some(QType::error()),
         None => Some(cx.unsupported(span, format!("a specialization of the class template '{}' that the first pieces of build step 5 do not make", name))),
     }
 }
@@ -854,6 +893,10 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
 /// it by the template-id. An error in it leaves the unit unsupported.
 fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg]) -> Option<crate::sem::types::ClassId> {
     let ct = cx.u.class_templates[v].clone();
+    if cx.instantiating >= cx.depth_limit {
+        cx.depth_exceeded = true;
+        return None;
+    }
     let saved_scope = cx.scope;
     let saved_func = cx.func.take();
     let saved_member = cx.member_of.take();
@@ -881,7 +924,7 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg]) -> Option<crate::s
     cx.lookup_limit = saved_limit;
     cx.instantiating -= 1;
     let bad = cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported);
-    if t.class() != Some(predicted) || bad {
+    if t.class() != Some(predicted) || bad || cx.depth_exceeded {
         cx.u.class_templates[v].specs.retain(|(a, _)| a.as_slice() != args);
         let tail = cx.u.diags.split_off(marks);
         cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));

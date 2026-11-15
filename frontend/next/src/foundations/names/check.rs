@@ -214,7 +214,13 @@ pub fn check_ambiguous(cx: &mut Check, found: &[EntityId], name: &str, span: Spa
 }
 
 /// The components of a `nested_name`: a leading `::`, and the names.
-fn components<'a>(cx: &Check<'a>, n: &Node, global: &mut bool, out: &mut Vec<(&'a str, Span)>) -> bool {
+/// One name of a qualifier: an identifier, or a template-id.
+enum Part<'a> {
+    Name(&'a str, Span),
+    Tid(Node),
+}
+
+fn components<'a>(cx: &Check<'a>, n: &Node, global: &mut bool, out: &mut Vec<Part<'a>>) -> bool {
     for k in &n.kids {
         match k {
             Kid::Node(c) if c.prod == "nested_name" => {
@@ -222,6 +228,7 @@ fn components<'a>(cx: &Check<'a>, n: &Node, global: &mut bool, out: &mut Vec<(&'
                     return false;
                 }
             }
+            Kid::Node(c) if c.prod == "template_id" => out.push(Part::Tid(c.clone())),
             Kid::Node(_) => return false,
             _ => {
                 let t = cx.text(k);
@@ -230,7 +237,7 @@ fn components<'a>(cx: &Check<'a>, n: &Node, global: &mut bool, out: &mut Vec<(&'
                         *global = true;
                     }
                 } else {
-                    out.push((t, cx.token(k).map(|t| t.span).unwrap_or(n.span)));
+                    out.push(Part::Name(t, cx.token(k).map(|t| t.span).unwrap_or(n.span)));
                 }
             }
         }
@@ -243,11 +250,31 @@ pub fn nested_name(cx: &mut Check, n: &Node) -> Qual {
     let mut global = false;
     let mut parts = Vec::new();
     if !components(cx, n, &mut global, &mut parts) {
-        cx.unsupported(n.span, "a qualifier with a template-id or decltype");
+        cx.unsupported(n.span, "a qualifier with decltype or another form");
         return Qual::Unsupported;
     }
     let mut cur: Option<ScopeId> = if global { Some(0) } else { None };
-    for (name, span) in parts {
+    for part in parts {
+        let (name, span) = match part {
+            Part::Name(name, span) => (name, span),
+            // TARG-1: a specialization of a class template names the
+            // members of its class.
+            Part::Tid(tid) => {
+                let t = crate::templates::declarations::check::class_template_use_in(cx, &tid, cur);
+                match t.as_ref().map(|t| &t.t) {
+                    Some(crate::sem::types::Type::Class(c)) => {
+                        cur = Some(cx.u.classes[*c].scope);
+                        continue;
+                    }
+                    Some(_) if t.as_ref().is_some_and(|t| t.is_error()) => return Qual::Error,
+                    Some(_) => return Qual::Unsupported,
+                    None => {
+                        cx.unsupported(tid.span, "a qualifier with a template-id that names no class template");
+                        return Qual::Unsupported;
+                    }
+                }
+            }
+        };
         let keep = |k: &EntKind| matches!(k, EntKind::Namespace(_) | EntKind::Enum(_) | EntKind::Class(_) | EntKind::Typedef(_) | EntKind::Unsupported(_));
         // NAM-33: a class's name inside its scope names the class.
         if let Some(s) = cur.filter(|&s| cx.u.scopes[s].kind == ScopeKind::Class && &*cx.u.scopes[s].name == name) {

@@ -2582,3 +2582,16 @@ fn explicit_function_specializations() {
     assert_eq!(rule("template <class T> constexpr int code(T) { return 1; } template <> constexpr int code<int>(int) { return 2; } template <> constexpr int code(char) { return 3; } static_assert(code(1.0) == 1 && code(1) == 2 && code('a') == 3);"), None);
     assert_eq!(rule("template <class T> int code(T) { return 1; } int a = code(1); template <> int code(int) { return 2; }"), Some("TSP-6"));
 }
+
+#[test]
+fn template_id_qualifiers_and_depth() {
+    let rule = |src: &str, depth: Option<u32>| match crate::check_source(src, Path::new("t.cpp"), &crate::Options { depth, ..Default::default() }).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("namespace q { template <class T> struct Box { static constexpr int n = sizeof(T); using V = T; }; } static_assert(q::Box<int>::n == 4); q::Box<char>::V c; static_assert(sizeof c == 1);", None), None);
+    let count = "template <int N> struct Count { static constexpr int value = Count<N - 1>::value + 1; }; template <> struct Count<0> { static constexpr int value = 0; };";
+    assert_eq!(rule(&format!("{} static_assert(Count<50>::value == 50);", count), None), None);
+    assert_eq!(rule(&format!("{} static_assert(Count<50>::value == 50);", count), Some(40)), Some("TR-13"));
+}

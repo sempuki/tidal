@@ -80,6 +80,14 @@ pub struct Options {
     pub werror: bool,
     pub wflags: Vec<String>,
     pub proposal: Option<&'static str>,
+    /// The limit on nested instantiations that an option sets (TR-13).
+    pub depth: Option<u32>,
+}
+
+/// The limit on nested instantiations that `-ftemplate-depth=N` or
+/// `--pending_instantiations=N` sets (TR-13).
+pub fn depth_of<'a>(mut flags: impl Iterator<Item = &'a str>) -> Option<u32> {
+    flags.find_map(|f| f.strip_prefix("-ftemplate-depth=").or_else(|| f.strip_prefix("--pending_instantiations=")).and_then(|v| v.parse().ok()))
 }
 
 /// The answer for one translation unit.
@@ -137,6 +145,9 @@ fn check_unit(src: &str, path: &Path, o: &Options, prior: Option<sem::Unit>) -> 
         let mut cx = sem::check::Check::new(&p.lexed.toks, u);
         cx.werror = o.werror;
         cx.wflags = o.wflags.clone();
+        if let Some(n) = o.depth {
+            cx.depth_limit = n;
+        }
         cx.parser_names = p.names.clone();
         if let Some(pr) = o.proposal.and_then(proposals::find) {
             cx.hooks = (pr.hooks)();
@@ -198,6 +209,7 @@ fn options(args: &[String]) -> Options {
         werror: args.iter().any(|a| a == "--werror" || a == "-Werror"),
         wflags: args.iter().filter(|a| a.starts_with("-W") && *a != "-Werror").cloned().collect(),
         proposal: proposal_of(args),
+        depth: depth_of(args.iter().map(|a| a.as_str())),
     }
 }
 

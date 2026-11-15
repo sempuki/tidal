@@ -36,6 +36,8 @@ struct Test {
     werror: bool,
     /// The -W flags other than -Werror.
     wflags: Vec<String>,
+    /// The limit on nested instantiations that the flags set (TR-13).
+    depth: Option<u32>,
     sources: Vec<PathBuf>,
     /// The base expectation is `run` or `run-fail`, or the test has a
     /// `tidal-interpreter: run-fail` line: the harness runs the program
@@ -252,6 +254,7 @@ fn parse_test(root: &Path, path: &Path, kinds: &std::collections::HashMap<String
         m32: flags.contains("-m32"),
         werror: flags.contains("-Werror"),
         wflags: flags.split_whitespace().filter(|f| f.starts_with("-W") && *f != "-Werror").map(String::from).collect(),
+        depth: crate::depth_of(flags.split_whitespace()),
         sources,
         run,
     })
@@ -270,7 +273,7 @@ fn run_one(t: &Test, proposal: Option<&'static str>) -> Outcome2 {
     let mut files = vec![t.path.clone()];
     files.extend(t.sources.iter().cloned());
     let want_run = t.run.is_some();
-    let opts = crate::Options { m32: t.m32, werror: t.werror, wflags: t.wflags.clone(), proposal };
+    let opts = crate::Options { m32: t.m32, werror: t.werror, wflags: t.wflags.clone(), proposal, depth: t.depth };
     let (tx, rx) = mpsc::channel();
     let paths = files.clone();
     std::thread::Builder::new()
