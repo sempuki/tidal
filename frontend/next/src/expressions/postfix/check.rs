@@ -401,6 +401,12 @@ pub fn call_value(cx: &mut Check, f: Expr, args: Vec<Expr>, span: Span) -> Expr 
 /// or a name that finds member functions inside a member function of
 /// their class, whose object is `*this`. None for any other callee.
 fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Option<Expr> {
+    // A parenthesized member access calls the member as without the
+    // parentheses (OVL-2).
+    let mut callee = callee;
+    while let ("primary", [_, Kid::Node(inner), _]) = (callee.prod, callee.kids.as_slice()) {
+        callee = inner;
+    }
     // A qualified name calls the function it names, not its final
     // overrider (VIRT-1).
     let mut qualified = false;
@@ -409,11 +415,30 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         let arrow = cx.text(&callee.kids[1]) == "->";
         // Only a member that is a function: a callee of another kind
         // goes through member access.
-        let u = first_node(id)?;
+        let mut u = first_node(id)?;
+        // `x.B::f(...)`: the qualifier names the class whose function the
+        // call takes, without dispatch (VIRT-1).
+        let qual_node = if u.prod == "qualified_name" {
+            let nn = u.child("nested_name")?;
+            u = u.child("unqualified_id")?;
+            Some(nn)
+        } else {
+            None
+        };
         if u.prod != "unqualified_id" || u.kids.len() != 1 {
             return None;
         }
-        let name = crate::classes::operators::check::unqualified_name(cx, u)?.to_string();
+        // A conversion function called by its name (CVF-1).
+        let name = match u.kids.first() {
+            Some(Kid::Node(cf)) if cf.prod == "conversion_function_id" => {
+                let t = crate::classes::conversion_functions::check::target(cx, cf);
+                if t.is_error() {
+                    return Some(bad(span));
+                }
+                crate::classes::conversion_functions::check::name(&t)
+            }
+            _ => crate::classes::operators::check::unqualified_name(cx, u)?.to_string(),
+        };
         let b = expr(cx, base);
         if b.ty.is_error() {
             return Some(bad(span));
@@ -434,6 +459,24 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             cx.error(span, "PFX-11", format!("member access on {}, which is not a class", obj.ty.show()));
             return Some(bad(span));
         };
+        if let Some(nn) = qual_node {
+            let saved = std::mem::replace(&mut cx.scope, cx.u.classes[c].scope);
+            let q = crate::foundations::names::check::nested_name(cx, nn);
+            cx.scope = saved;
+            let crate::foundations::names::check::Qual::Scope(s) = q else { return Some(bad(span)) };
+            let k = cx.u.class_of_scope(s)?;
+            let funcs = crate::foundations::names::check::lookup_in(cx, s, &name);
+            if !crate::classes::derived::check::derives(cx, c, k) || funcs.is_empty() || !funcs.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
+                // Member access gives the error or the data member.
+                let m = crate::classes::members::check::member_access(cx, obj, false, id, span);
+                if m.ty.is_error() {
+                    return Some(m);
+                }
+                return Some(call_value(cx, m, args.to_vec(), span));
+            }
+            let decl = cx.u.func(funcs[0]).and_then(|f| f.class).unwrap_or(k);
+            return member_call_tail(cx, Some(obj), cx.u.classes[decl].scope, name, id.span, true, args, span);
+        }
         let (found, decl) = match crate::classes::derived::check::member_lookup(cx, c, &name) {
             Ok(Some(x)) => (x.ents, x.class),
             Ok(None) => (Vec::new(), c),

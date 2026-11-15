@@ -1818,3 +1818,18 @@ fn array_member_initializers() {
     assert_eq!(rule("struct S { int p[2]; S(double d) : p{1, d} {} };"), Some("CTOR-21"));
     assert_eq!(rule("struct S { int a[2]; S(const int (&x)[2]) : a(x) {} };"), Some("INIT-8"));
 }
+
+#[test]
+fn member_access_forms() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A qualified member name, a qualified call without dispatch, an
+    // enumerator, and a parenthesized member call.
+    assert_eq!(run("struct B { int b = 4; virtual int f() { return 1; } }; struct D : B { enum { k = 2 }; int f() override { return 3; } }; int main() { D d; B& r = d; return d.B::b + r.B::f() + d.k + (d.f)(); }"), RunOutcome::Result(10));
+    // A conversion function called by its name.
+    assert_eq!(run("struct S { operator int() const { return 3; } }; int main() { S s; return s.operator int(); }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct S { int f() { return 1; } }; void g(S s) { auto p = s.f; }"), Some("PFX-20"));
+}

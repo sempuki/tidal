@@ -692,7 +692,14 @@ functions reach. A class prvalue keeps its cv-qualifiers. A converting
 constructor makes an object from an object of another class when that
 class has no conversion functions. A member initializer in braces
 gives an array member its elements in order and value-initializes the
-rest, and a reference member binds the one value in braces. The
+rest, and a reference member binds the one value in braces. Member
+access names a static member function or an enumerator as a value and
+a qualified member through the class of its qualifier, which lookup
+finds in the object's class first. A qualified member call takes the
+function of that class without dispatch, a parenthesized member access
+calls as without the parentheses, and a conversion function can be
+called by its name. A non-static member function named without a call
+is an error. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

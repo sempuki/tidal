@@ -1160,17 +1160,43 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
         cx.error(span, "PFX-11", "member access on an object of an incomplete class");
         return bad(span);
     }
-    let name = match first_node(id) {
-        Some(u) if u.prod == "unqualified_id" && u.kids.len() == 1 => cx.source(u),
-        _ => return cx_unsupported(cx, span, "a member name of this form"),
-    };
-    let found = match crate::classes::derived::check::member_lookup(cx, c, &name) {
-        Ok(Some(x)) => x.ents,
-        Ok(None) => Vec::new(),
-        Err(()) => {
-            cx.error(span, "DER-4", format!("the member '{}' is in more than one base", name));
-            return bad(span);
+    // NAM-37: a qualified member name looks the name up in the class or
+    // enumeration that its qualifier names, which is the class of the
+    // object or a base of it.
+    let qualified = first_node(id).filter(|q| q.prod == "qualified_name");
+    let (name, found) = if let Some(q) = qualified {
+        let (Some(nn), Some(u)) = (q.child("nested_name"), q.child("unqualified_id")) else { return cx_unsupported(cx, span, "a member name of this form") };
+        if u.kids.len() != 1 {
+            return cx_unsupported(cx, span, "a member name of this form");
         }
+        let name = cx.source(u);
+        // The qualifier is looked up in the class of the object first.
+        let saved = std::mem::replace(&mut cx.scope, cx.u.classes[c].scope);
+        let qual = names::nested_name(cx, nn);
+        cx.scope = saved;
+        let crate::foundations::names::check::Qual::Scope(s) = qual else { return bad(span) };
+        if let Some(k) = cx.u.class_of_scope(s) {
+            if !crate::classes::derived::check::derives(cx, c, k) {
+                cx.error(span, "NAM-37", format!("the qualifier of the member '{}' names a class that is not the object's class or a base of it", name));
+                return bad(span);
+            }
+        }
+        let found = names::lookup_in(cx, s, &name);
+        (name, found)
+    } else {
+        let name = match first_node(id) {
+            Some(u) if u.prod == "unqualified_id" && u.kids.len() == 1 => cx.source(u),
+            _ => return cx_unsupported(cx, span, "a member name of this form"),
+        };
+        let found = match crate::classes::derived::check::member_lookup(cx, c, &name) {
+            Ok(Some(x)) => x.ents,
+            Ok(None) => Vec::new(),
+            Err(()) => {
+                cx.error(span, "DER-4", format!("the member '{}' is in more than one base", name));
+                return bad(span);
+            }
+        };
+        (name, found)
     };
     let Some(&f) = found.first() else {
         cx.error(span, "PFX-11", format!("no member named '{}'", name));
@@ -1197,7 +1223,32 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
             cx.error(span, "MPTR-9", "the address of a member function of an object, which only '&C::f' forms");
             bad(span)
         }
-        _ => cx_unsupported(cx, span, "a member function named outside a call, or a member of this kind"),
+        // PFX-20: a non-static member function named by member access
+        // can only be called.
+        EntKind::Func(_) if found.iter().any(|&g| cx.u.func(g).is_some_and(|x| !x.member_static)) => {
+            cx.error_cause(span, "PFX-20", Some("CLS-24"), format!("the member function '{}' is named without a call", name));
+            bad(span)
+        }
+        // A static member function or an enumerator: the object is not
+        // read, and it is evaluated (PFX-10).
+        EntKind::Func(_) | EntKind::Enumerator { .. } => {
+            if !crate::classes::derived::check::accessible_through(cx, f, c) {
+                cx.error(span, "ACC-2", format!("the member '{}' is not public", name));
+                return bad(span);
+            }
+            let v = crate::expressions::primary::check::entity_expr(cx, &found, &name, span);
+            if obj.any(&|x| matches!(x.k, EK::Call(..) | EK::Assign(..) | EK::Compound(..) | EK::IncDec(..))) {
+                let (ty, cat) = (v.ty.clone(), v.cat);
+                return Expr::new(EK::Comma(Box::new(obj), Box::new(v)), ty, cat, span);
+            }
+            v
+        }
+        // NAM-37: a member type is no value.
+        EntKind::Typedef(_) | EntKind::Class(_) | EntKind::Enum(_) => {
+            cx.error_cause(span, "PFX-11", Some("NAM-37"), format!("the member '{}' is a type, which member access does not name", name));
+            bad(span)
+        }
+        _ => cx_unsupported(cx, span, "a member of this kind named by member access"),
     }
 }
 
