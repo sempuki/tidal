@@ -29,9 +29,6 @@ replace it.
 
 ## The roles of the agents
 
-People and AI agents both work on Tidal. Each agent has one of three
-roles, defined by what can be read.
-
 **Source reader**
 
 - May read the ISO standard, WG21 papers, cppreference, compiler
