@@ -27,7 +27,7 @@ standard, so that a program means the same under both. The ISO
 standard remains the normative definition of C++. Tidal does not
 replace it.
 
-## The roles of the agents
+## Roles
 
 | Agent | Forbidden | Reads | Writes |
 |---|---|---|---|
