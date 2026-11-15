@@ -49,7 +49,7 @@ back to the source reader to be reworded.
 ## Workflow
 
 ```{raw} html
-<figure class="tidal-diagram">
+<figure class="tidal-diagram" tabindex="0" role="button" aria-label="The Tidal workflow. Select to enlarge." title="Click to enlarge" onclick="this.classList.toggle('zoomed')" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.classList.toggle('zoomed'); } else if (event.key === 'Escape') { this.classList.remove('zoomed'); }">
 <svg font-family="sans-serif" viewBox="0 0 840 480" role="img" aria-labelledby="wf-title wf-desc">
   <title id="wf-title">The Tidal workflow</title>
   <desc id="wf-desc">The clean room is on the left. The numbers are the steps of the pipeline listed below the diagram. 1: a clean-room writer picks the topic. 2: the writer probes the baseline compilers for their behavior and diagnostics. 3: the writer reads the source readers' summaries that passed the non-similarity check. Outside the clean room, source readers read the ISO standard and other protected sources. 4: the writer classifies the behavior. 5 and 6: the writer writes the rules, tests, and questions. 7: the non-similarity check compares the page with the reference corpus. 8: the tests run on the compilers, and the results become each page's Evidence. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers.</desc>
@@ -76,10 +76,10 @@ back to the source reader to be reworded.
   <text x="115" y="364" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Clean-room readers</text>
   <text x="115" y="383" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">exercises and</text>
   <text x="115" y="400" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">the Tidal front ends</text>
-  <rect x="470" y="190" width="130" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="535" y="207" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Non-similarity</text>
-  <text x="535" y="223" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">check</text>
-  <text x="535" y="241" class="wf-label wf-mono" fill="currentColor" font-size="13" text-anchor="middle">tools/similarity.py</text>
+  <rect x="460" y="190" width="152" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="536" y="207" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Non-similarity</text>
+  <text x="536" y="223" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">check</text>
+  <text x="536" y="241" class="wf-label wf-mono" fill="currentColor" font-size="13" text-anchor="middle">tools/similarity.py</text>
   <rect x="640" y="190" width="180" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
   <text x="730" y="225" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Source readers</text>
   <rect x="640" y="40" width="180" height="76" rx="6" class="wf-box wf-protected" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4"/>
@@ -106,7 +106,7 @@ back to the source reader to be reworded.
   <text x="386" y="306" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">questions</text>
 
   <!-- step 7: the check of the page -->
-  <path d="M440,392 L535,392 L535,252" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <path d="M440,392 L536,392 L536,252" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
   <rect x="544.0" y="313" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
   <text x="553" y="326" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">7</text>
   <text x="567" y="326" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">pages</text>
@@ -126,12 +126,12 @@ back to the source reader to be reworded.
   <!-- step 3: summaries from outside -->
   <line x1="730" y1="116" x2="730" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
   <text x="738" y="157" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">read</text>
-  <line x1="640" y1="220" x2="602" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <line x1="640" y1="220" x2="614" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
   <text x="552" y="180" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">summaries</text>
-  <line x1="470" y1="220" x2="442" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <rect x="447.0" y="189" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
-  <text x="456" y="202" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">3</text>
-  <text x="456" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">passed</text>
+  <line x1="460" y1="220" x2="442" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <rect x="446" y="257" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="455" y="270" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">3</text>
+  <text x="469" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">passed</text>
 </svg>
 <figcaption>The numbers are the steps of the pipeline in the list
 below. One badge can mark more than one step. The findings of

@@ -67,7 +67,11 @@ article div.tidal-rule { font-size: 0.92rem; }
 
 /* The workflow diagram of chapter 0. Its colors come from the theme, so
    it follows the light and dark modes. */
-figure.tidal-diagram { margin: 1.2rem 0; }
+figure.tidal-diagram { margin: 1.2rem 0; cursor: zoom-in; }
+/* A click on the diagram shows it over the whole window; another click,
+   or Escape, closes it. */
+figure.tidal-diagram.zoomed { position: fixed; inset: 0; z-index: 1000; margin: 0; padding: 1.5rem; overflow: auto; cursor: zoom-out; background: var(--color-background-primary); display: flex; flex-direction: column; justify-content: center; }
+figure.tidal-diagram.zoomed svg { max-width: none; width: 100%; max-height: calc(100vh - 6rem); }
 figure.tidal-diagram svg { width: 100%; height: auto; max-width: 840px; color: var(--color-foreground-primary); }
 figure.tidal-diagram figcaption { font-size: 0.85rem; color: var(--color-foreground-muted); }
 .tidal-diagram .wf-box { fill: var(--color-background-secondary); stroke: var(--color-foreground-muted); stroke-width: 1.2; }
