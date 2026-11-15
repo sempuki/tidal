@@ -188,6 +188,9 @@ pub fn run_program(u: &Unit) -> RunOutcome {
         Err(Stop::Undefined(rule, msg)) => RunOutcome::Undefined(rule, msg, m.line),
         Err(Stop::Limit(rule, msg)) => RunOutcome::Unsupported(format!("[{}] {}", rule, msg), m.line),
         Err(Stop::Unsupported(msg)) => RunOutcome::Unsupported(msg, m.line),
+        // UNW-5, UNW-10: an exception that no handler catches ends the
+        // program as SIGABRT does, with the status 134.
+        Err(Stop::Throw(_) | Stop::Terminate(_)) => RunOutcome::Result(134),
     }
 }
 

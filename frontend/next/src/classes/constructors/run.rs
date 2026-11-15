@@ -69,6 +69,24 @@ pub fn destroy(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     }
 }
 
+/// UNW-2: the members and bases of the object at `p` of class `c`
+/// end, last first, without the destructor of the class itself. A
+/// complete object's virtual bases end last.
+pub fn destroy_parts(m: &mut Machine, p: &Ptr, c: crate::sem::types::ClassId) -> R<()> {
+    let complete = crate::classes::derived::run::is_complete(m, p);
+    let n = m.u.classes[c].fields.len();
+    let tys = if complete { m.u.object_types(c) } else { m.u.field_types(c) };
+    for k in (0..n).rev().chain((n..tys.len()).rev()) {
+        if needs(m, &tys[k]) {
+            let mut q = p.clone();
+            q.path.push(k as i64);
+            q.array = false;
+            destroy(m, &q, &tys[k])?;
+        }
+    }
+    Ok(())
+}
+
 /// The objects of a block or a full expression end, in the reverse
 /// order of their creation: each that needs it is destroyed first.
 pub fn end_objects(m: &mut Machine, objs: Vec<usize>) -> R<()> {

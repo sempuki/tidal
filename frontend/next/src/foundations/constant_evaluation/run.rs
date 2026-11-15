@@ -240,5 +240,8 @@ pub fn value_of(r: R<Val>) -> Result<Val, (&'static str, String)> {
         Err(crate::machine::Stop::Undefined(rule, msg)) => Err((rule, format!("undefined behavior: {}", msg))),
         Err(crate::machine::Stop::Unsupported(msg)) => Err(("", msg)),
         Err(crate::machine::Stop::Exit(_)) => Err(("CE-2", "a call that ends the program".into())),
+        // CE-8: an exception, or the end of the program that it causes.
+        Err(crate::machine::Stop::Throw(_)) => Err(("CE-8", "an exception leaves the evaluation".into())),
+        Err(crate::machine::Stop::Terminate(msg)) => Err(("CE-8", msg)),
     }
 }

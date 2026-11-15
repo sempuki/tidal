@@ -217,7 +217,9 @@ pub fn end_of_function(cx: &mut Check, ctx: &FnCtx) {
                 if at.iter().any(|v| !live.contains(v)) {
                     cx.error(*span, "JMP-6", format!("the jump to '{}' skips the initialization of a variable", name));
                 }
-                if at_ifs.iter().any(|i| !ifs.contains(i)) {
+                if at_ifs.iter().any(|i| !ifs.contains(i) && ctx.try_regions.contains(i)) {
+                    cx.error(*span, "TRY-7", format!("the jump to '{}' enters a try block or a handler", name));
+                } else if at_ifs.iter().any(|i| !ifs.contains(i)) {
                     cx.error(*span, "IF-17", format!("the jump to '{}' enters a branch of 'if constexpr'", name));
                 }
             }

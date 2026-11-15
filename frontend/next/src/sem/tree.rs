@@ -225,6 +225,12 @@ pub enum EK {
     /// type; the target class, or None for `void*`; and whether the
     /// target is a reference.
     DynCast(Box<Expr>, Option<ClassId>, bool),
+    /// `throw e`, with the prvalue that initializes the exception object
+    /// (THR-1), or a rethrow (THR-6).
+    Throw(Option<Box<Expr>>),
+    /// The exception object as the parameter of the handler that caught
+    /// it sees it: an lvalue of the handler's type (TRY-2).
+    Caught,
 }
 
 /// The member that a pointer to member names: a data member by its
@@ -262,6 +268,9 @@ pub struct Alloc {
     pub f: crate::sem::EntityId,
     pub align: bool,
     pub args: Vec<Arg>,
+    /// The deallocation function that frees the storage when the
+    /// initialization throws (UNW-3), if one matches (NEW-24).
+    pub dealloc: Option<Dealloc>,
 }
 
 /// The deallocation function of a `delete` expression (NEW-22): the
@@ -309,6 +318,7 @@ impl Expr {
             EK::List(i) => i.any(f),
             EK::New(n) => n.bound.as_ref().is_some_and(|b| b.any(f)) || n.init.any(f),
             EK::Delete(x, ..) => x.any(f),
+            EK::Throw(x) => x.as_ref().is_some_and(|x| x.any(f)),
             _ => false,
         }
     }
@@ -413,8 +423,20 @@ pub enum SK {
     Goto(Rc<str>),
     /// `[[fallthrough]];`, which does nothing when it runs (ATTR-2).
     Fallthrough,
+    /// A try block and its handlers (TRY-1).
+    Try { body: Box<Stmt>, handlers: Vec<Handler> },
     /// A statement the machine does not run (unsupported at run time).
     Unsupported(String),
+}
+
+/// A handler of a try block: the type it catches, None for
+/// `catch (...)`; its parameter with the initialization from the
+/// exception object; and its body.
+#[derive(Clone, Debug)]
+pub struct Handler {
+    pub ty: Option<QType>,
+    pub param: Option<(crate::sem::EntityId, Init)>,
+    pub body: Box<Stmt>,
 }
 
 impl Stmt {

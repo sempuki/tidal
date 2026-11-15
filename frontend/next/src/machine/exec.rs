@@ -32,6 +32,7 @@ pub fn contains(s: &Stmt, t: &Seek) -> bool {
         SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => contains(body, t),
         // A nested switch's own labels are not the outer switch's.
         SK::Switch { body, .. } => matches!(t, Seek::Label(_)) && contains(body, t),
+        SK::Try { body, handlers } => contains(body, t) || handlers.iter().any(|h| contains(&h.body, t)),
         _ => false,
     }
 }
@@ -40,12 +41,12 @@ pub fn exec(m: &mut Machine, s: &Stmt) -> R<Flow> {
     run(m, s, None)
 }
 
-fn end_block(m: &mut Machine) -> R<()> {
+pub fn end_block(m: &mut Machine) -> R<()> {
     let objs = m.frames.last_mut().and_then(|f| f.blocks.pop()).unwrap_or_default();
     crate::classes::constructors::run::end_objects(m, objs)
 }
 
-fn open_block(m: &mut Machine) {
+pub fn open_block(m: &mut Machine) {
     if let Some(f) = m.frames.last_mut() {
         f.blocks.push(Vec::new());
     }
@@ -81,6 +82,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
             Ok(Flow::Normal)
         }
         SK::Block(items) => block(m, items, seek),
+        SK::Try { body, handlers } => crate::exceptions::handlers::run::try_block(m, body, handlers, seek),
         SK::If { init, cond, then, els } => {
             open_block(m);
             let r = (|| -> R<Flow> {
@@ -297,6 +299,7 @@ fn loop_flow(f: Flow, id: StmtId) -> Option<Flow> {
 
 fn block(m: &mut Machine, items: &[Stmt], seek: Option<&Seek>) -> R<Flow> {
     open_block(m);
+    let temps = m.temps.len();
     // The objects of the block's variables exist from its start, so a
     // jump past a declaration with no initializer finds them (JMP rules).
     for it in items {
@@ -347,6 +350,12 @@ fn block(m: &mut Machine, items: &[Stmt], seek: Option<&Seek>) -> R<Flow> {
         }
         Ok(Flow::Normal)
     })();
+    // UNW-1: an exception ends the temporaries of the full expression
+    // that it leaves, then the block's objects.
+    if matches!(r, Err(crate::machine::Stop::Throw(_))) {
+        let r = crate::exceptions::throw::run::unwind(m, r, |m| end_temps(m, temps));
+        return crate::exceptions::throw::run::unwind(m, r, end_block);
+    }
     end_block(m)?;
     r
 }
@@ -367,7 +376,7 @@ fn condition(m: &mut Machine, c: &Cond) -> R<Val> {
 }
 
 /// The run of a declaration statement for one variable.
-fn declare(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
+pub fn declare(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     let Some(v) = m.u.var(id) else { return Ok(()) };
     if v.storage != Storage::Automatic {
         // A block-scope static variable is initialized the first time
@@ -398,15 +407,22 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     let t = m.temps.len();
     let o = m.frames.last().unwrap().vars[&id];
     m.undeclared.remove(&o);
-    if crate::declarations::initialization::forms::run::constructs(init) {
+    let r = if crate::declarations::initialization::forms::run::constructs(init) {
         m.objs[o].val = m.uninit(&ty);
         m.objs[o].alive = true;
-        crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init)?;
+        crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init)
     } else {
-        let val = init_value(m, &ty, init)?;
-        m.objs[o].val = val;
-        m.objs[o].alive = true;
+        init_value(m, &ty, init).map(|val| {
+            m.objs[o].val = val;
+            m.objs[o].alive = true;
+        })
+    };
+    // UNW-2: a variable whose initialization throws was never made, so
+    // the end of its block does not destroy it.
+    if let Err(crate::machine::Stop::Throw(_)) = r {
+        m.undeclared.insert(o);
     }
+    r?;
     m.objs[o].konst = ty.is_const();
     end_temps(m, t)?;
     Ok(())
@@ -523,5 +539,12 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
     m.frames = frames;
     m.temps = saved;
     m.initializing.retain(|&x| x != id);
+    // UNW-4: an initialization that throws leaves the variable without a
+    // value, and the next pass through its declaration tries again.
+    if let Err(crate::machine::Stop::Throw(_)) = r {
+        if let Some(o) = m.globals.remove(&id) {
+            m.objs[o].alive = false;
+        }
+    }
     r
 }

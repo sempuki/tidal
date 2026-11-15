@@ -111,26 +111,32 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                 Type::Array(e, Some(n)) => (0..*n).map(|_| (**e).clone()).collect(),
                 _ => Vec::new(),
             };
-            // DER-7: a complete object initializes its virtual bases first.
-            if let Some(c) = ty.class() {
-                vbases_first(m, p, c, items)?;
-            }
-            for (k, t) in tys.iter().enumerate() {
-                let mut q = p.clone();
-                q.path.push(k as i64);
-                q.array = ty.is_array();
-                // VC-9: the initialization of each element of an array is a
-                // full expression, whose temporaries end with it.
-                let from = m.temps.len();
-                match items.get(k) {
-                    Some(i) => construct(m, &q, t, i)?,
-                    None => set(m, &q, m.zero(t))?,
+            let mut built = Vec::new();
+            let r = (|| -> R<()> {
+                // DER-7: a complete object initializes its virtual bases
+                // first.
+                if let Some(c) = ty.class() {
+                    vbases_first(m, p, c, items, &mut built)?;
                 }
-                if ty.is_array() {
-                    crate::machine::exec::end_temps(m, from)?;
+                for (k, t) in tys.iter().enumerate() {
+                    let mut q = p.clone();
+                    q.path.push(k as i64);
+                    q.array = ty.is_array();
+                    // VC-9: the initialization of each element of an array
+                    // is a full expression, whose temporaries end with it.
+                    let from = m.temps.len();
+                    match items.get(k) {
+                        Some(i) => construct(m, &q, t, i)?,
+                        None => set(m, &q, m.zero(t))?,
+                    }
+                    built.push((q, t.clone()));
+                    if ty.is_array() {
+                        crate::machine::exec::end_temps(m, from)?;
+                    }
                 }
-            }
-            Ok(())
+                Ok(())
+            })();
+            undo(m, r, built)
         }
         _ => {
             let v = value(m, ty, init)?;
@@ -170,7 +176,9 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
             if last_base.is_some() || vbases {
                 m.early.push((this.obj, this.path.clone()));
             }
-            vbases_first(m, &this, c, inits)?;
+            let mut built = Vec::new();
+            let r = (|| -> R<()> {
+            vbases_first(m, &this, c, inits, &mut built)?;
             if vbases && last_base.is_none() {
                 m.early.pop();
             }
@@ -200,14 +208,33 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
                     Some(i) => construct(m, &q, t, i)?,
                     None => set(m, &q, m.zero(t))?,
                 }
+                built.push((q, t.clone()));
                 crate::machine::exec::end_temps(m, from)?;
             }
             if last_base.is_some_and(|i| i + 1 == tys.len()) {
                 m.early.pop();
             }
             Ok(())
+            })();
+            undo(m, r, built)
         }
     }
+}
+
+/// UNW-2: when the initialization of an object throws, the parts that
+/// it built end, last first.
+fn undo(m: &mut Machine, r: R<()>, built: Vec<(Ptr, QType)>) -> R<()> {
+    if !matches!(r, Err(crate::machine::Stop::Throw(_))) {
+        return r;
+    }
+    crate::exceptions::throw::run::unwind(m, r, |m| {
+        for (q, t) in built.into_iter().rev() {
+            if crate::classes::constructors::run::needs(m, &t) {
+                crate::classes::constructors::run::destroy(m, &q, &t)?;
+            }
+        }
+        Ok(())
+    })
 }
 
 /// The value of an object of type `ty` from its initializer (INIT-2 to
@@ -317,7 +344,7 @@ fn has_vbases(m: &Machine, ty: &QType) -> bool {
 /// initializes each virtual base from its initializer in `inits`, after
 /// those of the data members. A base subobject leaves them to the
 /// complete object.
-fn vbases_first(m: &mut Machine, p: &Ptr, c: crate::sem::types::ClassId, inits: &[Init]) -> R<()> {
+fn vbases_first(m: &mut Machine, p: &Ptr, c: crate::sem::types::ClassId, inits: &[Init], built: &mut Vec<(Ptr, QType)>) -> R<()> {
     if m.u.classes[c].vbases.is_empty() || !crate::classes::derived::run::is_complete(m, p) {
         return Ok(());
     }
@@ -332,6 +359,7 @@ fn vbases_first(m: &mut Machine, p: &Ptr, c: crate::sem::types::ClassId, inits: 
             Some(i) => construct(m, &q, &vt, i)?,
             None => set(m, &q, m.zero_as(&vt, false))?,
         }
+        built.push((q, vt));
         crate::machine::exec::end_temps(m, from)?;
     }
     Ok(())

@@ -58,6 +58,17 @@ pub fn offset(m: &Machine, p: &Ptr) -> i64 {
 /// The same type up to cv-qualifiers, or the signed or unsigned integer
 /// type that matches it (STG-14).
 fn same_or_counterpart(a: &QType, b: &QType) -> bool {
+    // Similar types, which differ only in cv-qualifiers at any level of
+    // pointers, are the same object type (CV-10).
+    fn similar(a: &QType, b: &QType) -> bool {
+        match (&a.t, &b.t) {
+            (Type::Ptr(x), Type::Ptr(y)) => similar(x, y),
+            (x, y) => x == y,
+        }
+    }
+    if similar(a, b) {
+        return true;
+    }
     match (&a.unqual().t, &b.unqual().t) {
         (Type::Int(x), Type::Int(y)) => x == y || (x.unsigned_of() == y.unsigned_of() && *x != IntK::Char && *y != IntK::Char && *x != IntK::Bool),
         (x, y) => x == y,

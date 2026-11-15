@@ -43,6 +43,7 @@ pub fn expr(cx: &mut Check, n: &Node) -> Expr {
             let t = cx.unsupported(n.span, "a braced list as an operand");
             Expr::new(EK::Int(0), t, Cat::PR, n.span)
         }
+        "throw_expr" => crate::exceptions::throw::check::throw_expr(cx, n),
         "decltype_spec" | "decltype_expr" => {
             let t = decltype::check::decltype_spec(cx, n);
             Expr::new(EK::Int(0), t, Cat::PR, n.span)

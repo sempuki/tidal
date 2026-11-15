@@ -86,6 +86,7 @@ pub fn can_throw(cx: &Check, e: &Expr) -> bool {
         EK::New(n) => !n.alloc.as_ref().is_some_and(|a| cx.u.func(a.f).is_some_and(|x| x.ty.noexcept)) || ctor_throws(cx, &n.init) || ctor_throws(cx, &n.rest),
         // A failed cast to a reference throws (VIRT-10).
         EK::DynCast(_, _, true) => true,
+        EK::Throw(_) => true,
         EK::Call(f, _, _) => {
             let t = f.ty.nonref();
             let t = match &t.t {

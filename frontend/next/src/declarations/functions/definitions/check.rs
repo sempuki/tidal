@@ -331,7 +331,8 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     let sub = |x: &Expr| local_in(cx, x);
     match &e.k {
         EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
-        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This | EK::MemberPtr(..) => None,
+        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This | EK::MemberPtr(..) | EK::Caught | EK::Throw(None) => None,
+        EK::Throw(Some(x)) => sub(x),
         EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::Delete(x, ..) | EK::PtrMemFn(x) | EK::DynCast(x, ..) => sub(x),
         EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
@@ -567,6 +568,9 @@ pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
     unused_locals(cx, fs);
     if let Some(b) = cx.u.func(id).and_then(|f| f.body.clone()) {
         crate::declarations::attributes::check::fallthrough_checks(cx, &b);
+        if cx.u.func(id).is_some_and(|f| f.ty.noexcept || f.special == crate::sem::Special::Dtor) {
+            crate::exceptions::throw::check::noexcept_throws(cx, &b);
+        }
     }
 }
 
@@ -698,6 +702,11 @@ impl Paths {
                 false
             }
             SK::Continue(_) | SK::Return(_) | SK::ReturnRef(_) => false,
+            // A handler that completes completes the try block too.
+            SK::Try { body, handlers } => {
+                let a = self.completes(cx, body);
+                handlers.iter().fold(a, |any, h| self.completes(cx, &h.body) || any)
+            }
             SK::Unsupported(_) => {
                 self.unsupported = true;
                 true
@@ -739,6 +748,7 @@ fn ends_path(cx: &Check, e: &Expr) -> bool {
     use crate::sem::tree::EK;
     match &e.k {
         EK::Conv(_, x) => ends_path(cx, x),
+        EK::Throw(_) => true,
         EK::Call(f, _, _) => matches!(&f.k, EK::Func(id) if cx.u.func(*id).is_some_and(|x| x.noreturn)),
         _ => false,
     }
@@ -765,6 +775,10 @@ fn walk(s: &Stmt, f: &mut impl FnMut(&Stmt)) {
             walk(body, f);
         }
         SK::Case(_, _, x) | SK::Label(_, x) => walk(x, f),
+        SK::Try { body, handlers } => {
+            walk(body, f);
+            handlers.iter().for_each(|h| walk(&h.body, f));
+        }
         _ => {}
     }
 }

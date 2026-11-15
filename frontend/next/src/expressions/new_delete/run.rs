@@ -54,7 +54,7 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
             if a.align {
                 vals.push(Ret::Val(Val::Int(m.target.align_of(m.u, &n.ty).unwrap_or(1) as i128)));
             }
-            vals.extend(place);
+            vals.extend(place.iter().cloned());
             match crate::machine::eval::call(m, a.f, vals)? {
                 // NEW-31: a null result initializes nothing; NEW-32: only a
                 // non-throwing function can give one.
@@ -71,18 +71,20 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
             Ptr::whole(o)
         }
     };
-    match count {
-        None => construct(m, &target, &ty, &n.init)?,
+    let built = match count {
+        None => construct(m, &target, &ty, &n.init),
         Some(k) => {
             let Init::List(items) = &n.init else { return unsup("an array initializer of this form") };
-            for i in 0..k as usize {
-                let mut q = target.clone();
-                q.path.push(i as i64);
-                q.array = true;
-                construct(m, &q, &n.ty, items.get(i).unwrap_or(&n.rest))?;
-            }
+            construct_elements(m, &target, &n.ty, k, items, &n.rest)
         }
+    };
+    // UNW-3: an initialization that throws frees the storage through the
+    // deallocation function that matches, if any.
+    if let Err(crate::machine::Stop::Throw(_)) = built {
+        let r = crate::exceptions::throw::run::unwind(m, built, |m| release(m, n, &target, &ty, place));
+        return r.map(|_| Val::Void);
     }
+    built?;
     if target.path.is_empty() {
         m.objs[target.obj].konst = n.ty.is_const() && count.is_none();
     }
@@ -92,6 +94,60 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
         out.array = true;
     }
     Ok(Val::Ptr(out))
+}
+
+/// The elements of an array that a `new` expression creates. UNW-2: an
+/// element that throws destroys the ones built before it.
+fn construct_elements(m: &mut Machine, target: &Ptr, el: &QType, k: u64, items: &[Init], rest: &Init) -> R<()> {
+    for i in 0..k as usize {
+        let mut q = target.clone();
+        q.path.push(i as i64);
+        q.array = true;
+        let r = construct(m, &q, el, items.get(i).unwrap_or(rest));
+        if let Err(crate::machine::Stop::Throw(_)) = r {
+            return crate::exceptions::throw::run::unwind(m, r, |m| {
+                for j in (0..i).rev() {
+                    let mut q = target.clone();
+                    q.path.push(j as i64);
+                    q.array = true;
+                    if crate::classes::constructors::run::needs(m, el) {
+                        crate::classes::constructors::run::destroy(m, &q, el)?;
+                    }
+                }
+                Ok(())
+            });
+        }
+        r?;
+    }
+    Ok(())
+}
+
+/// UNW-3: the storage of a `new` expression whose initialization threw
+/// goes back through its deallocation function.
+fn release(m: &mut Machine, n: &New, target: &Ptr, ty: &QType, place: Vec<Ret>) -> R<()> {
+    m.objs[target.obj].alive = false;
+    let Some(d) = n.alloc.as_ref().and_then(|a| a.dealloc.clone()) else { return Ok(()) };
+    if is_library(m, d.f) {
+        return match m.objs[target.obj].host {
+            Some(_) => free(m, &Ptr::whole(target.obj), n.bound.is_some(), "NEW-5"),
+            None => {
+                if let Some((a, _)) = m.objs[target.obj].heap {
+                    m.objs[target.obj].heap = Some((a, true));
+                }
+                Ok(())
+            }
+        };
+    }
+    let mut vals = vec![Ret::Val(Val::Ptr(Ptr::whole(target.obj)))];
+    if d.sized {
+        vals.push(Ret::Val(Val::Int(crate::foundations::storage::run::size(m, ty) as i128)));
+    }
+    if d.align {
+        vals.push(Ret::Val(Val::Int(m.target.align_of(m.u, ty.base_elem()).unwrap_or(1) as i128)));
+    }
+    vals.extend(place);
+    crate::machine::eval::call(m, d.f, vals)?;
+    Ok(())
 }
 
 /// A global allocation or deallocation function that the program does

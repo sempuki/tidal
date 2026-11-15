@@ -626,8 +626,9 @@ fn allocation(cx: &mut Check, ty: &QType, array: bool, global: bool, place: Vec<
     let dname = if array { "operatordelete[]" } else { "operatordelete" };
     let (dcands, _) = search(cx, ty, dname, global, span)?;
     let params = cx.u.func(f).unwrap().ty.params.clone();
+    let plain = usual(cx, &dcands, align, !array);
     let matched: Vec<crate::sem::EntityId> = if place.is_empty() {
-        usual(cx, &dcands, align, true).map(|d| d.f).into_iter().collect()
+        plain.as_ref().map(|d| d.f).into_iter().collect()
     } else {
         dcands.iter().copied().filter(|&d| cx.u.func(d).is_some_and(|x| !x.ty.variadic && x.ty.params.len() == params.len() && x.ty.params[1..] == params[1..])).collect()
     };
@@ -642,7 +643,14 @@ fn allocation(cx: &mut Check, ty: &QType, array: bool, global: bool, place: Vec<
         }
         crate::declarations::functions::definitions::check::note_use(cx, d, span);
     }
-    Some(crate::sem::tree::Alloc { f, align, args: conv[skip..].to_vec() })
+    // UNW-3, NEW-24: the function that frees the storage after a throw,
+    // if one matches.
+    let dealloc = match matched[..] {
+        [d] if place.is_empty() => plain.filter(|x| x.f == d),
+        [d] => Some(crate::sem::tree::Dealloc { f: d, sized: false, align }),
+        _ => None,
+    };
+    Some(crate::sem::tree::Alloc { f, align, args: conv[skip..].to_vec(), dealloc })
 }
 
 /// A usual deallocation function: a `void*` parameter, then optionally

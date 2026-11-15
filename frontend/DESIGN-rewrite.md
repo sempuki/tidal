@@ -618,7 +618,19 @@ an allocation function of the program creates its object in the storage
 that the function returns. An object of the same type at that place is
 replaced in its place, and any other object there ends. A byte array
 keeps its life and reads the bytes of the objects in it. Pointers into
-one storage compare by their addresses. The
+one storage compare by their addresses. A `throw` creates the exception
+object from its operand, moving a local variable that every enclosing
+try block declares, and leaves as a stop of its own kind. Each block
+that the exception leaves ends the temporaries of its full expression,
+then its objects. A partly built object destroys the parts that it
+built, and a `new` expression frees its storage through the matching
+deallocation function. A try block tries its handlers in order, by the
+exception object's type, and a handler's parameter binds to or copies
+the object. A rethrow passes on the handled exception. An exception
+that leaves a non-throwing function, a destructor, or `main`, or a
+destructor that throws during unwinding, ends the program with the
+status of `SIGABRT`. The checks warn about a shadowed handler and about
+a `throw` that nothing in a non-throwing function catches. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -626,6 +638,7 @@ another entity. An explicit destructor call on a subobject or with a qualified n
 literal operator, an
 `operator->`, a comparison that `<=>` rewrites,
 a failed `dynamic_cast` to a reference outside constant evaluation, a
+function try block, a destructor with an exception specification, a
 deallocation function of the dynamic class in a `delete` through a base,
 an object in allocated storage that would hold an object created there
 before, a nested named union, a union member whose class has special

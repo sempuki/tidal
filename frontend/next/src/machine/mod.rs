@@ -32,6 +32,11 @@ pub enum Stop {
     Unsupported(String),
     /// The program ended with a status (`exit`, or the end of `main`).
     Exit(i128),
+    /// An exception leaves the current operation: its exception object
+    /// (`exceptions::throw::run`).
+    Throw(usize),
+    /// The program ends without returning from `main` (UNW-5).
+    Terminate(String),
 }
 
 pub type R<T> = Result<T, Stop>;
@@ -229,6 +234,10 @@ pub struct Machine<'a> {
     /// The places whose constructor or destructor runs, innermost last
     /// (`classes::virtual::run`, VIRT-6).
     pub structors: Vec<(usize, Vec<i64>)>,
+    /// The handled exceptions, innermost last (THR-6), and the place that
+    /// the parameter of the handler being entered binds to (TRY-2).
+    pub handled: Vec<usize>,
+    pub caught: Option<Ptr>,
     /// The objects that an explicit destructor call destroyed (DTOR-7).
     pub destroyed: std::collections::HashSet<usize>,
     /// The objects in whose storage a `new` expression created an object
@@ -287,6 +296,8 @@ impl<'a> Machine<'a> {
             next_addr: 0x1_0000,
             constructing: Vec::new(),
             structors: Vec::new(),
+            handled: Vec::new(),
+            caught: None,
             early: Vec::new(),
             destroyed: Default::default(),
             hosting: Default::default(),

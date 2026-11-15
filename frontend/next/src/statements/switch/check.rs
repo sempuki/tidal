@@ -92,7 +92,13 @@ pub fn label_prefix(cx: &mut Check, l: &Node) -> Option<Stmt> {
     }
     let ifs = cx.func.as_ref().map_or(0, |f| f.constexpr_ifs.len());
     if ifs > sw.ifs_at_start {
-        cx.error(l.span, "IF-17", format!("the jump to the '{}' label enters a branch of 'if constexpr'", w));
+        // TRY-7: a label inside a try block or a handler.
+        let entered = cx.func.as_ref().map(|f| f.constexpr_ifs[sw.ifs_at_start..].iter().any(|i| f.try_regions.contains(i))).unwrap_or(false);
+        if entered {
+            cx.error(l.span, "TRY-7", format!("the jump to the '{}' label enters a try block or a handler", w));
+        } else {
+            cx.error(l.span, "IF-17", format!("the jump to the '{}' label enters a branch of 'if constexpr'", w));
+        }
     }
     if w == "default" {
         if sw.default {

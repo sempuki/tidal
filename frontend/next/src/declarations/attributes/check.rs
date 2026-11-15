@@ -240,6 +240,10 @@ fn placement(s: &crate::sem::tree::Stmt, next: Next, sw: Option<crate::sem::tree
         SK::Chosen(Some(x)) | SK::Case(_, _, x) | SK::Label(_, x) => placement(x, next, sw, bad),
         SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => placement(body, Next::LoopEnd, sw, bad),
         SK::Switch { id, body, .. } => placement(body, Next::Other, Some(*id), bad),
+        SK::Try { body, handlers } => {
+            placement(body, next, sw, bad);
+            handlers.iter().for_each(|h| placement(&h.body, next, sw, bad));
+        }
         _ => {}
     }
 }
@@ -281,6 +285,10 @@ fn falls(cx: &Check, s: &crate::sem::tree::Stmt, warn: &mut Vec<Span>) {
         }
         SK::Chosen(Some(x)) | SK::Case(_, _, x) | SK::Label(_, x) => falls(cx, x, warn),
         SK::While { body, .. } | SK::Do { body, .. } | SK::For { body, .. } | SK::RangeArray { body, .. } => falls(cx, body, warn),
+        SK::Try { body, handlers } => {
+            falls(cx, body, warn);
+            handlers.iter().for_each(|h| falls(cx, &h.body, warn));
+        }
         _ => {}
     }
 }

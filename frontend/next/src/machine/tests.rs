@@ -1611,3 +1611,26 @@ fn allocation_functions_and_placement() {
     assert_eq!(rule("struct S { private: static void* operator new(decltype(sizeof 0)); }; S* f() { return new S; }"), Some("NEW-25"));
     assert_eq!(rule("struct T {}; T* f() { return new (1) T; }"), Some("NEW-20"));
 }
+
+#[test]
+fn exceptions_throw_and_unwind() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // TRY-1, TRY-2: the first handler that matches, a base by reference.
+    assert_eq!(run("struct B { int v; }; struct D : B {}; int main() { try { throw D{{7}}; } catch (int) { return 1; } catch (B& b) { return b.v; } return 2; }"), RunOutcome::Result(7));
+    // UNW-1: the objects of the blocks that the exception leaves end
+    // before the handler runs.
+    assert_eq!(run("int t = 0; struct S { int d; ~S() { t = t * 10 + d; } }; void f() { S a{1}; S b{2}; throw 0; } int main() { try { f(); } catch (int) { t = t * 10 + 3; } return t; }"), RunOutcome::Result(213));
+    // THR-6: a rethrow passes on the same object.
+    assert_eq!(run("int main() { try { try { throw 5; } catch (int& e) { e = 9; throw; } } catch (int e) { return e; } return 0; }"), RunOutcome::Result(9));
+    // UNW-2: a constructor that throws destroys the members that it built.
+    assert_eq!(run("int t = 0; struct M { M() {} ~M() { ++t; } }; struct S { M a; S() { throw 1; } }; int main() { try { S s; } catch (int) {} return t; }"), RunOutcome::Result(1));
+    // UNW-5: an exception that leaves a noexcept function ends the
+    // program.
+    assert_eq!(run("void f() noexcept { throw 1; } int main() { try { f(); } catch (...) {} return 0; }"), RunOutcome::Result(134));
+    assert_eq!(rule("void f() { try {} catch (...) {} catch (int) {} }"), Some("TRY-3"));
+    assert_eq!(rule("struct I; void f(I* p) { throw *p; }"), Some("THR-3"));
+}

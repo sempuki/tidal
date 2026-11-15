@@ -103,6 +103,7 @@ pub fn plain_stmt(cx: &mut Check, n: &Node, attrs: &crate::declarations::attribu
         "for_stmt" => loops::check::for_stmt(cx, c),
         "range_for_stmt" => range_for::check::range_for_stmt(cx, c),
         "jump_stmt" => jumps::check::jump_stmt(cx, c),
+        "try_block" => crate::exceptions::handlers::check::try_block(cx, c),
         _ => {
             cx.unsupported(c.span, format!("a statement of the form {} (build step 4)", c.prod));
             if let Some(f) = cx.func.as_mut() {

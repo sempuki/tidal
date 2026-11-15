@@ -32,7 +32,8 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         EK::MemberPtr(c, r) => Ok(Val::Mem(crate::expressions::member_pointers::run::MemVal { anchor: *c, path: Vec::new(), member: *r })),
         EK::PtrMemFn(_) => unsup("a pointer to member function applied outside a call"),
         EK::DynCast(x, t, false) => crate::classes::r#virtual::run::dynamic_cast_ptr(m, x, *t),
-        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) | EK::PtrMem(..) | EK::DynCast(_, _, true) => {
+        EK::Throw(x) => crate::exceptions::throw::run::throw(m, x.as_deref()),
+        EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) | EK::PtrMem(..) | EK::DynCast(_, _, true) | EK::Caught => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
             // an array or function that decays.
@@ -250,6 +251,7 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
             postfix::run::subscript(m, pv, iv)
         }
         EK::PtrMem(o, pm) => crate::expressions::member_pointers::run::place(m, o, pm),
+        EK::Caught => m.caught.clone().ok_or_else(|| crate::machine::Stop::Unsupported("the exception object outside a handler".into())),
         EK::DynCast(x, t, true) => crate::classes::r#virtual::run::dynamic_cast_ref(m, x, *t),
         EK::Assign(l, r) => {
             // The right operand is sequenced before the left (ASN rules).
@@ -531,6 +533,7 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
         return postfix::run::too_deep(m);
     }
     let params = func.params.clone();
+    let func_noexcept = func.ty.noexcept;
     let ptys: Vec<QType> = func.ty.params.clone();
     let ret_ty = func.ty.ret.clone();
     let mut frame = super::Frame { func: Some(id), ..Default::default() };
@@ -606,9 +609,18 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     m.frames.push(frame);
     m.depth += 1;
     // CTOR-6: a constructor initializes the members before its body.
+    // `built`: the member initializers completed, so a throw from the
+    // body destroys the members (UNW-2).
+    let mut built = false;
     let r = match m.u.mem_inits.get(&id) {
-        Some(mi) => crate::declarations::initialization::forms::run::mem_inits(m, id, mi).and_then(|_| super::exec::exec(m, &body)),
-        None => super::exec::exec(m, &body),
+        Some(mi) => crate::declarations::initialization::forms::run::mem_inits(m, id, mi).and_then(|_| {
+            built = true;
+            super::exec::exec(m, &body)
+        }),
+        None => {
+            built = true;
+            super::exec::exec(m, &body)
+        }
     };
     m.depth -= 1;
     if structor {
@@ -618,16 +630,45 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
         m.early = e;
     }
     let mut frame = m.frames.pop().unwrap_or_default();
+    let mut r = r;
     for b in frame.blocks.drain(..).rev() {
         if r.is_ok() {
             crate::classes::constructors::run::end_objects(m, b)?;
+        } else if matches!(r, Err(Stop::Throw(_))) {
+            r = crate::exceptions::throw::run::unwind(m, r, |m| crate::classes::constructors::run::end_objects(m, b));
         } else {
             for o in b {
                 m.objs[o].alive = false;
             }
         }
     }
+    if let Err(Stop::Throw(_)) = r {
+        // UNW-2: a constructor that throws destroys the parts that it
+        // built, and its object's destructor does not run.
+        if special == crate::sem::Special::Ctor && m.u.func(id).is_some_and(|f| f.class.is_some()) {
+            if let (Some(this), Some(c)) = (frame.this.clone(), m.u.func(id).and_then(|f| f.class)) {
+                // UNW-2: after a delegation, the object is complete, and
+                // its destructor runs.
+                let delegated = matches!(m.u.mem_inits.get(&id), Some(crate::sem::MemInits::Delegate(_)));
+                if built && delegated {
+                    let ty = QType::new(Type::Class(c));
+                    r = crate::exceptions::throw::run::unwind(m, r, |m| crate::classes::constructors::run::destroy(m, &this, &ty));
+                } else if built {
+                    r = crate::exceptions::throw::run::unwind(m, r, |m| crate::classes::constructors::run::destroy_parts(m, &this, c));
+                }
+            }
+        }
+        // THR-9, UNW-5: an exception that leaves a non-throwing function,
+        // such as a destructor (DTOR-4), ends the program.
+        if func_noexcept || special == crate::sem::Special::Dtor {
+            return crate::exceptions::throw::run::terminate("an exception leaves a non-throwing function");
+        }
+    }
     let flow = r?;
+    // ATTR-3: a noreturn function that returns.
+    if m.u.func(id).is_some_and(|f| f.noreturn) {
+        return crate::machine::ub("ATTR-3", format!("the noreturn function '{}' returns", m.u.entities[id].name));
+    }
     match frame.ret.take() {
         Some(r) => Ok(r),
         None if ret_ty.is_void() => Ok(Ret::Val(Val::Void)),

@@ -107,6 +107,12 @@ pub struct FnCtx {
     /// Depth of discarded statements of `if constexpr`, whose returns
     /// deduce nothing (RET-1).
     pub discarded: u32,
+    /// For each try block or handler around the statement being checked,
+    /// the first entity id inside it, for the implicit move of THR-1.
+    pub tries: Vec<EntityId>,
+    /// The ids in `constexpr_ifs` that mark a try block or a handler,
+    /// which no jump enters (TRY-7).
+    pub try_regions: Vec<StmtId>,
 }
 
 /// A lambda expression whose body is being checked: its closure type,
