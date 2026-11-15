@@ -33,10 +33,48 @@ pub struct Ics {
     /// A user-defined sequence by a conversion function, with the rank of
     /// the standard sequence after it (ICS-4, ICS-8).
     pub user: Option<(crate::sem::EntityId, Rank)>,
+    /// The facts that the tie-breakers between standard sequences of one
+    /// rank read (ICS-21 to ICS-30, ICS-39, ICS-46).
+    pub extra: Extra,
+}
+
+/// The facts of a standard sequence that the tie-breakers read.
+#[derive(Clone, Debug, PartialEq, Default)]
+pub struct Extra {
+    /// A pointer or a pointer to member converted to `bool`, which loses
+    /// to another conversion.
+    pub to_bool: bool,
+    /// A conversion of a class to its base, by pointer, reference, value,
+    /// or pointer to member: the class converted from, the number of
+    /// derivation steps to the base (None for `void*`), and the kind. A
+    /// nearer base wins, and a base pointer beats `void*`.
+    pub base: Option<(crate::sem::types::ClassId, Option<usize>, u8)>,
+    /// An enumeration with a fixed type promoted to that type, which beats
+    /// a promotion to the type that the fixed type promotes to (ICS-39).
+    pub fixed_promo: bool,
+    /// The target of a qualification conversion; fewer cv-qualifiers win.
+    pub qual_target: Option<QType>,
+    /// A reference to a function: true for an lvalue reference, which
+    /// beats an rvalue reference.
+    pub func_lref: Option<bool>,
+    /// The target is an array of unknown bound, which loses to one of
+    /// known bound (ICS-46).
+    pub unknown_bound: bool,
+}
+
+/// The number of derivation steps from class `d` to its base `b`.
+fn base_steps(cx: &Check, d: crate::sem::types::ClassId, b: crate::sem::types::ClassId) -> Option<usize> {
+    crate::classes::derived::check::paths(cx, d, b).first().map(|p| p.len())
 }
 
 /// ICS-2: the rank of the conversion from a prvalue type to a target.
-fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bool)> {
+fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bool, Extra)> {
+    let mut x = Extra::default();
+    let r = rank_inner(cx, from, to, null, &mut x)?;
+    Some((r.0, r.1, x))
+}
+
+fn rank_inner(cx: &Check, from: &QType, to: &QType, null: bool, x: &mut Extra) -> Option<(Rank, bool)> {
     let (f, t) = (from.unqual(), to.unqual());
     if f.t == t.t {
         return Some((Rank::Exact, false));
@@ -49,6 +87,7 @@ fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bo
                 }
                 // ICS-39: an enumeration with a fixed type promotes to it.
                 if cx.u.enums[e].fixed && cx.u.enums[e].underlying.map(|k| Type::Int(k)) == Some(t.t.clone()) {
+                    x.fixed_promo = true;
                     return Some((Rank::Promotion, false));
                 }
             }
@@ -71,7 +110,10 @@ fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bo
             }
             Some((Rank::Conversion, false))
         }
-        (Type::Ptr(_) | Type::NullPtr, Type::Int(IntK::Bool)) => Some((Rank::Conversion, false)),
+        (Type::Ptr(_) | Type::NullPtr | Type::MemPtr(..), Type::Int(IntK::Bool)) => {
+            x.to_bool = true;
+            Some((Rank::Conversion, false))
+        }
         (_, Type::Ptr(_)) if null => Some((Rank::Conversion, false)),
         (_, Type::NullPtr) if null => Some((Rank::Exact, false)),
         (Type::Ptr(a), Type::Ptr(b)) => {
@@ -80,6 +122,7 @@ fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bo
             if let (Some(d), Some(c)) = (a.class(), b.class()) {
                 if crate::classes::derived::check::is_base(cx, d, c) && (!a.c || b.c) && (!a.v || b.v) {
                     let qual = (b.c && !a.c) || (b.v && !a.v);
+                    x.base = Some((d, base_steps(cx, d, c), 0));
                     return (crate::classes::derived::check::paths(cx, d, c).len() == 1).then_some((Rank::Conversion, qual));
                 }
             }
@@ -87,14 +130,24 @@ fn rank_of(cx: &Check, from: &QType, to: &QType, null: bool) -> Option<(Rank, bo
                 return None;
             }
             if b.is_void() && !a.is_void() {
+                if let Some(d) = a.class() {
+                    x.base = Some((d, None, 0));
+                }
                 return Some((Rank::Conversion, false));
             }
             if a.t == b.t || matches!((&a.t, &b.t), (Type::Ptr(_), Type::Ptr(_))) {
+                x.qual_target = Some(t.clone());
                 return Some((Rank::Exact, true));
             }
             // A function pointer that loses `noexcept` is an exact match
             // (ICS-2's function pointer conversion).
             Some((Rank::Exact, true))
+        }
+        // MPTR rules: a pointer to a member of a base converts to one of a
+        // derived class; the nearer derived class wins.
+        (Type::MemPtr(a, m), Type::MemPtr(b, n)) if m == n && a != b && crate::classes::derived::check::is_base(cx, *b, *a) => {
+            x.base = Some((*a, base_steps(cx, *b, *a), 3));
+            Some((Rank::Conversion, false))
         }
         _ => None,
     }
@@ -115,10 +168,10 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
             _ => None,
         }?;
         let set = crate::expressions::primary::check::overload_set(cx, inner);
-        return set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).then(|| Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
+        return set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).then(|| Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
     }
     if arg.ty.is_error() || param.is_error() {
-        return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
+        return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
     }
     let null = conv::is_null_constant(arg);
     if let Type::Ref(inner, rv) = &param.t {
@@ -135,7 +188,9 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
             let cv_ok = (!at.c || inner.c) && (!at.v || inner.v);
             let binds_ok = (lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)));
             if cv_ok && binds_ok && crate::classes::derived::check::paths(cx, at.class().unwrap(), inner.class().unwrap()).len() == 1 {
-                return Some(Ics { rank: Rank::Conversion, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None });
+                let (d, b) = (at.class().unwrap(), inner.class().unwrap());
+                let extra = Extra { base: Some((d, base_steps(cx, d, b), 1)), ..Default::default() };
+                return Some(Ics { rank: Rank::Conversion, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None, extra });
             }
             return None;
         }
@@ -143,10 +198,11 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         let compatible = same && (!at.c || inner.c) && (!at.v || inner.v);
         if compatible && ((lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)))) {
             // ICS-11: a direct binding is the identity.
-            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None });
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None, extra: Default::default() });
         }
         if at.is_func() && inner.t == at.t {
-            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, false, (**inner).clone())), ellipsis: false, user: None });
+            let extra = Extra { func_lref: Some(!*rv), ..Default::default() };
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, false, (**inner).clone())), ellipsis: false, user: None, extra });
         }
         // REF-2, REF-3: a temporary, for a const lvalue reference or an
         // rvalue reference, from a value of another type.
@@ -162,10 +218,10 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         }
         if (*rv || (inner.c && !inner.v)) && !(compatible && lvalue && *rv) {
             let from = crate::declarations::auto::check::decay(&at);
-            let (rank, qual) = rank_of(cx, &from, inner, null)?;
+            let (rank, qual, extra) = rank_of(cx, &from, inner, null)?;
             // ICS-11: the sequence of the temporary, whose qualification
             // conversion loses to a direct binding's identity.
-            return Some(Ics { rank, qual, binds: Some((*rv, true, (**inner).clone())), ellipsis: false, user: None });
+            return Some(Ics { rank, qual, binds: Some((*rv, true, (**inner).clone())), ellipsis: false, user: None, extra });
         }
         return None;
     }
@@ -178,11 +234,16 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
     // with the rank of a conversion.
     if let (Some(d), Some(b)) = (from.class(), param.class()) {
         if crate::classes::derived::check::is_base(cx, d, b) {
-            return (crate::classes::derived::check::paths(cx, d, b).len() == 1).then_some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: false, user: None });
+            let extra = Extra { base: Some((d, base_steps(cx, d, b), 2)), ..Default::default() };
+            return (crate::classes::derived::check::paths(cx, d, b).len() == 1).then_some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: false, user: None, extra });
         }
     }
-    let (rank, qual) = rank_of(cx, &from, param, null)?;
-    Some(Ics { rank, qual, binds: None, ellipsis: false, user: None })
+    // ICS-2: a bit-field whose values int holds promotes to int.
+    if param.t == Type::int() && from.is_integral() && crate::classes::unions::check::width_of(&cx.u, arg).is_some_and(|w| w < 32) && from.t != Type::int() {
+        return Some(Ics { rank: Rank::Promotion, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
+    }
+    let (rank, qual, extra) = rank_of(cx, &from, param, null)?;
+    Some(Ics { rank, qual, binds: None, ellipsis: false, user: None, extra })
 }
 
 /// ICS-21 to ICS-30: whether `a` is better than `b`.
@@ -200,6 +261,44 @@ pub fn better(a: &Ics, b: &Ics) -> bool {
             (Some((f, x)), Some((g, y))) => f == g && x < y,
             _ => false,
         };
+    }
+    // The tie-breakers of one rank.
+    let (x, y) = (&a.extra, &b.extra);
+    if x.to_bool != y.to_bool {
+        return !x.to_bool;
+    }
+    if let (Some((fa, da, ka)), Some((fb, db, kb))) = (x.base, y.base) {
+        if fa == fb && ka == kb && da != db {
+            return match (da, db) {
+                (Some(_), None) => true,
+                (None, Some(_)) => false,
+                (Some(m), Some(n)) => m < n,
+                _ => false,
+            };
+        }
+    }
+    if x.fixed_promo != y.fixed_promo && a.rank == Rank::Promotion {
+        return x.fixed_promo;
+    }
+    // ICS-28 comes before ICS-31: an rvalue reference that binds an
+    // rvalue beats an lvalue reference.
+    if let (Some((arv, true, _)), Some((brv, true, _))) = (&a.binds, &b.binds) {
+        if arv != brv {
+            return *arv;
+        }
+    }
+    if let (Some(p), Some(q)) = (&x.qual_target, &y.qual_target) {
+        if p != q && cv_within(p, q) {
+            return true;
+        }
+    }
+    if let (Some(p), Some(q)) = (x.func_lref, y.func_lref) {
+        if p != q {
+            return p;
+        }
+    }
+    if x.unknown_bound != y.unknown_bound {
+        return !x.unknown_bound;
     }
     if a.qual != b.qual {
         return !a.qual;
@@ -221,6 +320,18 @@ pub fn better(a: &Ics, b: &Ics) -> bool {
         }
     }
     false
+}
+
+/// `a` and `b` differ only in cv-qualifiers, and each level of `a` has
+/// those of `b` or fewer (ICS-26).
+fn cv_within(a: &QType, b: &QType) -> bool {
+    if (a.c && !b.c) || (a.v && !b.v) {
+        return false;
+    }
+    match (&a.t, &b.t) {
+        (Type::Ptr(x), Type::Ptr(y)) => cv_within(x, y),
+        (s, t) => s == t,
+    }
 }
 
 /// Whether `a` converts to `b` by a qualification adjustment below the

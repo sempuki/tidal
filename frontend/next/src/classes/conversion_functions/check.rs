@@ -192,7 +192,7 @@ fn candidates(cx: &Check, e: &Expr, to: &QType, direct: bool) -> Vec<Cand> {
             }
             match sequence(cx, &r, to) {
                 Some(s) => s,
-                None if !to.is_ref() => Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None },
+                None if !to.is_ref() => Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() },
                 None => continue,
             }
         } else {
@@ -297,11 +297,11 @@ pub fn convert(cx: &mut Check, e: &Expr, to: &QType, direct: bool) -> Option<Res
 pub fn user_sequence(cx: &Check, e: &Expr, to: &QType) -> Option<Ics> {
     converting_class(cx, e)?;
     match choose(cx, e, to, false) {
-        Ok(Some((f, second))) => Some(Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: Some((f, second.rank)) }),
+        Ok(Some((f, second))) => Some(Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: Some((f, second.rank)), extra: Default::default() }),
         Ok(None) => None,
         // ICS-8: an ambiguous conversion is a user-defined sequence that
         // is as good as any other.
-        Err(_) => Some(Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: None }),
+        Err(_) => Some(Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() }),
     }
 }
 

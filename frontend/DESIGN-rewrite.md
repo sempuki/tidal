@@ -495,7 +495,11 @@ class that its definition makes with the parameters bound, which is
 recorded before its body so that the body names it. A union template
 works the same way, a template-id can follow a qualifier, and the
 namespaces of a specialization's arguments are associated for
-argument-dependent lookup. A reference that
+argument-dependent lookup. Standard sequences of one rank compare by the
+tie-breakers: a conversion to `bool` loses, a nearer base wins and a
+base pointer beats `void*`, a fixed enumeration's own type wins, an
+rvalue reference to an rvalue wins before fewer cv-qualifiers do, and an
+array of known bound wins. A reference that
 an alias or a template argument gives collapses with one that a
 declarator adds. A call deduces the arguments from the arguments of
 the call, after any explicit ones, and the specialization is the

@@ -95,7 +95,7 @@ pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
         return sequence(cx, object, &func.ty.params[0]);
     }
     let Some(c) = func.class.filter(|_| !func.member_static) else {
-        return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
+        return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
     };
     // OVL rules: a function that a using-declaration brings into the
     // object's class takes that class as its object type.
@@ -166,7 +166,7 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                     ok = false;
                     break;
                 }
-                seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None });
+                seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None, extra: Default::default() });
                 continue;
             }
             // ICS-4: a class parameter takes another class or a value by

@@ -1094,7 +1094,7 @@ pub fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Opti
     if !ok {
         return None;
     }
-    let plain = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None };
+    let plain = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() };
     if target.is_class() {
         return Some(Ics { rank: Rank::User, ..plain });
     }
@@ -1112,6 +1112,7 @@ pub fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Opti
             }
         }
         cx.u.diags.truncate(marks);
+        worst.extra.unknown_bound = matches!(target.t, Type::Array(_, None));
         return Some(worst);
     }
     match &one {

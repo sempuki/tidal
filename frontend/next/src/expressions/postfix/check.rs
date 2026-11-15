@@ -634,7 +634,7 @@ fn braced_choice(cx: &mut Check, found: &[EntityId], args: &[Option<Expr>], node
         for (k, a) in args.iter().enumerate() {
             let s = match (a, g.ty.params.get(k)) {
                 (Some(e), Some(p)) => sequence(cx, e, p),
-                (Some(_), None) => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None }),
+                (Some(_), None) => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None, extra: Default::default() }),
                 (None, Some(p)) => crate::classes::constructors::check::list_sequence(cx, first_node(nodes[k]).unwrap(), p, false),
                 (None, None) => None,
             };
@@ -726,7 +726,7 @@ fn surrogate_call(cx: &mut Check, f: Expr, ops: &[EntityId], convs: &[EntityId],
         }
         args.iter().enumerate().map(|(k, a)| match params.get(k) {
             Some(p) => sequence(cx, a, p),
-            None => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None }),
+            None => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None, extra: Default::default() }),
         }).collect()
     };
     // A candidate: a call operator, or a surrogate by its conversion
@@ -760,7 +760,7 @@ fn surrogate_call(cx: &mut Check, f: Expr, ops: &[EntityId], convs: &[EntityId],
         }
         let Some(ft) = to_function(&func.ty.ret) else { continue };
         if let Some(mut seqs) = fits(cx, &ft.params, 0, ft.variadic) {
-            seqs.insert(0, Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: Some((g, Rank::Exact)) });
+            seqs.insert(0, Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: Some((g, Rank::Exact)), extra: Default::default() });
             viable.push((g, true, seqs));
         }
     }
@@ -958,7 +958,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
 /// candidate must be static (OVL-23); otherwise the call has no object.
 fn contrived_call(cx: &mut Check, members: &[EntityId], args: &[Expr], nspan: Span, span: Span, name: &str) -> Expr {
     use crate::overloading::conversion_sequences::check::{better, sequence, Ics, Rank};
-    let exact = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None };
+    let exact = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() };
     let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
     for &f in members {
         let Some(g) = cx.u.func(f).cloned() else { continue };
@@ -972,7 +972,7 @@ fn contrived_call(cx: &mut Check, members: &[EntityId], args: &[Expr], nspan: Sp
         for (k, a) in args.iter().enumerate() {
             let s = match params.get(k) {
                 Some(p) => sequence(cx, a, p),
-                None => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None }),
+                None => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None, extra: Default::default() }),
             };
             match s {
                 Some(s) => seqs.push(s),

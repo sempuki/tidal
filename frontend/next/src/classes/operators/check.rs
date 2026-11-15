@@ -241,7 +241,7 @@ pub fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
     let ok = crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| {
         cx.u.func(f).is_some_and(|x| !x.explicit && !x.deleted && !x.ty.params.is_empty() && (1..x.ty.params.len()).all(|k| x.defaults.get(k).is_some_and(|d| d.is_some())) && sequence(cx, a, &x.ty.params[0]).is_some_and(|i| i.user.is_none() && i.rank != crate::overloading::conversion_sequences::check::Rank::User))
     });
-    ok.then(|| Ics { rank: crate::overloading::conversion_sequences::check::Rank::User, qual: false, binds: None, ellipsis: false, user: None })
+    ok.then(|| Ics { rank: crate::overloading::conversion_sequences::check::Rank::User, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() })
 }
 
 /// OPR-15: the best viable candidate, or None after an error.
