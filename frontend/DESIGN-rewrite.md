@@ -736,7 +736,9 @@ whose member it initializes, wherever the initializer runs. An
 aggregate class takes values in parentheses, each for one whole member,
 and keeps no temporary there. A call `(&C::f)(a)` of a set with a
 member function that has an implicit object parameter takes only the
-other functions of the set. The
+other functions of the set. A friend declaration with a qualified
+name befriends the function of that namespace or class with the same
+type. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

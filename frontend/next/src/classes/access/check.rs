@@ -70,8 +70,14 @@ pub fn friend_decl(cx: &mut Check, c: ClassId, n: &Node) -> bool {
         cx.unsupported(n.span, "a friend declaration that names a type (build step 4)");
         return false;
     }
+    if let names::Qual::Scope(s) = d.qual {
+        if fd.is_some() {
+            cx.unsupported(n.span, "a friend definition with a qualified name");
+            return false;
+        }
+        return qualified_friend(cx, c, s, &d, n);
+    }
     if d.qual != names::Qual::None {
-        cx.unsupported(n.span, "a friend member function of another class or a qualified friend (build step 4)");
         return false;
     }
     // DEFARG-11: a friend declaration with a default argument is a
@@ -106,6 +112,25 @@ pub fn friend_decl(cx: &mut Check, c: ClassId, n: &Node) -> bool {
         if let Some(x) = cx.u.func_mut(f) {
             x.inline = true;
         }
+    }
+    cx.u.friends.entry(c).or_default().push(f);
+    true
+}
+
+/// ACC-5: `friend R N::f(P);` or `friend R C::f(P);` makes the function
+/// of that namespace or class with the same type a friend of class `c`.
+/// A member function of another class needs access from `c` (ACC-15).
+fn qualified_friend(cx: &mut Check, c: ClassId, s: crate::sem::ScopeId, d: &crate::declarations::declarators::check::Declared, n: &Node) -> bool {
+    let Some((name, span)) = d.name.clone() else { return true };
+    let Some(fty) = d.ty.func().cloned() else { return true };
+    let found = names::declared_here(cx, s, &name).into_iter().find(|&e| cx.u.func(e).is_some_and(|x| x.ty.params == fty.params && x.ty.ret == fty.ret && x.obj_cv == d.obj_cv));
+    let Some(f) = found else {
+        cx.error(span, "ACC-5", format!("the friend declaration names '{}', which its scope does not declare with this type", name));
+        return true;
+    };
+    if cx.u.func(f).is_some_and(|x| x.class.is_some()) && !crate::classes::members::check::accessible(cx, f) {
+        cx.error(n.span, "ACC-15", format!("the friend declaration names the member function '{}', which is not accessible here", name));
+        return true;
     }
     cx.u.friends.entry(c).or_default().push(f);
     true

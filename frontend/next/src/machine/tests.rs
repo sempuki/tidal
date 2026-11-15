@@ -2087,3 +2087,15 @@ fn calls_through_the_address_of_a_member_set() {
     assert_eq!(rule("struct I { int f() &; static int f(int = 0); int use() { return (&(I::f))(1); } };"), Some("OVL-44"));
     assert_eq!(rule("struct S { ~S() {} }; auto p = &S::~S;"), Some("DTOR-8"));
 }
+
+#[test]
+fn qualified_friends() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("class C; struct R { int read(const C& c) const; }; class C { int s = 9; friend int R::read(const C&) const; }; int R::read(const C& c) const { return c.s; } int main() { return R{}.read(C{}); }"), RunOutcome::Result(9));
+    assert_eq!(rule("class C; struct R { int read(const C&) const; int other(const C&) const; }; class C { int s = 9; friend int R::read(const C&) const; }; int R::other(const C& c) const { return c.s; }"), Some("ACC-2"));
+    assert_eq!(rule("class O { void h(); }; class C { friend void O::h(); };"), Some("ACC-15"));
+}
