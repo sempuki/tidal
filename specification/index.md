@@ -1,9 +1,8 @@
 # Tidal
 
 Tidal is made with deep respect for copyright, and for the work of the
-contributors to the ISO C++ standard. {doc}`Chapter 0, Provenance
-<introduction>`, says who writes the text, what each writer may read,
-and how the text of the ISO standard stays out of Tidal.
+contributors to the ISO C++ standard. The {doc}`Provenance
+<introduction>` chapter states how Tidal is made.
 
 Tidal is an open specification of a language that is compatible with
 ISO C++23. The specification is reference material. Each page states
