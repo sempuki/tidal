@@ -1747,3 +1747,18 @@ fn destructor_exceptions() {
     // UNW-5: a destructor that throws during unwinding ends the program.
     assert_eq!(run("struct S { ~S() noexcept(false) { throw 1; } }; int main() { try { S s; throw 2; } catch (int) { return 1; } return 2; }"), RunOutcome::Result(134));
 }
+
+#[test]
+fn range_for_over_classes() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // RFOR-2: member begin and end, an iterator class, and an end of
+    // another type.
+    assert_eq!(run("struct It { int v; int operator*() const { return v; } It& operator++() { ++v; return *this; } bool operator!=(int e) const { return v != e; } }; struct R { It begin() { return {1}; } int end() { return 4; } }; int main() { int s = 0; for (int x : R{}) s += x; return s; }"), RunOutcome::Result(6));
+    // Free functions that argument-dependent lookup finds.
+    assert_eq!(run("namespace n { struct B { int d[2] = {3, 4}; }; int* begin(B& b) { return b.d; } int* end(B& b) { return b.d + 2; } } int main() { n::B b; int s = 0; for (int& x : b) s += x; return s; }"), RunOutcome::Result(7));
+    assert_eq!(rule("struct R { int d[2]; int* begin() { return d; } }; int* end(R& r) { return r.d + 2; } void f(R r) { for (int v : r) (void)v; }"), Some("RFOR-7"));
+}

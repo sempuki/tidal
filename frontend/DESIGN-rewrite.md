@@ -672,7 +672,12 @@ block guards its members' destructors. A result that a return built
 ends when an exception follows the return. The `noexcept` operator
 counts the destructors of temporaries, of `delete`, and of explicit
 destructor calls. An explicit destructor call on the active member of a
-union leaves the union with no active member. The
+union leaves the union with no active member. A range-based `for` over
+a class range becomes the plain `for` that hidden variables for the
+range, the iterator, and the end make, with member `begin` and `end`
+when the class has both names and the functions of argument-dependent
+lookup otherwise. A call of a data member of class type goes through
+its call operator. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

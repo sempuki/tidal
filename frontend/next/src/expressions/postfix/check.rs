@@ -354,6 +354,12 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         Ok((callee, object)) => return finish_call(cx, callee, None, args, span, Some(object)),
         Err(f) => f,
     };
+    call_value(cx, f, args, span)
+}
+
+/// A call of the value `f`: a function, a pointer to function, or a class
+/// object with a call operator.
+pub fn call_value(cx: &mut Check, f: Expr, args: Vec<Expr>, span: Span) -> Expr {
     let f = deref_ref(f);
     // OVL-6: a conversion function to a pointer or reference to function
     // gives a surrogate call function, which the front end does not
@@ -379,6 +385,10 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         }
         let object = if func.member_static { None } else { Some(f) };
         return finish_call(cx, callee, Some(op), args, span, object);
+    }
+    // PFX-17: a class object without a call operator is not callable.
+    if f.ty.is_class() {
+        return not_callable(cx, &f, span);
     }
     let target = match &f.k {
         EK::Func(id) => Some(*id),
@@ -438,8 +448,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             if m.ty.is_error() {
                 return Some(m);
             }
-            let f = deref_ref(m);
-            return Some(finish_call(cx, f, None, args.to_vec(), span, None));
+            return Some(call_value(cx, m, args.to_vec(), span));
         }
         (Some(obj), cx.u.classes[decl].scope, name, id.span)
     } else {
@@ -471,6 +480,42 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         }
         (obj, cx.u.classes[class].scope, name.to_string(), nspan)
     };
+    member_call_tail(cx, object, scope, name, nspan, qualified, args, span)
+}
+
+/// A call `obj.name(args)` of a member that lookup by name finds in the
+/// class of `obj`, as the range-based `for` makes (RFOR-2): a member
+/// function, or a data member of a callable type. None when the class
+/// has no such member.
+pub fn call_member(cx: &mut Check, obj: Expr, name: &str, args: &[Expr], span: Span) -> Option<Expr> {
+    let c = obj.ty.class()?;
+    let (found, decl) = match crate::classes::derived::check::member_lookup(cx, c, name) {
+        Ok(Some(x)) => (x.ents, x.class),
+        Ok(None) => return None,
+        Err(()) => {
+            cx.error(span, "DER-4", format!("the member '{}' is in more than one base", name));
+            return Some(bad(span));
+        }
+    };
+    if !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
+        let [f] = found[..] else { return None };
+        if !matches!(cx.u.entities[f].kind, EntKind::Field(_)) {
+            let t = cx.unsupported(span, format!("a call of the member '{}' of this kind", name));
+            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
+        let m = crate::classes::members::check::field_of(cx, obj, f, span);
+        if m.ty.is_error() {
+            return Some(m);
+        }
+        return Some(call_value(cx, m, args.to_vec(), span));
+    }
+    member_call_tail(cx, Some(obj), cx.u.classes[decl].scope, name.to_string(), span, false, args, span)
+}
+
+/// The call of the member functions named `name` in `scope`, with the
+/// object, if any.
+#[allow(clippy::too_many_arguments)]
+fn member_call_tail(cx: &mut Check, object: Option<Expr>, scope: crate::sem::ScopeId, name: String, nspan: Span, qualified: bool, args: &[Expr], span: Span) -> Option<Expr> {
     let mut cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
     if let Some(c) = cx.u.class_of_scope(scope) {
         crate::classes::derived::check::hide_brought(cx, c, &mut cands);
