@@ -2345,3 +2345,8 @@ fn references_from_braces_and_explicit_conversions() {
 fn functions_that_hide_a_class() {
     assert_eq!(run("struct stat { int size = 8; }; int stat(int x) { return x; } int main() { struct stat s; return s.size + stat(3); }"), RunOutcome::Result(11));
 }
+
+#[test]
+fn new_value_initializes_a_class() {
+    assert_eq!(run("struct P { int a; int b = 4; }; int main() { P* p = new P(); int r = p->a * 10 + p->b; delete p; return r; }"), RunOutcome::Result(4));
+}

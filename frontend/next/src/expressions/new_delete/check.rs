@@ -192,8 +192,14 @@ fn single(cx: &mut Check, ty: QType, init: Option<&Node>, span: Span) -> Expr {
             }
         }
         Some(i) if empty(cx, i) => {
+            // NEW-11: `()` value-initializes a class without constructors:
+            // zero, then the default member initializers.
             if ty.is_class() && !ty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) && cx.words(i).first() == Some(&"(") {
-                return unsupported(cx, span, "a new expression that value-initializes a class without constructors");
+                if !crate::classes::members::check::check_default_init(cx, &ty, span) {
+                    return bad(span);
+                }
+                let init = crate::classes::members::check::value_init(cx, &ty);
+                return result(New { ty, bound: None, init, rest: Init::Default, alloc: None }, span);
             }
             if ty.is_class() {
                 match crate::declarations::initialization::forms::check::initializer(cx, &ty, i, "the object") {
