@@ -72,7 +72,7 @@ figure.tidal-diagram { margin: 1.2rem 0; cursor: zoom-in; }
    or Escape, closes it. */
 figure.tidal-diagram.zoomed { position: fixed; inset: 0; z-index: 1000; margin: 0; padding: 1.5rem; overflow: auto; cursor: zoom-out; background: var(--color-background-primary); display: flex; flex-direction: column; justify-content: center; }
 figure.tidal-diagram.zoomed svg { max-width: none; width: 100%; max-height: calc(100vh - 6rem); }
-figure.tidal-diagram svg { width: 100%; height: auto; max-width: 840px; color: var(--color-foreground-primary); }
+figure.tidal-diagram svg { width: 100%; height: auto; max-width: 890px; color: var(--color-foreground-primary); }
 figure.tidal-diagram figcaption { font-size: 0.85rem; color: var(--color-foreground-muted); }
 .tidal-diagram .wf-box { fill: var(--color-background-secondary); stroke: var(--color-foreground-muted); stroke-width: 1.2; }
 .tidal-diagram .wf-accent { stroke: var(--color-brand-primary); stroke-width: 2; }
@@ -86,4 +86,5 @@ figure.tidal-diagram figcaption { font-size: 0.85rem; color: var(--color-foregro
 .tidal-diagram .wf-head { fill: currentColor; }
 .tidal-diagram .wf-badge { fill: var(--color-brand-primary); }
 .tidal-diagram .wf-badge-text { fill: var(--color-background-primary); font-size: 11px; font-weight: 600; }
+.tidal-diagram .wf-room { fill: var(--color-brand-primary); fill-opacity: 0.07; stroke: none; }
 .tidal-diagram .wf-boundary { stroke: var(--color-foreground-muted); stroke-width: 1.2; stroke-dasharray: 6 5; }
