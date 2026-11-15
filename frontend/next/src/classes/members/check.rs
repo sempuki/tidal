@@ -991,13 +991,10 @@ fn member_init(cx: &mut Check, ty: &QType, n: &Node) -> Option<Init> {
         if e.ty.is_error() {
             return None;
         }
-        // CTOR-17 holds where a constructor uses the initializer, which
-        // the front end does not track yet.
+        // CTOR-17 holds where a constructor uses the initializer
+        // (`temporary_default`); an aggregate list keeps the temporary
+        // (REF-4).
         let b = crate::declarations::initialization::references::check::bind(cx, e, ty, "INIT-7")?;
-        if binds_temporary(&b) {
-            cx.unsupported(n.span, "a default member initializer that binds a reference member to a temporary");
-            return None;
-        }
         return Some(Init::Ref(b));
     }
     if c.prod == "braced_init" {
@@ -1074,6 +1071,9 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
         // A member whose destructor is deleted or not accessible.
         if x.ty.base_elem().class().is_some_and(|d| crate::classes::constructors::check::dtor_blocked(cx, d, false, x.base)) {
             cx.error(span, "CTOR-20", format!("the default constructor of the class is deleted: the destructor of the member '{}' is deleted or not accessible", cx.u.entities[f].name));
+            return false;
+        }
+        if temporary_default(cx, f, span) {
             return false;
         }
         if x.init.is_some() {
@@ -1394,6 +1394,17 @@ pub fn bind_member(cx: &mut Check, e: Expr, ty: &QType, span: Span) -> Option<In
 }
 
 /// Whether a reference binding makes a temporary.
+/// CTOR-17: a constructor uses the default member initializer of the
+/// member `f`, which binds a reference to a temporary. True after the
+/// error.
+pub fn temporary_default(cx: &mut Check, f: EntityId, span: Span) -> bool {
+    let bad = matches!(cx.u.field(f).and_then(|x| x.init.as_ref()), Some(Init::Ref(b)) if binds_temporary(b));
+    if bad {
+        cx.error(span, "CTOR-17", format!("a constructor binds the reference member '{}' to a temporary by its default member initializer", cx.u.entities[f].name));
+    }
+    bad
+}
+
 pub fn binds_temporary(e: &Expr) -> bool {
     match &e.k {
         EK::Conv(Conv::Materialize, _) => true,

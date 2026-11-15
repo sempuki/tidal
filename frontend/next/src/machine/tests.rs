@@ -2099,3 +2099,18 @@ fn qualified_friends() {
     assert_eq!(rule("class C; struct R { int read(const C&) const; int other(const C&) const; }; class C { int s = 9; friend int R::read(const C&) const; }; int R::other(const C& c) const { return c.s; }"), Some("ACC-2"));
     assert_eq!(rule("class O { void h(); }; class C { friend void O::h(); };"), Some("ACC-15"));
 }
+
+#[test]
+fn reference_members_whose_default_binds_a_temporary() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // An aggregate list keeps the temporary; a constructor that leaves
+    // the member to its default is an error.
+    assert_eq!(run("struct A { int tag; const int& r = 5; }; int main() { A a{1}; return a.tag + a.r; }"), RunOutcome::Result(6));
+    assert_eq!(run("int v = 3; struct S { const int& r = 5; S() : r(v) {} }; int main() { S s; return s.r; }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct S { const int& r = 42; }; S s;"), Some("CTOR-17"));
+    assert_eq!(rule("struct S { const int& r = 42; S() {} };"), Some("CTOR-17"));
+}

@@ -409,6 +409,9 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
         let mut inits = Vec::new();
         for fid in fields {
             let x = cx.u.field(fid).unwrap().clone();
+            if crate::classes::members::check::temporary_default(cx, fid, def.span) {
+                return;
+            }
             inits.push(match x.init {
                 Some(i) => i,
                 None if union => Init::Default,
@@ -627,6 +630,9 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
         if union {
             out.push(g.or(if named { None } else { x.init.clone() }).unwrap_or(Init::Default));
             continue;
+        }
+        if g.is_none() && crate::classes::members::check::temporary_default(cx, fields[k], cx.u.entities[f].span) {
+            return None;
         }
         out.push(match g.or(x.init.clone()) {
             Some(i) => i,
@@ -901,6 +907,9 @@ fn implicit_default_but(cx: &mut Check, c: ClassId, skip: Option<usize>, span: S
             continue;
         }
         let x = cx.u.field(f).unwrap().clone();
+        if crate::classes::members::check::temporary_default(cx, f, span) {
+            return None;
+        }
         out.push(match x.init {
             Some(i) => i,
             // A union's member without an initializer stays inactive (UNI-4).

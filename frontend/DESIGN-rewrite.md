@@ -738,7 +738,9 @@ and keeps no temporary there. A call `(&C::f)(a)` of a set with a
 member function that has an implicit object parameter takes only the
 other functions of the set. A friend declaration with a qualified
 name befriends the function of that namespace or class with the same
-type. The
+type. A default member initializer can bind a reference member to a
+temporary, which an aggregate list keeps and a constructor must not
+use. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
