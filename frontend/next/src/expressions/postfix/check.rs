@@ -820,8 +820,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         let mixed = members.iter().any(|&f| cx.u.func(f).unwrap().member_static) && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static);
         let other_this = cx.func.as_ref().is_some_and(|f| f.this.is_some());
         if obj.is_none() && (members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) || (mixed && (other_this || members.iter().any(|&f| cx.u.func(f).unwrap().defaults.iter().any(|d| d.is_some()))))) {
-            let t = cx.unsupported(span, "a call without an object among ref-qualified, or static and non-static, member functions (build step 4)");
-            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+            return Some(contrived_call(cx, &members, args, nspan, span, name));
         }
         if obj.is_none() && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static) && !members.iter().any(|&f| cx.u.func(f).unwrap().member_static) {
             let t = cx.unsupported(span, "a non-static member function called without an object (build step 4)");
@@ -830,6 +829,63 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         (obj, cx.u.classes[class].scope, name.to_string(), nspan)
     };
     member_call_tail(cx, object, scope, name, nspan, qualified, args, span)
+}
+
+/// OVL-3: a call by name of member functions with no object to give
+/// them. The implied object argument is a contrived object that every
+/// candidate's object parameter takes, so the arguments decide. The best
+/// candidate must be static (OVL-23); otherwise the call has no object.
+fn contrived_call(cx: &mut Check, members: &[EntityId], args: &[Expr], nspan: Span, span: Span, name: &str) -> Expr {
+    use crate::overloading::conversion_sequences::check::{better, sequence, Ics, Rank};
+    let exact = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None };
+    let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
+    for &f in members {
+        let Some(g) = cx.u.func(f).cloned() else { continue };
+        let skip = usize::from(g.explicit_object);
+        let params = &g.ty.params[skip.min(g.ty.params.len())..];
+        let defaults = &g.defaults[skip.min(g.defaults.len())..];
+        if (args.len() > params.len() && !g.ty.variadic) || (args.len()..params.len()).any(|k| defaults.get(k).is_none_or(|d| d.is_none())) {
+            continue;
+        }
+        let mut seqs = vec![exact.clone()];
+        for (k, a) in args.iter().enumerate() {
+            let s = match params.get(k) {
+                Some(p) => sequence(cx, a, p),
+                None => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None }),
+            };
+            match s {
+                Some(s) => seqs.push(s),
+                None => break,
+            }
+        }
+        if seqs.len() == args.len() + 1 {
+            viable.push((f, seqs));
+        }
+    }
+    if viable.is_empty() {
+        cx.error(span, "OVL-35", format!("no function '{}' fits the arguments", name));
+        return bad(span);
+    }
+    let wins = |a: &[Ics], b: &[Ics]| !a.iter().zip(b).any(|(x, y)| better(y, x)) && a.iter().zip(b).any(|(x, y)| better(x, y));
+    let mut best = 0;
+    for j in 1..viable.len() {
+        if wins(&viable[j].1, &viable[best].1) {
+            best = j;
+        }
+    }
+    if (0..viable.len()).any(|j| j != best && !wins(&viable[best].1, &viable[j].1)) {
+        cx.error_cause(span, "OVL-36", Some("OVL-3"), format!("the call of '{}' is ambiguous", name));
+        return bad(span);
+    }
+    let f = viable[best].0;
+    let g = cx.u.func(f).unwrap().clone();
+    if !g.member_static {
+        cx.error_cause(span, "OVL-23", Some("OVL-3"), format!("the call of '{}' chooses a non-static member function, and there is no object", name));
+        return bad(span);
+    }
+    crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
+    let callee = Expr::new(EK::Func(f), QType::new(Type::Func(g.ty.clone())), Cat::L, nspan);
+    finish_call(cx, callee, Some(f), args.to_vec(), span, None)
 }
 
 /// A call `obj.name(args)` of a member that lookup by name finds in the

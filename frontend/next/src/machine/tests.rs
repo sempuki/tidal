@@ -2290,3 +2290,15 @@ fn braced_arguments_among_overloads() {
 fn destructors_defined_outside_the_class() {
     assert_eq!(run("int n = 0; struct A { virtual ~A() = 0; }; A::~A() { ++n; } struct B : A {}; struct S { ~S(); }; S::~S() { n += 10; } int main() { { B b; S s; } return n; }"), RunOutcome::Result(11));
 }
+
+#[test]
+fn calls_with_a_contrived_object() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct S { static int put(long v) { return int(v); } int put(int) && { return 0; } static int fill() { return put(5L); } }; int main() { return S::fill(); }"), RunOutcome::Result(5));
+    assert_eq!(rule("struct S { static void put(long); void put(int) &&; static void fill() { put(1); } };"), Some("OVL-23"));
+    assert_eq!(rule("struct I { static void reset(int = 0); void reset(); static void clear() { reset(); } };"), Some("OVL-36"));
+}
