@@ -2218,3 +2218,18 @@ fn references_bound_by_conversion_functions() {
     assert_eq!(rule("struct I { int v; }; I shared{1}; struct S { constexpr operator I&&() const { return static_cast<I&&>(shared); } }; constexpr bool f() { const I& r = S{}; return &r == &shared; } static_assert(f());"), None);
     assert_eq!(rule("using F = int(); constexpr int a() { return 1; } struct S { constexpr operator F&&() const { return a; } }; constexpr F& r = S{}; static_assert(r() == 1);"), None);
 }
+
+#[test]
+fn redefinitions_and_ambiguous_integral_conversions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct S { int a; }; struct S { int a; };"), Some("TYN-7"));
+    assert_eq!(rule("struct D {}; struct D final {};"), Some("DER-1"));
+    let two = "struct S { operator int() const { return 1; } operator long() const { return 2; } };";
+    assert_eq!(rule(&format!("{} void f(S s) {{ switch (s) {{ case 1: break; }} }}", two)), Some("SW-2"));
+    assert_eq!(rule(&format!("{} int* f(S s) {{ return new int[s]; }}", two)), Some("CVF-8"));
+    assert_eq!(run("struct S { operator int() const { return 2; } }; int main() { S s; int* p = new int[s]; p[1] = 4; int r = p[1]; delete[] p; switch (s) { case 2: return r; } return 0; }"), RunOutcome::Result(4));
+}

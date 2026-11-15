@@ -70,7 +70,7 @@ pub fn condition(cx: &mut Check, n: &Node, rule: &'static str, as_bool: bool) ->
         // CVF-8: a switch condition of class type converts by its
         // conversion function, chosen by the object's cv-qualifiers.
         if !as_bool {
-            e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
+            e = crate::classes::conversion_functions::check::integral_operand(cx, e, "SW-2")?;
         }
         e = if as_bool { conv::contextual_bool(cx, e, rule) } else { crate::foundations::values::check::rvalue(cx, e) };
         if e.ty.is_error() {
@@ -82,7 +82,7 @@ pub fn condition(cx: &mut Check, n: &Node, rule: &'static str, as_bool: bool) ->
     if e.ty.is_error() {
         return None;
     }
-    let e = if as_bool { e } else { crate::classes::conversion_functions::check::builtin_operand(cx, e)? };
+    let e = if as_bool { e } else { crate::classes::conversion_functions::check::integral_operand(cx, e, "SW-2")? };
     let e = if as_bool { conv::contextual_bool(cx, e, rule) } else { crate::foundations::values::check::rvalue(cx, e) };
     if e.ty.is_error() {
         return None;

@@ -86,7 +86,7 @@ pub fn integral_constant(cx: &mut Check, n: &Node, rule: &'static str) -> Option
         }
     }
     // CVF-2: a class object converts by its conversion function.
-    let e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
+    let e = crate::classes::conversion_functions::check::integral_operand(cx, e, if rule == "ALN-2" { "ALN-8" } else { rule })?;
     let e = rvalue(cx, e);
     if e.ty.is_error() {
         return None;
@@ -131,7 +131,7 @@ pub fn bool_constant(cx: &mut Check, n: &Node, rule: &'static str) -> Option<boo
 /// enumeration type, greater than zero.
 pub fn array_bound(cx: &mut Check, n: &Node) -> Option<u64> {
     let e = expressions::check::expr(cx, n);
-    let e = crate::classes::conversion_functions::check::builtin_operand(cx, e)?;
+    let e = crate::classes::conversion_functions::check::integral_operand(cx, e, "DCL-19")?;
     let e = rvalue(cx, e);
     if e.ty.is_error() {
         return None;

@@ -756,7 +756,10 @@ converting constructor or a conversion function, and a virtual call
 finds the overrider that a class declares itself. A thread_local
 variable with dynamic initialization starts at the first use of one of
 the unit's such variables, which starts all of them. A reference to a
-class or a function binds the result of a conversion function. The
+class or a function binds the result of a conversion function. A
+second definition of a class is an error, and so is a class operand of
+a switch, an array bound, or an integral constant with several
+conversion functions to integral types. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

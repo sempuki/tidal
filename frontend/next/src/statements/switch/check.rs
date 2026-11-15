@@ -28,7 +28,7 @@ pub fn switch_stmt(cx: &mut Check, n: &Node) -> Stmt {
         // CVF-8: a class object converts to an integral or enumeration
         // type by its one conversion function to such a type.
         if crate::classes::conversion_functions::check::converting_class(cx, e).is_some() {
-            match crate::classes::conversion_functions::check::builtin_operand(cx, e.clone()) {
+            match crate::classes::conversion_functions::check::integral_operand(cx, e.clone(), "SW-2") {
                 Some(x) => *e = crate::foundations::values::check::rvalue(cx, x),
                 None => e.ty = QType::error(),
             }

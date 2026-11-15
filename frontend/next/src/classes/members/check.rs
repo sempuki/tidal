@@ -131,8 +131,15 @@ fn class_def_in(cx: &mut Check, n: &Node, head: &Node) -> QType {
         cx.error(head.span, "LSUP-5", "std::align_val_t declared as a class, not as a scoped enumeration");
     }
     let id = match declared_class(cx, &name).filter(|_| !name.is_empty()) {
+        // TYN-7: a class is defined once; with `final` the second head
+        // names the class it cannot redefine (DER-1, KW-3).
         Some(c) if cx.u.classes[c].complete => {
-            return cx.unsupported(head.span, format!("a second definition of the class '{}'", name));
+            if cx.has_word(head, "final") {
+                cx.error_cause(head.span, "DER-1", Some("KW-3"), format!("a second definition of the class '{}', with final", name));
+            } else {
+                cx.error(head.span, "TYN-7", format!("a second definition of the class '{}'", name));
+            }
+            return QType::error();
         }
         Some(c) => c,
         None => new_class(cx, &name, key, head.span),

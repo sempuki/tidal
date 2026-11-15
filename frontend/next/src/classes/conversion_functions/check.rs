@@ -348,6 +348,29 @@ pub fn operand_functions(cx: &Check, c: ClassId, obj: &QType, wanted: impl Fn(&Q
     fs
 }
 
+/// CVF-8: a class object `e` converted by its one non-explicit
+/// conversion function to an integral or unscoped enumeration type, for
+/// a switch condition, an array bound, or an integral constant. Several
+/// such functions with different result types are an error of `rule`;
+/// with none, `e` is returned for the caller's check of its type.
+pub fn integral_operand(cx: &mut Check, e: Expr, rule: &'static str) -> Option<Expr> {
+    let Some(c) = converting_class(cx, &e) else { return Some(e) };
+    let obj = e.ty.nonref();
+    let fs = operand_functions(cx, c, &obj, |r| r.is_integral() || matches!(r.t, Type::Enum(en) if !cx.u.enums[en].scoped));
+    match fs.as_slice() {
+        [f] => {
+            let span = e.span;
+            Some(call(cx, *f, e, span))
+        }
+        [] => builtin_operand(cx, e),
+        _ => {
+            let cause = (rule != "CVF-8").then_some("CVF-8");
+            cx.error_cause(e.span, rule, cause, format!("{} has several conversion functions to integral types", obj.show()));
+            None
+        }
+    }
+}
+
 /// `builtin_operand` for both operands of a binary operator.
 pub fn builtin_operands(cx: &mut Check, l: Expr, r: Expr) -> Option<(Expr, Expr)> {
     let l = builtin_operand(cx, l)?;
