@@ -598,10 +598,6 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
             if !defined {
                 Init::Default
             } else if ty.base_elem().class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
-                if s.thread_local {
-                    cx.unsupported(span, "a thread_local object of a class with constructors (build step 4)");
-                    return None;
-                }
                 crate::classes::constructors::check::default_init(cx, &ty, span)?
             } else if ty.base_elem().is_class() {
                 if !crate::classes::members::check::check_default_init(cx, &ty, span) {

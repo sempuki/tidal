@@ -2198,3 +2198,12 @@ fn user_defined_sequences_in_overload_resolution() {
     // A using-declaration does not hide the overrider of the class itself.
     assert_eq!(run("struct N; struct V { virtual int visit(const N&) = 0; virtual int visit(int) = 0; }; struct N {}; struct W : V { int visit(const N&) override { return 1; } int visit(int) override { return 2; } }; struct C final : W { using W::visit; int visit(const N&) override { return 3; } }; int main() { C c; V& v = c; N n; return v.visit(n) * 10 + v.visit(0); }"), RunOutcome::Result(32));
 }
+
+#[test]
+fn thread_local_objects_with_constructors() {
+    // A use of a constant thread_local starts nothing; the first use of a
+    // waiting one starts all of them; a block thread_local starts when
+    // its declaration is first reached.
+    assert_eq!(run("int made = 0; struct L { L() { ++made; } }; struct C { int t; C() : t(5) { ++made; } }; thread_local L l; thread_local int k = 3; thread_local C c; int main() { int a = k; int b = made; int t = c.t; return a * 100 + b * 10 + made + t; }"), RunOutcome::Result(307));
+    assert_eq!(run("int made = 0; struct K { int h = 0; K() { ++made; } }; int look() { thread_local K k; return ++k.h; } int main() { int before = made; look(); return before * 10 + look() + made; }"), RunOutcome::Result(3));
+}

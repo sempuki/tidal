@@ -125,6 +125,39 @@ pub enum RunOutcome {
     Unsupported(String, u32),
 }
 
+/// The dynamic initialization of the variable `id` with static or thread
+/// storage, whose zero-initialized object is `o` (SINIT rules).
+pub fn dynamic_init(m: &mut Machine, id: crate::sem::EntityId, o: usize) -> Result<(), Stop> {
+    let u = m.u;
+    let v = u.var(id).unwrap();
+    if let Some(init) = &v.init {
+        if crate::declarations::initialization::forms::run::constructs(init) {
+            crate::declarations::initialization::forms::run::construct(m, &crate::machine::Ptr::whole(o), &v.ty, init)?;
+            crate::machine::exec::end_temps(m, 0)?;
+            m.static_order.push(o);
+            return Ok(());
+        }
+        let val = crate::machine::eval::init_value(m, &v.ty, init)?;
+        let val = m.fill_zero(&v.ty, val);
+        m.objs[o].val = val;
+        m.objs[o].konst = v.ty.is_const();
+        for t in m.temps.drain(..) {
+            m.objs[t].alive = false;
+        }
+    }
+    Ok(())
+}
+
+/// OBJ-11: the first use of a thread_local variable that waits starts
+/// every waiting thread_local variable of the unit, in the order of
+/// their definitions.
+pub fn start_thread_locals(m: &mut Machine) -> Result<(), Stop> {
+    for (id, o) in std::mem::take(&mut m.thread_pending) {
+        dynamic_init(m, id, o)?;
+    }
+    Ok(())
+}
+
 /// Run the program of one translation unit.
 pub fn run_program(u: &Unit) -> RunOutcome {
     let mut m = Machine::new(u, false);
@@ -146,26 +179,17 @@ pub fn run_program(u: &Unit) -> RunOutcome {
                 m.objs[o].is_static = true;
                 m.objs[o].konst = false;
                 m.globals.insert(id, o);
-                dynamic.push((id, o));
+                // OBJ-11: a thread_local variable waits for the first use
+                // of one of the unit's thread_local variables.
+                if v.storage == crate::sem::Storage::Thread {
+                    m.thread_pending.push((id, o));
+                } else {
+                    dynamic.push((id, o));
+                }
             }
         }
         for (id, o) in dynamic {
-            let v = u.var(id).unwrap();
-            if let Some(init) = &v.init {
-                if crate::declarations::initialization::forms::run::constructs(init) {
-                    crate::declarations::initialization::forms::run::construct(&mut m, &crate::machine::Ptr::whole(o), &v.ty, init)?;
-                    crate::machine::exec::end_temps(&mut m, 0)?;
-                    m.static_order.push(o);
-                    continue;
-                }
-                let val = crate::machine::eval::init_value(&mut m, &v.ty, init)?;
-                let val = m.fill_zero(&v.ty, val);
-                m.objs[o].val = val;
-                m.objs[o].konst = v.ty.is_const();
-                for t in m.temps.drain(..) {
-                    m.objs[t].alive = false;
-                }
-            }
+            dynamic_init(&mut m, id, o)?;
         }
         let Some(main) = u.main() else { return crate::machine::unsup("the program has no main function") };
         let args = main_arguments(&mut m, main);
@@ -177,7 +201,8 @@ pub fn run_program(u: &Unit) -> RunOutcome {
         // of their construction, each that needs it destroyed.
         // Namespace-scope objects count in the order of their
         // definitions, also the constant-initialized ones.
-        let defined: Vec<usize> = u.statics.iter().filter_map(|id| m.globals.get(id).copied()).collect();
+        let waiting: Vec<usize> = m.thread_pending.iter().map(|&(_, o)| o).collect();
+        let defined: Vec<usize> = u.statics.iter().filter_map(|id| m.globals.get(id).copied()).filter(|o| !waiting.contains(o)).collect();
         let mut order = defined.clone();
         order.extend(std::mem::take(&mut m.static_order).into_iter().filter(|o| !defined.contains(o)));
         crate::classes::constructors::run::end_objects(&mut m, order)?;

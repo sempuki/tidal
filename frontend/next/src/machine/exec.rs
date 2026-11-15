@@ -495,6 +495,9 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
 /// The object of a variable with static or thread storage, initialized
 /// the first time the run needs it.
 pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
+    if m.thread_pending.iter().any(|&(i, _)| i == id) {
+        crate::foundations::translation::run::start_thread_locals(m)?;
+    }
     if let Some(&o) = m.globals.get(&id) {
         return Ok(Ptr::whole(o));
     }

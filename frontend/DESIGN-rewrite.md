@@ -753,7 +753,9 @@ warns. A constexpr object with no initializer can be a union, and a
 class with a volatile member is not a literal type. Overload
 resolution gives a class parameter a user-defined sequence by a
 converting constructor or a conversion function, and a virtual call
-finds the overrider that a class declares itself. The
+finds the overrider that a class declares itself. A thread_local
+variable with dynamic initialization starts at the first use of one of
+the unit's such variables, which starts all of them. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

@@ -264,6 +264,9 @@ pub struct Machine<'a> {
     /// The objects whose members default member initializers initialize,
     /// innermost last (`EK::InitThis`).
     pub init_this: Vec<Ptr>,
+    /// The thread_local variables of the unit whose dynamic
+    /// initialization waits for the first use of one of them (OBJ-11).
+    pub thread_pending: Vec<(EntityId, usize)>,
     /// The static objects in the order their initialization completed,
     /// which their destruction reverses after main (OBJ-12).
     pub static_order: Vec<usize>,
@@ -320,6 +323,7 @@ impl<'a> Machine<'a> {
             extending: None,
             ended: Vec::new(),
             init_this: Vec::new(),
+            thread_pending: Vec::new(),
             static_order: Vec::new(),
             undeclared: Default::default(),
         }
@@ -506,6 +510,10 @@ impl<'a> Machine<'a> {
             if let Some(p) = f.refs.get(&id) {
                 return Ok(p.clone());
             }
+        }
+        // OBJ-11: the first use of a waiting thread_local variable.
+        if self.thread_pending.iter().any(|&(i, _)| i == id) {
+            crate::foundations::translation::run::start_thread_locals(self)?;
         }
         if let Some(&o) = self.globals.get(&id) {
             return Ok(Ptr::whole(o));
