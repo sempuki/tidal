@@ -10,17 +10,17 @@ specification with the text of the ISO standard, and a similar passage
 fails the change. The same tool checks each summary that a source
 reader writes, before a clean-room writer reads it.
 
-## Names used in this chapter
+## Definitions
 
 This chapter names two specifications and two kinds of program. Each
-name below means one thing only.
+term below means one thing only.
 
-| Name | What it is |
+| Term | Meaning |
 |---|---|
-| **The ISO standard** | ISO/IEC 14882:2024, the international standard that defines C++23, with its drafts. Tidal does not copy it, and the agents that write Tidal do not read it. |
-| **The Tidal specification** | The pages of this site: chapters 1 to 8, the glossary, and the rule index. Their source is the directory `specification/` of the Tidal repository. |
-| **The baseline compilers** | Clang, GCC, and EDG, the compilers that {ref}`the front page <baseline-compilers>` lists. Tidal runs them as programs and records what they do. |
-| **The Tidal front ends** | The programs in the directory `frontend/` of the Tidal repository. Each one reads a C++ program and decides what the Tidal specification says about it. `frontend/next/` holds the newer of the two. |
+| **ISO standard** | ISO/IEC 14882:2024, the international standard that defines C++23, with its drafts. Tidal does not copy it, and the agents that write Tidal do not read it. |
+| **Tidal specification** | The pages of this site: chapters 1 to 8, the glossary, and the rule index. Their source is the directory `specification/` of the Tidal repository. |
+| **Baseline compilers** | Clang, GCC, and EDG, the compilers that {ref}`the front page <baseline-compilers>` lists. Tidal runs them as programs and records what they do. |
+| **Tidal front ends** | The programs in the directory `frontend/` of the Tidal repository. Each one reads a C++ program and decides what the Tidal specification says about it. `frontend/next/` holds the newer of the two. |
 
 The Tidal specification describes the same language as the ISO
 standard, so that a program means the same under both. The ISO
