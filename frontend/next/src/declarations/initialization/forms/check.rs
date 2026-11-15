@@ -44,8 +44,11 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
     if let Some(c) = to.class().filter(|&c| crate::classes::constructors::check::has_ctors(cx, c)) {
         if e.ty.nonref().unqual().t != Type::Class(c) {
             let span = e.span;
-            if e.ty.nonref().class().is_some() {
-                cx.unsupported(span, "a conversion between classes by a constructor (build step 4)");
+            // A conversion function of the source class competes with the
+            // constructors, which a later piece weighs.
+            let competes = crate::classes::conversion_functions::check::converting_class(cx, &e).is_some_and(|k| !crate::classes::conversion_functions::check::functions(&cx.u, k).is_empty());
+            if e.ty.nonref().class().is_some() && competes {
+                cx.unsupported(span, "a conversion between classes by a constructor or a conversion function (build step 4)");
                 return None;
             }
             let i = crate::classes::constructors::check::construct_init(cx, to, vec![e], false, true, span)?;

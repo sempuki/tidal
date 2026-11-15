@@ -1791,3 +1791,17 @@ fn no_unique_address_layout() {
     assert_eq!(rule("struct B { B() {} int a; char b; }; struct H { [[no_unique_address]] B part; char c; }; static_assert(sizeof(H) == 8);"), None);
     assert_eq!(rule("struct S { [[no_unique_address]] int b : 3; };"), Some("ATTR-2"));
 }
+
+#[test]
+fn conditional_class_operands() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // COND-16: one operand converts to the other's type.
+    assert_eq!(run("struct D { int m; D(int x) : m(x) {} }; int main() { D s = 20; D d = true ? 300 : s; return d.m == 300 ? 0 : 1; }"), RunOutcome::Result(0));
+    // COND-11: two classes reach int by their conversion functions.
+    assert_eq!(run("struct A { operator int() const { return 1; } }; struct B { operator int() const { return 2; } }; int main() { A a; B b; return false ? a : b; }"), RunOutcome::Result(2));
+    assert_eq!(rule("struct M { M(int); operator int() const; }; M m(0); extern bool c; auto r = c ? m : 1;"), Some("COND-5"));
+}

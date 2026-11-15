@@ -9,7 +9,7 @@ use crate::sem::tree::{Cat, Conv, Expr, EK};
 use crate::sem::types::QType;
 use crate::syntax::Node;
 
-/// `conditional_expr` (COND-1 to COND-5).
+/// `conditional_expr` (COND-1 to COND-5, COND-11, COND-16).
 pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
     let ns = nodes(n);
     let span = n.span;
@@ -24,13 +24,119 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
     if c.ty.is_error() || a.ty.is_error() || b.ty.is_error() {
         return bad(span);
     }
-    // COND-4: an operand converts to the other's type by a conversion
-    // function, which the front end does not weigh yet.
-    let converts = |cx: &Check, x: &Expr| crate::classes::conversion_functions::check::converting_class(cx, x).is_some();
-    if (converts(cx, &a) || converts(cx, &b)) && a.ty != b.ty {
-        let t = cx.unsupported(span, "a conditional operator whose class operand converts by a conversion function");
-        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    combine(cx, c, a, b, span, 0)
+}
+
+/// What an operand converts to for the other operand (COND-16).
+enum Target {
+    /// A glvalue of the type, of the category, by a binding to the
+    /// operand itself or to the result of the conversion function.
+    Glvalue(QType, Cat, Option<crate::sem::EntityId>),
+    /// A prvalue of the type, by copy-initialization.
+    Prvalue(QType),
+}
+
+/// Whether the cv-qualifiers of `t` include those of `x`.
+fn covers(t: &QType, x: &QType) -> bool {
+    (t.c || !x.c) && (t.v || !x.v)
+}
+
+/// The class `d` is the class `b` or derived from it.
+fn same_or_derived(cx: &Check, d: crate::sem::types::ClassId, b: crate::sem::types::ClassId) -> bool {
+    d == b || crate::classes::derived::check::is_base(cx, d, b)
+}
+
+/// COND-16: what the operand `x` converts to for the operand `y`, if
+/// anything. Err when the conversion sequence of step 3 is ambiguous.
+fn target(cx: &Check, x: &Expr, y: &Expr) -> Result<Option<Target>, ()> {
+    let t = y.ty.clone();
+    // Steps 1 and 2: a reference binds directly to `x`, or to the
+    // glvalue that a conversion function of `x` returns.
+    for (cat, rv) in [(Cat::L, false), (Cat::X, true)] {
+        if y.cat != cat || (cat == Cat::L && x.cat != Cat::L) {
+            continue;
+        }
+        if let (Some(cx_), Some(ct)) = (x.ty.class(), t.class()) {
+            if x.cat == cat && same_or_derived(cx, cx_, ct) && covers(&t, &x.ty) {
+                return Ok(Some(Target::Glvalue(t, cat, None)));
+            }
+        }
+        if let Some(c) = crate::classes::conversion_functions::check::converting_class(cx, x) {
+            let fits = |f: &crate::sem::Func| {
+                let r = &f.ty.ret;
+                let binds = matches!(&r.t, crate::sem::types::Type::Ref(_, v) if *v == rv);
+                let u = r.nonref();
+                let compatible = u.unqual().t == t.unqual().t || matches!((u.class(), t.class()), (Some(d), Some(b)) if same_or_derived(cx, d, b));
+                !f.explicit && binds && compatible && covers(&t, &u) && (!x.ty.c || f.obj_cv.0) && (!x.ty.v || f.obj_cv.1)
+            };
+            let fs: Vec<crate::sem::EntityId> = crate::classes::conversion_functions::check::functions(&cx.u, c).into_iter().filter(|&f| cx.u.func(f).is_some_and(fits)).collect();
+            if let [f] = fs[..] {
+                return Ok(Some(Target::Glvalue(t, cat, Some(f))));
+            }
+        }
     }
+    // Step 3: a prvalue of the target.
+    if let (Some(cx_), Some(ct)) = (x.ty.class(), t.class()) {
+        if cx_ == ct || crate::classes::derived::check::is_base(cx, cx_, ct) {
+            return Ok(covers(&t, &x.ty).then(|| Target::Prvalue(t.unqual().with_cv(t.c, t.v))));
+        }
+        if crate::classes::derived::check::is_base(cx, ct, cx_) {
+            return Ok(None);
+        }
+    }
+    let to = if t.is_class() { t.clone() } else { crate::declarations::auto::check::decay(&t).unqual() };
+    let xv = crate::foundations::values::check::deref_ref(x.clone());
+    // A conversion function of `x`; access and deletion do not count
+    // here (Q-0378).
+    if crate::classes::conversion_functions::check::converting_class(cx, &xv).is_some() {
+        match crate::classes::conversion_functions::check::user_sequence(cx, &xv, &to) {
+            Some(i) if i.user.is_none() => return Err(()),
+            Some(_) => return Ok(Some(Target::Prvalue(to))),
+            None => {}
+        }
+    }
+    // A converting constructor of the target class.
+    if let Some(ct) = to.class() {
+        let ok = crate::classes::constructors::check::ctors(cx, ct).into_iter().any(|f| {
+            cx.u.func(f).is_some_and(|g| !g.explicit && !g.ty.params.is_empty() && (1..g.ty.params.len()).all(|k| g.defaults.get(k).is_some_and(|d| d.is_some())) && crate::overloading::conversion_sequences::check::sequence(cx, &xv, &g.ty.params[0]).is_some_and(|i| i.user.is_none()))
+        });
+        return Ok(ok.then_some(Target::Prvalue(to)));
+    }
+    if x.ty.is_class() {
+        return Ok(None);
+    }
+    Ok(crate::overloading::conversion_sequences::check::sequence(cx, &xv, &to).map(|_| Target::Prvalue(to)))
+}
+
+/// The operand `x` converted to `t` (COND-16).
+fn apply(cx: &mut Check, x: Expr, t: Target, span: crate::source::Span) -> Option<Expr> {
+    match t {
+        Target::Glvalue(ty, cat, None) => {
+            let x = match (x.ty.class(), ty.class()) {
+                (Some(d), Some(b)) if d != b => crate::classes::derived::check::to_base(cx, x, b, span)?,
+                _ => x,
+            };
+            Some(x.conv(Conv::NoOp, ty, cat))
+        }
+        Target::Glvalue(ty, cat, Some(f)) => {
+            let r = deref_ref(crate::classes::conversion_functions::check::call(cx, f, x, span));
+            if r.ty.is_error() {
+                return None;
+            }
+            let r = match (r.ty.class(), ty.class()) {
+                (Some(d), Some(b)) if d != b => crate::classes::derived::check::to_base(cx, r, b, span)?,
+                _ => r,
+            };
+            Some(r.conv(Conv::NoOp, ty, cat))
+        }
+        Target::Prvalue(ty) => crate::declarations::initialization::forms::check::copy_init(cx, x, &ty, "COND-16"),
+    }
+}
+
+/// The result of `c ? a : b` from its evaluated operands (COND-2 to
+/// COND-5, COND-11, COND-16). `depth` counts the conversions of COND-16
+/// and COND-11 so far.
+fn combine(cx: &mut Check, c: Expr, a: Expr, b: Expr, span: crate::source::Span, depth: u8) -> Expr {
     let mk = |c: Expr, a: Expr, b: Expr, t: QType, cat: Cat| Expr::new(EK::Cond(Box::new(c), Box::new(a), Box::new(b)), t, cat, span);
     // COND-2: two glvalues of the same type and category give that.
     if a.cat == b.cat && a.cat != Cat::PR && a.ty == b.ty {
@@ -64,6 +170,59 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
                 let base = base.conv(Conv::NoOp, t.clone(), cat);
                 let (a, b) = if flip { (base, d) } else { (d, base) };
                 return mk(c, a, b, t, cat);
+            }
+        }
+    }
+    // COND-16: operands of different types, one of class type: each is
+    // tried against the other.
+    if depth < 2 && a.ty != b.ty && (a.ty.is_class() || b.ty.is_class()) && !a.ty.is_void() && !b.ty.is_void() {
+        let (ta, tb) = (target(cx, &a, &b), target(cx, &b, &a));
+        if ta.is_err() || tb.is_err() {
+            cx.error(span, "COND-5", format!("the conversion of an operand of type {} or {} to the other type is ambiguous", a.ty.show(), b.ty.show()));
+            return bad(span);
+        }
+        match (ta.unwrap(), tb.unwrap()) {
+            (Some(_), Some(_)) => {
+                cx.error(span, "COND-5", format!("the operands of types {} and {} each convert to the other's type", a.ty.show(), b.ty.show()));
+                return bad(span);
+            }
+            (Some(t), None) => {
+                let Some(a) = apply(cx, a, t, span) else { return bad(span) };
+                return combine(cx, c, a, b, span, depth + 1);
+            }
+            (None, Some(t)) => {
+                let Some(b) = apply(cx, b, t, span) else { return bad(span) };
+                return combine(cx, c, a, b, span, depth + 1);
+            }
+            (None, None) => {
+                // COND-11: the built-in candidates, which the conversion
+                // functions of the class operands reach. Each gives a
+                // prvalue.
+                let builtin = |cx: &Check, e: &Expr| -> usize {
+                    let Some(k) = crate::classes::conversion_functions::check::converting_class(cx, e) else { return 0 };
+                    let mut tys: Vec<QType> = Vec::new();
+                    for f in crate::classes::conversion_functions::check::functions(&cx.u, k) {
+                        let Some(g) = cx.u.func(f) else { continue };
+                        let r = crate::declarations::auto::check::decay(&g.ty.ret.nonref()).unqual();
+                        if !g.explicit && (r.is_arithmetic() || r.is_enum() || r.is_ptr() || r.is_member_ptr()) && !tys.contains(&r) {
+                            tys.push(r);
+                        }
+                    }
+                    tys.len()
+                };
+                if builtin(cx, &a) > 1 || builtin(cx, &b) > 1 {
+                    cx.error(span, "COND-5", format!("the operands of types {} and {} have no best built-in candidate", a.ty.show(), b.ty.show()));
+                    return bad(span);
+                }
+                let (Some(a2), Some(b2)) = (crate::classes::conversion_functions::check::builtin_operand(cx, a), crate::classes::conversion_functions::check::builtin_operand(cx, b)) else { return bad(span) };
+                if a2.ty.is_class() || b2.ty.is_class() || a2.ty.is_error() || b2.ty.is_error() {
+                    if !a2.ty.is_error() && !b2.ty.is_error() {
+                        cx.error(span, "COND-5", format!("the operands of types {} and {} have no common type", a2.ty.show(), b2.ty.show()));
+                    }
+                    return bad(span);
+                }
+                let (a2, b2) = (rvalue(cx, a2), rvalue(cx, b2));
+                return combine(cx, c, a2, b2, span, 2);
             }
         }
     }
@@ -139,12 +298,6 @@ pub fn conditional_expr(cx: &mut Check, n: &Node) -> Expr {
                 return mk(c, a, b, t, Cat::PR);
             }
         }
-    }
-    let converts = |cx: &Check, t: &QType| t.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c));
-    if converts(cx, &a.ty) || converts(cx, &b.ty) {
-        // COND-16: a conversion by a constructor between the operands.
-        let t = cx.unsupported(span, "a conditional operator whose operands convert by a constructor (build step 4)");
-        return Expr::new(EK::Int(0), t, Cat::PR, span);
     }
     cx.error(span, "COND-5", format!("the operands of types {} and {} have no common type", a.ty.show(), b.ty.show()));
     bad(span)

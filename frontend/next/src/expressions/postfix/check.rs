@@ -666,6 +666,8 @@ pub fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<
     }
     let (ty, cat) = match &ret.t {
         Type::Ref(inner, rv) => ((**inner).clone(), if *rv && !inner.is_func() { Cat::X } else { Cat::L }),
+        // A class prvalue keeps its cv-qualifiers (VC rules).
+        _ if ret.is_class() => (ret.clone(), Cat::PR),
         _ => (ret.unqual_top(), Cat::PR),
     };
     if let Some(t) = target {

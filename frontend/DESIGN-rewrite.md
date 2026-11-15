@@ -684,7 +684,13 @@ member declared `[[no_unique_address]]` takes the layout of a base
 subobject: an empty one takes no space unless it would share an address
 with a subobject of its type, and one that is not a POD for the layout
 lends its tail padding. A class with a move assignment and no copy
-assignment is a POD for the layout. The
+assignment is a POD for the layout. The conditional operator tries
+each class operand against the other, by a direct binding of an lvalue
+or an xvalue reference or by a conversion to a prvalue, and with
+neither, the built-in candidates that the operands' conversion
+functions reach. A class prvalue keeps its cv-qualifiers. A converting
+constructor makes an object from an object of another class when that
+class has no conversion functions. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -702,7 +708,8 @@ ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload
 resolution with several candidates, a conversion function to a class
 type in overload resolution or a constructor's argument, a conversion
-function in the operand of `?:` or with an operator function in play,
+by a constructor from a class with conversion functions, a conversion
+function with an operator function in play,
 a choice between conversion functions that ICS rules beyond rank
 decide, a friend member function of another class, a qualified friend, a
 friend that names a type, a friend function defined in a nested or

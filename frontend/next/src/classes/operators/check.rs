@@ -231,7 +231,9 @@ fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
         return None;
     }
     let c = p.nonref().class()?;
-    if a.ty.nonref().class() == Some(c) || a.ty.nonref().is_class() {
+    // A source class with conversion functions waits for a later piece.
+    let converts = crate::classes::conversion_functions::check::converting_class(cx, a).is_some_and(|k| !crate::classes::conversion_functions::check::functions(&cx.u, k).is_empty());
+    if a.ty.nonref().class() == Some(c) || converts {
         return None;
     }
     let ok = crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| {
