@@ -1904,3 +1904,19 @@ fn braced_list_arguments() {
     // A list adds no associated namespace.
     assert_eq!(rule("namespace n { struct S {}; int probe(S); } int g() { return probe({}); }"), Some("NAM-8"));
 }
+
+#[test]
+fn explicit_conditions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct S { explicit(false) S(int) {} }; S s = 1;"), None);
+    assert_eq!(rule("struct S { explicit(true) S(int) {} }; S s = 1;"), Some("CTOR-9"));
+    assert_eq!(rule("struct S { explicit(2) S(int); };"), Some("CE-19"));
+    assert_eq!(rule("bool b = true; struct S { explicit(b) S(int); };"), Some("CTOR-9"));
+    assert_eq!(rule("struct S { S(int); }; explicit S::S(int) {}"), Some("CTOR-9"));
+    // A plain argument and a braced one copy-initialize the parameter.
+    assert_eq!(rule("struct S { explicit S(int); }; void f(S); void g() { f(1); }"), Some("PFX-16"));
+}

@@ -145,13 +145,18 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
             ("consteval", _) => s.consteval = true,
             ("constinit", _) => s.constinit = true,
             ("inline", _) => s.inline = true,
-            ("explicit", _) if cx.member_of.is_some() && !cx.has_word(d, "(") => s.explicit = true,
+            // CTOR-9: `explicit(c)` is explicit when the constant `c` is true.
+            ("explicit", _) if cx.member_of.is_some() => s.explicit = d.find("explicit_spec").is_none_or(|x| crate::classes::constructors::check::explicit_condition(cx, x)),
+            // CTOR-9: only a declaration in its class has `explicit`.
+            ("explicit", _) => {
+                cx.error(d.span, "CTOR-9", "'explicit' outside the definition of the class");
+            }
             // VIRT-2: `virtual` only in a class definition.
             ("virtual", _) if cx.member_of.is_some() => s.is_virtual = true,
             ("virtual", _) => {
                 cx.error(d.span, "VIRT-2", "'virtual' outside a class definition");
             }
-            ("friend" | "explicit", _) => {
+            ("friend", _) => {
                 s.unsupported = true;
                 cx.unsupported(d.span, format!("the specifier '{}'", word));
             }
@@ -159,7 +164,10 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
                 if let Some(Kid::Node(x)) = d.kids.first() {
                     match x.prod {
                         // CTOR-9: `explicit` on a constructor.
-                        "explicit_spec" if cx.member_of.is_some() && !cx.has_word(x, "(") => s.explicit = true,
+                        "explicit_spec" if cx.member_of.is_some() => s.explicit = crate::classes::constructors::check::explicit_condition(cx, x),
+                        "explicit_spec" => {
+                            cx.error(x.span, "CTOR-9", "'explicit' outside the definition of the class");
+                        }
                         "storage_class" if cx.first_word(x) == "register" => s.register = true,
                         "storage_class" => {
                             let w = cx.first_word(x);

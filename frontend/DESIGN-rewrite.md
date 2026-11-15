@@ -714,7 +714,9 @@ surrogate call function for each conversion function to a pointer or
 reference to function against the call operators, and the surrogate
 takes the object by a user-defined sequence. A braced list as an
 argument of a call whose name finds one function copy-list-initializes
-its parameter and adds no associated namespace. The
+its parameter and adds no associated namespace. `explicit(c)` makes a
+constructor or conversion function explicit when the constant `c`,
+converted to `bool` without narrowing, is true. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

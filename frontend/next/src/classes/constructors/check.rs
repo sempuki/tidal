@@ -742,11 +742,20 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     // CTOR-9: copy-initialization does not use an explicit constructor;
     // copy-list-initialization considers it and fails if it is chosen
     // (ILC-8).
-    if copy && !list {
-        cands.retain(|&f| !cx.u.func(f).unwrap().explicit);
-    }
+    let dropped: Vec<EntityId> = if copy && !list { cands.iter().copied().filter(|&f| cx.u.func(f).unwrap().explicit).collect() } else { Vec::new() };
+    cands.retain(|f| !dropped.contains(f));
+    // CTOR-9 names the failure when only an explicit constructor was left
+    // out.
+    let none_left = |cx: &mut Check, dropped: bool| {
+        let msg = format!("no constructor of '{}' takes these arguments", cx.u.classes[c].name);
+        if dropped {
+            cx.error_cause(span, "CTOR-9", Some("CTOR-25"), format!("{} in copy-initialization, which leaves out the explicit ones", msg));
+        } else {
+            cx.error(span, "CTOR-25", msg);
+        }
+    };
     if cands.is_empty() {
-        cx.error(span, "CTOR-25", format!("no constructor of '{}' takes these arguments", cx.u.classes[c].name));
+        none_left(cx, !dropped.is_empty());
         return None;
     }
     // CPY-9, CPY-10: an object of the class itself is copied or moved,
@@ -784,7 +793,8 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     // parameter takes no user-defined conversion.
     cands.retain(|&f| crate::classes::copy_move::check::copy_or_move(cx, c, f).is_none());
     if cands.is_empty() {
-        cx.error(span, "CTOR-25", format!("no constructor of '{}' takes these arguments", cx.u.classes[c].name));
+        let dropped = dropped.iter().any(|&f| crate::classes::copy_move::check::copy_or_move(cx, c, f).is_none());
+        none_left(cx, dropped);
         return None;
     }
     let name = cx.u.classes[c].name.to_string();
@@ -936,5 +946,44 @@ pub fn default_init(cx: &mut Check, ty: &QType, span: Span) -> Option<Init> {
             Some(Init::List((0..*n).map(|_| one.clone()).collect()))
         }
         _ => Some(Init::Default),
+    }
+}
+
+/// CTOR-9: the condition of `explicit(c)` in the `explicit_spec` `n`, a
+/// constant of type `bool` whose conversion does not narrow (CE-19).
+/// `explicit` alone is true, and so is a condition with an error.
+pub fn explicit_condition(cx: &mut Check, n: &Node) -> bool {
+    let Some(c) = n.kids.iter().find_map(|k| match k {
+        crate::syntax::Kid::Node(x) => Some(x),
+        _ => None,
+    }) else {
+        return true;
+    };
+    let e = expr(cx, c);
+    let e = crate::foundations::values::check::rvalue(cx, e);
+    if e.ty.is_error() {
+        return true;
+    }
+    let to = QType::bool();
+    if e.ty.t != to.t {
+        if !(e.ty.is_arithmetic() || e.ty.is_enum()) {
+            cx.error_cause(e.span, "CTOR-9", Some("CE-11"), format!("the condition of 'explicit' has type {}, not bool", e.ty.show()));
+            return true;
+        }
+        if crate::foundations::conversions::check::is_narrowing(cx, &e, &to) {
+            cx.error(e.span, "CE-19", format!("the condition of 'explicit' narrows from {} to bool", e.ty.show()));
+            return true;
+        }
+    }
+    let b = crate::foundations::conversions::check::contextual_bool(cx, e, "CTOR-9");
+    if b.ty.is_error() {
+        return true;
+    }
+    match crate::foundations::constant_evaluation::check::evaluate(cx, &b) {
+        Ok(v) => v.truthy(),
+        Err(why) => {
+            crate::foundations::constant_evaluation::check::report(cx, b.span, "CTOR-9", why);
+            true
+        }
     }
 }

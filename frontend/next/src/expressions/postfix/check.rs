@@ -415,10 +415,7 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
                 // constructor takes no part.
                 let n_errs = cx.u.diags.len();
                 let Some(e) = crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7") else {
-                    if let Some(d) = cx.u.diags[n_errs..].iter_mut().find(|d| d.sev == crate::diag::Severity::Error && d.rule == Some("CTOR-9")) {
-                        d.rule = Some("PFX-16");
-                        d.cause = Some("CTOR-9");
-                    }
+                    explicit_in_argument(cx, n_errs);
                     return bad(span);
                 };
                 out.push(e);
@@ -429,6 +426,16 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
     crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
     let callee = Expr::new(EK::Func(f), QType::new(Type::Func(func.ty.clone())), Cat::L, nspan);
     finish_call(cx, callee, Some(f), out, span, None)
+}
+
+/// PFX-16: a parameter is copy-initialized, so an explicit constructor
+/// takes no part. The first error after `from` that names CTOR-9 names
+/// PFX-16 instead.
+fn explicit_in_argument(cx: &mut Check, from: usize) {
+    if let Some(d) = cx.u.diags[from..].iter_mut().find(|d| d.sev == crate::diag::Severity::Error && d.rule == Some("CTOR-9")) {
+        d.rule = Some("PFX-16");
+        d.cause = Some("CTOR-9");
+    }
 }
 
 /// A call of the value `f`: a function, a pointer to function, or a class
@@ -851,9 +858,13 @@ pub fn finish_call(cx: &mut Check, f: Expr, target: Option<EntityId>, args: Vec<
         if k < args.len() {
             let a = args[k].clone();
             if k < n {
+                let n_errs = cx.u.diags.len();
                 match crate::declarations::initialization::forms::check::init_parameter(cx, a, &fty.params[k]) {
                     Some(arg) => out.push(arg),
-                    None => return bad(span),
+                    None => {
+                        explicit_in_argument(cx, n_errs);
+                        return bad(span);
+                    }
                 }
             } else {
                 // An argument for the ellipsis is promoted (PFX-7).
