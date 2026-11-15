@@ -348,7 +348,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: None, span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -753,7 +753,12 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
     });
     incomplete
         || dependent_base
-        || words.iter().any(|w| matches!(*w, "template" | "requires" | "concept"))
+        || words.iter().any(|w| matches!(*w, "requires" | "concept"))
+        // `x.template f<A>()`: a dependent member template (DEP rules),
+        // and `x.f<A>()`, which needs `template` when `x` is dependent
+        // (DEP-24).
+        || words.windows(2).any(|w| matches!(w[0], "." | "->" | "::") && w[1] == "template")
+        || words.windows(3).any(|w| matches!(w[0], "." | "->") && is_word(w[1]) && w[2] == "<")
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
         || words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x)))
@@ -786,9 +791,10 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     let saved_scope = cx.scope;
     let saved_func = cx.func.take();
     let saved_limit = cx.lookup_limit.replace(tpl.limit);
-    // The specialization is a function of the template's namespace, made
-    // outside the class, lambda, or operand that the call stands in.
-    let saved_member = cx.member_of.take();
+    // The specialization is a function of the template's namespace or
+    // class, made outside the class, lambda, or operand that the call
+    // stands in.
+    let saved_member = std::mem::replace(&mut cx.member_of, tpl.class);
     let saved_lambdas = std::mem::take(&mut cx.lambdas);
     let saved_unevaluated = std::mem::replace(&mut cx.unevaluated, 0);
     let saved_default = std::mem::replace(&mut cx.default_arg, false);
@@ -1316,6 +1322,62 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
     let limit = cx.u.entities.len() + 1;
     cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
+    true
+}
+
+/// TPL rules: `template <class T> R f(P...) { ... }` in the class `class`,
+/// a member function template. False for another form, such as a
+/// constructor template.
+pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &Node, access: crate::sem::Access) -> bool {
+    // TPL-2: no member template in a local class.
+    if cx.func.is_some() {
+        cx.error(m.span, "TPL-2", "a member template of a local class");
+        return true;
+    }
+    let Some((params, defaults)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    // A default sees the class incomplete (CLS-2), which waits for a
+    // later piece.
+    if defaults.iter().any(|d| d.is_some()) {
+        return false;
+    }
+    let Some(inner) = m.child("member_decl") else { return false };
+    let Some(fd) = inner.child("function_definition") else { return false };
+    // Operator and conversion function templates wait for a later piece.
+    if fd.child("declarator").is_some_and(|d| d.find("operator_function_id").is_some() || d.find("conversion_function_id").is_some() || d.find("literal_operator_id").is_some()) {
+        return false;
+    }
+    let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
+    if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
+        return true;
+    }
+    if dependent_forms(cx, fd, &params) || cx.words(ds).iter().any(|w| matches!(*w, "virtual" | "friend")) {
+        return false;
+    }
+    let saved = cx.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    declare_params(cx, ts, &params);
+    let marks = cx.u.diags.len();
+    let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+    let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    cx.leave(saved);
+    let fty = d.ty.func().cloned();
+    let (Some((name, span)), Some(fty)) = (d.name.clone(), fty) else {
+        cx.u.diags.truncate(marks);
+        return false;
+    };
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || d.placeholder.is_some() || specs.is_static {
+        cx.u.diags.truncate(marks);
+        return false;
+    }
+    // A name that the class declares already waits for a later piece.
+    if !names::declared_here(cx, saved, &name).is_empty() || name.starts_with('~') || name.as_ref() == cx.u.classes[class].name.as_ref() {
+        return false;
+    }
+    let id = cx.u.templates.len();
+    let limit = cx.u.entities.len() + 1;
+    cx.u.templates.push(FnTemplate { name: name.clone(), defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: Some(class), span, limit });
+    let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
+    cx.u.access.insert(e, access);
     true
 }
 

@@ -2689,3 +2689,14 @@ fn alias_templates() {
     assert_eq!(rule("enum class Color { red }; template <class T> using Paint = Color; using enum Paint<int>; static_assert(red == Color::red);"), None);
     assert_eq!(rule("template <class T = int, class U> using First = T;"), Some("TPL-14"));
 }
+
+#[test]
+fn member_function_templates() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct S { int base = 10; template <class T> int f(T v) const { return base + sizeof(v); } int g() const { return f('a'); } }; template <class U> struct W { U u; template <class T> U add(T t) { return u + t; } }; int main() { S s; W<int> w{5}; return s.f(1) + s.g() + w.add(2L) + s.f<short>(1); }"), RunOutcome::Result(44));
+    assert_eq!(rule("int use() { struct Local { template <class T> T get(T v) { return v; } }; return Local().get(1); }"), Some("TPL-2"));
+}

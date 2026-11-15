@@ -517,7 +517,12 @@ of the declarations of one template add up; one parameter gets one
 default, and outside a function template each parameter after a default
 has one. An alias template's specialization is its type-id checked
 with the parameters bound, one type for each list of arguments, and a
-dependent type for dependent arguments. A function template can be declared before
+dependent type for dependent arguments. A class can have member
+function templates with no default, other than operators, conversion
+functions, constructors, and destructors; a specialization is a member
+of the class, and a call through an object or by name in a member, with
+or without explicit arguments, takes it. A local class has no member
+template. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a
@@ -563,7 +568,8 @@ points of instantiation of model section 3 are not there yet, a
 template that nothing specializes and that a trial specialization with
 `int` for each parameter does not check without a diagnostic, an error in a
 specialization, a call whose argument-dependent lookup would see later
-declarations, a definition with a dependent form (`template`, a name
+declarations, a definition with a dependent form (`.template`, a
+member named with template arguments after `.` or `->`, a name
 qualified by a parameter, a base whose template arguments hold a
 parameter) or an incomplete class, and a name that a
 function template shares with another declaration leave the unit

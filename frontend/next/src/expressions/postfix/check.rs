@@ -812,6 +812,8 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     // A qualified name calls the function it names, not its final
     // overrider (VIRT-1).
     let mut qualified = false;
+    // `x.f<A>(...)`: explicit arguments of a member function template.
+    let mut member_tid: Option<Node> = None;
     let (object, scope, name, nspan) = if callee.prod == "postfix_expr" && matches!(callee.kids.get(1).map(|k| cx.text(k)), Some("." | "->")) {
         let (Some(Kid::Node(base)), Some(Kid::Node(id))) = (callee.kids.first(), callee.kids.get(2)) else { return None };
         let arrow = cx.text(&callee.kids[1]) == "->";
@@ -832,6 +834,10 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         }
         // A conversion function called by its name (CVF-1).
         let name = match u.kids.first() {
+            Some(Kid::Node(t)) if t.prod == "template_id" => {
+                member_tid = Some(t.clone());
+                cx.source(t.child("template_name")?)
+            }
             Some(Kid::Node(cf)) if cf.prod == "conversion_function_id" => {
                 let t = crate::classes::conversion_functions::check::target(cx, cf);
                 if t.is_error() {
@@ -882,7 +888,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
                 return Some(call_value(cx, m, args.to_vec(), span));
             }
             let decl = cx.u.func(funcs[0]).and_then(|f| f.class).unwrap_or(k);
-            return member_call_tail(cx, Some(obj), cx.u.classes[decl].scope, name, id.span, true, args, span);
+            return member_call_tail(cx, Some(obj), cx.u.classes[decl].scope, name, id.span, true, args, span, None);
         }
         let (found, decl) = match crate::classes::derived::check::member_lookup(cx, c, &name) {
             Ok(Some(x)) => (x.ents, x.class),
@@ -892,7 +898,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
                 return Some(bad(span));
             }
         };
-        if found.is_empty() || !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
+        if found.is_empty() || !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_))) {
             // A data member that holds a function pointer, or no member.
             let m = crate::classes::members::check::member_access(cx, obj, false, id, span);
             if m.ty.is_error() {
@@ -910,6 +916,22 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             crate::foundations::names::check::Qual::Scope(s) => crate::foundations::names::check::lookup_in(cx, s, name),
             _ => return None,
         };
+        // A member function template, called by name in a member of its
+        // class: the object is `*this`.
+        let templates: Vec<crate::sem::types::ClassId> = found.iter().filter_map(|&e| match cx.u.entities[e].kind {
+            EntKind::Template(t) => cx.u.templates[t].class,
+            _ => None,
+        }).collect();
+        if !templates.is_empty() && q == crate::foundations::names::check::Qual::None {
+            let class = templates[0];
+            let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
+            let Some(t) = this else {
+                let t = cx.unsupported(span, "a member function template called by name without an object");
+                return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+            };
+            let obj = Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan);
+            return member_call_tail(cx, Some(obj), cx.u.classes[class].scope, name.to_string(), nspan, false, args, span, None);
+        }
         let members: Vec<EntityId> = found.iter().copied().filter(|&e| cx.u.func(e).is_some_and(|f| f.class.is_some())).collect();
         if members.is_empty() || members.len() != found.len() {
             return None;
@@ -938,7 +960,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         }
         (obj, cx.u.classes[class].scope, name.to_string(), nspan)
     };
-    member_call_tail(cx, object, scope, name, nspan, qualified, args, span)
+    member_call_tail(cx, object, scope, name, nspan, qualified, args, span, member_tid.as_ref())
 }
 
 /// OVL-3: a call by name of member functions with no object to give
@@ -1024,14 +1046,20 @@ pub fn call_member(cx: &mut Check, obj: Expr, name: &str, args: &[Expr], span: S
         }
         return Some(call_value(cx, m, args.to_vec(), span));
     }
-    member_call_tail(cx, Some(obj), cx.u.classes[decl].scope, name.to_string(), span, false, args, span)
+    member_call_tail(cx, Some(obj), cx.u.classes[decl].scope, name.to_string(), span, false, args, span, None)
 }
 
 /// The call of the member functions named `name` in `scope`, with the
 /// object, if any.
 #[allow(clippy::too_many_arguments)]
-fn member_call_tail(cx: &mut Check, object: Option<Expr>, scope: crate::sem::ScopeId, name: String, nspan: Span, qualified: bool, args: &[Expr], span: Span) -> Option<Expr> {
-    let mut cands: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, scope, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+fn member_call_tail(cx: &mut Check, object: Option<Expr>, scope: crate::sem::ScopeId, name: String, nspan: Span, qualified: bool, args: &[Expr], span: Span, tid: Option<&Node>) -> Option<Expr> {
+    let here = crate::foundations::names::check::declared_here(cx, scope, &name);
+    let mut cands: Vec<EntityId> = here.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+    // DED-P3: a member function template adds the specialization that
+    // its deduced arguments give.
+    if here.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) {
+        cands.extend(crate::templates::declarations::check::call_candidates(cx, &here, tid, args));
+    }
     if let Some(c) = cx.u.class_of_scope(scope) {
         crate::classes::derived::check::hide_brought(cx, c, &mut cands);
     }

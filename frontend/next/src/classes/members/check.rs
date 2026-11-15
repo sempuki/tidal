@@ -821,6 +821,14 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
             }
             true
         }
+        // A member function template (TPL rules).
+        "template_head" => {
+            if crate::templates::declarations::check::member_template(cx, id, m, *access) {
+                return true;
+            }
+            cx.unsupported(m.span, "a member template of this form (build step 5)");
+            false
+        }
         // ENUM-9: `using enum E;` in a class makes the enumerators members.
         "using_enum_decl" => {
             crate::declarations::enumerations::check::using_enum_decl(cx, first);
