@@ -97,8 +97,30 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[(Rc<str>, Span)]) -> bool {
     // DEP-31: a class that is incomplete at the definition and complete
     // at a specialization needs the definition checks.
     let incomplete = words.iter().any(|w| names::lookup(cx, w).iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Class(c) if !cx.u.classes[c].complete)));
+    // `decltype` of an operand that names no parameter is independent.
+    let mut dependent_decltype = false;
+    for (k, w) in words.iter().enumerate() {
+        if *w != "decltype" {
+            continue;
+        }
+        let mut depth = 0;
+        for x in &words[k + 1..] {
+            match *x {
+                "(" => depth += 1,
+                ")" => {
+                    depth -= 1;
+                    if depth == 0 {
+                        break;
+                    }
+                }
+                _ if params.iter().any(|(p, _)| p.as_ref() == *x) => dependent_decltype = true,
+                _ => {}
+            }
+        }
+    }
     incomplete
-        || words.iter().any(|w| matches!(*w, "typename" | "template" | "requires" | "decltype" | "concept"))
+        || dependent_decltype
+        || words.iter().any(|w| matches!(*w, "typename" | "template" | "requires" | "concept"))
         || words.windows(2).any(|w| w[1] == "::" && params.iter().any(|(p, _)| p.as_ref() == w[0]))
 }
 
@@ -189,7 +211,7 @@ pub fn end_of_unit(cx: &mut Check) {
     let mut unused: Vec<(Rc<str>, Span)> = cx.u.templates.iter().filter(|t| t.specs.is_empty()).map(|t| (t.name.clone(), t.span)).collect();
     unused.extend(cx.u.class_templates.iter().filter(|t| t.specs.is_empty()).map(|t| (t.name.clone(), t.span)));
     for (name, span) in unused {
-        cx.unsupported(span, format!("the function template '{}', which nothing specializes (its definition is not checked yet)", name));
+        cx.unsupported(span, format!("the template '{}', which nothing specializes (its definition is not checked yet)", name));
     }
 }
 
@@ -415,14 +437,25 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) 
     let Some(ds) = sd.child("decl_specifiers") else { return false };
     let specs: Vec<&Node> = ds.children("decl_specifier").collect();
     let [one] = specs[..] else { return false };
-    let Some(cd) = one.child("type_specifier").and_then(|t| t.child("class_def")) else { return false };
-    let Some(head) = cd.child("class_head") else { return false };
+    let Some(cd) = one.child("type_specifier").and_then(|t| t.child("class_def").or_else(|| t.child("union_def"))) else { return false };
+    // A `union_def` is its own head (`classes/unions`).
+    let head = if cd.prod == "union_def" { cd } else {
+        let Some(h) = cd.child("class_head") else { return false };
+        h
+    };
     if head.child("nested_name").is_some() || head.child("template_id").is_some() {
         return false;
     }
     let Some(name) = head.child("class_name").map(|c| cx.source(c)) else { return false };
     let saved = cx.scope;
     if !names::declared_here(cx, saved, &name).is_empty() || dependent_forms(cx, cd, &params) {
+        return false;
+    }
+    // LSUP rules: `std::initializer_list`, which the language builds
+    // braced lists into (ILC rules), and `std::allocator`, whose
+    // allocation constant evaluation allows (LSUP-11), are classes that
+    // the first pieces of build step 5 do not model.
+    if matches!(&*name, "initializer_list" | "allocator") && cx.u.scopes[saved].name.as_ref() == "std" {
         return false;
     }
     let id = cx.u.class_templates.len();
@@ -436,11 +469,21 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) 
 /// with type arguments, made the first time. None when the name is no
 /// class template.
 pub fn class_template_use(cx: &mut Check, tid: &Node) -> Option<QType> {
+    class_template_use_in(cx, tid, None)
+}
+
+/// `class_template_use` for a template-id after the qualifier that names
+/// the scope `scope`.
+pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::sem::ScopeId>) -> Option<QType> {
     let span = tid.span;
     let name = cx.source(tid.child("template_name")?);
+    let found = match scope {
+        Some(s) => names::lookup_in(cx, s, &name),
+        None => names::lookup(cx, &name),
+    };
     // Inside a specialization, the class's own name finds the class,
     // which leads to its template (DEP-15).
-    let v = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+    let v = found.into_iter().find_map(|e| match cx.u.entities[e].kind {
         EntKind::ClassTemplate(v) => Some(v),
         EntKind::Class(c) => cx.u.class_templates.iter().position(|t| t.specs.iter().any(|&(_, k)| k == c)),
         _ => None,

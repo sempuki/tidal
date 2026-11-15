@@ -400,6 +400,11 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
             for (_, b) in cx.u.bases(*c) {
                 associated(cx, &crate::sem::types::QType::new(Type::Class(b)), out);
             }
+            // NAM-27: and of the template arguments of a specialization.
+            let args: Vec<crate::sem::types::QType> = cx.u.class_templates.iter().flat_map(|t| t.specs.iter()).filter(|(_, k)| k == c).flat_map(|(a, _)| a.clone()).collect();
+            for a in args {
+                associated(cx, &a, out);
+            }
         }
         Type::Enum(e) => {
             let mut s = cx.u.scopes[cx.u.enums[*e].scope].parent;

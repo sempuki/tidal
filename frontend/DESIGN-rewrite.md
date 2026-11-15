@@ -492,7 +492,10 @@ the one partial specialization whose pattern its arguments match, or
 the primary, and makes a constexpr variable from it. A class template
 of that kind has a specialization for each list of type arguments, the
 class that its definition makes with the parameters bound, which is
-recorded before its body so that the body names it. A reference that
+recorded before its body so that the body names it. A union template
+works the same way, a template-id can follow a qualifier, and the
+namespaces of a specialization's arguments are associated for
+argument-dependent lookup. A reference that
 an alias or a template argument gives collapses with one that a
 declarator adds. A call deduces the arguments from the arguments of
 the call, after any explicit ones, and the specialization is the

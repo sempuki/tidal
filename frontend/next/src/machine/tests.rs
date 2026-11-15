@@ -2487,3 +2487,15 @@ fn class_templates_with_type_parameters() {
     assert_eq!(rule("template <class T> struct Box { T v; }; static_assert(sizeof(Box<char>) == 1 && sizeof(Box<long>) == 8);"), None);
     assert_eq!(rule("template <class T> struct Box { T v; };"), Some("unsupported"));
 }
+
+#[test]
+fn union_and_qualified_class_templates() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class T> union W { T x; char c; }; static_assert(sizeof(W<int>) == 4); namespace lib { template <class E> class Box { decltype(sizeof 0) n_; public: constexpr Box() : n_(0) {} }; } lib::Box<int> b;"), None);
+    // The namespaces of a specialization's arguments are associated.
+    assert_eq!(rule("namespace t { template <class X> struct box {}; } namespace n { struct S {}; int probe(t::box<S>) { return 1; } } int read() { return probe(t::box<n::S>{}); }"), None);
+}
