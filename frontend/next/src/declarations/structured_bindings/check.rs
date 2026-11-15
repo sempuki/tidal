@@ -226,6 +226,10 @@ fn class_bindings(cx: &mut Check, e: Expr, k: crate::sem::types::ClassId, ids: &
         let i = Init::Ref(at.clone());
         let id = names::declare_in(cx, scope, name, EntKind::Var(Var { used: false, ..var(QType::lref(at.ty.clone()), storage, Some(i.clone())) }), *sp, Linkage::None);
         cx.bindings.insert(id);
+        // SB-4: `decltype` of the binding is the member's declared type.
+        if let Some(t) = cx.u.field(f).map(|x| x.ty.clone()).filter(|t| t.is_ref()) {
+            cx.binding_decl.insert(id, t);
+        }
         // SB-10: a binding to a bit-field names the bit-field.
         if cx.u.field(f).is_some_and(|x| x.width.is_some()) {
             cx.bit_bindings.insert(id, at);

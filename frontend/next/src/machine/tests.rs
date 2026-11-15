@@ -2536,3 +2536,14 @@ fn conditional_throw_and_class_cv() {
     let same = "template <class T, class U> constexpr bool same = false; template <class T> constexpr bool same<T, T> = true; template <class T> T&& mv(T& v) { return static_cast<T&&>(v); }";
     assert_eq!(rule(&format!("{} struct B {{}}; B b; const B f{{}}; B make(); int i; const int ci = 0; extern bool c; static_assert(same<decltype(c ? f : make()), const B>); static_assert(same<decltype(c ? b : mv(f)), const B>); static_assert(same<decltype(c ? mv(i) : mv(ci)), const int&&>);", same)), None);
 }
+
+#[test]
+fn decltype_of_names_and_trailing_returns() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
+    assert_eq!(rule(&format!("{} auto add(int a, long b) -> decltype(a + b) {{ return a + b; }} static_assert(same<decltype(add(1, 2)), long>); struct S {{ int m; }}; static_assert(same<decltype(S::m), int>); int g = 0; struct R {{ int& r; }}; R rr{{g}}; auto [x] = rr; static_assert(same<decltype(x), int&>); void f() {{ int y = 0; [=] {{ static_assert(same<decltype(y), int>); static_assert(same<decltype((y)), const int&>); }}(); }}", same)), None);
+}

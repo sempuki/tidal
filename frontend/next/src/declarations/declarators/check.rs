@@ -576,7 +576,17 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
         }
     }
     if let Some(tr) = n.child("type_id") {
+        // DCL-21: the trailing return type sees the parameters.
+        let saved = cx.scope;
+        let s = cx.enter(crate::sem::ScopeKind::Function);
+        for p in &params {
+            if let Some((name, span)) = &p.name {
+                let v = crate::sem::Var { ty: p.ty.clone(), storage: crate::sem::Storage::Automatic, constexpr: false, constinit: false, inline: false, is_extern: false, is_static: false, param: true, defined: true, init: None, const_init: false, used: true, maybe_unused: true, align: None };
+                names::declare_in(cx, s, name, crate::sem::EntKind::Var(v), *span, crate::sem::Linkage::None);
+            }
+        }
         let rt = type_id(cx, tr);
+        cx.scope = saved;
         if d.placeholder.is_none() || !ret.is_error() {
             cx.error(n.span, "DCL-21", "a trailing return type needs 'auto' at the start");
         }

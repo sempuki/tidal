@@ -66,12 +66,29 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
     if e.ty.is_error() {
         return QType::error();
     }
-    let declared = match &e.k {
+    let mut declared = match &e.k {
+        EK::Var(id) if cx.binding_decl.contains_key(id) => cx.binding_decl.get(id).cloned(),
         EK::Var(id) => cx.u.var(*id).map(|v| if cx.bindings.contains(id) { v.ty.nonref() } else { v.ty.clone() }),
         EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
         _ => None,
     };
     let unparenthesized_name = matches!(c.prod, "primary" | "id_expression") && !e.paren;
+    // DTY-1: a name of a variable that a lambda captures, or of a data
+    // member named without an object, gives the entity's declared type.
+    if unparenthesized_name && declared.is_none() {
+        let id = if c.prod == "id_expression" { Some(c) } else { c.child("id_expression") };
+        if let Some(id) = id {
+            let marks = cx.u.diags.len();
+            if let Some((found, _, _, _)) = crate::expressions::primary::check::find(cx, id) {
+                declared = found.first().and_then(|&f| match &cx.u.entities[f].kind {
+                    crate::sem::EntKind::Var(v) if !cx.bindings.contains(&f) => Some(v.ty.clone()),
+                    crate::sem::EntKind::Field(x) => Some(x.ty.clone()),
+                    _ => None,
+                });
+            }
+            cx.u.diags.truncate(marks);
+        }
+    }
     // DTY-1: an unparenthesized member access names the member's
     // declared type, also a reference member's.
     let field = |x: &Expr, i: usize| x.ty.class().and_then(|k| cx.u.field_types(k).get(i).cloned());
@@ -89,6 +106,17 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
     let member_access = c.prod == "postfix_expr" && cx.words(c).iter().any(|w| matches!(*w, "." | "->")) && !e.paren;
     if member_access {
         return decltype_with(&e, member.or(declared));
+    }
+    // DTY-1, LAM-18: `decltype((x))` in a lambda that captures by copy and
+    // is not mutable, for a variable of an enclosing function, is a
+    // reference to const, as if the lambda captured it.
+    if e.paren {
+        if let (EK::Var(id), Some(l)) = (&e.k, cx.lambdas.last()) {
+            let enclosing = cx.u.var(*id).is_some_and(|v| v.storage == crate::sem::Storage::Automatic) && cx.u.entities[*id].scope != cx.u.classes[l.class].scope && crate::expressions::lambdas::check::in_lambda_body(cx);
+            if enclosing && l.default == Some(false) && !l.mutable && e.cat == crate::sem::tree::Cat::L && !e.ty.is_ref() {
+                return QType::lref(e.ty.with_cv(true, e.ty.v));
+            }
+        }
     }
     decltype_with(&e, if unparenthesized_name { declared } else { None })
 }

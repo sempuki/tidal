@@ -504,7 +504,11 @@ elements than the list wins. User-defined sequences by one conversion
 function compare their reference bindings. A conditional expression with
 a throw expression as one operand has the type and category of the
 other, two xvalues of one type give an xvalue of the more qualified
-type, and a class prvalue result keeps its cv-qualifiers. A reference that
+type, and a class prvalue result keeps its cv-qualifiers. A trailing
+return type sees the parameters. `decltype` of a name gives the declared
+type of a captured variable, of a data member named without an object,
+and of the reference member that a structured binding names, and
+`decltype((x))` in a lambda that copies is a reference to const. A reference that
 an alias or a template argument gives collapses with one that a
 declarator adds. A call deduces the arguments from the arguments of
 the call, after any explicit ones, and the specialization is the
