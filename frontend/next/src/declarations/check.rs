@@ -21,6 +21,8 @@ use crate::syntax::{Kid, Node};
 pub struct Specs {
     /// The type the type specifiers give, before the declarator.
     pub ty: Option<QType>,
+    /// `friend` on a member declaration of a type or a function (ACC-5).
+    pub friend: bool,
     /// `auto` or `decltype(auto)` (`declarations/auto`).
     pub placeholder: Option<auto::check::Placeholder>,
     pub typedef: bool,
@@ -156,6 +158,7 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
             ("virtual", _) => {
                 cx.error(d.span, "VIRT-2", "'virtual' outside a class definition");
             }
+            ("friend", _) if cx.member_of.is_some() => s.friend = true,
             ("friend", _) => {
                 s.unsupported = true;
                 cx.unsupported(d.span, format!("the specifier '{}'", word));

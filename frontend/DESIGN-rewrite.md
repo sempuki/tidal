@@ -778,7 +778,8 @@ direct-initialization of a reference takes an explicit conversion
 function. A function of a class's name hides the class, so the form of a
 functional cast calls the function. `new T()` value-initializes a
 class without constructors. A member declared with a qualified function
-type takes its qualifiers. The
+type takes its qualifiers. `friend T;` befriends a class and ignores
+another type. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

@@ -555,6 +555,26 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                 cx.u.classes[id].fields.push(fid);
                 return true;
             }
+            // ACC-5: `friend T;` befriends a class and ignores another
+            // type. VIRT-9: a friend function is not pure.
+            if first.children("decl_specifier").any(|d| cx.first_word(d) == "friend") {
+                let specs = crate::declarations::check::decl_specifiers(cx, first, Default::default());
+                if specs.unsupported {
+                    return false;
+                }
+                if m.children("member_declarator").next().is_none() {
+                    if let Some(f) = specs.ty.as_ref().and_then(|t| t.class()) {
+                        cx.u.friend_classes.entry(id).or_default().push(f);
+                    }
+                    return true;
+                }
+                if m.find("pure_specifier").is_some() || m.children("member_declarator").any(|md| cx.words(md).ends_with(&["=", "0"])) {
+                    cx.error(m.span, "VIRT-9", "a friend function declared pure");
+                    return true;
+                }
+                cx.unsupported(m.span, "a friend declaration of this form (build step 4)");
+                return false;
+            }
             if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator" | "bitfield" | "attribute_spec" | "alignment_specifier"))) {
                 cx.unsupported(m.span, "a member of this form (build step 4)");
                 return false;
@@ -672,6 +692,11 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                     return false;
                 }
                 if d.ty.is_func() {
+                    // DEL-3: `= delete` has no reason in parentheses.
+                    if md.child("member_init").is_some_and(|mi| mi.find("delete_expr").is_some_and(|d| d.find("primary").is_some_and(|p| cx.first_word(p) == "("))) {
+                        cx.error(md.span, "DEL-3", "a deleted definition with a reason in parentheses");
+                        return true;
+                    }
                     if md.child("member_init").is_some() {
                         cx.unsupported(md.span, "a pure, defaulted, or deleted member function (build step 4)");
                         return false;
@@ -699,8 +724,13 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                     }
                     continue;
                 }
-                if specs.constexpr || specs.inline {
-                    cx.unsupported(md.span, "constexpr or inline on a non-static data member (build step 4)");
+                // INL-2: no `inline` on a non-static data member.
+                if specs.inline {
+                    cx.error(md.span, "INL-2", "inline on a non-static data member");
+                    return true;
+                }
+                if specs.constexpr {
+                    cx.unsupported(md.span, "constexpr on a non-static data member (build step 4)");
                     return false;
                 }
                 // CLS-9: no `mutable` on a reference member.

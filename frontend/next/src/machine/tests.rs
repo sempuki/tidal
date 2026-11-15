@@ -2355,3 +2355,16 @@ fn new_value_initializes_a_class() {
 fn members_of_qualified_function_types() {
     assert_eq!(run("using G = int() &&; using F = int() const; struct S { G take; F get; int v = 4; }; int S::take() && { return v; } int S::get() const { return v + 1; } G S::* pm = &S::take; F S::* pg = &S::get; int main() { S s; return (S{}.*pm)() * 10 + (s.*pg)(); }"), RunOutcome::Result(45));
 }
+
+#[test]
+fn friend_types_and_member_specifier_errors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct R; using A = R; class C { int s = 2; friend A; friend int; }; struct R { int get(const C& c) { return c.s; } }; int main() { return R{}.get(C{}); }"), RunOutcome::Result(2));
+    assert_eq!(rule("struct S { friend void f() = 0; };"), Some("VIRT-9"));
+    assert_eq!(rule("struct S { inline int v = 0; };"), Some("INL-2"));
+    assert_eq!(rule("struct S { void f() = delete(\"use g\"); };"), Some("DEL-3"));
+}
