@@ -44,6 +44,12 @@ pub fn expr(cx: &mut Check, n: &Node) -> Expr {
             Expr::new(EK::Int(0), t, Cat::PR, n.span)
         }
         "throw_expr" => crate::exceptions::throw::check::throw_expr(cx, n),
+        "fold_expr" => crate::templates::packs::check::fold_expr(cx, n),
+        // An operand that a fold checked already.
+        "prechecked" => match cx.prechecked.pop_front() {
+            Some(e) => return e,
+            None => error(cx, n),
+        },
         "decltype_spec" | "decltype_expr" => {
             let t = decltype::check::decltype_spec(cx, n);
             Expr::new(EK::Int(0), t, Cat::PR, n.span)

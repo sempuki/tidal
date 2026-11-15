@@ -105,3 +105,110 @@ pub fn arguments(cx: &mut Check, list: Option<&Node>) -> Option<Vec<Expr>> {
     }
     Some(out)
 }
+
+/// PRIM-27: a fold `( E op ... )`, `( ... op E )`, `( E op ... op I )`, or
+/// `( I op ... op E )`: the operator applied between the elements of the
+/// expansion of `E`, right to left for a right fold and left to right
+/// for a left fold, with `I` at the far end. An empty unary fold of `&&`
+/// is `true`, of `||` `false`, and of `,` `void()` (PACK-12).
+pub fn fold_expr(cx: &mut Check, n: &Node) -> Expr {
+    use crate::sem::tree::{Cat, EK};
+    let span = n.span;
+    let unsupported = |cx: &mut Check, why: &str| {
+        let t = cx.unsupported(span, why.to_string());
+        Expr::new(EK::Int(0), t, Cat::PR, span)
+    };
+    let kids: Vec<&Kid> = n.kids.iter().filter(|k| !matches!(k, Kid::Tok(_)) || cx.text(k) == "...").collect();
+    let Some(ell) = kids.iter().position(|k| matches!(k, Kid::Tok(_))) else { return unsupported(cx, "a fold of this form") };
+    let node = |k: &&Kid| match k {
+        Kid::Node(c) => Some(c.clone()),
+        _ => None,
+    };
+    let ops: Vec<Node> = kids.iter().filter_map(node).filter(|c| c.prod == "fold_op").collect();
+    let operands: Vec<Node> = kids.iter().filter_map(node).filter(|c| c.prod != "fold_op").collect();
+    let Some(op) = ops.first() else { return unsupported(cx, "a fold of this form") };
+    let Some(&op_tok) = op.kids.iter().find_map(|k| match k {
+        Kid::Tok(t) => Some(t),
+        _ => None,
+    }) else {
+        return unsupported(cx, "a fold of this form");
+    };
+    let text = cx.toks[op_tok].text.clone();
+    // A pattern before `...` makes a right fold; the other operand of a
+    // binary fold is its initial value.
+    let first_is_operand = kids.first().is_some_and(|k| matches!(k, Kid::Node(c) if c.prod != "fold_op"));
+    let (pattern, init, right) = match operands.as_slice() {
+        [e] => (e.clone(), None, first_is_operand && ell > 0),
+        [a, b] => {
+            if !packs_in(cx, a).is_empty() {
+                (a.clone(), Some(b.clone()), true)
+            } else {
+                (b.clone(), Some(a.clone()), false)
+            }
+        }
+        _ => return unsupported(cx, "a fold of this form"),
+    };
+    let Some(mut es) = expand(cx, &pattern, |cx, p| crate::expressions::check::expr(cx, p)) else { return unsupported(cx, "a fold whose pattern names no pack that the front end binds") };
+    if let Some(i) = &init {
+        let x = crate::expressions::check::expr(cx, i);
+        if right {
+            es.push(x);
+        } else {
+            es.insert(0, x);
+        }
+    }
+    if es.is_empty() {
+        return match text.as_str() {
+            "&&" => Expr::int(1, crate::sem::types::QType::bool(), span),
+            "||" => Expr::int(0, crate::sem::types::QType::bool(), span),
+            "," => Expr::new(EK::Int(0), crate::sem::types::QType::void(), Cat::PR, span),
+            _ => {
+                cx.error(span, "PACK-12", format!("an empty unary fold of '{}'", text));
+                crate::expressions::check::bad(span)
+            }
+        };
+    }
+    let prod = match text.as_str() {
+        "+" | "-" => "add_expr",
+        "*" | "/" | "%" => "mul_expr",
+        "<<" | ">>" => "shift_expr",
+        "<" | ">" | "<=" | ">=" => "relational_expr",
+        "==" | "!=" => "equality_expr",
+        "&" => "and_expr",
+        "^" => "xor_expr",
+        "|" => "or_expr",
+        "&&" => "logical_and_expr",
+        "||" => "logical_or_expr",
+        "," => "expression",
+        _ => return unsupported(cx, "a fold of this operator"),
+    };
+    let placeholder = |span| Kid::Node(Node { prod: "prechecked", ext: None, span, kids: Vec::new() });
+    let combine = |cx: &mut Check, a: Expr, b: Expr| -> Expr {
+        let mut a = a;
+        let mut b = b;
+        a.paren = true;
+        b.paren = true;
+        let syn = Node { prod, ext: None, span, kids: vec![placeholder(a.span), Kid::Tok(op_tok), placeholder(b.span)] };
+        cx.prechecked.push_back(a);
+        cx.prechecked.push_back(b);
+        let e = crate::expressions::check::expr(cx, &syn);
+        cx.prechecked.clear();
+        e
+    };
+    let mut it = es.into_iter();
+    let mut acc;
+    if right {
+        let mut rest: Vec<Expr> = it.collect();
+        acc = rest.pop().unwrap();
+        while let Some(x) = rest.pop() {
+            acc = combine(cx, x, acc);
+        }
+    } else {
+        acc = it.next().unwrap();
+        for x in it {
+            acc = combine(cx, acc, x);
+        }
+    }
+    acc.paren = true;
+    acc
+}

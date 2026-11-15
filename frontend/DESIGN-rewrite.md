@@ -549,7 +549,11 @@ the others for it, explicit arguments give its first elements, and a
 specialization has one parameter for each element, which the pack's
 name names (`EntKind::Pack`). `E...` in a call's arguments expands to
 one argument for each element; `sizeof...` gives the length.
-Expansions in a signature's template arguments, folds, partial ordering
+A fold applies its operator between the elements of its pattern's
+expansion, right to left or left to right, with the initial value at
+the far end; an empty unary fold of `&&`, `||`, or `,` has its value,
+and of another operator is an error. Expansions in a signature's
+template arguments, folds of assignment operators, partial ordering
 with a pack, and constant packs wait for a later piece. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a

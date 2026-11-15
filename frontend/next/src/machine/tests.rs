@@ -2766,3 +2766,14 @@ fn function_parameter_packs() {
     assert_eq!(rule("void count(int... x);"), Some("PACK-2"));
     assert_eq!(rule("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; void f(int, ...); void g(int...); static_assert(same<decltype(f), decltype(g)>);"), None);
 }
+
+#[test]
+fn fold_expressions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class... A> constexpr int f(A... a) { return (a + ...) + (... * a) + (1 + ... + a) + (a - ... - 0); } static_assert(f(1, 2, 3) == 6 + 6 + 7 + 2); template <class... A> constexpr bool all(A... a) { return (a && ...); } static_assert(all() && all(true, true) && !all(true, false)); template <class... A> constexpr int left(A... a) { return (... - a); } static_assert(left(10, 2, 3) == 5);"), None);
+    assert_eq!(rule("template <class... A> constexpr int sum(A... a) { return (a + ...); } int x = sum();"), Some("unsupported"));
+}
