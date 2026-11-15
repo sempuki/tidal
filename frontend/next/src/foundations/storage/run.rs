@@ -42,10 +42,12 @@ pub fn offset(m: &Machine, p: &Ptr) -> i64 {
                 off += i * size(m, &e);
                 t = (*e).clone();
             }
+            // The position of a virtual base is that of the complete
+            // object's layout.
             Type::Class(c) => {
                 let offs = m.target.layout(m.u, c).map(|l| l.2).unwrap_or_default();
                 off += offs.get(i as usize).copied().unwrap_or(0) as i64;
-                t = m.u.field_types(c).get(i as usize).cloned().unwrap_or(t);
+                t = m.u.object_types(c).get(i as usize).cloned().unwrap_or(t);
             }
             _ => off += i * size(m, &t),
         }
@@ -66,17 +68,18 @@ fn same_or_counterpart(a: &QType, b: &QType) -> bool {
 /// at byte `off` of the object, as a typed pointer, or None. The
 /// position one past an array element counts.
 pub fn reach(m: &Machine, obj: usize, off: i64, want: &QType) -> Option<Ptr> {
-    fn walk(m: &Machine, t: &QType, off: i64, want: &QType, path: &mut Vec<i64>) -> Option<bool> {
+    // `complete`: the object at `t` holds its virtual bases.
+    fn walk(m: &Machine, t: &QType, off: i64, want: &QType, path: &mut Vec<i64>, complete: bool) -> Option<bool> {
         if off == 0 && same_or_counterpart(t, want) {
             return Some(false);
         }
         if let Type::Class(c) = &t.t {
             let offs = m.target.layout(m.u, *c)?.2;
-            for (k, ft) in m.u.field_types(*c).iter().enumerate() {
+            for (k, (ft, whole)) in m.parts(*c, complete).iter().enumerate() {
                 let fo = offs[k] as i64;
                 if off >= fo && off < fo + size(m, ft).max(1) {
                     path.push(k as i64);
-                    if let Some(a) = walk(m, ft, off - fo, want, path) {
+                    if let Some(a) = walk(m, ft, off - fo, want, path, *whole) {
                         return Some(a);
                     }
                     path.pop();
@@ -98,10 +101,10 @@ pub fn reach(m: &Machine, obj: usize, off: i64, want: &QType) -> Option<Ptr> {
             return None;
         }
         path.push(k);
-        walk(m, e, off % es, want, path)
+        walk(m, e, off % es, want, path, true)
     }
     let mut path = Vec::new();
-    let array = walk(m, &m.objs[obj].ty, off, want, &mut path)?;
+    let array = walk(m, &m.objs[obj].ty, off, want, &mut path, true)?;
     Some(Ptr { obj, path, array, view: None })
 }
 
@@ -266,6 +269,9 @@ pub fn encode(m: &mut Machine, ty: &QType, v: &Val) -> R<Vec<Option<u8>>> {
             if has_bitfield(m, *c) {
                 return unsup("the bytes of a class with a bit-field");
             }
+            if !m.u.classes[*c].vbases.is_empty() {
+                return unsup("the bytes of a class with a virtual base");
+            }
             let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
             let tys = m.u.field_types(*c);
             // Padding bytes have unspecified values, which a byte read
@@ -310,8 +316,8 @@ pub fn encode(m: &mut Machine, ty: &QType, v: &Val) -> R<Vec<Option<u8>>> {
 /// when a byte has none.
 pub fn decode(m: &Machine, ty: &QType, bytes: &[Option<u8>]) -> R<Val> {
     if let Type::Class(c) = &ty.t {
-        if has_bitfield(m, *c) || m.u.classes[*c].key == crate::sem::ClassKey::Union {
-            return unsup("a value of a union or of a class with a bit-field from bytes");
+        if has_bitfield(m, *c) || m.u.classes[*c].key == crate::sem::ClassKey::Union || !m.u.classes[*c].vbases.is_empty() {
+            return unsup("a value of a union, of a class with a bit-field, or of a class with a virtual base from bytes");
         }
         let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
         let mut out = Vec::new();

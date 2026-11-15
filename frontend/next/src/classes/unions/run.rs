@@ -23,7 +23,7 @@ fn union_steps(m: &Machine, p: &Ptr) -> Vec<(Ptr, ClassId, usize)> {
             out.push((Ptr { obj: p.obj, path: p.path[..k].to_vec(), array: false, view: None }, c, i as usize));
         }
         ty = match &ty.t {
-            Type::Class(c) => match m.u.field_types(*c).get(i as usize) {
+            Type::Class(c) => match m.u.object_types(*c).get(i as usize) {
                 Some(t) => t.clone(),
                 None => break,
             },

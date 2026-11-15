@@ -1583,3 +1583,10 @@ fn virtual_bases_at_run_time() {
     // A copy of a complete object copies its virtual base.
     assert_eq!(run("struct A { int v = 1; }; struct B : virtual A { int w = 2; }; int main() { B x; x.v = 6; B y = x; return y.v + y.w; }"), RunOutcome::Result(8));
 }
+
+#[test]
+fn byte_offsets_through_virtual_bases() {
+    // STG-13: a byte pointer reaches the virtual base at its offset in
+    // the complete object.
+    assert_eq!(run("struct V { int v = 7; }; struct A : virtual V { int a = 2; }; int main() { A x; char* p = reinterpret_cast<char*>(&x); V* q = &x; int off = reinterpret_cast<char*>(q) - p; int* r = reinterpret_cast<int*>(p + off); return off + *r; }"), RunOutcome::Result(19));
+}
