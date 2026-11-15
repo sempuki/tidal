@@ -1871,3 +1871,20 @@ fn reference_members_keep_temporaries() {
     assert_eq!(rule("struct H { const int& n; }; void f() { constexpr H h{4}; }"), Some("CX-2"));
     assert_eq!(rule("struct H { const int& n; }; constexpr H h{4}; static_assert(h.n == 4);"), None);
 }
+
+#[test]
+fn surrogate_call_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A call through a conversion function to a pointer to function.
+    assert_eq!(run("int add(int a, int b) { return a + b; } using F = int (*)(int, int); struct S { operator F() const { return add; } }; int main() { S s; return s(2, 3); }"), RunOutcome::Result(5));
+    // The call operator takes the object without a conversion.
+    assert_eq!(run("int other(int) { return 9; } using F = int (*)(int); struct S { int operator()(int v) { return v; } operator F() { return other; } }; int main() { S s; return s(4); }"), RunOutcome::Result(4));
+    // A conversion function qualified && does not serve an lvalue.
+    assert_eq!(rule("using F = int (*)(int); struct S { operator F() &&; }; int f(S s) { return s(1); }"), Some("OVL-35"));
+    // The call operator wins on the object and the surrogate on the argument.
+    assert_eq!(rule("using F = int (*)(int); struct S { int operator()(long); operator F(); }; int f(S s) { return s(1); }"), Some("OVL-36"));
+}

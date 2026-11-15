@@ -709,7 +709,10 @@ counts for `!`, `&&`, and `||`. A const object is not const while its
 constructor runs. A temporary that a reference member of a braced
 aggregate binds lives as long as the declared variable and ends after
 it, and one that the object of a `new` expression binds ends with the
-full expression, with a warning. The
+full expression, with a warning. A call of a class object weighs a
+surrogate call function for each conversion function to a pointer or
+reference to function against the call operators, and the surrogate
+takes the object by a user-defined sequence. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

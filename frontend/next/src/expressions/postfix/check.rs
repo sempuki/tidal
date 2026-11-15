@@ -362,29 +362,18 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
 pub fn call_value(cx: &mut Check, f: Expr, args: Vec<Expr>, span: Span) -> Expr {
     let f = deref_ref(f);
     // OVL-6: a conversion function to a pointer or reference to function
-    // gives a surrogate call function, which the front end does not
-    // model yet.
+    // gives a surrogate call function.
+    let ops = crate::expressions::lambdas::check::call_operators(cx, &f);
     if let Some(c) = crate::classes::conversion_functions::check::converting_class(cx, &f) {
-        let surrogate = crate::classes::conversion_functions::check::functions(&cx.u, c).iter().any(|&g| cx.u.func(g).is_some_and(|x| { let r = x.ty.ret.nonref(); r.is_func() || r.pointee().is_some_and(|p| p.is_func()) }));
-        if surrogate {
-            let t = cx.unsupported(span, "a call of a class object through a conversion function to a function pointer");
-            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        let convs: Vec<EntityId> = crate::classes::conversion_functions::check::functions(&cx.u, c).into_iter().filter(|&g| cx.u.func(g).is_some_and(|x| !x.explicit && to_function(&x.ty.ret).is_some())).collect();
+        if !convs.is_empty() {
+            return surrogate_call(cx, f, &ops, &convs, args, span);
         }
     }
     // LAM-1, OPR-3: a call of a class object calls its call operator.
-    let ops = crate::expressions::lambdas::check::call_operators(cx, &f);
     if !ops.is_empty() {
         let Some(op) = ovl::resolve_with(cx, &ops, Some(&f), &args, span, "operator()") else { return bad(span) };
-        let func = cx.u.func(op).unwrap().clone();
-        let fty = QType::new(Type::Func(func.ty.clone()));
-        let callee = Expr::new(EK::Func(op), fty, Cat::L, f.span);
-        let mut args = args;
-        if func.explicit_object {
-            args.insert(0, f);
-            return finish_call(cx, callee, Some(op), args, span, None);
-        }
-        let object = if func.member_static { None } else { Some(f) };
-        return finish_call(cx, callee, Some(op), args, span, object);
+        return call_operator(cx, f, op, args, span);
     }
     // PFX-17: a class object without a call operator is not callable.
     if f.ty.is_class() {
@@ -395,6 +384,122 @@ pub fn call_value(cx: &mut Check, f: Expr, args: Vec<Expr>, span: Span) -> Expr 
         _ => None,
     };
     finish_call(cx, f, target, args, span, None)
+}
+
+/// The function type that a conversion function's result `ret` calls:
+/// a pointer to function, a reference to such a pointer, or a reference
+/// to function (OVL-6).
+fn to_function(ret: &QType) -> Option<crate::sem::types::FnType> {
+    let r = ret.nonref();
+    match (&r.t, r.pointee()) {
+        (Type::Func(ft), _) => Some((**ft).clone()),
+        (_, Some(p)) => match &p.t {
+            Type::Func(ft) => Some((**ft).clone()),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// OVL-6: a call of the class object `f` whose conversion functions
+/// `convs` give surrogate call functions, weighed with the call
+/// operators `ops`. A surrogate takes the object by a user-defined
+/// sequence through its conversion function, and the arguments by the
+/// parameters of the function type it converts to.
+fn surrogate_call(cx: &mut Check, f: Expr, ops: &[EntityId], convs: &[EntityId], args: Vec<Expr>, span: Span) -> Expr {
+    use crate::overloading::conversion_sequences::check::{better, sequence, Ics, Rank};
+    let obj = f.ty.nonref();
+    let lvalue = f.cat == Cat::L;
+    // The sequences of each argument for parameters `params`, None when
+    // the candidate is not viable (OVL-22).
+    let fits = |cx: &Check, params: &[QType], defaults: usize, variadic: bool| -> Option<Vec<Ics>> {
+        if (args.len() > params.len() && !variadic) || args.len() + defaults < params.len() {
+            return None;
+        }
+        args.iter().enumerate().map(|(k, a)| match params.get(k) {
+            Some(p) => sequence(cx, a, p),
+            None => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None }),
+        }).collect()
+    };
+    // A candidate: a call operator, or a surrogate by its conversion
+    // function, with the object's sequence first.
+    let mut viable: Vec<(EntityId, bool, Vec<Ics>)> = Vec::new();
+    for &op in ops {
+        let Some(func) = cx.u.func(op) else { continue };
+        let skip = usize::from(func.explicit_object);
+        let defaults = func.defaults[skip.min(func.defaults.len())..].iter().filter(|d| d.is_some()).count();
+        let (params, variadic) = (func.ty.params[skip..].to_vec(), func.ty.variadic);
+        let Some(o) = ovl::object_sequence(cx, op, &f) else { continue };
+        if let Some(mut seqs) = fits(cx, &params, defaults, variadic) {
+            seqs.insert(0, o);
+            viable.push((op, false, seqs));
+        }
+    }
+    for &g in convs {
+        let Some(func) = cx.u.func(g) else { continue };
+        // The cv-qualifiers of the function include the object's, and its
+        // ref-qualifier takes the object's category.
+        if (obj.c && !func.obj_cv.0) || (obj.v && !func.obj_cv.1) {
+            continue;
+        }
+        let binds = match func.ref_q {
+            Some(true) => !lvalue,
+            Some(false) => lvalue || (func.obj_cv.0 && !func.obj_cv.1),
+            None => true,
+        };
+        if !binds {
+            continue;
+        }
+        let Some(ft) = to_function(&func.ty.ret) else { continue };
+        if let Some(mut seqs) = fits(cx, &ft.params, 0, ft.variadic) {
+            seqs.insert(0, Ics { rank: Rank::User, qual: false, binds: None, ellipsis: false, user: Some((g, Rank::Exact)) });
+            viable.push((g, true, seqs));
+        }
+    }
+    if viable.is_empty() {
+        cx.error(span, "OVL-35", format!("no call operator or surrogate call function of {} fits the arguments", obj.show()));
+        return bad(span);
+    }
+    // OVL-29: the best candidate is better than every other.
+    let wins = |a: &[Ics], b: &[Ics]| !a.iter().zip(b).any(|(x, y)| better(y, x)) && a.iter().zip(b).any(|(x, y)| better(x, y));
+    let mut best = 0;
+    for i in 1..viable.len() {
+        if wins(&viable[i].2, &viable[best].2) {
+            best = i;
+        }
+    }
+    if (0..viable.len()).any(|i| i != best && !wins(&viable[best].2, &viable[i].2)) {
+        cx.error(span, "OVL-36", format!("the call of an object of {} is ambiguous between its call operators and surrogate call functions", obj.show()));
+        return bad(span);
+    }
+    let (g, surrogate, _) = viable[best].clone();
+    if !surrogate {
+        return call_operator(cx, f, g, args, span);
+    }
+    let callee = crate::classes::conversion_functions::check::call(cx, g, f, span);
+    if callee.ty.is_error() {
+        return bad(span);
+    }
+    let callee = deref_ref(callee);
+    let callee = if callee.ty.is_ptr() { rvalue(cx, callee) } else { callee };
+    finish_call(cx, callee, None, args, span, None)
+}
+
+/// LAM-1, OPR-3: the call of the call operator `op` of the class object
+/// `f`.
+fn call_operator(cx: &mut Check, f: Expr, op: EntityId, args: Vec<Expr>, span: Span) -> Expr {
+    {
+        let func = cx.u.func(op).unwrap().clone();
+        let fty = QType::new(Type::Func(func.ty.clone()));
+        let callee = Expr::new(EK::Func(op), fty, Cat::L, f.span);
+        let mut args = args;
+        if func.explicit_object {
+            args.insert(0, f);
+            return finish_call(cx, callee, Some(op), args, span, None);
+        }
+        let object = if func.member_static { None } else { Some(f) };
+        finish_call(cx, callee, Some(op), args, span, object)
+    }
 }
 
 /// A call of a member function (PFX-10, ICS-13): `x.f(...)`, `p->f(...)`,
