@@ -93,7 +93,7 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             None => return QType::error(),
         }
     };
-    if head.child("template_id").is_some() {
+    if head.child("template_id").is_some() && !cx.explicit_head {
         return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
     let Some(nn) = head.child("nested_name") else { return class_def_in(cx, n, head) };
@@ -125,7 +125,12 @@ fn class_def_in(cx: &mut Check, n: &Node, head: &Node) -> QType {
     crate::declarations::attributes::check::on_class(cx, &attrs);
     let aligns: Vec<Node> = head.children("alignment_specifier").cloned().collect();
     let key = key_of(cx, head);
-    let name = head.child("class_name").map(|c| cx.source(c)).unwrap_or_default();
+    // An explicit specialization takes the template's name. The caller
+    // has entered a template scope, so the name is declared there.
+    let name = match std::mem::take(&mut cx.explicit_head) {
+        true => head.child("template_id").and_then(|t| t.child("template_name")).map(|c| cx.source(c)).unwrap_or_default(),
+        false => head.child("class_name").map(|c| cx.source(c)).unwrap_or_default(),
+    };
     // LSUP-5: `std::align_val_t` is a scoped enumeration.
     if &*name == "align_val_t" && cx.u.scopes[cx.scope].name.as_ref() == "std" && cx.u.scopes[cx.scope].parent == Some(cx.u.root) {
         cx.error(head.span, "LSUP-5", "std::align_val_t declared as a class, not as a scoped enumeration");

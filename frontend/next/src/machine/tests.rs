@@ -2559,3 +2559,15 @@ fn constant_template_parameters() {
     assert_eq!(rule("template <unsigned char N> struct Byte {}; Byte<1> ok; Byte<300> b;"), Some("TARG-13"));
     assert_eq!(rule("template <int N> const int* where() { return &N; } const int* use() { return where<1>(); }"), Some("unsupported"));
 }
+
+#[test]
+fn explicit_specializations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("template <class T> struct Box { int f() { return 1; } }; template <> struct Box<int> { int f() { return 2; } int extra; }; template <class T> constexpr int code = 0; template <> constexpr int code<char> = 7; int main() { Box<long> a; Box<int> b; return a.f() + b.f() * 10 + code<char> * 100 + code<int> + sizeof(Box<int>) * 1000; }"), RunOutcome::Result(4721));
+    assert_eq!(rule("template <class T> struct Box { T v; }; Box<int> early; template <> struct Box<int> { long v; };"), Some("TSP-6"));
+    assert_eq!(rule("template <class T> int n = 0; template <> static int n<char> = 1; int r = n<int>;"), Some("TSP-24"));
+}

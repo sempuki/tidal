@@ -73,6 +73,7 @@ pub fn declaration(cx: &mut Check, n: &Node) {
             "attribute_spec" => {}
             "empty_decl" | "null_stmt" => {}
             "template_decl" if crate::templates::declarations::check::template_decl(cx, c) => {}
+            "explicit_specialization" if crate::templates::declarations::check::explicit_specialization(cx, c) => {}
             _ => {
                 cx.unsupported(c.span, format!("a declaration of the form {}", c.prod));
             }

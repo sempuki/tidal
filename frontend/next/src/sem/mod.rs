@@ -156,6 +156,8 @@ pub struct ClassTemplate {
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
     pub specs: Vec<(Vec<types::TArg>, types::ClassId)>,
+    /// The classes of `specs` that explicit specializations define.
+    pub explicit: Vec<types::ClassId>,
     pub span: Span,
     pub limit: EntityId,
 }
@@ -178,6 +180,8 @@ pub struct VarTemplate {
     /// index of a partial), the arguments of that source, and the
     /// variable.
     pub specs: Vec<(Option<usize>, Vec<types::TArg>, EntityId)>,
+    /// The explicit specializations by their arguments (TSP rules).
+    pub explicit: Vec<(Vec<types::TArg>, EntityId)>,
     pub span: Span,
     pub limit: EntityId,
 }

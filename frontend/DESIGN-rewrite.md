@@ -499,7 +499,11 @@ class that its definition makes with the parameters bound, which is
 recorded before its body so that the body names it. A union template
 works the same way, a template-id can follow a qualifier, and the
 namespaces of a specialization's arguments are associated for
-argument-dependent lookup. Standard sequences of one rank compare by the
+argument-dependent lookup. An explicit specialization of a class
+template or a variable template is the specialization of its arguments;
+it is an error after a use that made that specialization from the
+template, with a `union` key against a class template, and with a
+storage class other than `thread_local`. Standard sequences of one rank compare by the
 tie-breakers: a conversion to `bool` loses, a nearer base wins and a
 base pointer beats `void*`, a fixed enumeration's own type wins, an
 rvalue reference to an rvalue wins before fewer cv-qualifiers do, an
