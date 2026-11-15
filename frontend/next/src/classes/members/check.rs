@@ -804,6 +804,23 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
             }
             true
         }
+        // ENUM-7: an opaque declaration of a member enumeration, with
+        // the member's access.
+        "enum_opaque" => {
+            let before = cx.u.entities.len();
+            crate::declarations::enumerations::check::enum_opaque(cx, first);
+            for e in before..cx.u.entities.len() {
+                if matches!(cx.u.entities[e].kind, EntKind::Enum(_)) {
+                    cx.u.access.insert(e, *access);
+                }
+            }
+            true
+        }
+        // ENUM-9: `using enum E;` in a class makes the enumerators members.
+        "using_enum_decl" => {
+            crate::declarations::enumerations::check::using_enum_decl(cx, first);
+            true
+        }
         _ => {
             cx.unsupported(m.span, format!("a member of the form {} (build step 4)", first.prod));
             false

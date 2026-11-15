@@ -2368,3 +2368,15 @@ fn friend_types_and_member_specifier_errors() {
     assert_eq!(rule("struct S { inline int v = 0; };"), Some("INL-2"));
     assert_eq!(rule("struct S { void f() = delete(\"use g\"); };"), Some("DEL-3"));
 }
+
+#[test]
+fn enumerations_in_classes_and_qualified_definitions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct S { enum class K : short; }; enum class S::K : short { low = 1, high = 9 }; constexpr S::K k = S::K::high; static_assert(static_cast<int>(k) == 9);"), None);
+    assert_eq!(rule("namespace lib { constexpr int start = 4; enum Plain : int; } enum lib::Plain : int { first = start + 1 }; static_assert(lib::first == 5);"), None);
+    assert_eq!(run("namespace p { enum class C { r, g, b }; } struct T { using enum p::C; }; int main() { return static_cast<int>(T::b); }"), RunOutcome::Result(2));
+}

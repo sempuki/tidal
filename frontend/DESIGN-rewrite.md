@@ -779,7 +779,8 @@ function. A function of a class's name hides the class, so the form of a
 functional cast calls the function. `new T()` value-initializes a
 class without constructors. A member declared with a qualified function
 type takes its qualifiers. `friend T;` befriends a class and ignores
-another type. The
+another type. A class can declare an opaque enumeration and `using
+enum`, and an enumeration can be defined after with a qualified name. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

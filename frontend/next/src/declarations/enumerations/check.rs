@@ -71,9 +71,27 @@ fn new_enum(cx: &mut Check, name: &str, span: Span, scoped: bool, fixed: Option<
 /// ENUM-4, ENUM-14 to ENUM-17).
 pub fn enum_def(cx: &mut Check, n: &Node) -> QType {
     let Some(head) = n.child("enum_head") else { return QType::error() };
-    if head.child("nested_name").is_some() {
-        return cx.unsupported(head.span, "a qualified enumeration name");
+    let Some(nn) = head.child("nested_name") else { return enum_def_in(cx, n, head) };
+    // ENUM-7: an enumeration declared in a namespace or a class is defined
+    // after with a qualified name, in the scope of the qualifier, so its
+    // enumerators see the members there (NAM-21).
+    let s = match names::nested_name(cx, nn) {
+        names::Qual::Scope(s) => s,
+        _ => return QType::error(),
+    };
+    let Some((name, span)) = head_name(cx, head) else { return QType::error() };
+    if !names::declared_here(cx, s, name).into_iter().any(|e| matches!(cx.u.entities[e].kind, EntKind::Enum(_))) {
+        cx.error(span, "ENUM-7", format!("the qualifier declares no enumeration '{}' to define here", name));
+        return QType::error();
     }
+    let saved = std::mem::replace(&mut cx.scope, s);
+    let t = enum_def_in(cx, n, head);
+    cx.scope = saved;
+    t
+}
+
+/// `enum_def` in the scope of the enumeration's name.
+fn enum_def_in(cx: &mut Check, n: &Node, head: &Node) -> QType {
     let scoped = cx.has_word(head, "class") || cx.has_word(head, "struct");
     let name = head_name(cx, head);
     if scoped && name.is_none() {
