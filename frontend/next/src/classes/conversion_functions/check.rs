@@ -139,7 +139,8 @@ struct Cand {
 fn result_of(cx: &Check, f: EntityId, span: Span) -> Expr {
     let ret = cx.u.func(f).map(|x| x.ty.ret.clone()).unwrap_or_else(QType::error);
     let (ty, cat) = match &ret.t {
-        Type::Ref(inner, rv) => ((**inner).clone(), if *rv { Cat::X } else { Cat::L }),
+        // A function is an lvalue also through an rvalue reference.
+        Type::Ref(inner, rv) => ((**inner).clone(), if *rv && !inner.is_func() { Cat::X } else { Cat::L }),
         _ => (ret.unqual_top(), Cat::PR),
     };
     Expr::new(EK::Int(1), ty, cat, span)

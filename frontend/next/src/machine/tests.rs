@@ -2207,3 +2207,14 @@ fn thread_local_objects_with_constructors() {
     assert_eq!(run("int made = 0; struct L { L() { ++made; } }; struct C { int t; C() : t(5) { ++made; } }; thread_local L l; thread_local int k = 3; thread_local C c; int main() { int a = k; int b = made; int t = c.t; return a * 100 + b * 10 + made + t; }"), RunOutcome::Result(307));
     assert_eq!(run("int made = 0; struct K { int h = 0; K() { ++made; } }; int look() { thread_local K k; return ++k.h; } int main() { int before = made; look(); return before * 10 + look() + made; }"), RunOutcome::Result(3));
 }
+
+#[test]
+fn references_bound_by_conversion_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct I { int v; }; I shared{1}; struct S { constexpr operator I&&() const { return static_cast<I&&>(shared); } }; constexpr bool f() { const I& r = S{}; return &r == &shared; } static_assert(f());"), None);
+    assert_eq!(rule("using F = int(); constexpr int a() { return 1; } struct S { constexpr operator F&&() const { return a; } }; constexpr F& r = S{}; static_assert(r() == 1);"), None);
+}

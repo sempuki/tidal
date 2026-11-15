@@ -23,10 +23,6 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
     // CVF-2: a class object converts by a conversion function, and the
     // reference binds the result.
     if crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && !matches!((e.ty.class(), inner.class()), (Some(d), Some(b)) if d == b || crate::classes::derived::check::is_base(cx, d, b)) {
-        if inner.is_func() || inner.is_class() {
-            cx.unsupported(span, "a reference to a function or a class bound by a conversion function");
-            return None;
-        }
         match crate::classes::conversion_functions::check::convert(cx, &e, rt, false) {
             Some(Ok(x)) if x.ty.is_error() => return None,
             Some(Ok(x)) => return bind(cx, x, rt, rule),
