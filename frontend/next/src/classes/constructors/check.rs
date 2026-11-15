@@ -791,6 +791,9 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
             crate::classes::conversion_functions::check::functions(&cx.u, k).iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.ret.nonref().class().is_some_and(|r| crate::classes::derived::check::derives(cx, r, c))))
         })
     });
+    if to_class && args.len() == 1 {
+        return crate::classes::conversion_functions::check::class_from_class(cx, ty, args.into_iter().next().unwrap(), !copy, list, span);
+    }
     if to_class {
         cx.unsupported(span, "a conversion function to the class in the argument of a constructor (build step 4)");
         return None;

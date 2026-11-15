@@ -48,8 +48,8 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
             // constructors, which a later piece weighs.
             let competes = crate::classes::conversion_functions::check::reaches_class(cx, &e, c);
             if e.ty.nonref().class().is_some() && competes {
-                cx.unsupported(span, "a conversion between classes by a constructor or a conversion function (build step 4)");
-                return None;
+                let i = crate::classes::conversion_functions::check::class_from_class(cx, to, e, false, false, span)?;
+                return Some(Expr::new(EK::List(Box::new(i)), to.unqual(), crate::sem::tree::Cat::PR, span));
             }
             // OVL-14: in copy-initialization a constructor takes an object
             // of another class by a standard conversion sequence only.

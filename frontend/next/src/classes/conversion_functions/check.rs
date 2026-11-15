@@ -353,3 +353,104 @@ pub fn builtin_operands(cx: &mut Check, l: Expr, r: Expr) -> Option<(Expr, Expr)
     let r = builtin_operand(cx, r)?;
     Some((l, r))
 }
+
+/// The initialization of an object of class type `ty` from the object
+/// `e` of another class (OVL-14, OVL-40). In copy-initialization, the
+/// converting constructors of the class that take `e` by a standard
+/// sequence compete with the conversion functions of `e`'s class to the
+/// class or a class derived from it. A candidate is better by the
+/// sequence of `e`, and then by the conversion after it: none for a
+/// constructor, a derived-to-base conversion for a function that gives
+/// a derived class (OVL-26). In direct-initialization, a conversion
+/// function only makes the argument of the copy or move constructor, so
+/// any constructor that takes `e` wins, and an explicit function that
+/// gives the class itself counts. `list` is list-initialization.
+pub fn class_from_class(cx: &mut Check, ty: &QType, e: Expr, direct: bool, list: bool, span: Span) -> Option<crate::sem::tree::Init> {
+    use crate::sem::tree::Init;
+    let c = ty.class()?;
+    let k = e.ty.nonref().class()?;
+    let user = |i: &Ics| i.user.is_some() || i.rank == Rank::User;
+    // A candidate: a constructor or a conversion function, the sequence
+    // of `e`, and the rank of the conversion after it.
+    let mut cands: Vec<(EntityId, bool, Ics, Rank)> = Vec::new();
+    for f in crate::classes::constructors::check::ctors(cx, c) {
+        let Some(g) = cx.u.func(f) else { continue };
+        if g.ty.params.is_empty() || (1..g.ty.params.len()).any(|j| g.defaults.get(j).is_none_or(|d| d.is_none())) {
+            continue;
+        }
+        if g.explicit && !direct && !list {
+            continue;
+        }
+        if crate::classes::copy_move::check::copy_or_move(cx, c, f).is_some() {
+            continue;
+        }
+        if let Some(i) = sequence(cx, &e, &g.ty.params[0]).filter(|i| !user(i)) {
+            cands.push((f, true, i, Rank::Exact));
+        }
+    }
+    if !(direct && !cands.is_empty()) {
+        for g in functions(&cx.u, k) {
+            let Some(x) = cx.u.func(g) else { continue };
+            let Some(d) = x.ty.ret.nonref().class() else { continue };
+            if d != c && !crate::classes::derived::check::is_base(cx, d, c) {
+                continue;
+            }
+            if x.explicit && !(direct && d == c) {
+                continue;
+            }
+            let Some(i) = crate::overloading::overload_resolution::check::object_sequence(cx, g, &e) else { continue };
+            cands.push((g, false, i, if d == c { Rank::Exact } else { Rank::Conversion }));
+        }
+    }
+    let name = cx.u.classes[c].name.to_string();
+    if cands.is_empty() {
+        cx.error(span, "OVL-35", format!("no constructor of '{}' and no conversion function of {} makes the object", name, e.ty.nonref().show()));
+        return None;
+    }
+    let wins = |a: &(EntityId, bool, Ics, Rank), b: &(EntityId, bool, Ics, Rank)| better(&a.2, &b.2) || (!better(&b.2, &a.2) && a.3 < b.3);
+    let mut best = 0;
+    for j in 1..cands.len() {
+        if wins(&cands[j], &cands[best]) {
+            best = j;
+        }
+    }
+    if (0..cands.len()).any(|j| j != best && !wins(&cands[best], &cands[j])) {
+        cx.error(span, "OVL-36", format!("the initialization of '{}' from {} is ambiguous between its constructors and conversion functions", name, e.ty.nonref().show()));
+        return None;
+    }
+    let (f, ctor, _, _) = cands[best].clone();
+    if !ctor {
+        let r = call(cx, f, e, span);
+        if r.ty.is_error() {
+            return None;
+        }
+        // A prvalue of the class initializes the object itself; another
+        // result is copied, through its base part for a derived class.
+        if r.cat == Cat::PR && r.ty.class() == Some(c) {
+            return Some(Init::Expr(r));
+        }
+        return crate::classes::constructors::check::construct_init(cx, ty, vec![r], false, !direct, span);
+    }
+    let g = cx.u.func(f)?.clone();
+    if g.deleted {
+        cx.error(span, "DEL-1", format!("the constructor of '{}' is deleted", name));
+        return None;
+    }
+    if list && !direct && g.explicit {
+        cx.error_cause(span, "CTOR-9", Some("ILC-8"), format!("copy-list-initialization of '{}' chooses an explicit constructor", name));
+        return None;
+    }
+    if !crate::classes::derived::check::accessible_through(cx, f, c) {
+        cx.error(span, "ACC-2", format!("the constructor of '{}' is not public", name));
+        return None;
+    }
+    let mut out = vec![crate::declarations::initialization::forms::check::init_parameter(cx, e, &g.ty.params[0])?];
+    for j in 1..g.ty.params.len() {
+        if let Some(Some(d)) = g.defaults.get(j) {
+            out.push(crate::sem::tree::Arg { e: d.clone(), by_ref: g.ty.params[j].is_ref() });
+        }
+    }
+    crate::declarations::functions::definitions::check::note_use(cx, f, span);
+    Some(Init::Ctor(f, out))
+}
+

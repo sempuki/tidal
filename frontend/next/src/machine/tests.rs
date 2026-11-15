@@ -2114,3 +2114,22 @@ fn reference_members_whose_default_binds_a_temporary() {
     assert_eq!(rule("struct S { const int& r = 42; }; S s;"), Some("CTOR-17"));
     assert_eq!(rule("struct S { const int& r = 42; S() {} };"), Some("CTOR-17"));
 }
+
+#[test]
+fn class_from_another_class() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // The constructor that binds the object without a qualification wins.
+    assert_eq!(rule("struct S; struct T { int from = 0; constexpr T(S&) : from(1) {} constexpr T(int f) : from(f) {} }; struct S { constexpr operator T() const { return T(2); } }; constexpr int p() { S s; T t = s; return t.from; } static_assert(p() == 1);"), None);
+    // A tie on the object's sequence goes to the candidate with no
+    // conversion after it.
+    assert_eq!(rule("struct S; struct T { int from; constexpr T(const S&) : from(1) {} constexpr T(int v) : from(v) {} }; struct D : T { constexpr D() : T(2) {} }; struct S { constexpr operator D() const { return D(); } }; constexpr S s; constexpr T t = s; static_assert(t.from == 1);"), None);
+    assert_eq!(rule("struct S; struct T { T(const S&); }; struct S { operator T() const; }; S s; T t = s;"), Some("OVL-36"));
+    // Direct-initialization counts an explicit function that gives the
+    // class itself, not one that gives a derived class.
+    assert_eq!(rule("struct T { int v = 0; constexpr T(int x) : v(x) {} }; struct S { constexpr explicit operator T() const { return T(4); } }; constexpr int p() { S s; T t(s); return t.v; } static_assert(p() == 4);"), None);
+    assert_eq!(rule("struct B { B() = default; B(const B&) = default; }; struct D : B {}; struct S { explicit operator D() const { return D{}; } }; B b(S{});"), Some("OVL-35"));
+}

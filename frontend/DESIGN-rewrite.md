@@ -740,7 +740,10 @@ other functions of the set. A friend declaration with a qualified
 name befriends the function of that namespace or class with the same
 type. A default member initializer can bind a reference member to a
 temporary, which an aggregate list keeps and a constructor must not
-use. The
+use. A class object initialized from an object of another class weighs
+the constructors against the conversion functions to the class in
+copy-initialization, and takes a conversion function only for the copy
+or move constructor in direct-initialization. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
