@@ -2547,3 +2547,15 @@ fn decltype_of_names_and_trailing_returns() {
     let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
     assert_eq!(rule(&format!("{} auto add(int a, long b) -> decltype(a + b) {{ return a + b; }} static_assert(same<decltype(add(1, 2)), long>); struct S {{ int m; }}; static_assert(same<decltype(S::m), int>); int g = 0; struct R {{ int& r; }}; R rr{{g}}; auto [x] = rr; static_assert(same<decltype(x), int&>); void f() {{ int y = 0; [=] {{ static_assert(same<decltype(y), int>); static_assert(same<decltype((y)), const int&>); }}(); }}", same)), None);
 }
+
+#[test]
+fn constant_template_parameters() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("template <class T, int N> struct Arr { T v[N]; constexpr int size() const { return N; } }; template <int N> constexpr int sq = N * N; template <int N, class T> T times(T v) { return v * N; } static_assert(sizeof(Arr<int, 4>) == 16 && sq<5> == 25); int main() { Arr<char, 3> a; return times<3>(2) + a.size(); }"), RunOutcome::Result(9));
+    assert_eq!(rule("template <unsigned char N> struct Byte {}; Byte<1> ok; Byte<300> b;"), Some("TARG-13"));
+    assert_eq!(rule("template <int N> const int* where() { return &N; } const int* use() { return where<1>(); }"), Some("unsupported"));
+}

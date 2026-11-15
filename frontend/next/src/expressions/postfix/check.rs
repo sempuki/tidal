@@ -378,7 +378,7 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
             }
             if found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) && found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_))) {
                 let plain: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
-                let specs = crate::templates::declarations::check::call_candidates(cx, &found, &[], &args);
+                let specs = crate::templates::declarations::check::call_candidates(cx, &found, None, &args);
                 let Some(f) = choose_with_templates(cx, &plain, &specs, &args, span, &text) else { return bad(span) };
                 crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
                 let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
@@ -503,18 +503,7 @@ fn template_id_call(cx: &mut Check, tid: &Node, args: &[Expr], span: Span) -> Op
     if found.is_empty() {
         return None;
     }
-    let mut explicit = Vec::new();
-    if let Some(ta) = tid.child("template_args") {
-        for a in ta.children("template_arg") {
-            let t = a.child("type_id")?;
-            let ty = crate::declarations::declarators::check::type_id(cx, t);
-            if ty.is_error() {
-                return Some(bad(span));
-            }
-            explicit.push(ty);
-        }
-    }
-    let specs = crate::templates::declarations::check::call_candidates(cx, &found, &explicit, args);
+    let specs = crate::templates::declarations::check::call_candidates(cx, &found, Some(tid), args);
     let f = choose_with_templates(cx, &[], &specs, args, span, &name)?;
     crate::declarations::functions::definitions::check::note_use(cx, f, tid.span);
     let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));

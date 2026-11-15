@@ -401,7 +401,10 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
                 associated(cx, &crate::sem::types::QType::new(Type::Class(b)), out);
             }
             // NAM-27: and of the template arguments of a specialization.
-            let args: Vec<crate::sem::types::QType> = cx.u.class_templates.iter().flat_map(|t| t.specs.iter()).filter(|(_, k)| k == c).flat_map(|(a, _)| a.clone()).collect();
+            let args: Vec<crate::sem::types::QType> = cx.u.class_templates.iter().flat_map(|t| t.specs.iter()).filter(|(_, k)| k == c).flat_map(|(a, _)| a.clone()).filter_map(|a| match a {
+                crate::sem::types::TArg::Type(t) => Some(t),
+                crate::sem::types::TArg::Value(..) => None,
+            }).collect();
             for a in args {
                 associated(cx, &a, out);
             }

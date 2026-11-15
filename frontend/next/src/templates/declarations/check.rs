@@ -9,21 +9,42 @@
 
 use crate::foundations::names::check as names;
 use crate::sem::check::Check;
-use crate::sem::types::{DepType, QType, Type};
+use crate::sem::types::{DepType, QType, TArg, Type};
 use crate::sem::{EntKind, EntityId, FnTemplate, Linkage, ScopeKind};
 use crate::source::Span;
 use crate::syntax::{Kid, Node};
 use std::rc::Rc;
 
-/// The names of a template head whose parameters are all type
-/// parameters without a default, a pack, or a constraint; None for
-/// another head.
-fn type_params(cx: &Check, head: &Node) -> Option<Vec<(Rc<str>, Span)>> {
+/// A template parameter: its name, where it is declared, and None for a
+/// type parameter or the type of a constant parameter.
+type Param = (Rc<str>, Span, Option<QType>);
+
+/// The parameters of a template head whose parameters are type
+/// parameters and constant parameters of integral or enumeration type,
+/// without a default, a pack, or a constraint; None for another head.
+fn type_params(cx: &mut Check, head: &Node) -> Option<Vec<Param>> {
     if head.child("requires_clause").is_some() {
         return None;
     }
     let mut out = Vec::new();
     for tp in head.child("template_params")?.children("template_param") {
+        // TARG-13: a constant parameter of integral or enumeration type.
+        if let Some(p) = tp.child("constant_param").and_then(|c| c.child("parameter")) {
+            if cx.words(p).iter().any(|w| matches!(*w, "=" | "...")) || p.find("ptr_part").is_some() {
+                return None;
+            }
+            let ds = p.child("decl_specifiers")?;
+            let marks = cx.u.diags.len();
+            let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+            let ty = specs.ty.clone().filter(|t| (t.is_integral() || t.is_enum()) && cx.u.diags.len() == marks && !specs.unsupported);
+            let Some(ty) = ty else {
+                cx.u.diags.truncate(marks);
+                return None;
+            };
+            let id = p.find("declarator_id")?;
+            out.push((cx.source(id).as_str().into(), id.span, Some(ty.unqual())));
+            continue;
+        }
         let t = tp.child("type_param")?;
         if t.child("type_key").is_none() || t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && matches!(cx.text(k), "=" | "...")) {
             return None;
@@ -33,9 +54,100 @@ fn type_params(cx: &Check, head: &Node) -> Option<Vec<(Rc<str>, Span)>> {
         if name.as_ref() == "class" || name.as_ref() == "typename" {
             return None;
         }
-        out.push((name, cx.token(k).map(|t| t.span).unwrap_or(t.span)));
+        out.push((name, cx.token(k).map(|t| t.span).unwrap_or(t.span), None));
     }
     Some(out)
+}
+
+/// Declare the parameters in the scope `ts` at a definition: a type
+/// parameter as a dependent type, a constant parameter as a variable of
+/// its type whose value is not known.
+fn declare_params(cx: &mut Check, ts: crate::sem::ScopeId, params: &[Param]) {
+    for (k, (name, span, kind)) in params.iter().enumerate() {
+        match kind {
+            None => {
+                let t = QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: name.clone() })));
+                names::declare_in(cx, ts, name, EntKind::Typedef(t), *span, Linkage::None);
+            }
+            Some(ty) => {
+                let v = crate::sem::Var { ty: ty.with_cv(true, false), storage: crate::sem::Storage::Automatic, constexpr: false, constinit: false, inline: false, is_extern: false, is_static: false, param: true, defined: true, init: None, const_init: false, used: true, maybe_unused: true, align: None };
+                names::declare_in(cx, ts, name, EntKind::Var(v), *span, Linkage::None);
+            }
+        }
+    }
+}
+
+/// Bind the parameters `names` to the arguments `args` in the scope `ts`
+/// of a specialization: a type parameter names its type, and a constant
+/// parameter is a constant of its value (TARG-13).
+fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], args: &[TArg], span: Span) {
+    for (name, a) in names_.iter().zip(args) {
+        match a {
+            TArg::Type(t) => {
+                names::declare_in(cx, ts, name, EntKind::Typedef(t.clone()), span, Linkage::None);
+            }
+            TArg::Value(t, v) => {
+                let init = crate::sem::tree::Init::Expr(crate::sem::tree::Expr::int(*v, t.clone(), span));
+                let var = crate::sem::Var { ty: t.with_cv(true, false), storage: crate::sem::Storage::Static, constexpr: true, constinit: false, inline: true, is_extern: false, is_static: false, param: false, defined: true, init: Some(init), const_init: true, used: true, maybe_unused: true, align: None };
+                let id = names::declare_in(cx, ts, name, EntKind::Var(var), span, Linkage::None);
+                cx.template_constants.insert(id);
+            }
+        }
+    }
+}
+
+/// The arguments of a template-id for parameters of the kinds `kinds`: a
+/// type for a type parameter, and a constant for a constant parameter,
+/// converted to its type. None for another number or form of arguments.
+pub fn template_args(cx: &mut Check, tid: &Node, kinds: &[Option<QType>]) -> Option<Vec<TArg>> {
+    let nodes: Vec<&Node> = tid.child("template_args").map(|ta| ta.children("template_arg").collect()).unwrap_or_default();
+    if nodes.len() != kinds.len() {
+        return None;
+    }
+    let mut out = Vec::new();
+    for (a, kind) in nodes.into_iter().zip(kinds) {
+        match kind {
+            None => out.push(TArg::Type(crate::declarations::declarators::check::type_id(cx, a.child("type_id")?))),
+            Some(ty) => {
+                let (e, v) = constant_arg(cx, a)?;
+                // TARG-13, CE-19: the argument converts to the parameter's
+                // type as a converted constant expression: an enumeration
+                // only from itself, and no narrowing.
+                let scoped = matches!(ty.t, Type::Enum(en) if cx.u.enums[en].scoped);
+                let other_enum = (ty.is_enum() || matches!(e.ty.t, Type::Enum(en) if cx.u.enums[en].scoped)) && e.ty.unqual().t != ty.t;
+                if (scoped || other_enum) && e.ty.unqual().t != ty.t || crate::foundations::conversions::check::is_narrowing(cx, &e, ty) {
+                    cx.error_cause(a.span, "TARG-13", Some("CE-19"), format!("the template argument of type {} does not convert to {} as a constant", e.ty.show(), ty.show()));
+                    return None;
+                }
+                let v = match ty.int_kind() {
+                    Some(k) => cx.u.target.wrap(k, v),
+                    None => v,
+                };
+                out.push(TArg::Value(ty.clone(), v));
+            }
+        }
+    }
+    Some(out)
+}
+
+/// The value of a template argument for a constant parameter: an
+/// expression, or a name that the parser read as a type.
+fn constant_arg(cx: &mut Check, a: &Node) -> Option<(crate::sem::tree::Expr, i128)> {
+    let node = crate::expressions::check::first_node(a)?;
+    let e = if node.prod == "type_id" {
+        let name = cx.source(node);
+        let var = names::lookup(cx, &name).into_iter().find(|&e| cx.u.var(e).is_some())?;
+        let ty = cx.u.var(var)?.ty.clone();
+        crate::sem::tree::Expr::new(crate::sem::tree::EK::Var(var), ty.nonref(), crate::sem::tree::Cat::L, node.span)
+    } else {
+        crate::expressions::check::expr(cx, node)
+    };
+    let e = crate::foundations::values::check::rvalue(cx, e);
+    if e.ty.is_error() || !(e.ty.is_integral() || e.ty.is_enum()) {
+        return None;
+    }
+    let v = crate::foundations::constant_evaluation::check::try_value(cx, &e).and_then(|v| v.int())?;
+    Some((e, v))
 }
 
 /// `template_decl` at namespace scope: a function template definition
@@ -56,10 +168,7 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
     let saved = cx.scope;
     let ts = cx.enter(ScopeKind::Template);
-    for (k, (name, span)) in params.iter().enumerate() {
-        let t = QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: name.clone() })));
-        names::declare_in(cx, ts, name, EntKind::Typedef(t), *span, Linkage::None);
-    }
+    declare_params(cx, ts, &params);
     let marks = cx.u.diags.len();
     let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
     let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
@@ -82,7 +191,7 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -90,7 +199,7 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
 /// The definition uses a form that needs the dependent names of model
 /// sections 1 and 2: `typename`, `template`, `requires`, `decltype`,
 /// `concept`, or a name qualified by a template parameter.
-fn dependent_forms(cx: &Check, fd: &Node, params: &[(Rc<str>, Span)]) -> bool {
+fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
     let mut toks = Vec::new();
     fd.tokens(&mut toks);
     let words: Vec<&str> = toks.iter().map(|&t| cx.toks[t].text.as_str()).collect();
@@ -113,7 +222,7 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[(Rc<str>, Span)]) -> bool {
                         break;
                     }
                 }
-                _ if params.iter().any(|(p, _)| p.as_ref() == *x) => dependent_decltype = true,
+                _ if params.iter().any(|(p, _, _)| p.as_ref() == *x) => dependent_decltype = true,
                 _ => {}
             }
         }
@@ -121,7 +230,10 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[(Rc<str>, Span)]) -> bool {
     incomplete
         || dependent_decltype
         || words.iter().any(|w| matches!(*w, "typename" | "template" | "requires" | "concept"))
-        || words.windows(2).any(|w| w[1] == "::" && params.iter().any(|(p, _)| p.as_ref() == w[0]))
+        // A pack expansion or a fold of a parameter (packs wait for a
+        // later piece); `catch (...)` and a C ellipsis are not.
+        || words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x)))
+        || words.windows(2).any(|w| w[1] == "::" && params.iter().any(|(p, _, _)| p.as_ref() == w[0]))
 }
 
 /// TARG-1, DED-P3: the specialization of the function template `t` for
@@ -130,7 +242,7 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[(Rc<str>, Span)]) -> bool {
 /// recorded before its body is checked, so a call of the same
 /// specialization in the body finds it. None when the declaration does
 /// not check.
-pub fn specialize(cx: &mut Check, t: usize, args: &[QType]) -> Option<EntityId> {
+pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     if let Some(&(_, f)) = cx.u.templates[t].specs.iter().find(|(a, _)| a.as_slice() == args) {
         return Some(f);
     }
@@ -149,9 +261,7 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[QType]) -> Option<EntityId> 
     let marks = cx.u.diags.len();
     cx.scope = tpl.scope;
     let ts = cx.enter(ScopeKind::Template);
-    for (k, name) in tpl.params.iter().enumerate() {
-        names::declare_in(cx, ts, name, EntKind::Typedef(args[k].clone()), tpl.span, Linkage::None);
-    }
+    bind_params(cx, ts, &tpl.params, args, tpl.span);
     let fd = &tpl.node;
     let r = (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
@@ -192,11 +302,23 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[QType]) -> Option<EntityId> 
 /// The function templates that a call by name finds, after their
 /// specializations for the call's arguments are made: each template
 /// whose arguments deduce (DED-P3), with the explicit arguments first.
-pub fn call_candidates(cx: &mut Check, found: &[EntityId], explicit: &[QType], args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
+pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
     let mut out = Vec::new();
     for &e in found {
         let EntKind::Template(t) = cx.u.entities[e].kind else { continue };
-        let Some(bound) = crate::templates::deduction::check::deduce_call(cx, t, explicit, args) else { continue };
+        // The explicit arguments, which fill the first parameters.
+        let explicit = match tid {
+            Some(tid) => {
+                let kinds = cx.u.templates[t].kinds.clone();
+                let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
+                match template_args(cx, tid, &kinds[..n.min(kinds.len())]) {
+                    Some(a) if n <= kinds.len() => a,
+                    _ => continue,
+                }
+            }
+            None => Vec::new(),
+        };
+        let Some(bound) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else { continue };
         if let Some(f) = specialize(cx, t, &bound) {
             out.push(f);
         }
@@ -234,7 +356,7 @@ fn var_parts(sd: &Node) -> Option<(&Node, &Node, &Node, Option<&Node>)> {
 /// TPL rules: a variable template at namespace scope whose parameters are
 /// types, with one declarator and an initializer, or a partial
 /// specialization of one (TSP-9). False for another form.
-fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) -> bool {
+fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
     let Some((_, dn, init, tid)) = var_parts(sd) else { return false };
     if dn.find("ptr_operator").is_some() || dependent_forms(cx, init, &params) {
         return false;
@@ -248,7 +370,7 @@ fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) ->
             }
             let id = cx.u.var_templates.len();
             let limit = cx.u.entities.len() + 1;
-            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), span: dn.span, limit });
+            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), span: dn.span, limit });
             names::declare_in(cx, saved, &name, EntKind::VarTemplate(id), dn.span, Linkage::External);
             true
         }
@@ -261,11 +383,13 @@ fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) ->
             }) else {
                 return false;
             };
-            let ts = cx.enter(ScopeKind::Template);
-            for (k, (p, span)) in params.iter().enumerate() {
-                let t = QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: p.clone() })));
-                names::declare_in(cx, ts, p, EntKind::Typedef(t), *span, Linkage::None);
+            // A partial specialization with a constant parameter waits for
+            // a later piece.
+            if params.iter().any(|p| p.2.is_some()) || cx.u.var_templates[v].kinds.iter().any(|k| k.is_some()) {
+                return false;
             }
+            let ts = cx.enter(ScopeKind::Template);
+            declare_params(cx, ts, &params);
             let marks = cx.u.diags.len();
             let pattern = template_type_args(cx, tid);
             cx.leave(saved);
@@ -338,19 +462,29 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
         let t = cx.unsupported(span, why.to_string());
         Some(Expr::new(EK::Int(0), t, Cat::PR, span))
     };
-    let Some(args) = template_type_args(cx, tid) else { return unsupported(cx, "a variable template with an argument that is not a type") };
-    if args.iter().any(|a| a.is_error()) {
+    let vt = cx.u.var_templates[v].clone();
+    let marks = cx.u.diags.len();
+    let Some(args) = template_args(cx, tid, &vt.kinds) else {
+        if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+            return Some(crate::expressions::check::bad(span));
+        }
+        return unsupported(cx, "a variable template with arguments of another number or form");
+    };
+    if args.iter().any(|a| matches!(a, TArg::Type(t) if t.is_error())) {
         return Some(crate::expressions::check::bad(span));
     }
-    let vt = cx.u.var_templates[v].clone();
-    if args.len() != vt.params.len() || args.iter().any(crate::templates::deduction::check::has_dep) {
-        return unsupported(cx, "a variable template with another number of arguments or a dependent argument");
+    if args.iter().any(|a| matches!(a, TArg::Type(t) if crate::templates::deduction::check::has_dep(t))) {
+        return unsupported(cx, "a variable template with a dependent argument");
     }
+    let types: Vec<QType> = args.iter().filter_map(|a| match a {
+        TArg::Type(t) => Some(t.clone()),
+        TArg::Value(..) => None,
+    }).collect();
     let mut matches = Vec::new();
     for (k, (ps, pattern, _)) in vt.partials.iter().enumerate() {
         let mut bound: Vec<Option<QType>> = vec![None; ps.len()];
-        if pattern.iter().zip(&args).all(|(p, a)| match_exact(p, a, &mut bound)) {
-            if let Some(b) = bound.into_iter().collect::<Option<Vec<QType>>>() {
+        if types.len() == args.len() && pattern.iter().zip(&types).all(|(p, a)| match_exact(p, a, &mut bound)) {
+            if let Some(b) = bound.into_iter().map(|b| b.map(TArg::Type)).collect::<Option<Vec<TArg>>>() {
                 matches.push((k, b));
             }
         }
@@ -386,7 +520,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
 /// The variable of a specialization: the declaration `node` checked with
 /// each of `params` bound to its argument in `args`. An error in it
 /// leaves the unit unsupported, as for a function template.
-fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[QType], node: &Node) -> Option<EntityId> {
+fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], node: &Node) -> Option<EntityId> {
     let vt = cx.u.var_templates[v].clone();
     let (ds, _, init, _) = var_parts(node)?;
     let saved_scope = cx.scope;
@@ -399,9 +533,7 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[QType],
     let marks = cx.u.diags.len();
     cx.scope = vt.scope;
     let ts = cx.enter(ScopeKind::Template);
-    for (k, name) in params.iter().enumerate() {
-        names::declare_in(cx, ts, name, EntKind::Typedef(args[k].clone()), vt.span, Linkage::None);
-    }
+    bind_params(cx, ts, params, args, vt.span);
     let r = (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
         if specs.unsupported || specs.placeholder.is_some() {
@@ -433,7 +565,7 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[QType],
 /// TPL rules: a class template definition at namespace scope whose
 /// parameters are types. False for another form, such as a declaration
 /// that is not a definition.
-fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) -> bool {
+fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
     let Some(ds) = sd.child("decl_specifiers") else { return false };
     let specs: Vec<&Node> = ds.children("decl_specifier").collect();
     let [one] = specs[..] else { return false };
@@ -460,7 +592,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) 
     }
     let id = cx.u.class_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), span: head.span, limit });
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
     true
 }
@@ -488,13 +620,19 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
         EntKind::Class(c) => cx.u.class_templates.iter().position(|t| t.specs.iter().any(|&(_, k)| k == c)),
         _ => None,
     })?;
-    let Some(args) = template_type_args(cx, tid) else { return Some(cx.unsupported(span, "a class template with an argument that is not a type")) };
-    if args.iter().any(|a| a.is_error()) {
+    let ct = cx.u.class_templates[v].clone();
+    let marks = cx.u.diags.len();
+    let Some(args) = template_args(cx, tid, &ct.kinds) else {
+        if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+            return Some(QType::error());
+        }
+        return Some(cx.unsupported(span, "a class template with arguments of another number or form"));
+    };
+    if args.iter().any(|a| matches!(a, TArg::Type(t) if t.is_error())) {
         return Some(QType::error());
     }
-    let ct = cx.u.class_templates[v].clone();
-    if args.len() != ct.params.len() || args.iter().any(crate::templates::deduction::check::has_dep) {
-        return Some(cx.unsupported(span, "a class template with another number of arguments or a dependent argument"));
+    if args.iter().any(|a| matches!(a, TArg::Type(t) if crate::templates::deduction::check::has_dep(t))) {
+        return Some(cx.unsupported(span, "a class template with a dependent argument"));
     }
     if let Some(&(_, c)) = ct.specs.iter().find(|(a, _)| *a == args) {
         return Some(QType::new(Type::Class(c)));
@@ -502,7 +640,7 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     // INST rules: a member declared with a parameter that a function type
     // binds is a data member of function type, which the first pieces of
     // build step 5 do not tell from a member function.
-    if args.iter().any(|a| a.is_func()) {
+    if args.iter().any(|a| matches!(a, TArg::Type(t) if t.is_func())) {
         return Some(cx.unsupported(span, "a class template with a function type as an argument"));
     }
     match instantiate_class(cx, v, &args) {
@@ -515,7 +653,7 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
 /// parameter bound to its argument, as a class of the template's
 /// namespace. The class is recorded before its body, so the body finds
 /// it by the template-id. An error in it leaves the unit unsupported.
-fn instantiate_class(cx: &mut Check, v: usize, args: &[QType]) -> Option<crate::sem::types::ClassId> {
+fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg]) -> Option<crate::sem::types::ClassId> {
     let ct = cx.u.class_templates[v].clone();
     let saved_scope = cx.scope;
     let saved_func = cx.func.take();
@@ -529,9 +667,7 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[QType]) -> Option<crate::
     let marks = cx.u.diags.len();
     cx.scope = ct.scope;
     let ts = cx.enter(ScopeKind::Template);
-    for (k, name) in ct.params.iter().enumerate() {
-        names::declare_in(cx, ts, name, EntKind::Typedef(args[k].clone()), ct.span, Linkage::None);
-    }
+    bind_params(cx, ts, &ct.params, args, ct.span);
     // The class that `class_def` makes first is the specialization.
     let predicted = cx.u.classes.len();
     cx.u.class_templates[v].specs.push((args.to_vec(), predicted));

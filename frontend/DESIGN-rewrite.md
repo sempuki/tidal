@@ -484,9 +484,13 @@ character escapes, and an array with more elements than the machine
 holds.
 
 Step 5 is begun (item RW3). A function template at namespace scope
-whose parameters are types, with no default, pack, or constraint, has
-a function type with each parameter as a dependent type (`DepType`,
-model section 1). A variable template of that kind, with one declarator
+whose parameters are types or constants of integral or enumeration
+type, with no default, pack, or constraint, has a function type with
+each type parameter as a dependent type (`DepType`, model section 1).
+A template argument is a type or a constant (`TArg`); a constant
+argument converts to its parameter's type without narrowing, and in a
+specialization the parameter is a constant of its value, with no
+address. A variable template of that kind, with one declarator
 and an initializer, has partial specializations, and a use of it takes
 the one partial specialization whose pattern its arguments match, or
 the primary, and makes a constexpr variable from it. A class template

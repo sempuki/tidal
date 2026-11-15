@@ -110,6 +110,11 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
             cx.error(span, rule, "the address of a bit-field");
             bad(span)
         }
+        // TPL-10: a constant template parameter is a prvalue.
+        "&" if matches!(e.k, EK::Var(id) if cx.template_constants.contains(&id)) => {
+            cx.error(span, "TPL-10", "the address of a constant template parameter");
+            bad(span)
+        }
         "&" => address_of(cx, e, span),
         "*" => indirection(cx, e, span),
         "++" | "--" => inc_dec(cx, e, true, op == "++", span, "UN-11"),

@@ -152,9 +152,10 @@ pub enum EntKind {
 pub struct ClassTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    pub kinds: Vec<Option<QType>>,
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
-    pub specs: Vec<(Vec<QType>, types::ClassId)>,
+    pub specs: Vec<(Vec<types::TArg>, types::ClassId)>,
     pub span: Span,
     pub limit: EntityId,
 }
@@ -166,6 +167,7 @@ pub struct ClassTemplate {
 pub struct VarTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    pub kinds: Vec<Option<QType>>,
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
     /// Each partial specialization: its parameters, its argument
@@ -175,7 +177,7 @@ pub struct VarTemplate {
     /// The specializations: the source (None for the primary, or the
     /// index of a partial), the arguments of that source, and the
     /// variable.
-    pub specs: Vec<(Option<usize>, Vec<QType>, EntityId)>,
+    pub specs: Vec<(Option<usize>, Vec<types::TArg>, EntityId)>,
     pub span: Span,
     pub limit: EntityId,
 }
@@ -189,10 +191,13 @@ pub struct VarTemplate {
 pub struct FnTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// For each parameter, None for a type parameter, or the type of a
+    /// constant parameter.
+    pub kinds: Vec<Option<QType>>,
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
     pub fty: Rc<FnType>,
-    pub specs: Vec<(Vec<QType>, EntityId)>,
+    pub specs: Vec<(Vec<types::TArg>, EntityId)>,
     pub span: Span,
     /// The first entity declared after the template (DEP-10).
     pub limit: EntityId,

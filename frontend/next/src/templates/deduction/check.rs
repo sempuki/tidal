@@ -8,7 +8,7 @@
 
 use crate::sem::check::Check;
 use crate::sem::tree::{Cat, Expr};
-use crate::sem::types::{DepType, QType, Type};
+use crate::sem::types::{DepType, QType, TArg, Type};
 use std::rc::Rc;
 
 /// The type names a template parameter, at any depth.
@@ -82,13 +82,16 @@ fn match_type(p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
 /// DED-P3: the arguments of the function template `t` for a call with
 /// `args`, after the explicit arguments `explicit`. None when a
 /// parameter does not deduce or two deductions differ.
-pub fn deduce_call(cx: &Check, t: usize, explicit: &[QType], args: &[Expr]) -> Option<Vec<QType>> {
+pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Option<Vec<TArg>> {
     let tpl = &cx.u.templates[t];
     let n = tpl.params.len();
     if explicit.len() > n {
         return None;
     }
-    let mut bound: Vec<Option<QType>> = (0..n).map(|k| explicit.get(k).cloned()).collect();
+    let mut bound: Vec<Option<QType>> = (0..n).map(|k| match explicit.get(k) {
+        Some(TArg::Type(t)) => Some(t.clone()),
+        _ => None,
+    }).collect();
     let fty = &tpl.fty;
     if args.len() > fty.params.len() && !fty.variadic {
         return None;
@@ -126,7 +129,12 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[QType], args: &[Expr]) -> O
             return None;
         }
     }
-    bound.into_iter().collect()
+    // A constant parameter takes its explicit argument; the first piece
+    // of build step 5 deduces none.
+    (0..n).map(|k| match &tpl.kinds[k] {
+        None => bound[k].clone().map(TArg::Type),
+        Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
+    }).collect()
 }
 
 /// `p` with the template parameters that `bound` already holds replaced.

@@ -230,6 +230,12 @@ fn combine(cx: &mut Check, c: Expr, a: Expr, b: Expr, span: crate::source::Span,
                     return bad(span);
                 }
                 let (a2, b2) = (rvalue(cx, a2), rvalue(cx, b2));
+                // COND-11: the built-in candidate for arithmetic operands
+                // takes them after the usual arithmetic conversions.
+                if arithmetic_operand(cx, &a2.ty) && arithmetic_operand(cx, &b2.ty) {
+                    let (a3, b3, t) = conv::arithmetic(cx, a2, b2);
+                    return mk(c, a3, b3, t, Cat::PR);
+                }
                 return combine(cx, c, a2, b2, span, 2);
             }
         }

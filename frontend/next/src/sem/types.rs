@@ -70,6 +70,14 @@ pub enum Type {
     Dep(Rc<DepType>),
 }
 
+/// A template argument: a type, or the value of a constant parameter
+/// with the parameter's type (TARG-1, TARG-13).
+#[derive(Clone, Debug, PartialEq)]
+pub enum TArg {
+    Type(QType),
+    Value(QType, i128),
+}
+
 /// The dependent forms of a type (`frontend/TEMPLATE-MODEL.md`, section
 /// 1). Build step 5 starts with the template parameter.
 #[derive(Clone, Debug, PartialEq)]
