@@ -283,12 +283,22 @@ fn dtor_member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n No
 /// accessible: from the point of use when `top` is set, and those of its
 /// members and bases from the class (DER-14: a base's protected one).
 pub fn dtor_blocked(cx: &Check, c: ClassId, top: bool, base: bool) -> bool {
+    blocked_in(cx, c, top, base, None, true)
+}
+
+/// `dtor_blocked` for the destructor of class `c` that the destructor
+/// of class `from` runs, which a friend class can run; a complete object
+/// also runs those of its virtual bases (DER-21).
+fn blocked_in(cx: &Check, c: ClassId, top: bool, base: bool, from: Option<ClassId>, complete: bool) -> bool {
     let own = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|&d| {
         let access = cx.u.access.get(&d).copied().unwrap_or(crate::sem::Access::Public);
-        let ok = if top { crate::classes::members::check::accessible(cx, d) } else { access == crate::sem::Access::Public || (base && access == crate::sem::Access::Protected) };
+        let friend = from.is_some_and(|k| cx.u.friend_classes.get(&c).is_some_and(|fs| fs.contains(&k)));
+        let ok = if top { crate::classes::members::check::accessible(cx, d) } else { access == crate::sem::Access::Public || (base && access == crate::sem::Access::Protected) || friend };
         cx.u.func(d).is_some_and(|f| f.deleted) || !ok
     });
-    own || cx.u.classes[c].fields.clone().iter().any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| dtor_blocked(cx, d, false, x.base))))
+    let vbases = if complete { cx.u.classes[c].vbases.clone() } else { Vec::new() };
+    own || cx.u.classes[c].fields.clone().iter().any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| blocked_in(cx, d, false, x.base, Some(c), !x.base))))
+        || vbases.into_iter().any(|v| blocked_in(cx, v, false, true, Some(c), false))
 }
 
 /// DTOR-3: the destructor of a class, or of a member's class, is
@@ -375,6 +385,7 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
                 None => default_init(cx, &x.ty, def.span).unwrap_or(Init::Default),
             });
         }
+        inits.extend(vbase_inits(cx, c, Vec::new(), def.span).unwrap_or_default());
         cx.u.mem_inits.insert(f, MemInits::Fields(inits));
         if let Some(x) = cx.u.func_mut(f) {
             x.body = Some(Rc::new(crate::sem::tree::Stmt::new(crate::sem::tree::SK::Block(Vec::new()), def.span)));
@@ -486,7 +497,8 @@ fn arg_exprs(cx: &mut Check, n: Option<&Node>, braced: bool) -> Option<Vec<Expr>
 pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Option<MemInits> {
     let c = cx.u.func(f)?.class?;
     let fields = cx.u.classes[c].fields.clone();
-    let mut given: Vec<Option<Init>> = vec![None; fields.len()];
+    let vbases = cx.u.classes[c].vbases.clone();
+    let mut given: Vec<Option<Init>> = vec![None; fields.len() + vbases.len()];
     let list: Vec<&Node> = ctor_init.map(|n| n.children("mem_init").collect()).unwrap_or_default();
     if let Some(ci) = ctor_init.filter(|n| cx.source(n).contains("__func__")) {
         cx.unsupported(ci.span, "__func__ in a member initializer (build step 4)");
@@ -534,7 +546,9 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
             crate::sem::EntKind::Typedef(t) => t.class(),
             _ => None,
         });
-        let base_k = fields.iter().position(|&x| cx.u.field(x).is_some_and(|y| y.base && (y.ty.class().is_some_and(|b| *cx.u.classes[b].name == *name) || (named_class.is_some() && y.ty.class() == named_class))));
+        let names_class = |b: ClassId| *cx.u.classes[b].name == *name || named_class == Some(b);
+        // DER-7: a mem-init can also name a virtual base, direct or not.
+        let base_k = fields.iter().position(|&x| cx.u.field(x).is_some_and(|y| y.base && y.ty.class().is_some_and(names_class))).or_else(|| vbases.iter().position(|&v| names_class(v)).map(|j| fields.len() + j));
         // UNI-7: a member of an anonymous union member.
         if base_k.is_none() && !fields.iter().any(|&x| *cx.u.entities[x].name == *name) {
             if let Some((k, j)) = crate::classes::unions::check::variant_member(&cx.u, c, &name) {
@@ -562,9 +576,13 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
             cx.error(mi.span, "UNI-8", "a constructor of a union initializes two members");
             return None;
         }
-        let fty = cx.u.field(fields[k]).unwrap().ty.clone();
+        let fty = match fields.get(k) {
+            Some(&x) => cx.u.field(x).unwrap().ty.clone(),
+            None => QType::new(Type::Class(vbases[k - fields.len()])),
+        };
         given[k] = Some(direct_init(cx, &fty, args, braced.is_some(), mi.span)?);
     }
+    let vgiven = given.split_off(fields.len());
     let mut out = Vec::new();
     // A union: the member that a mem-init names, or else the one with a
     // default member initializer, is active; the others are not (UNI-4).
@@ -591,6 +609,7 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
             }
         });
     }
+    out.extend(vbase_inits(cx, c, vgiven, cx.u.entities[f].span)?);
     Some(MemInits::Fields(out))
 }
 
@@ -766,6 +785,36 @@ fn implicit_default(cx: &mut Check, c: ClassId, span: Span) -> Option<Init> {
     implicit_default_but(cx, c, None, span)
 }
 
+/// The initializers of the virtual bases of `c`, after those of its
+/// data members: the one that `given` holds, or the default
+/// constructor's (DER-13). A constructor of an abstract class never
+/// initializes them, because its class is never the most derived one.
+fn vbase_inits(cx: &mut Check, c: ClassId, given: Vec<Option<Init>>, span: Span) -> Option<Vec<Init>> {
+    let vbases = cx.u.classes[c].vbases.clone();
+    let skip = crate::classes::r#virtual::check::is_abstract(cx, c);
+    let mut out = Vec::new();
+    for (j, v) in vbases.into_iter().enumerate() {
+        if let Some(Some(i)) = given.get(j) {
+            out.push(i.clone());
+            continue;
+        }
+        if skip {
+            out.push(Init::Default);
+            continue;
+        }
+        let marks = cx.u.diags.len();
+        match default_init(cx, &QType::new(Type::Class(v)), span) {
+            Some(i) => out.push(i),
+            None => {
+                cx.u.diags.truncate(marks);
+                cx.error(span, "DER-13", format!("the virtual base '{}' of '{}' has no default constructor and no initializer", cx.u.classes[v].name, cx.u.classes[c].name));
+                return None;
+            }
+        }
+    }
+    Some(out)
+}
+
 /// `implicit_default`, with no initializer for the member at `skip`.
 fn implicit_default_but(cx: &mut Check, c: ClassId, skip: Option<usize>, span: Span) -> Option<Init> {
     let fields = cx.u.classes[c].fields.clone();
@@ -790,6 +839,7 @@ fn implicit_default_but(cx: &mut Check, c: ClassId, skip: Option<usize>, span: S
             None => default_init(cx, &x.ty, span)?,
         });
     }
+    out.extend(vbase_inits(cx, c, Vec::new(), span)?);
     Some(Init::List(out))
 }
 

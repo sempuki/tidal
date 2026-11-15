@@ -590,13 +590,20 @@ the declaration warns when no name is read. `dynamic_cast` to the same
 class or a base converts as an implicit conversion does; any other cast
 finds its target from the most derived object, or from the object whose
 constructor or destructor runs, and gives a null pointer when the check
-fails. The
+fails. A virtual base is one subobject of the complete object, which
+every path to it reaches. Lookup, conversions, and access treat those
+paths as one. A downcast or a pointer-to-member conversion through a
+virtual base is an error. The layout places each virtual base once,
+after the other parts of the complete object. The most derived class
+initializes the virtual bases, and an abstract class skips them. A
+class with a virtual base has no constexpr constructor or destructor.
+Each virtual function needs a unique final overrider. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a subobject or with a qualified name, a
 literal operator, an
-`operator->`, a comparison that `<=>` rewrites, a virtual base,
+`operator->`, a comparison that `<=>` rewrites, a run of a program with a virtual base,
 a failed `dynamic_cast` to a reference outside constant evaluation, an allocation or deallocation function that the
 program declares or calls by name, a `new` expression with placement
 arguments, a nested named union, a union member whose class has special

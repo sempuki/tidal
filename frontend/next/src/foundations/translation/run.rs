@@ -129,6 +129,9 @@ pub enum RunOutcome {
 pub fn run_program(u: &Unit) -> RunOutcome {
     let mut m = Machine::new(u, false);
     let r = (|| -> Result<i128, Stop> {
+        if u.classes.iter().any(|c| !c.vbases.is_empty()) {
+            return crate::machine::unsup("a run of a program with a virtual base (build step 4)");
+        }
         // SINIT rules: every static variable is zero-initialized or
         // constant-initialized first; then the dynamic initializers run in
         // the order of the definitions.

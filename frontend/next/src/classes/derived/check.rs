@@ -1,9 +1,10 @@
-//! The check part of `classes/derived`, for build step 4 part a: classes
-//! with non-virtual bases. Each direct base is a subobject that the class
-//! holds as an unnamed data member before its declared members (DER-2),
-//! so the layout, the initialization, the copies, and the destruction of
-//! the members take the bases along. Virtual bases and virtual functions
-//! are unsupported.
+//! The check part of `classes/derived`, for build step 4 part a. Each
+//! direct base that is not virtual is a subobject that the class holds as
+//! an unnamed data member before its declared members (DER-2), so the
+//! layout, the initialization, the copies, and the destruction of the
+//! members take the bases along. A virtual base is one subobject of the
+//! complete object (DER-6): a path reaches it by a step of
+//! `crate::sem::VSTEP`, and the paths that reach it count once.
 
 use crate::sem::check::Check;
 use crate::sem::tree::{Cat, Expr, EK};
@@ -21,10 +22,7 @@ pub fn base_clause(cx: &mut Check, c: ClassId, key: ClassKey, n: &Node) -> bool 
     }
     let mut seen: Vec<ClassId> = Vec::new();
     for b in n.children("base_spec") {
-        if cx.has_word(b, "virtual") {
-            cx.unsupported(b.span, "a virtual base (build step 4)");
-            return false;
-        }
+        let virt = cx.has_word(b, "virtual");
         if b.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") || cx.has_word(n, "...") {
             cx.unsupported(b.span, "a pack expansion in a base list (build step 5)");
             return false;
@@ -74,6 +72,30 @@ pub fn base_clause(cx: &mut Check, c: ClassId, key: ClassKey, n: &Node) -> bool 
             None if key == ClassKey::Class => Access::Private,
             None => Access::Public,
         };
+        // DER-7: the virtual bases of the base come first, in its order;
+        // CLS-35: in the layout, a virtual base comes before its own.
+        let (post, pre) = (cx.u.classes[d].vbases.clone(), cx.u.classes[d].vlayout.clone());
+        let info = &mut cx.u.classes[c];
+        for v in post {
+            if !info.vbases.contains(&v) {
+                info.vbases.push(v);
+            }
+        }
+        if virt && !info.vbases.contains(&d) {
+            info.vbases.push(d);
+        }
+        if virt && !info.vlayout.contains(&d) {
+            info.vlayout.push(d);
+        }
+        for v in pre {
+            if !info.vlayout.contains(&v) {
+                info.vlayout.push(v);
+            }
+        }
+        if virt {
+            info.vdirect.push((d, access));
+            continue;
+        }
         let index = cx.u.classes[c].fields.len();
         let scope = cx.u.classes[c].scope;
         let f = cx.u.add(crate::sem::Entity {
@@ -126,6 +148,11 @@ pub fn paths(cx: &Check, from: ClassId, to: ClassId) -> Vec<Vec<usize>> {
     cx.u.base_paths(from, to)
 }
 
+/// The path goes through a virtual base (DER-11, MPTR-11).
+pub fn through_virtual(path: &[usize]) -> bool {
+    path.iter().any(|&i| i >= crate::sem::VSTEP)
+}
+
 /// `to` is a base of `from`, direct or not, or `from` itself.
 pub fn derives(cx: &Check, from: ClassId, to: ClassId) -> bool {
     !paths(cx, from, to).is_empty()
@@ -152,12 +179,10 @@ fn path_access(cx: &Check, from: ClassId, path: &[usize]) -> Access {
     let mut c = from;
     let mut acc = Access::Public;
     for &i in path {
-        let f = cx.u.classes[c].fields[i];
-        let x = cx.u.field(f).unwrap();
-        if x.access != Access::Public {
+        if cx.u.step_access(c, i) != Access::Public {
             acc = Access::Private;
         }
-        c = x.ty.class().unwrap();
+        c = cx.u.step_class(c, i).unwrap();
     }
     acc
 }
@@ -186,10 +211,8 @@ pub fn along(cx: &Check, e: Expr, from: ClassId, path: &[usize]) -> Expr {
     let mut out = e;
     let mut c = from;
     for &i in path {
-        let f = cx.u.classes[c].fields[i];
-        let x = cx.u.field(f).unwrap();
-        let t = x.ty.clone().with_cv(cv.0, cv.1);
-        c = x.ty.class().unwrap();
+        c = cx.u.step_class(c, i).unwrap();
+        let t = QType::new(Type::Class(c)).with_cv(cv.0, cv.1);
         out = Expr::new(EK::Member(Box::new(out), i), t, cat, span);
     }
     out
@@ -245,6 +268,24 @@ pub fn member_lookup(cx: &Check, c: ClassId, name: &str) -> Result<Option<Found>
             results.push(f);
         }
     }
+    // DER-6: the paths to one subobject count once; DER-4: a member of a
+    // class hides the members of its bases, also those that another path
+    // reaches through a virtual base.
+    let key = |f: &Found| cx.u.path_key(c, &f.path);
+    let mut kept: Vec<Found> = Vec::new();
+    for r in results {
+        if !kept.iter().any(|k| key(k) == key(&r)) {
+            kept.push(r);
+        }
+    }
+    let within = |outer: &Found, inner: &Found| {
+        outer.class != inner.class && cx.u.base_paths(outer.class, inner.class).iter().any(|p| {
+            let mut full = outer.path.clone();
+            full.extend(p);
+            cx.u.path_key(c, &full) == key(inner)
+        })
+    };
+    let results: Vec<Found> = kept.iter().filter(|r| !kept.iter().any(|o| within(o, r))).cloned().collect();
     let Some(first) = results.first().cloned() else { return Ok(None) };
     // DER-4: one declaring class through every path, and for a
     // non-static member one path.
@@ -282,10 +323,8 @@ fn access_as_member(cx: &Check, naming: ClassId, path: &[usize], access: Access)
     let mut specs = Vec::new();
     let mut c = naming;
     for &i in path {
-        let f = cx.u.classes[c].fields[i];
-        let x = cx.u.field(f).unwrap();
-        specs.push(x.access);
-        c = x.ty.class().unwrap();
+        specs.push(cx.u.step_access(c, i));
+        c = cx.u.step_class(c, i).unwrap();
     }
     let mut acc = access;
     for s in specs.into_iter().rev() {

@@ -1112,7 +1112,7 @@ fn derived_classes() {
     assert_eq!(rule("struct A { int x; }; struct B { int x; }; struct D : A, B { int f() { return x; } };"), Some("DER-4"));
     assert_eq!(rule("struct B { int x; }; struct D : private B {}; int f(D d) { return d.x; }"), Some("ACC-2"));
     assert_eq!(rule("struct A {}; struct B : private A {}; struct C : B { void f() { A* p = nullptr; (void)p; } };"), Some("ACC-14"));
-    assert_eq!(rule("struct B {}; struct D : virtual B {};"), Some("unsupported"));
+    assert_eq!(rule("struct B {}; struct D : virtual B {};"), None);
 }
 
 #[test]
@@ -1143,7 +1143,7 @@ fn virtual_functions() {
     assert_eq!(rule("struct B { virtual void f(); }; struct D : B { static void f(); };"), Some("VIRT-21"));
     assert_eq!(rule("struct S { void f() = 0; };"), Some("VIRT-9"));
     assert_eq!(rule("virtual void f();"), Some("VIRT-2"));
-    assert_eq!(rule("struct B { virtual void f(); }; struct D : virtual B {};"), Some("unsupported"));
+    assert_eq!(rule("struct B { virtual void f(); }; struct D : virtual B {};"), None);
 }
 
 #[test]
@@ -1550,4 +1550,24 @@ fn dynamic_casts() {
     assert_eq!(rule("struct B {}; struct D : B {}; D* f(B* b) { return dynamic_cast<D*>(b); }"), Some("VIRT-18"));
     assert_eq!(rule("struct B { virtual ~B() {} }; int* f(B* b) { return dynamic_cast<int*>(b); }"), Some("VIRT-18"));
     assert_eq!(rule("struct B { constexpr virtual ~B() {} }; struct D : B {}; constexpr D d; constexpr const B& r = d; static_assert(&dynamic_cast<const D&>(r) == &d);"), None);
+}
+
+#[test]
+fn virtual_bases_in_checks_and_layout() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DER-6: two paths reach one virtual base, so the conversion and the
+    // member are unambiguous; CLS-35: the virtual base comes last.
+    assert_eq!(rule("struct A { int v; }; struct B : virtual A {}; struct C : virtual A {}; struct D : B, C {}; A* f(D* d) { d->v = 1; return d; } static_assert(sizeof(B) == 16 && sizeof(D) == 24);"), None);
+    assert_eq!(rule("struct A {}; struct B : virtual A {}; struct C : A {}; struct D : B, C {}; A* f(D* d) { return d; }"), Some("DER-10"));
+    assert_eq!(rule("struct A {}; struct B : virtual A {}; B* f(A* a) { return static_cast<B*>(a); }"), Some("DER-11"));
+    assert_eq!(rule("struct A {}; struct D : virtual A { constexpr D() {} };"), Some("DER-12"));
+    // DER-13: the most derived class initializes the virtual base.
+    assert_eq!(rule("struct A { A(int) {} }; struct B : virtual A { B() : A(1) {} }; struct D : B { D() : A(2) {} };"), None);
+    assert_eq!(rule("struct A { A(int) {} }; struct B : virtual A { B() : A(1) {} }; struct D : B { D() {} };"), Some("DER-13"));
+    assert_eq!(rule("struct A { virtual void f(); }; struct B : virtual A { void f() override; }; struct C : virtual A { void f() override; }; struct D : B, C {};"), Some("VIRT-5"));
+    assert_eq!(run("struct A {}; struct B : virtual A {}; int main() { B b; return 0; }"), RunOutcome::Unsupported("a run of a program with a virtual base (build step 4)".into(), 0));
 }

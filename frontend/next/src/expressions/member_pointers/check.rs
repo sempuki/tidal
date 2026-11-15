@@ -251,7 +251,7 @@ pub fn implicit(cx: &mut Check, e: Expr, null: bool, to: &QType) -> Option<Resul
         // A pointer to member of a base converts to one of a derived
         // class, through one path to a base that is accessible.
         let ps = derived::paths(cx, tc, fc);
-        if ps.len() != 1 || !derived::base_is_accessible(cx, tc, fc) {
+        if ps.len() != 1 || !derived::base_is_accessible(cx, tc, fc) || derived::through_virtual(&ps[0]) {
             return no();
         }
     }
@@ -286,7 +286,8 @@ pub fn cast(cx: &mut Check, reinterpret: bool, e: Expr, null: bool, to: &QType) 
     if let (Some((fc, fm)), Some((tc, tm))) = (from.member_ptr(), to.member_ptr()) {
         // The reverse of a conversion from a base to a derived class.
         if fc != tc && member_types(fm, tm) && derived::is_base(cx, fc, tc) {
-            if derived::paths(cx, fc, tc).len() != 1 || !derived::base_is_accessible(cx, fc, tc) {
+            let ps = derived::paths(cx, fc, tc);
+            if ps.len() != 1 || !derived::base_is_accessible(cx, fc, tc) || derived::through_virtual(&ps[0]) {
                 return err(format!("static_cast from {} to {} through a base that is ambiguous or not accessible", from.show(), to.show()));
             }
             return Some(Ok(e.conv(Conv::PtrNoOp, to.unqual(), Cat::PR)));

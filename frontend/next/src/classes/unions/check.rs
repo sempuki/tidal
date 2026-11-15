@@ -23,8 +23,9 @@ pub fn is_union(cx: &Check, c: ClassId) -> bool {
 
 /// Whether the special member functions of a type are all trivial and
 /// not declared by the program: no constructor, destructor, or
-/// assignment that the program provides, no virtual function, and no
-/// default member initializer, in the type and in its members.
+/// assignment that the program provides, no virtual function or virtual
+/// base, and no default member initializer, in the type and in its
+/// members.
 fn plain(u: &Unit, ty: &QType) -> bool {
     match &ty.t {
         Type::Array(e, _) => plain(u, e),
@@ -33,7 +34,7 @@ fn plain(u: &Unit, ty: &QType) -> bool {
             let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !u.defaulted.contains(f)));
             let ctor = crate::classes::constructors::check::CTOR;
             let dtor = crate::classes::constructors::check::DTOR;
-            !u.polymorphic(*c) && !provided(ctor) && !provided(dtor) && !provided("operator=") && u.classes[*c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.init.is_none() && plain(u, &x.ty)))
+            !u.dynamic(*c) && !provided(ctor) && !provided(dtor) && !provided("operator=") && u.classes[*c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.init.is_none() && plain(u, &x.ty)))
         }
         _ => true,
     }

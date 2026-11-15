@@ -80,7 +80,7 @@ pub fn trivial_default(u: &Unit, ty: &QType) -> bool {
     match &ty.t {
         Type::Array(e, _) => trivial_default(u, e),
         Type::Class(c) => {
-            if u.polymorphic(*c) {
+            if u.dynamic(*c) {
                 return false;
             }
             let own = u.scopes[u.classes[*c].scope].names.get(crate::classes::constructors::check::CTOR).into_iter().flatten().copied();

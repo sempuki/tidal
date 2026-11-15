@@ -68,6 +68,9 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
                     if ps.len() != 1 {
                         return Err(("DER-10", format!("the base {} occurs as more than one subobject of {}", e.ty.show(), inner.show())));
                     }
+                    if crate::classes::derived::check::through_virtual(&ps[0]) {
+                        return Err(("DER-11", format!("static_cast from {} to {} through a virtual base", e.ty.show(), inner.show())));
+                    }
                     let from = QType::ptr_to(e.ty.clone());
                     let addr = Expr::new(EK::AddrOf(Box::new(e)), from, Cat::PR, span);
                     let p = Expr::new(EK::DerivedPtr(Box::new(addr), ps[0].clone()), QType::ptr_to((**inner).clone()), Cat::PR, span);
@@ -164,6 +167,9 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
                         let ps = crate::classes::derived::check::paths(cx, b, d);
                         if ps.len() != 1 {
                             return Err(("DER-10", format!("the base {} occurs as more than one subobject of {}", fp.show(), tp.show())));
+                        }
+                        if crate::classes::derived::check::through_virtual(&ps[0]) {
+                            return Err(("DER-11", format!("static_cast from {} to {} through a virtual base", fp.show(), tp.show())));
                         }
                         return Ok(Expr::new(EK::DerivedPtr(Box::new(e), ps[0].clone()), target, Cat::PR, span));
                     }

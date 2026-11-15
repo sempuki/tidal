@@ -213,7 +213,20 @@ pub struct ClassInfo {
     pub is_final: bool,
     /// The alignment that `alignas` on the class asks for (ALN-1).
     pub align: Option<u64>,
+    /// The direct virtual bases, in the order of the base list, with
+    /// their access (DER-6).
+    pub vdirect: Vec<(types::ClassId, Access)>,
+    /// All virtual bases, direct or not, in the order of their
+    /// initialization (DER-7).
+    pub vbases: Vec<types::ClassId>,
+    /// All virtual bases in the order of the layout (CLS-35).
+    pub vlayout: Vec<types::ClassId>,
 }
+
+/// A step of a path to a base subobject that names the virtual base
+/// `vbases[i - VSTEP]` of the class at that point. The machine finds the
+/// one subobject of that class in the complete object.
+pub const VSTEP: usize = 1 << 40;
 
 /// The closure type of a lambda expression (`expressions/lambdas`): its
 /// call operator and the number of its captures.
@@ -385,9 +398,48 @@ impl Unit {
         self.classes.iter().position(|c| c.scope == s)
     }
     /// The direct bases of a class: the position of each base subobject
-    /// among the data members, and its class.
+    /// among the data members, and its class. A virtual base has the
+    /// position `VSTEP` plus its place among the virtual bases.
     pub fn bases(&self, c: types::ClassId) -> Vec<(usize, types::ClassId)> {
+        let mut out = self.nv_bases(c);
+        for &(v, _) in &self.classes[c].vdirect {
+            if let Some(k) = self.classes[c].vbases.iter().position(|&x| x == v) {
+                out.push((VSTEP + k, v));
+            }
+        }
+        out
+    }
+    /// The direct bases that are not virtual.
+    pub fn nv_bases(&self, c: types::ClassId) -> Vec<(usize, types::ClassId)> {
         self.classes[c].fields.iter().filter_map(|&f| self.field(f).filter(|x| x.base).and_then(|x| Some((x.index, x.ty.class()?)))).collect()
+    }
+    /// The class of the base subobject at step `i` of a path from class
+    /// `c`.
+    pub fn step_class(&self, c: types::ClassId, i: usize) -> Option<types::ClassId> {
+        if i >= VSTEP {
+            return self.classes[c].vbases.get(i - VSTEP).copied();
+        }
+        self.field(*self.classes[c].fields.get(i)?)?.ty.class()
+    }
+    /// The access of the base specifier of step `i` from class `c`.
+    pub fn step_access(&self, c: types::ClassId, i: usize) -> Access {
+        if i >= VSTEP {
+            let v = self.classes[c].vbases.get(i - VSTEP);
+            return self.classes[c].vdirect.iter().find(|x| Some(&x.0) == v).map_or(Access::Public, |x| x.1);
+        }
+        self.classes[c].fields.get(i).and_then(|&f| self.field(f)).map_or(Access::Public, |x| x.access)
+    }
+    /// The types of the parts of a complete object of class `c`: its
+    /// data members, then one subobject per virtual base.
+    pub fn object_types(&self, c: types::ClassId) -> Vec<QType> {
+        let mut out = self.field_types(c);
+        out.extend(self.classes[c].vbases.iter().map(|&v| QType::new(types::Type::Class(v))));
+        out
+    }
+    /// The class has a virtual base or a virtual function, so its
+    /// objects hold a pointer for them (CLS-35).
+    pub fn dynamic(&self, c: types::ClassId) -> bool {
+        !self.classes[c].vbases.is_empty() || self.polymorphic(c)
     }
     /// A polymorphic class declares or inherits a virtual function
     /// (VIRT-11).
@@ -395,19 +447,62 @@ impl Unit {
         self.scopes[self.classes[c].scope].names.values().flatten().any(|e| self.virt.contains_key(e)) || self.bases(c).iter().any(|&(_, b)| self.polymorphic(b))
     }
     /// The positions from class `from` down to each base subobject of
-    /// class `to`, `from` itself included.
+    /// class `to`, `from` itself included. The paths that reach one
+    /// subobject through a virtual base count once (DER-6); of those,
+    /// the one with public steps comes first.
     pub fn base_paths(&self, from: types::ClassId, to: types::ClassId) -> Vec<Vec<usize>> {
+        let mut out: Vec<Vec<usize>> = Vec::new();
+        for p in self.all_base_paths(from, to) {
+            let key = self.path_key(from, &p);
+            match out.iter().position(|q| self.path_key(from, q) == key) {
+                Some(k) => {
+                    if !self.path_public(from, &out[k]) && self.path_public(from, &p) {
+                        out[k] = p;
+                    }
+                }
+                None => out.push(p),
+            }
+        }
+        out
+    }
+    fn all_base_paths(&self, from: types::ClassId, to: types::ClassId) -> Vec<Vec<usize>> {
         if from == to {
             return vec![Vec::new()];
         }
         let mut out = Vec::new();
         for (i, b) in self.bases(from) {
-            for mut p in self.base_paths(b, to) {
+            for mut p in self.all_base_paths(b, to) {
                 p.insert(0, i);
                 out.push(p);
             }
         }
         out
+    }
+    /// The subobject a path names: the last virtual base on it, if any,
+    /// and the steps after that base.
+    pub fn path_key(&self, from: types::ClassId, path: &[usize]) -> (Option<types::ClassId>, Vec<usize>) {
+        let (mut c, mut key) = (from, (None, Vec::new()));
+        for &i in path {
+            let Some(d) = self.step_class(c, i) else { break };
+            if i >= VSTEP {
+                key = (Some(d), Vec::new());
+            } else {
+                key.1.push(i);
+            }
+            c = d;
+        }
+        key
+    }
+    fn path_public(&self, from: types::ClassId, path: &[usize]) -> bool {
+        let mut c = from;
+        for &i in path {
+            if self.step_access(c, i) != Access::Public {
+                return false;
+            }
+            let Some(d) = self.step_class(c, i) else { return false };
+            c = d;
+        }
+        true
     }
     /// The types of a class's data members, in order.
     pub fn field_types(&self, c: types::ClassId) -> Vec<QType> {

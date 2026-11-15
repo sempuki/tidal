@@ -27,7 +27,7 @@ fn declared_class(cx: &Check, name: &str) -> Option<ClassId> {
 fn new_class(cx: &mut Check, name: &str, key: ClassKey, span: Span) -> ClassId {
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), name);
     let id = cx.u.classes.len();
-    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false, align: None });
+    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false, align: None, vdirect: Vec::new(), vbases: Vec::new(), vlayout: Vec::new() });
     if !name.is_empty() {
         names::declare_in(cx, cx.scope, name, EntKind::Class(id), span, Linkage::None);
     }
@@ -919,10 +919,11 @@ pub fn trivial_default(i: &Init) -> bool {
     }
 }
 
-/// An object of type `ty` holds a polymorphic class object, whose
-/// default constructor runs code (CTOR-23, VIRT-11).
+/// An object of type `ty` holds an object of a polymorphic class or of a
+/// class with a virtual base, whose default constructor runs code
+/// (CTOR-23, VIRT-11).
 pub fn has_polymorphic_part(cx: &Check, ty: &QType) -> bool {
-    ty.base_elem().class().is_some_and(|c| cx.u.polymorphic(c) || cx.u.field_types(c).iter().any(|t| has_polymorphic_part(cx, t)))
+    ty.base_elem().class().is_some_and(|c| cx.u.dynamic(c) || cx.u.field_types(c).iter().any(|t| has_polymorphic_part(cx, t)))
 }
 
 /// A class whose default-initialization initializes each member: a
@@ -1003,7 +1004,7 @@ fn virtual_dtor(cx: &mut Check, id: ClassId, declared_virtual: bool, n: &Node, d
 /// 4 part a has no constructors, bases, or virtual functions (LIST
 /// rules).
 pub fn is_aggregate(cx: &Check, c: ClassId) -> bool {
-    !crate::classes::constructors::check::has_ctors(cx, c) && !cx.u.polymorphic(c) && cx.u.classes[c].fields.iter().all(|&f| cx.u.field(f).is_some_and(|x| x.access == Access::Public))
+    !crate::classes::constructors::check::has_ctors(cx, c) && !cx.u.dynamic(c) && cx.u.classes[c].fields.iter().all(|&f| cx.u.field(f).is_some_and(|x| x.access == Access::Public))
 }
 
 /// Default-initialization of an object of type `ty`: each data member

@@ -604,6 +604,12 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     // constexpr.
     if constexpr {
         if let Some(c) = ty.base_elem().class() {
+            // DER-12: a class with a virtual base has no constexpr
+            // constructor.
+            if !cx.u.classes[c].vbases.is_empty() {
+                cx.error_cause(span, "CX-1", Some("DER-12"), format!("the constexpr variable '{}' has a type with a virtual base, which is not a literal type", name));
+                return None;
+            }
             if crate::classes::constructors::run::needs_in(&cx.u, &ty) && !crate::classes::constructors::check::dtor_constexpr(cx, c) {
                 cx.error_cause(span, "CX-1", Some("CE-23"), format!("the constexpr variable '{}' has a type whose destructor is not constexpr", name));
                 return None;

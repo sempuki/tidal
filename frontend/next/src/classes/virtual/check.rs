@@ -175,6 +175,12 @@ fn pure_left(cx: &Check, c: ClassId) -> Vec<EntityId> {
     out
 }
 
+/// VIRT-8: the class has a pure virtual function that it does not
+/// override.
+pub fn is_abstract(cx: &Check, c: ClassId) -> bool {
+    !pure_left(cx, c).is_empty()
+}
+
 /// The class `c` is complete (its members are declared): VIRT-3 for a
 /// final destructor of a base, which the destructor of `c` overrides
 /// (VIRT-7), the abstract class (VIRT-8), and the warnings of VIRT-13.
@@ -190,7 +196,87 @@ pub fn complete(cx: &mut Check, c: ClassId, span: Span) {
     if !pure_left(cx, c).is_empty() {
         cx.u.abstract_classes.insert(c);
     }
+    // DER-12: no constexpr constructor or destructor in a class with a
+    // virtual base.
+    if !cx.u.classes[c].vbases.is_empty() {
+        let mut fs = crate::classes::constructors::check::ctors(cx, c);
+        fs.extend(crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, dtor));
+        for f in fs {
+            if cx.u.func(f).is_some_and(|x| x.constexpr) {
+                let what = if cx.u.func(f).is_some_and(|x| x.special == Special::Dtor) { "destructor" } else { "constructor" };
+                cx.error(cx.u.entities[f].span, "DER-12", format!("a constexpr {} in the class '{}', which has a virtual base", what, cx.u.classes[c].name));
+            }
+        }
+    }
+    unique_overriders(cx, c, span);
     warnings(cx, c);
+}
+
+/// `e` is `v` or overrides it, directly or not.
+fn overrides(cx: &Check, e: EntityId, v: EntityId) -> bool {
+    e == v || cx.u.virt.get(&e).is_some_and(|x| x.overrides.iter().any(|&o| overrides(cx, o, v)))
+}
+
+/// VIRT-5: each virtual function of each base subobject has one final
+/// overrider in `c`. Two paths that reach one subobject through a
+/// virtual base can each override the function; then a class must
+/// override it again, unless one overrider's class derives from the
+/// other's.
+fn unique_overriders(cx: &mut Check, c: ClassId, span: Span) {
+    if cx.u.classes[c].vbases.is_empty() {
+        return;
+    }
+    let declares = |cx: &Check, k: ClassId, v: EntityId| cx.u.scopes[cx.u.classes[k].scope].names.values().flatten().copied().find(|&e| cx.u.virt.contains_key(&e) && overrides(cx, e, v));
+    for a in cx.u.classes[c].vbases.clone() {
+        let virtuals: Vec<EntityId> = cx.u.scopes[cx.u.classes[a].scope].names.values().flatten().copied().filter(|e| cx.u.virt.contains_key(e)).collect();
+        let paths = cx.u.base_paths(c, a);
+        let Some(path) = paths.first() else { continue };
+        if !crate::classes::derived::check::through_virtual(path) {
+            continue;
+        }
+        for v in virtuals {
+            // The overrider nearest to `c` along each path to the shared
+            // subobject.
+            let mut found: Vec<(ClassId, EntityId)> = Vec::new();
+            for p in all_paths(cx, c, a) {
+                if cx.u.path_key(c, &p) != cx.u.path_key(c, path) {
+                    continue;
+                }
+                let mut k = c;
+                let mut classes = vec![c];
+                for &i in &p {
+                    k = cx.u.step_class(k, i).unwrap();
+                    classes.push(k);
+                }
+                if let Some(x) = classes.iter().find_map(|&k| declares(cx, k, v).map(|e| (k, e))) {
+                    if !found.contains(&x) {
+                        found.push(x);
+                    }
+                }
+            }
+            let finals: Vec<&(ClassId, EntityId)> = found.iter().filter(|x| !found.iter().any(|y| y.0 != x.0 && crate::classes::derived::check::is_base(cx, y.0, x.0))).collect();
+            if finals.len() > 1 {
+                cx.error(span, "VIRT-5", format!("'{}' has no unique final overrider in '{}'", cx.u.entities[v].name, cx.u.classes[c].name));
+                return;
+            }
+        }
+    }
+}
+
+/// Every path from `from` to a base subobject of class `to`, also those
+/// that reach one subobject twice.
+fn all_paths(cx: &Check, from: ClassId, to: ClassId) -> Vec<Vec<usize>> {
+    if from == to {
+        return vec![Vec::new()];
+    }
+    let mut out = Vec::new();
+    for (i, b) in cx.u.bases(from) {
+        for mut p in all_paths(cx, b, to) {
+            p.insert(0, i);
+            out.push(p);
+        }
+    }
+    out
 }
 
 /// VIRT-13: a member function that hides the virtual functions of a

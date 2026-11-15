@@ -67,6 +67,7 @@ pub fn constructs(init: &Init) -> bool {
 /// and each member or element of a list is initialized in its place.
 pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
     use crate::machine::Ret;
+    virtual_base_constant(m, ty)?;
     match init {
         Init::Ctor(f, args) => {
             let mut vals = vec![Ret::Place(p.clone())];
@@ -204,6 +205,9 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
 /// INIT-4): none for default-initialization of a scalar (INIT-1), zero
 /// for value-initialization, the converted value, or the list.
 pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
+    if !matches!(init, Init::Ref(_)) {
+        virtual_base_constant(m, ty)?;
+    }
     match init {
         // A constructor runs on an object: a temporary, whose value is
         // the result.
@@ -273,6 +277,15 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
             }
             Ok(Val::Agg(out))
         }
+    }
+}
+
+/// CE-2, DER-12: no constructor of a class with a virtual base is
+/// constexpr, so a constant evaluation creates no object of one.
+fn virtual_base_constant(m: &Machine, ty: &QType) -> R<()> {
+    match ty.base_elem().class() {
+        Some(c) if m.constant && !m.u.classes[c].vbases.is_empty() => crate::foundations::constant_evaluation::run::not_constexpr(&format!("{}::{}", m.u.classes[c].name, m.u.classes[c].name)),
+        _ => Ok(()),
     }
 }
 

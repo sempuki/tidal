@@ -132,8 +132,59 @@ impl Target {
         Some((size, align, bits.iter().map(|b| (b / 8) as u64).collect()))
     }
     /// `layout`, with the offset of each data member in bits. Bit-fields
-    /// go as BF-9 says for the matrix's ABI.
+    /// go as BF-9 says for the matrix's ABI. The offsets of the virtual
+    /// bases follow those of the data members, in the order of
+    /// `ClassInfo::vbases`: each comes once, after the other parts of the
+    /// complete object (CLS-35).
     pub fn layout_bits(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u64, u64, Vec<u128>)> {
+        let info = u.classes.get(c)?;
+        let (mut end, mut align, mut offs, primary) = self.nv_layout(u, c)?;
+        let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
+        for (k, &f) in info.fields.iter().enumerate() {
+            if let Some(d) = u.field(f).and_then(|x| x.ty.base_elem().class()) {
+                placed.extend(self.empty_subobjects(u, d).into_iter().map(|(e, o)| (e, o + (offs[k] / 8) as u64)));
+            }
+        }
+        offs.resize(info.fields.len() + info.vbases.len(), 0);
+        for &v in &info.vlayout {
+            let k = info.fields.len() + info.vbases.iter().position(|&x| x == v)?;
+            if Some(v) == primary {
+                continue;
+            }
+            let inner = self.empty_subobjects(u, v);
+            let clash = |at: u64, placed: &[(crate::sem::types::ClassId, u64)]| inner.iter().any(|&(e, o)| placed.contains(&(e, at + o)));
+            let a = self.nv_align(u, v)?;
+            align = align.max(a);
+            let size = u64::try_from(end.div_ceil(8)).ok()?;
+            let at = if self.is_empty(u, v) && !clash(0, &placed) {
+                0
+            } else {
+                let mut at = size.div_ceil(a).checked_mul(a)?;
+                while clash(at, &placed) {
+                    at = at.checked_add(a)?;
+                }
+                at
+            };
+            let s = if self.is_empty(u, v) { 0 } else if self.pod(u, v) { self.size_of(u, &QType::new(Type::Class(v)))? } else { self.data_size(u, v)? };
+            offs[k] = 8 * at as u128;
+            placed.extend(inner.iter().map(|&(e, o)| (e, at + o)));
+            end = end.max(8 * at.checked_add(s)? as u128);
+        }
+        let align = align.max(info.align.unwrap_or(1));
+        let size = u64::try_from(end.div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
+        Some((size.max(1), align, offs))
+    }
+    /// The alignment of a class without its virtual bases, which is that
+    /// of a base subobject of it.
+    fn nv_align(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<u64> {
+        let (_, a, _, _) = self.nv_layout(u, c)?;
+        Some(a.max(u.classes[c].align.unwrap_or(1)))
+    }
+    /// The layout of the parts of class `c` other than its virtual bases:
+    /// the end of the parts in bits, their alignment, the offset of each
+    /// data member, and the virtual base that shares the pointer at 0.
+    #[allow(clippy::type_complexity)]
+    fn nv_layout(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u128, u64, Vec<u128>, Option<crate::sem::types::ClassId>)> {
         let info = u.classes.get(c)?;
         if !info.complete {
             return None;
@@ -146,12 +197,14 @@ impl Target {
         let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
         let fields: Vec<&crate::sem::Field> = info.fields.iter().filter_map(|&f| u.field(f)).collect();
         let mut offs = vec![0u128; fields.len()];
-        // A polymorphic class holds a pointer to its virtual functions at
-        // offset 0, which its first polymorphic base shares (the matrix's
-        // ABI, CLS-35).
+        // A class with a virtual function or a virtual base holds a
+        // pointer for them at offset 0, which its first such base shares;
+        // without one, the first virtual base that holds only its pointer
+        // shares it (the matrix's ABI, CLS-35).
         let mut order: Vec<usize> = (0..fields.len()).collect();
-        if !union && u.polymorphic(c) {
-            match (0..fields.len()).find(|&k| fields[k].base && fields[k].ty.class().is_some_and(|b| u.polymorphic(b))) {
+        let mut primary = None;
+        if !union && u.dynamic(c) {
+            match (0..fields.len()).find(|&k| fields[k].base && fields[k].ty.class().is_some_and(|b| u.dynamic(b))) {
                 Some(p) => {
                     order.remove(p);
                     order.insert(0, p);
@@ -159,6 +212,10 @@ impl Target {
                 None => {
                     end = 8 * self.ptr_size() as u128;
                     align = self.ptr_size();
+                    primary = info.vlayout.iter().copied().find(|&v| u.dynamic(v) && self.data_size(u, v) == Some(self.ptr_size()));
+                    if let Some(v) = primary {
+                        align = align.max(self.nv_align(u, v)?);
+                    }
                 }
             }
         }
@@ -209,6 +266,10 @@ impl Target {
                 continue;
             }
             let (s, a) = self.member_size(u, &t)?;
+            let a = match t.class() {
+                Some(b) if x.base => self.nv_align(u, b)?,
+                _ => a,
+            };
             let a = a.max(x.align.unwrap_or(1));
             // The tail padding of a base that is not a POD holds the
             // members that follow (the matrix's ABI, CLS-35).
@@ -229,9 +290,7 @@ impl Target {
                 end = 8 * at.checked_add(s)? as u128;
             }
         }
-        let align = align.max(info.align.unwrap_or(1));
-        let size = u64::try_from(end.div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
-        Some((size.max(1), align, offs))
+        Some((end, align, offs, primary))
     }
     /// The size and alignment of a data member of type `t`: a reference
     /// member holds a pointer (CLS-35).
@@ -266,7 +325,7 @@ impl Target {
     fn data_size(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<u64> {
         let (size, _, bits) = self.layout_bits(u, c)?;
         let offs: Vec<u64> = bits.iter().map(|b| (b / 8) as u64).collect();
-        let mut end = 0;
+        let mut end = if u.dynamic(c) { self.ptr_size() } else { 0 };
         for (k, &f) in u.classes[c].fields.iter().enumerate() {
             let x = u.field(f)?;
             if x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b)) {
@@ -290,7 +349,7 @@ impl Target {
     fn pod(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
         let names = &u.scopes[u.classes[c].scope].names;
         let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !u.defaulted.contains(f)));
-        if u.polymorphic(c) || provided("{ctor}") || provided("{dtor}") || provided("operator=") {
+        if u.dynamic(c) || provided("{ctor}") || provided("{dtor}") || provided("operator=") {
             return false;
         }
         u.classes[c].fields.iter().all(|&f| {
@@ -299,7 +358,7 @@ impl Target {
     }
     /// A class with no data member other than empty bases.
     pub fn is_empty(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
-        !u.polymorphic(c) && u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b))))
+        !u.dynamic(c) && u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b))))
     }
     pub fn align_of(self, u: &Unit, q: &QType) -> Option<u64> {
         Some(match &q.t {
