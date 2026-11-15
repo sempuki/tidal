@@ -647,6 +647,11 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
     Some(MemInits::Fields(out))
 }
 
+/// Whether the elements of an array type are arrays.
+fn el_is_array(ty: &QType) -> bool {
+    ty.elem().is_some_and(|e| e.is_array())
+}
+
 /// Direct-initialization of an object of type `ty` from arguments in
 /// parentheses or braces (INIT rules, LIST rules, CTOR-25).
 pub fn direct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, span: Span) -> Option<Init> {
@@ -664,11 +669,37 @@ pub fn direct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, span
         return None;
     }
     // A reference member binds its one value (CTOR-17).
-    if ty.is_ref() && args.len() == 1 && !list {
+    if ty.is_ref() && args.len() == 1 {
         return crate::classes::members::check::bind_member(cx, args[0].clone(), ty, span);
     }
+    // An array member: from braces, each value initializes an element in
+    // order (CTOR-21), and the rest are value-initialized; from empty
+    // parentheses, each element is (INIT-8).
+    if let (Type::Array(el, Some(n)), false) = (&ty.t, el_is_array(ty)) {
+        if !list && !args.is_empty() {
+            cx.error(span, "INIT-8", "an array member initialized from a value in parentheses");
+            return None;
+        }
+        if args.len() as u64 > *n {
+            cx.error(span, "CTOR-21", format!("{} values for an array of {} elements", args.len(), n));
+            return None;
+        }
+        let mut out = Vec::new();
+        for e in args {
+            let i = if el.is_class() {
+                Init::Expr(crate::declarations::initialization::forms::check::copy_init(cx, e, el, "CTOR-21")?)
+            } else {
+                Init::Expr(crate::declarations::initialization::list::check::braced_value(cx, e, el, "CTOR-21")?)
+            };
+            out.push(i);
+        }
+        while (out.len() as u64) < *n {
+            out.push(crate::classes::members::check::value_init(cx, el));
+        }
+        return Some(Init::List(out));
+    }
     if ty.is_ref() || ty.is_array() {
-        cx.unsupported(span, "a member initializer for a reference or an array (build step 4)");
+        cx.unsupported(span, "a member initializer for a reference or an array of arrays (build step 4)");
         return None;
     }
     match args.len() {

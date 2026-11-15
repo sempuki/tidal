@@ -1805,3 +1805,16 @@ fn conditional_class_operands() {
     assert_eq!(run("struct A { operator int() const { return 1; } }; struct B { operator int() const { return 2; } }; int main() { A a; B b; return false ? a : b; }"), RunOutcome::Result(2));
     assert_eq!(rule("struct M { M(int); operator int() const; }; M m(0); extern bool c; auto r = c ? m : 1;"), Some("COND-5"));
 }
+
+#[test]
+fn array_member_initializers() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // CTOR-21: braces give the elements in order, and the rest are zero.
+    assert_eq!(run("struct S { int a[3]; S() : a{4, 5} {} }; int main() { S s; return s.a[0] + s.a[1] + s.a[2]; }"), RunOutcome::Result(9));
+    assert_eq!(rule("struct S { int p[2]; S(double d) : p{1, d} {} };"), Some("CTOR-21"));
+    assert_eq!(rule("struct S { int a[2]; S(const int (&x)[2]) : a(x) {} };"), Some("INIT-8"));
+}

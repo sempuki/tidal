@@ -690,7 +690,9 @@ or an xvalue reference or by a conversion to a prvalue, and with
 neither, the built-in candidates that the operands' conversion
 functions reach. A class prvalue keeps its cv-qualifiers. A converting
 constructor makes an object from an object of another class when that
-class has no conversion functions. The
+class has no conversion functions. A member initializer in braces
+gives an array member its elements in order and value-initializes the
+rest, and a reference member binds the one value in braces. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
