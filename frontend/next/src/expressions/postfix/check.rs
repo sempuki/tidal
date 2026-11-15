@@ -81,6 +81,11 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
                     cx.error(n.span, "DTOR-8", "a destructor name that is not called");
                     return bad(n.span);
                 }
+                // DTOR-8: a destructor name names no value without a call.
+                if b.ty.nonref().is_class() {
+                    cx.error(n.span, "DTOR-8", "a destructor name that is not called");
+                    return bad(n.span);
+                }
                 let t = cx.unsupported(n.span, "a destructor call on a class (build step 4)");
                 return Expr::new(EK::Int(0), t, Cat::PR, n.span);
             }
@@ -233,9 +238,30 @@ fn pseudo_destructor(cx: &mut Check, base: &Node, arrow: bool, id: &Node, args: 
 /// alias, or `decltype`.
 fn class_destructor_call(cx: &mut Check, obj: Expr, c: crate::sem::types::ClassId, id: &Node, span: Span) -> Expr {
     let u = match first_node(id) {
+        // DTOR-6: `x.B::~B()` ends the base subobject of class `B`,
+        // without a virtual call.
         Some(q) if q.prod == "qualified_name" => {
-            let t = cx.unsupported(span, "a qualified destructor name in a destructor call");
-            return Expr::new(EK::Int(0), t, Cat::PR, span);
+            let Some(name) = q.find("class_name").map(|x| cx.source(x)) else { return bad(span) };
+            let found = names::lookup_where(cx, &name, |k| matches!(k, EntKind::Class(_) | EntKind::Typedef(_)));
+            let named = found.first().and_then(|&e| match &cx.u.entities[e].kind {
+                EntKind::Class(k) => Some(*k),
+                EntKind::Typedef(t) => t.class(),
+                _ => None,
+            });
+            let Some(b) = named.filter(|&b| b == c || crate::classes::derived::check::is_base(cx, c, b)) else {
+                cx.error(span, "DTOR-8", format!("the destructor name '~{}' does not name the class of the object or a base of it", name));
+                return bad(span);
+            };
+            let obj = if b == c { obj } else {
+                match crate::classes::derived::check::to_base(cx, obj, b, span) {
+                    Some(x) => x,
+                    None => return bad(span),
+                }
+            };
+            if !crate::classes::constructors::check::dtor_usable(cx, &obj.ty, span) {
+                return bad(span);
+            }
+            return Expr::new(EK::Destroy(Box::new(obj)), QType::void(), Cat::PR, span);
         }
         Some(u) => u,
         None => return bad(span),

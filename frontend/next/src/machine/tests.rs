@@ -2380,3 +2380,16 @@ fn enumerations_in_classes_and_qualified_definitions() {
     assert_eq!(rule("namespace lib { constexpr int start = 4; enum Plain : int; } enum lib::Plain : int { first = start + 1 }; static_assert(lib::first == 5);"), None);
     assert_eq!(run("namespace p { enum class C { r, g, b }; } struct T { using enum p::C; }; int main() { return static_cast<int>(T::b); }"), RunOutcome::Result(2));
 }
+
+#[test]
+fn bindings_captured_and_destructor_names() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct P { int a; int b; }; int main() { auto [x, y] = P{1, 2}; auto g = [x, &y] { return x + y; }; y = 5; return g(); }"), RunOutcome::Result(6));
+    assert_eq!(rule("struct B { ~B() {} }; struct D : B { int c = 0; }; void e(D& d) { d.B::~B(); } void g(D* d) { d->B::~B(); }"), None);
+    assert_eq!(rule("struct S { ~S() {} }; void f(S& s) { s.~S; }"), Some("DTOR-8"));
+    assert_eq!(rule("struct R { int a; int& r; }; R x{1};"), Some("LIST-12"));
+}

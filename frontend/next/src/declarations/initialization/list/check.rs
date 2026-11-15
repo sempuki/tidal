@@ -337,7 +337,9 @@ fn aggregate_from(cx: &mut Check, ty: &QType, its: &[&Node], cache: &mut [Option
                     out.push(i);
                     continue;
                 }
-                cx.unsupported(b_span(its), "an aggregate that leaves a reference member without a value");
+                // LIST-12: a reference member takes a value from the list or
+                // its default member initializer.
+                cx.error(b_span(its), "LIST-12", "the list leaves a reference member without a value");
                 return None;
             };
             if c.prod == "braced_init" {

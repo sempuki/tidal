@@ -215,8 +215,9 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
             cx.error(w.span, "LAM-6", format!("'{}' does not have automatic storage", w.name));
             return bad(span);
         }
-        if cx.bindings.contains(&v) {
-            return unsupported(cx, w.span, "a capture of a structured binding");
+        // LAM-7: a structured binding to a bit-field is not captured here.
+        if cx.bit_bindings.contains_key(&v) {
+            return unsupported(cx, w.span, "a capture of a structured binding to a bit-field");
         }
         let Some(e) = enclosing_use(cx, v, w.span) else { return bad(span) };
         // VIRT-8: a capture by copy makes an object of the type.
@@ -480,8 +481,8 @@ fn use_at(cx: &mut Check, level: Option<usize>, v: EntityId, span: Span) -> Opti
         cx.error(span, "LAM-9", format!("the lambda uses '{}', which it does not capture", name));
         return None;
     };
-    if cx.bindings.contains(&v) {
-        cx.unsupported(span, "a capture of a structured binding");
+    if cx.bit_bindings.contains_key(&v) {
+        cx.unsupported(span, "a capture of a structured binding to a bit-field");
         return None;
     }
     let outer = if k == 0 { None } else { Some(k - 1) };
