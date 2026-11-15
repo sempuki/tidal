@@ -560,10 +560,10 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 crate::declarations::declarators::check::reference_needs_init(cx, span, &name);
                 return None;
             }
-            // A literal type with a volatile member, and a union without
-            // an initializer, wait for a later part (CE-23).
-            if constexpr && ty.base_elem().class().is_some_and(|c| crate::classes::unions::check::is_union(cx, c) || volatile_member(cx, c)) {
-                cx.unsupported(span, "a constexpr object of a union or of a class with a volatile member, with no initializer (build step 4)");
+            // CE-23: a class with a volatile member is not a literal type;
+            // a union is one while a member is not volatile.
+            if constexpr && ty.base_elem().class().is_some_and(|c| volatile_not_literal(cx, c)) {
+                cx.error_cause(span, "CX-1", Some("CE-23"), format!("the constexpr variable '{}' has a type with a volatile member, which is not a literal type", name));
                 return None;
             }
             // CTOR-4, CTOR-24: a const object of class type that default-
@@ -785,6 +785,18 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, ty: &QType, span: Spa
 
 /// A data member of class `c`, or of a member or base of class type, is
 /// volatile.
+/// CE-23: a volatile member keeps class `c` from being a literal type: a
+/// class with a volatile member, or a member of class type that is not
+/// literal for this reason, or a union whose members are all volatile.
+fn volatile_not_literal(cx: &Check, c: crate::sem::types::ClassId) -> bool {
+    let fields: Vec<_> = cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f)).collect();
+    let bad = |x: &&crate::sem::Field| x.ty.is_volatile() || x.ty.base_elem().class().is_some_and(|d| volatile_not_literal(cx, d));
+    if crate::classes::unions::check::is_union(cx, c) {
+        return !fields.is_empty() && fields.iter().all(bad);
+    }
+    fields.iter().any(bad)
+}
+
 fn volatile_member(cx: &Check, c: crate::sem::types::ClassId) -> bool {
     cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f)).any(|x| x.ty.is_volatile() || x.ty.base_elem().class().is_some_and(|d| volatile_member(cx, d)))
 }

@@ -2176,3 +2176,16 @@ fn consteval_and_nodiscard_constructors() {
     };
     assert_eq!(warned, Some("ATTR-5"));
 }
+
+#[test]
+fn constexpr_unions_and_volatile_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("union U { int a; float b; constexpr U() {} }; constexpr U u;"), None);
+    assert_eq!(rule("union R { volatile int h; int s; constexpr R() : s(0) {} }; constexpr R r; static_assert(r.s == 0);"), None);
+    assert_eq!(rule("union R { volatile int h; volatile long w; constexpr R() : h(0) {} }; constexpr R r;"), Some("CX-1"));
+    assert_eq!(rule("struct P { volatile int l; constexpr P() : l(0) {} }; constexpr P p;"), Some("CX-1"));
+}

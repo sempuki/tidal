@@ -107,12 +107,11 @@ pub enum Val {
 }
 
 impl Val {
-    /// A part of the value has no value.
+    /// A part of the value has no value. A union's parts are those of its
+    /// active member, and a union with no active member has none (CE-21).
     pub fn has_empty_part(&self) -> bool {
         match self {
             Val::Uninit => true,
-            // A union with no active member.
-            Val::Agg(xs) if !xs.is_empty() && xs.iter().all(|x| *x == Val::Inactive) => true,
             Val::Agg(xs) => xs.iter().any(|x| x.has_empty_part()),
             _ => false,
         }
