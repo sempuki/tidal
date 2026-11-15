@@ -2238,3 +2238,15 @@ fn redefinitions_and_ambiguous_integral_conversions() {
 fn decltype_in_a_functional_cast() {
     assert_eq!(run("int main() { auto n = decltype(sizeof 0)(-1) / 2; long k = decltype(3L)(7); return n > 1000 ? int(k) : 0; }"), RunOutcome::Result(7));
 }
+
+#[test]
+fn delete_of_a_class_operand() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct B { double* d; operator double*() const { return d; } }; int main() { const B b{new double[2]{1.0, 2.0}}; int r = int(b.d[1]); delete[] b; return r; }"), RunOutcome::Result(2));
+    assert_eq!(rule("struct S {}; void f(S s) { delete s; }"), Some("NEW-8"));
+    assert_eq!(rule("struct S { operator int*(); operator long*(); }; void f(S s) { delete s; }"), Some("NEW-15"));
+}

@@ -397,12 +397,33 @@ pub fn delete_expr(cx: &mut Check, n: &Node) -> Expr {
     let array = cx.words(n).contains(&"[");
     let Some(o) = nodes(n).last().copied() else { return bad(span) };
     let e = expr(cx, o);
+    if e.ty.is_error() {
+        return bad(span);
+    }
+    // NEW-15: a class operand converts by its one non-explicit conversion
+    // function to a pointer to an object type.
+    let e = match crate::classes::conversion_functions::check::converting_class(cx, &e) {
+        Some(c) => {
+            let obj = e.ty.nonref();
+            let fs = crate::classes::conversion_functions::check::operand_functions(cx, c, &obj, |r| r.pointee().is_some_and(|p| !p.is_func()));
+            match fs.as_slice() {
+                [f] => crate::classes::conversion_functions::check::call(cx, *f, e, span),
+                [] => e,
+                _ => {
+                    cx.error(span, "NEW-15", format!("the operand of delete has type {}, which has several conversion functions to pointer types", obj.show()));
+                    return bad(span);
+                }
+            }
+        }
+        None => e,
+    };
     let e = rvalue(cx, e);
     if e.ty.is_error() {
         return bad(span);
     }
     if e.ty.is_class() {
-        return unsupported(cx, span, "a delete expression with an operand of class type");
+        cx.error_cause(span, "NEW-8", Some("NEW-15"), format!("the operand of delete has type {}, which does not convert to a pointer", e.ty.show()));
+        return bad(span);
     }
     let Some(pointee) = e.ty.pointee().cloned() else {
         cx.error(span, "NEW-8", format!("the operand of delete has type {}, not a pointer", e.ty.show()));
