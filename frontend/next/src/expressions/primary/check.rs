@@ -39,9 +39,16 @@ pub fn primary(cx: &mut Check, n: &Node) -> Expr {
                 cx.error_cause(n.span, "PRIM-20", cause, why);
                 bad(n.span)
             }
+            // DEFARG-4: a default argument does not use `this`.
+            None if cx.default_arg => {
+                cx.error(n.span, "DEFARG-4", "'this' in a default argument");
+                bad(n.span)
+            }
+            // PRIM-11: in the declaration of a member function, such as
+            // its trailing return type, `this` points to the class.
             None => {
-                let t = cx.unsupported(n.span, "'this' outside a member function body (build step 4)");
-                Expr::new(EK::Int(0), t, Cat::PR, n.span)
+                let c = cx.member_of.unwrap();
+                Expr::new(EK::This, QType::ptr_to(QType::new(Type::Class(c))), Cat::PR, n.span)
             }
         },
         [_, Kid::Node(e), _] => {

@@ -2302,3 +2302,15 @@ fn calls_with_a_contrived_object() {
     assert_eq!(rule("struct S { static void put(long); void put(int) &&; static void fill() { put(1); } };"), Some("OVL-23"));
     assert_eq!(rule("struct I { static void reset(int = 0); void reset(); static void clear() { reset(); } };"), Some("OVL-36"));
 }
+
+#[test]
+fn this_in_member_declarations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct S { int v; auto get() const -> decltype(this->v) { return v; } };"), None);
+    assert_eq!(rule("struct S { int f(const S* p = this); };"), Some("DEFARG-4"));
+    assert_eq!(rule("struct B { int size; int fill(unsigned long n = sizeof(*this)); };"), Some("DEFARG-4"));
+}

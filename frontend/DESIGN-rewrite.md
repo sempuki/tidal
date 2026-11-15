@@ -769,7 +769,9 @@ assignment takes a class rvalue on the left. A braced argument among
 overloads has the sequence of a trial initialization, the worst of its
 elements for an array, and none for an ellipsis. A destructor can be
 defined outside its class. A call of member functions with no object
-gives them a contrived object, and its best candidate must be static. The
+gives them a contrived object, and its best candidate must be static.
+`this` in the declaration of a member function points to the class,
+and in a default argument it is an error. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
