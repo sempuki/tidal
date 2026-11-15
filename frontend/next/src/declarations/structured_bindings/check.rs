@@ -163,6 +163,20 @@ fn class_bindings(cx: &mut Check, e: Expr, k: crate::sem::types::ClassId, ids: &
         cx.error(e.span, "SB-13", "a structured binding of an incomplete class");
         return failed(local, span);
     }
+    // SB-5: a class that `std::tuple_size` names a size for binds by the
+    // tuple protocol, which waits for a later piece.
+    let std_ns = cx.u.scopes[cx.u.root].names.get("std").and_then(|es| es.iter().find_map(|&e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Namespace(s) => Some(s),
+        _ => None,
+    }));
+    let tuple_like = std_ns.is_some_and(|s| cx.u.scopes[s].names.get("tuple_size").is_some_and(|es| es.iter().any(|&e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::ClassTemplate(v) => cx.u.class_templates[v].specs.iter().any(|(a, _)| a.first().is_some_and(|x| matches!(x, crate::sem::types::TArg::Type(t) if t.unqual().t == Type::Class(k)))) || !cx.u.class_templates[v].partials.is_empty(),
+        _ => false,
+    })));
+    if tuple_like {
+        cx.unsupported(e.span, "a structured binding by the tuple protocol");
+        return failed(local, span);
+    }
     // The classes of the hierarchy that declare data members.
     fn holders(cx: &Check, c: crate::sem::types::ClassId, out: &mut Vec<crate::sem::types::ClassId>) {
         let own = cx.u.classes[c].fields.iter().filter_map(|&f| cx.u.field(f).map(|x| (f, x))).any(|(f, x)| !x.base && !(x.width.is_some() && cx.u.entities[f].name.is_empty()));

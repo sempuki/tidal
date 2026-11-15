@@ -209,14 +209,24 @@ pub struct ClassTemplate {
     /// each definition, its declaration, and the first entity declared
     /// after it.
     pub outside: Vec<(Vec<Rc<str>>, crate::syntax::Node, EntityId)>,
-    /// Each partial specialization: its parameters, its argument pattern
-    /// with its parameters as dependent types, and its definition
+    /// Each partial specialization: its parameters, the types of its
+    /// constant parameters, its argument pattern, and its definition
     /// (TSP-9).
-    pub partials: Vec<(Vec<Rc<str>>, Vec<QType>, crate::syntax::Node)>,
+    pub partials: Vec<(Vec<Rc<str>>, Vec<Option<QType>>, Vec<PatArg>, crate::syntax::Node)>,
     /// False for a template declared and not yet defined.
     pub defined: bool,
     pub span: Span,
     pub limit: EntityId,
+}
+
+/// An argument of a partial specialization's pattern: a type with its
+/// type parameters as dependent types, a value, or one of its constant
+/// parameters by index.
+#[derive(Clone, Debug, PartialEq)]
+pub enum PatArg {
+    Type(QType),
+    Value(i128),
+    Param(usize),
 }
 
 /// A variable template whose parameters are types, with its partial

@@ -500,9 +500,12 @@ recorded before its body so that the body names it. A member that a
 definition outside the class gives, with the parameters as the
 qualifier's arguments, is checked again for each specialization, made
 before or after the definition. A class template can be declared before
-its definition, and has partial specializations whose parameters are
-types: a use takes the one whose pattern its arguments match, or the
-primary. A partial specialization whose pattern is the parameters alone,
+its definition, and has partial specializations whose patterns hold
+types, values, and the partial specialization's own constant
+parameters: a use takes the one whose pattern its arguments match, or
+the primary. An explicit or partial specialization can name its
+template with a qualifier, from a namespace that encloses the
+template's. A partial specialization whose pattern is the parameters alone,
 or that leaves out a parameter, is an error. A `typename` specifier
 after a qualifier that names a parameter is a dependent type that
 deduction does not look into, and in a specialization it names the

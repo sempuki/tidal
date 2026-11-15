@@ -96,7 +96,9 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     if head.child("template_id").is_some() && !cx.explicit_head {
         return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
-    let Some(nn) = head.child("nested_name") else { return class_def_in(cx, n, head) };
+    // An explicit specialization's caller has entered the qualifier's
+    // scope.
+    let Some(nn) = head.child("nested_name").filter(|_| !cx.explicit_head) else { return class_def_in(cx, n, head) };
     // TYN-6: a class declared in a namespace or a class is defined after
     // with a qualified name. The definition is in the scope of the
     // qualifier, so its bases and body see the members there (NAM-21).

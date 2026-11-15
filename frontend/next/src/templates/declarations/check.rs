@@ -607,12 +607,29 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
             let Some(h) = cd.child("class_head") else { return false };
             h
         };
-        if head.child("nested_name").is_some() {
-            return false;
-        }
+        // TSP-5, TSP-19: a qualified name names a template of an enclosed
+        // namespace.
+        let home = match head.child("nested_name") {
+            None => saved,
+            Some(nn) => match names::nested_name(cx, nn) {
+                names::Qual::Scope(s) if cx.u.scopes[s].kind == ScopeKind::Namespace => {
+                    let mut p = Some(s);
+                    while p.is_some_and(|x| x != saved) {
+                        p = cx.u.scopes[p.unwrap()].parent;
+                    }
+                    if p.is_none() {
+                        cx.error(head.span, "TSP-5", "an explicit specialization outside a namespace that encloses its template");
+                        return true;
+                    }
+                    s
+                }
+                names::Qual::Error => return true,
+                _ => return false,
+            },
+        };
         let Some(tid) = head.child("template_id") else { return false };
         let Some(name) = tid.child("template_name").map(|t| cx.source(t)) else { return false };
-        let Some(v) = names::declared_here(cx, saved, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        let Some(v) = names::declared_here(cx, home, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
             EntKind::ClassTemplate(v) => Some(v),
             _ => None,
         }) else {
@@ -648,6 +665,7 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
         }
         let predicted = cx.u.classes.len();
         cx.u.class_templates[v].specs.push((args.clone(), predicted));
+        cx.scope = home;
         cx.enter(ScopeKind::Template);
         cx.explicit_head = true;
         let t = crate::classes::members::check::class_def(cx, cd);
@@ -1868,16 +1886,16 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         let Some(h) = cd.child("class_head") else { return false };
         h
     };
-    if head.child("nested_name").is_some() {
-        return false;
-    }
     if let Some(tid) = head.child("template_id") {
         // TSP-11: a partial specialization's parameters have no default.
         if defaults.iter().any(|d| d.is_some()) {
             cx.error(head.span, "TSP-11", "a default template argument on a partial specialization");
             return true;
         }
-        return class_partial(cx, cd, tid, params);
+        return class_partial(cx, cd, head, tid, params);
+    }
+    if head.child("nested_name").is_some() {
+        return false;
     }
     let Some(name) = head.child("class_name").map(|c| cx.source(c)) else { return false };
     if shadows_param(cx, cd, &params) {
@@ -2046,13 +2064,32 @@ fn alias_use(cx: &mut Check, a: usize, tid: &Node) -> QType {
 /// TSP-9: `template <class T> struct C<P...> { ... };`, a partial
 /// specialization of a class template of the scope whose parameters are
 /// types.
-fn class_partial(cx: &mut Check, cd: &Node, tid: &Node, params: Vec<Param>) -> bool {
+fn class_partial(cx: &mut Check, cd: &Node, head: &Node, tid: &Node, params: Vec<Param>) -> bool {
     let saved = cx.scope;
     if cx.head_pack {
         return false;
     }
+    // TSP-19: a qualified name names a template of an enclosed namespace.
+    let home = match head.child("nested_name") {
+        None => saved,
+        Some(nn) => match names::nested_name(cx, nn) {
+            names::Qual::Scope(s) if cx.u.scopes[s].kind == ScopeKind::Namespace => {
+                let mut p = Some(s);
+                while p.is_some_and(|x| x != saved) {
+                    p = cx.u.scopes[p.unwrap()].parent;
+                }
+                if p.is_none() {
+                    cx.error(head.span, "TSP-5", "a partial specialization outside a namespace that encloses its template");
+                    return true;
+                }
+                s
+            }
+            names::Qual::Error => return true,
+            _ => return false,
+        },
+    };
     let Some(name) = tid.child("template_name").map(|t| cx.source(t)) else { return false };
-    let Some(v) = names::declared_here(cx, saved, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+    let Some(v) = names::declared_here(cx, home, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
         EntKind::ClassTemplate(v) => Some(v),
         _ => None,
     }) else {
@@ -2061,7 +2098,7 @@ fn class_partial(cx: &mut Check, cd: &Node, tid: &Node, params: Vec<Param>) -> b
     if shadows_param(cx, cd, &params) {
         return true;
     }
-    if params.iter().any(|p| p.2.is_some()) || cx.u.class_templates[v].kinds.iter().any(|k| k.is_some()) || dependent_forms(cx, cd, &params) {
+    if dependent_forms(cx, cd, &params) {
         return false;
     }
     // TSP-32: `union` agrees only with `union`.
@@ -2070,40 +2107,78 @@ fn class_partial(cx: &mut Check, cd: &Node, tid: &Node, params: Vec<Param>) -> b
     if primary_union != (cd.prod == "union_def") {
         return false;
     }
+    let primary_kinds = ct.kinds.clone();
+    let nodes: Vec<Node> = tid.child("template_args").map(|ta| ta.children("template_arg").cloned().collect()).unwrap_or_default();
+    if nodes.len() != primary_kinds.len() || !cx.u.class_templates[v].specs.is_empty() || nodes.iter().any(|a| cx.words(a).contains(&"...")) {
+        return false;
+    }
+    cx.scope = home;
     let ts = cx.enter(ScopeKind::Template);
     declare_params(cx, ts, &params);
     let marks = cx.u.diags.len();
-    let pattern = template_type_args(cx, tid);
+    // The pattern: a type, a constant parameter of the partial
+    // specialization, or a value.
+    let mut pattern: Vec<crate::sem::PatArg> = Vec::new();
+    for (a, kind) in nodes.iter().zip(&primary_kinds) {
+        let item = match kind {
+            None => a.child("type_id").map(|t| crate::sem::PatArg::Type(crate::declarations::declarators::check::type_id(cx, t))),
+            Some(ty) => {
+                let src = cx.source(a);
+                match params.iter().position(|p| p.2.is_some() && p.0.as_ref() == src.as_str()) {
+                    Some(i) => Some(crate::sem::PatArg::Param(i)),
+                    None => constant_arg(cx, a).and_then(|(e, x)| constant_of(cx, &e, x, ty, a.span)).and_then(|t| match t {
+                        TArg::Value(_, x) => Some(crate::sem::PatArg::Value(x)),
+                        _ => None,
+                    }),
+                }
+            }
+        };
+        match item {
+            Some(i) => pattern.push(i),
+            None => {
+                cx.leave(saved);
+                cx.u.diags.truncate(marks);
+                return false;
+            }
+        }
+    }
     cx.leave(saved);
-    let Some(pattern) = pattern.filter(|_| cx.u.diags.len() == marks) else {
+    if cx.u.diags.len() > marks {
         cx.u.diags.truncate(marks);
-        return false;
-    };
-    if pattern.len() != cx.u.class_templates[v].params.len() || !cx.u.class_templates[v].specs.is_empty() {
         return false;
     }
     // TSP-11: each parameter is deducible from the pattern, and a pattern
     // of the parameters alone, in any order, matches every list.
-    let index = |t: &QType| match &t.t {
-        Type::Dep(d) if !t.c && !t.v => match &**d {
-            DepType::Param { index, .. } => Some(*index),
+    let index = |p: &crate::sem::PatArg| match p {
+        crate::sem::PatArg::Type(t) => match &t.t {
+            Type::Dep(d) if !t.c && !t.v => match &**d {
+                DepType::Param { index, .. } => Some(*index as usize),
+                _ => None,
+            },
             _ => None,
         },
-        _ => None,
+        crate::sem::PatArg::Param(i) => Some(*i),
+        crate::sem::PatArg::Value(_) => None,
     };
-    let bare: Vec<Option<u32>> = pattern.iter().map(index).collect();
-    let mut seen: Vec<u32> = bare.iter().flatten().copied().collect();
+    let bare: Vec<Option<usize>> = pattern.iter().map(index).collect();
+    let mut seen: Vec<usize> = bare.iter().flatten().copied().collect();
     seen.sort();
     seen.dedup();
     if bare.iter().all(|b| b.is_some()) && seen.len() == bare.len() {
         cx.error(tid.span, "TSP-11", format!("a partial specialization of '{}' that matches every argument list of the template", name));
         return true;
     }
-    if let Some(k) = (0..params.len()).find(|&k| !pattern.iter().any(|p| mentions(p, k as u32))) {
+    let appears = |k: usize| pattern.iter().any(|p| match p {
+        crate::sem::PatArg::Type(t) => params[k].2.is_none() && mentions(t, k as u32),
+        crate::sem::PatArg::Param(i) => *i == k,
+        crate::sem::PatArg::Value(_) => false,
+    });
+    if let Some(k) = (0..params.len()).find(|&k| !appears(k)) {
         cx.error(tid.span, "TSP-11", format!("the parameter '{}' of a partial specialization of '{}' does not appear in its arguments", params[k].0, name));
         return true;
     }
-    cx.u.class_templates[v].partials.push((params.into_iter().map(|p| p.0).collect(), pattern, cd.clone()));
+    let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
+    cx.u.class_templates[v].partials.push((params.into_iter().map(|p| p.0).collect(), kinds, pattern, cd.clone()));
     true
 }
 
@@ -2173,10 +2248,27 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     // TSP-13 to TSP-15: the one partial specialization whose pattern the
     // arguments match, or the primary.
     let mut matches = Vec::new();
-    for (k, (ps, pattern, _)) in ct.partials.iter().enumerate() {
+    for (k, (ps, kinds, pattern, _)) in ct.partials.iter().enumerate() {
         let mut bound: Vec<Option<QType>> = vec![None; ps.len()];
-        if pattern.len() == args.len() && pattern.iter().zip(&args).all(|(p, a)| matches!(a, TArg::Type(a) if match_exact(&cx.u, p, a, &mut bound))) {
-            if let Some(b) = bound.into_iter().map(|b| b.map(TArg::Type)).collect::<Option<Vec<TArg>>>() {
+        let mut values: Vec<Option<i128>> = vec![None; ps.len()];
+        let fits = pattern.len() == args.len() && pattern.iter().zip(&args).all(|(p, a)| match (p, a) {
+            (crate::sem::PatArg::Type(p), TArg::Type(a)) => match_exact(&cx.u, p, a, &mut bound),
+            (crate::sem::PatArg::Value(v), TArg::Value(_, x)) => v == x,
+            (crate::sem::PatArg::Param(i), TArg::Value(_, x)) => match values[*i] {
+                Some(y) => y == *x,
+                None => {
+                    values[*i] = Some(*x);
+                    true
+                }
+            },
+            _ => false,
+        });
+        if fits {
+            let b: Option<Vec<TArg>> = (0..ps.len()).map(|i| match &kinds[i] {
+                None => bound[i].clone().map(TArg::Type),
+                Some(t) => values[i].map(|v| TArg::Value(t.clone(), v)),
+            }).collect();
+            if let Some(b) = b {
                 matches.push((k, b));
             }
         }
@@ -2209,7 +2301,7 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg], source: Option<(us
     let ct = cx.u.class_templates[v].clone();
     // A partial specialization binds its own parameters.
     let (params, bound, node) = match &source {
-        Some((k, b)) => (ct.partials[*k].0.clone(), b.clone(), ct.partials[*k].2.clone()),
+        Some((k, b)) => (ct.partials[*k].0.clone(), b.clone(), ct.partials[*k].3.clone()),
         None => (ct.params.clone(), args.to_vec(), ct.node.clone()),
     };
     if cx.instantiating >= cx.depth_limit {

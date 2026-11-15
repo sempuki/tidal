@@ -2807,3 +2807,14 @@ fn explicit_instantiations() {
     assert_eq!(rule("template <class T> int get(T); template int get(int);"), Some("INST-20"));
     assert_eq!(rule(&format!("{} template int get(int); template <> int get(int) {{ return 2; }}", base)), Some("INST-19"));
 }
+
+#[test]
+fn qualified_and_constant_partial_specializations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("namespace std { template <class T> struct tuple_size; template <decltype(sizeof 0) I, class T> struct tuple_element; } struct P { int a, b; }; template <> struct std::tuple_size<P> { static constexpr decltype(sizeof 0) value = 2; }; template <decltype(sizeof 0) I> struct std::tuple_element<I, P> { static constexpr int index = I; }; template <int N, class T> struct Arr { static constexpr int n = 0; }; template <class T> struct Arr<3, T> { static constexpr int n = 3; }; template <int N> struct Arr<N, char> { static constexpr int n = N + 100; }; static_assert(std::tuple_size<P>::value == 2 && std::tuple_element<1, P>::index == 1); static_assert(Arr<1, int>::n == 0 && Arr<3, int>::n == 3 && Arr<5, char>::n == 105);"), None);
+    assert_eq!(rule("namespace lib { template <class T> struct Box {}; } namespace other { template <> struct lib::Box<int> {}; }"), Some("TSP-5"));
+}
