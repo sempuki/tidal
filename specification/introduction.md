@@ -26,11 +26,40 @@ replace it.
 
 ## Roles
 
-| Agent | Forbidden | Reads | Writes |
-|---|---|---|---|
-| **Source reader** | Writing or changing any file of the repository; quoting a source or proposing wording | The ISO standard, WG21 papers, cppreference, compiler sources under restrictive licenses, and posts that quote any of these | Summaries in its own words, which describe behavior, gaps, and doubts |
-| **Clean-room writer** | Reading protected material | Source readers' summaries that passed the non-similarity check, the behavior and diagnostics of the baseline compilers, sanitized compiler sources under permissive licenses, and every file of the repository | The Tidal specification, the tests, the tools, and the documentation |
-| **Clean-room reader** | Reading anything other than Tidal's own files | The Tidal specification, the tests, and their results | Its own exercise directories, and the Tidal front ends |
+:::{list-table}
+:header-rows: 1
+:widths: 16 24 34 26
+
+* - Agent
+  - Forbidden
+  - Reads
+  - Writes
+* - **Source reader**
+  - - Writing or changing any file of the repository
+    - Quoting a source or proposing wording
+  - - The ISO standard
+    - WG21 papers
+    - cppreference
+    - Compiler sources under restrictive licenses
+    - Posts that quote any of these
+  - Summaries in its own words, which describe behavior, gaps, and doubts
+* - **Clean-room writer**
+  - Reading protected material
+  - - Source readers' summaries that passed the non-similarity check
+    - The behavior and diagnostics of the baseline compilers
+    - Sanitized compiler sources under permissive licenses
+    - Every file of the repository
+  - - The Tidal specification
+    - The tests
+    - The tools
+    - The documentation
+* - **Clean-room reader**
+  - Reading anything other than Tidal's own files
+  - - The Tidal specification
+    - The tests and their results
+  - - Its own exercise directories
+    - The Tidal front ends
+:::
 
 An agent that reads protected material becomes a source reader for the
 rest of its session. It cannot work in the clean room again in that
