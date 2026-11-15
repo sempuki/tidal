@@ -505,7 +505,10 @@ types, values, and the partial specialization's own constant
 parameters: a use takes the one whose pattern its arguments match, or
 the primary. An explicit or partial specialization can name its
 template with a qualifier, from a namespace that encloses the
-template's. A partial specialization whose pattern is the parameters alone,
+template's. A structured binding of a class that `std::tuple_size`
+gives a `value` for uses the tuple protocol: each name is a reference
+to `std::tuple_element<i, E>::type` that a member `get<i>()` or an
+argument-dependent `get<i>(e)` initializes. A partial specialization whose pattern is the parameters alone,
 or that leaves out a parameter, is an error. A `typename` specifier
 after a qualifier that names a parameter is a dependent type that
 deduction does not look into, and in a specialization it names the

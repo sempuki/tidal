@@ -1472,13 +1472,34 @@ pub fn beats_by_template(cx: &Check, f: EntityId, g: EntityId) -> Option<bool> {
 /// specializations for the call's arguments are made: each template
 /// whose arguments deduce (DED-P3), with the explicit arguments first.
 pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
+    call_candidates_given(cx, found, tid, None, args)
+}
+
+/// `call_candidates` with explicit arguments that are given already, as
+/// `get<i>` of the tuple protocol (SB-5).
+pub fn call_candidates_with(cx: &mut Check, found: &[EntityId], explicit: &[TArg], args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
+    call_candidates_given(cx, found, None, Some(explicit), args)
+}
+
+fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, given: Option<&[TArg]>, args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
     let mut out = Vec::new();
     cx.constraints_failed = false;
     for &e in found {
         let EntKind::Template(t) = cx.u.entities[e].kind else { continue };
         // The explicit arguments, which fill the first parameters.
-        let explicit = match tid {
-            Some(tid) => {
+        let explicit = match (tid, given) {
+            (_, Some(g)) => {
+                // A constant argument takes the parameter's type.
+                let kinds = cx.u.templates[t].kinds.clone();
+                if g.len() > kinds.len() {
+                    continue;
+                }
+                g.iter().zip(&kinds).map(|(a, k)| match (a, k) {
+                    (TArg::Value(_, v), Some(ty)) => TArg::Value(ty.clone(), *v),
+                    (a, _) => a.clone(),
+                }).collect()
+            }
+            (Some(tid), None) => {
                 let kinds = cx.u.templates[t].kinds.clone();
                 let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
                 // PACK rules: explicit arguments for a pack come last.
@@ -1489,8 +1510,12 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
                     _ => continue,
                 }
             }
-            None => Vec::new(),
+            (None, None) => Vec::new(),
         };
+        // A constant parameter takes a value, and a type parameter a type.
+        if explicit.iter().zip(&cx.u.templates[t].kinds).any(|(a, k)| matches!(a, TArg::Value(..)) != k.is_some()) {
+            continue;
+        }
         let Some(partial) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else {
             // A call that leaves parameters to their default arguments
             // waits for a later piece (ORD-5).
@@ -2242,8 +2267,17 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
         let name: Rc<str> = cx.source(tid).into();
         return Some(QType::new(Type::Dep(Rc::new(DepType::Spec { template: v, args, name }))));
     }
+    Some(class_specialization(cx, v, args, span))
+}
+
+/// The class of the specialization of class template `v` for `args`:
+/// one made before, or one that its primary or a partial specialization
+/// makes now (TSP-13 to TSP-15).
+pub fn class_specialization(cx: &mut Check, v: usize, args: Vec<TArg>, span: Span) -> QType {
+    let ct = cx.u.class_templates[v].clone();
+    let name = ct.name.clone();
     if let Some(&(_, c)) = ct.specs.iter().find(|(a, _)| *a == args) {
-        return Some(QType::new(Type::Class(c)));
+        return QType::new(Type::Class(c));
     }
     // TSP-13 to TSP-15: the one partial specialization whose pattern the
     // arguments match, or the primary.
@@ -2274,22 +2308,22 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
         }
     }
     if matches.len() > 1 {
-        return Some(cx.unsupported(span, "a class template whose arguments match several partial specializations (partial ordering)"));
+        return cx.unsupported(span, "a class template whose arguments match several partial specializations (partial ordering)");
     }
     let source = matches.pop();
     if source.is_none() && !ct.defined {
-        return Some(cx.unsupported(span, format!("a specialization of the class template '{}', which is declared and not defined", name)));
+        return cx.unsupported(span, format!("a specialization of the class template '{}', which is declared and not defined", name));
     }
     // INST rules: a member declared with a parameter that a function type
     // binds is a data member of function type, which the first pieces of
     // build step 5 do not tell from a member function.
     if args.iter().any(|a| matches!(a, TArg::Type(t) if t.is_func())) {
-        return Some(cx.unsupported(span, "a class template with a function type as an argument"));
+        return cx.unsupported(span, "a class template with a function type as an argument");
     }
     match instantiate_class(cx, v, &args, source) {
-        Some(c) => Some(QType::new(Type::Class(c))),
-        None if depth_failed(cx, span) => Some(QType::error()),
-        None => Some(cx.unsupported(span, format!("a specialization of the class template '{}' that the first pieces of build step 5 do not make", name))),
+        Some(c) => QType::new(Type::Class(c)),
+        None if depth_failed(cx, span) => QType::error(),
+        None => cx.unsupported(span, format!("a specialization of the class template '{}' that the first pieces of build step 5 do not make", name)),
     }
 }
 

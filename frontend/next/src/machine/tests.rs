@@ -2818,3 +2818,15 @@ fn qualified_and_constant_partial_specializations() {
     assert_eq!(rule("namespace std { template <class T> struct tuple_size; template <decltype(sizeof 0) I, class T> struct tuple_element; } struct P { int a, b; }; template <> struct std::tuple_size<P> { static constexpr decltype(sizeof 0) value = 2; }; template <decltype(sizeof 0) I> struct std::tuple_element<I, P> { static constexpr int index = I; }; template <int N, class T> struct Arr { static constexpr int n = 0; }; template <class T> struct Arr<3, T> { static constexpr int n = 3; }; template <int N> struct Arr<N, char> { static constexpr int n = N + 100; }; static_assert(std::tuple_size<P>::value == 2 && std::tuple_element<1, P>::index == 1); static_assert(Arr<1, int>::n == 0 && Arr<3, int>::n == 3 && Arr<5, char>::n == 105);"), None);
     assert_eq!(rule("namespace lib { template <class T> struct Box {}; } namespace other { template <> struct lib::Box<int> {}; }"), Some("TSP-5"));
 }
+
+#[test]
+fn tuple_protocol_bindings() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let base = "namespace std { template <class T> struct tuple_size; template <decltype(sizeof 0) I, class T> struct tuple_element; } namespace lib { struct Two { int a, b; }; template <decltype(sizeof 0) I> constexpr int get(const Two& t) { return I == 0 ? t.a : t.b; } } template <> struct std::tuple_size<lib::Two> { static constexpr decltype(sizeof 0) value = 2; };";
+    assert_eq!(rule(&format!("{} template <decltype(sizeof 0) I> struct std::tuple_element<I, lib::Two> {{ using type = int; }}; constexpr int f() {{ auto [x, y] = lib::Two{{3, 4}}; return x * 10 + y; }} static_assert(f() == 34);", base)), None);
+    assert_eq!(rule(&format!("{} template <decltype(sizeof 0) I> struct std::tuple_element<I, lib::Two> {{ using type = int; }}; void g() {{ auto [x, y, z] = lib::Two{{3, 4}}; }}", base)), Some("SB-2"));
+}
