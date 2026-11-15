@@ -382,11 +382,11 @@ pub fn delete(m: &mut Machine, e: &Expr, array: bool, virtual_dtor: bool, deallo
     }
     // NEW-22: the deallocation function that the program gives gets the
     // pointer to the storage, and the size and the alignment it asks for.
+    let dynamic = m.objs[p.obj].ty.base_elem().class();
+    if virtual_dtor && dynamic != e.ty.pointee().and_then(|t| t.class()) && dynamic_delete(m, p.obj) {
+        return unsup("a delete through a base whose dynamic class has its own deallocation function");
+    }
     if let Some(d) = dealloc.filter(|d| !is_library(m, d.f)) {
-        let dynamic = m.objs[p.obj].ty.base_elem().class();
-        if virtual_dtor && dynamic != e.ty.pointee().and_then(|t| t.class()) && dynamic_delete(m, p.obj) {
-            return unsup("a delete through a base whose dynamic class has its own deallocation function");
-        }
         m.objs[p.obj].alive = false;
         let mut vals = vec![Ret::Val(Val::Ptr(Ptr::whole(p.obj)))];
         if d.sized {

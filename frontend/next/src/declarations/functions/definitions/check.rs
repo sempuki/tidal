@@ -328,6 +328,10 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     if deferred {
         cx.pending_defaults.push((id, d.params.clone()));
     }
+    let spec = crate::declarations::declarators::syntax::function_suffix_of(&d.node).and_then(|fs| fs.child("exception_spec"));
+    if let Some(e) = spec.filter(|e| crate::declarations::declarators::check::deferred_noexcept(cx, e)) {
+        cx.pending_noexcept.push((id, e.clone(), d.params.clone()));
+    }
     // ACC-7: a declaration in the namespace makes a friend function that
     // a class first declared visible to lookup.
     if !cx.friend_decl && cx.u.scopes[scope].kind == ScopeKind::Namespace {

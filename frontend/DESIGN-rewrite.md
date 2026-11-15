@@ -653,7 +653,10 @@ object and no `this`, and its address is an ordinary pointer to
 function. A call with an object passes the object as the first
 argument, and overload resolution matches the object against that
 parameter. A lambda with an explicit object parameter waits for
-templates. The
+templates. A member function can be `noexcept`, and a noexcept operand
+in its class waits for the complete class, where it sees the later
+members and `this`. An override of a non-throwing function is checked
+there too. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -666,7 +669,7 @@ an object in allocated storage that would hold an object created there
 before, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
-bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a member function with a noexcept operand, a call without an object
+bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a call without an object
 among ref-qualified member functions or among static and non-static
 ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload

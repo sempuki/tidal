@@ -537,7 +537,11 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
     }
     let mut noexcept = false;
     if let Some(e) = n.child("exception_spec") {
-        noexcept = crate::declarations::exception_specifications::check::exception_spec(cx, e, &params);
+        // EXS-1: the noexcept operand of a member function sees the
+        // complete class, so `declare_function` puts it off until then.
+        if !(member && declared && deferred_noexcept(cx, e)) {
+            noexcept = crate::declarations::exception_specifications::check::exception_spec(cx, e, &params);
+        }
     }
     if let Some(tr) = n.child("type_id") {
         let rt = type_id(cx, tr);
@@ -567,6 +571,12 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
         d.params = params;
     }
     QType::new(Type::Func(Rc::new(f)))
+}
+
+/// Whether the exception specification of a member function declared in
+/// its class has a noexcept operand, which waits for the complete class.
+pub fn deferred_noexcept(cx: &Check, e: &Node) -> bool {
+    cx.defer_defaults && cx.member_of.is_some() && cx.friend_scope.is_none() && e.child("noexcept_specifier").is_some_and(|s| s.kids.iter().any(|k| matches!(k, Kid::Node(_))))
 }
 
 /// `parameters`: each parameter's type after the adjustments of DCL-9:

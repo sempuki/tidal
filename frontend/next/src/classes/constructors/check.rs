@@ -151,10 +151,6 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         cx.unsupported(dn.span, "a constructor declaration of this form (build step 4)");
         return false;
     }
-    if dn.find("exception_spec").is_some_and(|e| first_node(e).is_some()) {
-        cx.unsupported(dn.span, "a constructor with a noexcept operand (build step 4)");
-        return false;
-    }
     let local = cx.u.is_local(cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0));
     if local || specs.consteval || specs.attrs.nodiscard || specs.attrs.deprecated.is_some() || specs.attrs.noreturn || dn.find("attribute_spec").is_some() || def.is_some_and(|x| x.child("attribute_spec").is_some()) {
         cx.unsupported(dn.span, "a constructor of a local class, a consteval constructor, or a constructor with attributes (build step 4)");

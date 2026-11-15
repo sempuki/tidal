@@ -1704,3 +1704,17 @@ fn explicit_object_parameters() {
     assert_eq!(rule("struct S { int v; int get(this S& s) { return this->v; } };"), Some("PRIM-20"));
     assert_eq!(rule("struct S { void f(); void f(this S&); };"), Some("CLS-26"));
 }
+
+#[test]
+fn noexcept_on_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // EXS-1: a noexcept operand of a member function sees the complete
+    // class, so it can name a later member.
+    assert_eq!(rule("struct S { void f() noexcept(noexcept(g())); void g() noexcept; }; static_assert(noexcept(S{}.f()));"), None);
+    assert_eq!(rule("struct S { void f() noexcept(sizeof(S) > 64); int a; }; static_assert(!noexcept(S{}.f()));"), None);
+    assert_eq!(rule("struct B { virtual void f() noexcept; }; struct D : B { void f() override; };"), Some("EXS-3"));
+}

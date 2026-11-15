@@ -132,6 +132,7 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     let outer = cx.member_of.replace(id);
     let outer_defer = std::mem::replace(&mut cx.defer_defaults, true);
     let outer_pending = std::mem::take(&mut cx.pending_defaults);
+    let outer_noexcept = std::mem::take(&mut cx.pending_noexcept);
     for m in n.children("member_decl") {
         if !member(cx, id, m, &mut access, &mut inits, &mut bodies, &mut ctor_bodies) {
             ok = false;
@@ -140,10 +141,12 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     }
     cx.defer_defaults = outer_defer;
     let mut pending = std::mem::replace(&mut cx.pending_defaults, outer_pending);
-    // DEFARG-3: in a nested class, the default arguments wait for the
-    // outermost class.
+    let mut pending_noexcept = std::mem::replace(&mut cx.pending_noexcept, outer_noexcept);
+    // DEFARG-3: in a nested class, the default arguments and noexcept
+    // operands wait for the outermost class.
     if outer.is_some() {
         cx.pending_defaults.append(&mut pending);
+        cx.pending_noexcept.append(&mut pending_noexcept);
     }
     cx.u.classes[id].complete = true;
     // ALN-1, ALN-2: `alignas` on the class, not weaker than the
@@ -186,6 +189,27 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
                         x.defaults[k] = d;
                     }
                 }
+            }
+        }
+    }
+    // EXS-1: so do the noexcept operands.
+    if ok {
+        for (f, spec, params) in pending_noexcept {
+            let own = cx.u.func(f).and_then(|x| x.class).unwrap_or(id);
+            let (saved_scope, saved_member) = (cx.scope, cx.member_of);
+            cx.scope = cx.u.classes[own].scope;
+            cx.member_of = Some(own);
+            // The operand of a non-static member function can use `this`.
+            let this = cx.u.func(f).filter(|x| !x.member_static).map(|x| QType::ptr_to(QType::new(Type::Class(own)).with_cv(x.obj_cv.0, x.obj_cv.1)));
+            let saved_func = cx.func.replace(crate::sem::check::FnCtx { this, ..Default::default() });
+            let v = crate::declarations::exception_specifications::check::exception_spec(cx, &spec, &params);
+            cx.func = saved_func;
+            cx.scope = saved_scope;
+            cx.member_of = saved_member;
+            if let Some(x) = cx.u.func_mut(f) {
+                let mut t = (*x.ty).clone();
+                t.noexcept = v;
+                x.ty = std::rc::Rc::new(t);
             }
         }
     }
@@ -400,10 +424,6 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
         }
         "function_definition" => {
             // The declaration now, the body when the class is complete.
-            if let Some(e) = first.child("declarator").and_then(|d| d.find("exception_spec")).filter(|e| first_node(e).is_some()) {
-                cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
-                return false;
-            }
             let specs = match first.child("decl_specifiers") {
                 Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, Default::default()),
                 // A conversion function (CVF-1).
@@ -466,10 +486,6 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                 let fid = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Field(f), span: m.span, scope, linkage: Linkage::None, deprecated: None });
                 cx.u.classes[id].fields.push(fid);
                 return true;
-            }
-            if let Some(e) = m.find("exception_spec").filter(|e| first_node(e).is_some()) {
-                cx.unsupported(e.span, "a noexcept operand of a member function, which sees the complete class (build step 4)");
-                return false;
             }
             if m.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator" | "bitfield" | "attribute_spec" | "alignment_specifier"))) {
                 cx.unsupported(m.span, "a member of this form (build step 4)");
@@ -753,18 +769,17 @@ fn using_member(cx: &mut Check, id: ClassId, n: &Node, access: Access) -> bool {
 }
 
 /// A member function declaration that build step 4's first pieces model:
-/// no default argument or noexcept operand, which see the complete class,
-/// in a class that is not local. True when it is modeled; otherwise an
-/// unsupported diagnostic is out.
+/// a member of a class that is not local, and not of a qualified function
+/// type. True when it is modeled; otherwise an unsupported diagnostic is
+/// out.
 fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarations::declarators::check::Declared) -> bool {
     let parent = cx.u.scopes[cx.u.classes[id].scope].parent.unwrap_or(0);
     // A member function of a local class waits for a later part (the
     // locals of the enclosing function).
     let local = cx.u.is_local(parent);
-    let operand = dn.find("exception_spec").is_some_and(|e| first_node(e).is_some());
     let qualified = d.ty.func().is_some_and(|f| f.qualified);
-    if local || operand || qualified {
-        cx.unsupported(dn.span, "a member function of a local class, with a noexcept operand, or of a qualified function type (build step 4)");
+    if local || qualified {
+        cx.unsupported(dn.span, "a member function of a local class or of a qualified function type (build step 4)");
         return false;
     }
     true

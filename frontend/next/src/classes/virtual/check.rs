@@ -328,9 +328,22 @@ fn warnings(cx: &mut Check, c: ClassId) {
 }
 
 /// VIRT-19, after the bodies of the class's members: an override and the
-/// function it overrides are both deleted or both not.
+/// function it overrides are both deleted or both not. EXS-3: an override
+/// of a non-throwing function is non-throwing, which the complete class
+/// shows for a noexcept operand.
 pub fn after_bodies(cx: &mut Check, c: ClassId) {
     let own: Vec<EntityId> = cx.u.scopes[cx.u.classes[c].scope].names.values().flatten().copied().filter(|e| cx.u.virt.contains_key(e)).collect();
+    for &f in &own {
+        let Some(func) = cx.u.func(f) else { continue };
+        if func.special == Special::Dtor || func.ty.noexcept {
+            continue;
+        }
+        if cx.u.virt[&f].overrides.iter().any(|&o| cx.u.func(o).is_some_and(|x| x.ty.noexcept)) {
+            let span = cx.u.entities[f].span;
+            cx.error(span, "EXS-3", format!("'{}' can throw and overrides a non-throwing function", cx.u.entities[f].name));
+            return;
+        }
+    }
     for f in own {
         let deleted = cx.u.func(f).is_some_and(|x| x.deleted);
         if cx.u.virt[&f].overrides.iter().any(|&o| cx.u.func(o).is_some_and(|x| x.deleted) != deleted) {

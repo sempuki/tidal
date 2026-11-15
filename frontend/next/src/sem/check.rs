@@ -176,6 +176,10 @@ pub struct Check<'a> {
     /// being defined, which wait for the outermost class (CLS-2).
     pub nested_bodies: Vec<NestedBody>,
     pub pending_defaults: Vec<(EntityId, Vec<crate::declarations::declarators::check::Param>)>,
+    /// The noexcept operands of member functions, which see the complete
+    /// class too (EXS-1): the function, the exception specification, and
+    /// the parameters.
+    pub pending_noexcept: Vec<(EntityId, Node, Vec<crate::declarations::declarators::check::Param>)>,
     /// Member functions defined in their class, which the class declared
     /// before their bodies are checked.
     pub deferred: std::collections::HashSet<EntityId>,
@@ -216,7 +220,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

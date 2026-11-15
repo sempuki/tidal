@@ -262,8 +262,10 @@ pub fn implicit(cx: &mut Check, e: Expr, null: bool, to: &QType) -> Option<Resul
 /// qualification conversion (CV-10), where the pointer to member counts
 /// as the outermost level.
 fn member_types(f: &QType, t: &QType) -> bool {
+    // A pointer to a noexcept member function converts to one without
+    // noexcept (CONV-10).
     if f.is_func() || t.is_func() {
-        return f.t == t.t;
+        return f.t == t.t || (f.is_func() && t.is_func() && conv::pointer_convertible(f, t));
     }
     conv::qual_level(f, t, true)
 }

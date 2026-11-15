@@ -123,6 +123,9 @@ fn matches(m: &mut Machine, ty: &QType, o: usize) -> R<Option<Ptr>> {
         }
         // A pointer to member by a qualification conversion.
         (Type::MemPtr(c, t), Type::MemPtr(d, f)) if c == d && t.unqual() == f.unqual() && (t.c || !f.c) && (t.v || !f.v) => Some(value(m)),
+        // A pointer to a noexcept member function, for a handler without
+        // noexcept.
+        (Type::MemPtr(c, t), Type::MemPtr(d, f)) if c == d && t.is_func() && crate::foundations::conversions::check::pointer_convertible(f, t) => Some(value(m)),
         _ => None,
     };
     let Some(v) = converted else { return Ok(None) };
