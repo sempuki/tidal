@@ -2393,3 +2393,16 @@ fn bindings_captured_and_destructor_names() {
     assert_eq!(rule("struct S { ~S() {} }; void f(S& s) { s.~S; }"), Some("DTOR-8"));
     assert_eq!(rule("struct R { int a; int& r; }; R x{1};"), Some("LIST-12"));
 }
+
+#[test]
+fn operator_functions_for_enumeration_operands() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("enum C { red, green }; int calls = 0; C operator~(C c) { ++calls; return c == red ? green : red; } int main() { C c = ~red; return calls * 10 + c; }"), RunOutcome::Result(11));
+    // A non-member function without a parameter of the enumeration is no
+    // candidate, so the built-in operator applies.
+    assert!(rule("enum class M { on }; struct W { W(M); }; bool operator+(W, W); auto r = M::on + M::on;").is_some());
+}

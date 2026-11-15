@@ -782,7 +782,9 @@ type takes its qualifiers. `friend T;` befriends a class and ignores
 another type. A class can declare an opaque enumeration and `using
 enum`, and an enumeration can be defined after with a qualified name. A
 lambda captures a structured binding, and a qualified destructor call
-ends a base subobject. The
+ends a base subobject. With enumeration operands only, a non-member
+operator function needs a parameter of an operand's enumeration, and a
+unary one that takes the operand exactly beats the built-in operator. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

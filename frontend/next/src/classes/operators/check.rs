@@ -443,6 +443,9 @@ fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite
         let t = cx.unsupported(span, "an operator function that the front end does not model");
         return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
     }
+    // OVL-8: with no class operand, a non-member candidate has a
+    // parameter of an operand's enumeration type.
+    let cands = enum_candidates(cx, cands, &args);
     if cands.is_empty() {
         return None;
     }
@@ -507,6 +510,17 @@ fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite
         }
     }
     Some(build(cx, c, args, span))
+}
+
+/// OVL-8: when no operand has class type, a non-member candidate is one
+/// with a parameter of an operand's enumeration type or a reference to
+/// it. A member candidate has a class operand, so it stays.
+fn enum_candidates(cx: &Check, cands: Vec<Cand>, args: &[Expr]) -> Vec<Cand> {
+    if args.iter().any(|a| a.ty.nonref().is_class()) {
+        return cands;
+    }
+    let enums: Vec<Type> = args.iter().map(|a| a.ty.nonref().unqual().t.clone()).filter(|t| matches!(t, Type::Enum(_))).collect();
+    cands.into_iter().filter(|c| c.member || cx.u.func(c.f).is_some_and(|f| f.ty.params.iter().any(|p| enums.contains(&p.nonref().unqual().t)))).collect()
 }
 
 /// The outcome of the built-in candidate against the operator functions
@@ -618,6 +632,7 @@ pub fn unary(cx: &mut Check, op: &str, e: &Expr, postfix: bool, span: Span) -> O
     }
     let (members, others) = found(cx, name, &args, Some(e));
     let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false, three: false })).collect();
+    let cands = enum_candidates(cx, cands, &args[..1]);
     if cands.is_empty() {
         return None;
     }
@@ -640,9 +655,14 @@ pub fn unary(cx: &mut Check, op: &str, e: &Expr, postfix: bool, span: Span) -> O
     if !viable && (op == "&" || !e.ty.nonref().is_class()) {
         return None;
     }
+    // An enumeration operand: an operator function that takes it by an
+    // exact match beats the built-in operator, which promotes it.
     if !e.ty.nonref().is_class() {
-        let t = cx.unsupported(span, "an operator function against a built-in operator for an enumeration operand");
-        return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        let exact = cands.iter().any(|c| sequences(cx, c, &args).is_some_and(|s| s.iter().all(|x| x.rank == crate::overloading::conversion_sequences::check::Rank::Exact)));
+        if !exact {
+            let t = cx.unsupported(span, "an operator function against a built-in operator for an enumeration operand");
+            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
     }
     // OPR-13: `++` and `--` use only the form the class declares.
     if !viable && matches!(op, "++" | "--") {
