@@ -115,29 +115,7 @@ pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
 
 /// Overload resolution with the object of a member call, if any.
 pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
-    // A conversion function to a class, which can initialize a class
-    // parameter, waits for a later piece (ICS-4).
-    let to_class = args.iter().any(|a| {
-        crate::classes::conversion_functions::check::converting_class(cx, a).is_some_and(|c| {
-            crate::classes::conversion_functions::check::functions(&cx.u, c).iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.ret.nonref().is_class()))
-        })
-    });
-    if to_class && cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| f.ty.params.iter().any(|p| p.nonref().is_class())) {
-        cx.unsupported(span, "a conversion function to a class in overload resolution (build step 4)");
-        return None;
-    }
-    // A conversion by a converting constructor is a user-defined
-    // conversion sequence, which a later piece models (ICS-4).
     if cands.len() > 1 {
-        let udc = cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| {
-            f.ty.params.iter().zip(args).any(|(p, a)| {
-                p.nonref().class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c) && a.ty.nonref().class() != Some(c))
-            })
-        });
-        if udc {
-            cx.unsupported(span, "a user-defined conversion by a constructor in overload resolution (build step 4)");
-            return None;
-        }
         let closure = cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| {
             f.ty.params.iter().zip(args).any(|(p, a)| p.is_ptr() && a.ty.nonref().class().is_some_and(|c| cx.u.closures.contains_key(&c)))
         });
@@ -191,7 +169,17 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                 seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None });
                 continue;
             }
-            match sequence(cx, a, &params[k]) {
+            // ICS-4: a class parameter takes another class or a value by
+            // a converting constructor, or a class object by a conversion
+            // function to the class.
+            let s = sequence(cx, a, &params[k]).or_else(|| {
+                let p = &params[k];
+                if !p.nonref().is_class() {
+                    return None;
+                }
+                crate::classes::operators::check::user_conversion(cx, a, p).or_else(|| crate::classes::conversion_functions::check::user_sequence(cx, a, p))
+            });
+            match s {
                 Some(s) => seqs.push(s),
                 None => {
                     ok = false;

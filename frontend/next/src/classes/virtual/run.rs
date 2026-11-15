@@ -57,7 +57,9 @@ pub fn dispatch(m: &Machine, f: EntityId, obj: Ret) -> R<(EntityId, Ret)> {
     for k in from..=n {
         let Some(c) = classes[k] else { continue };
         let scope = m.u.classes[c].scope;
-        let found = m.u.scopes[scope].names.get(name).into_iter().flatten().copied().find(|&g| g == f || m.u.virt.get(&g).is_some_and(|v| v.overrides.contains(&f)));
+        // A function that a using-declaration brings into the class is
+        // found in its own class, where it overrides (VIRT-1).
+        let found = m.u.scopes[scope].names.get(name).into_iter().flatten().copied().filter(|&g| m.u.entities[g].scope == scope).find(|&g| g == f || m.u.virt.get(&g).is_some_and(|v| v.overrides.contains(&f)));
         if let Some(g) = found {
             if m.u.virt.get(&g).is_some_and(|v| v.pure) {
                 return ub("VIRT-12", format!("a virtual call of the pure virtual function '{}' of '{}'", name, m.u.classes[c].name));

@@ -750,7 +750,10 @@ type, or with a qualifier is an error. A call of a `consteval`
 constructor outside an immediate function context is a constant
 expression, and a discarded object of a `nodiscard` constructor
 warns. A constexpr object with no initializer can be a union, and a
-class with a volatile member is not a literal type. The
+class with a volatile member is not a literal type. Overload
+resolution gives a class parameter a user-defined sequence by a
+converting constructor or a conversion function, and a virtual call
+finds the overrider that a class declares itself. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

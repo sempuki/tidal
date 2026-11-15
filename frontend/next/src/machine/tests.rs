@@ -2189,3 +2189,12 @@ fn constexpr_unions_and_volatile_members() {
     assert_eq!(rule("union R { volatile int h; volatile long w; constexpr R() : h(0) {} }; constexpr R r;"), Some("CX-1"));
     assert_eq!(rule("struct P { volatile int l; constexpr P() : l(0) {} }; constexpr P p;"), Some("CX-1"));
 }
+
+#[test]
+fn user_defined_sequences_in_overload_resolution() {
+    // A standard sequence beats a converting constructor, and a converting
+    // constructor makes the only viable candidate.
+    assert_eq!(run("struct E { int id; E(int i) : id(i) {} }; int f(E e) { return e.id; } int f(long) { return 50; } int g(E e) { return e.id; } int g(const char*) { return 0; } int main() { return f(1L) + g(7); }"), RunOutcome::Result(57));
+    // A using-declaration does not hide the overrider of the class itself.
+    assert_eq!(run("struct N; struct V { virtual int visit(const N&) = 0; virtual int visit(int) = 0; }; struct N {}; struct W : V { int visit(const N&) override { return 1; } int visit(int) override { return 2; } }; struct C final : W { using W::visit; int visit(const N&) override { return 3; } }; int main() { C c; V& v = c; N n; return v.visit(n) * 10 + v.visit(0); }"), RunOutcome::Result(32));
+}

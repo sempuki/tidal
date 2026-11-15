@@ -415,7 +415,8 @@ pub fn class_from_class(cx: &mut Check, ty: &QType, e: Expr, direct: bool, list:
         }
     }
     if (0..cands.len()).any(|j| j != best && !wins(&cands[best], &cands[j])) {
-        cx.error(span, "OVL-36", format!("the initialization of '{}' from {} is ambiguous between its constructors and conversion functions", name, e.ty.nonref().show()));
+        // CVF-12: two user-defined conversions can make the object.
+        cx.error_cause(span, "OVL-36", Some("CVF-12"), format!("the initialization of '{}' from {} is ambiguous between its constructors and conversion functions", name, e.ty.nonref().show()));
         return None;
     }
     let (f, ctor, _, _) = cands[best].clone();

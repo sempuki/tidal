@@ -228,7 +228,7 @@ fn sequences(cx: &Check, c: &Cand, args: &[Expr]) -> Option<Vec<Ics>> {
 /// A user-defined conversion sequence from `a` to a parameter of class
 /// type, or a reference to const of it: a converting constructor that
 /// takes `a` by a standard sequence.
-fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
+pub fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
     if p.is_ref() && !(p.nonref().c && !p.nonref().v) && !matches!(p.t, Type::Ref(_, true)) {
         return None;
     }
