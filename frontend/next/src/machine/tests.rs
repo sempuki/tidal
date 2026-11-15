@@ -2350,3 +2350,8 @@ fn functions_that_hide_a_class() {
 fn new_value_initializes_a_class() {
     assert_eq!(run("struct P { int a; int b = 4; }; int main() { P* p = new P(); int r = p->a * 10 + p->b; delete p; return r; }"), RunOutcome::Result(4));
 }
+
+#[test]
+fn members_of_qualified_function_types() {
+    assert_eq!(run("using G = int() &&; using F = int() const; struct S { G take; F get; int v = 4; }; int S::take() && { return v; } int S::get() const { return v + 1; } G S::* pm = &S::take; F S::* pg = &S::get; int main() { S s; return (S{}.*pm)() * 10 + (s.*pg)(); }"), RunOutcome::Result(45));
+}

@@ -421,6 +421,12 @@ fn member_ptr(cx: &mut Check, t: QType, nn: &Node, span: Span) -> QType {
     if t.is_void() {
         return cx.error(span, "MPTR-8", "a pointer to member of type void");
     }
+    // DCL-15: the qualifiers of a function type that an alias names are
+    // the object's, as written after the parameters.
+    let t = match &t.t {
+        Type::Func(f) if f.qualified => QType::new(Type::Func(Rc::new(crate::sem::types::FnType { qualified: false, ..(**f).clone() }))),
+        _ => t,
+    };
     QType::new(Type::MemPtr(class, Rc::new(t)))
 }
 

@@ -437,11 +437,11 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                     return false;
                 }
                 let specs = crate::declarations::check::Specs::default();
-                let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+                let mut d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
                 if d.unsupported || !d.ty.is_func() {
                     return !d.unsupported;
                 }
-                if !modeled_function(cx, id, dn, &d) {
+                if !modeled_function(cx, id, dn, &mut d) {
                     return false;
                 }
                 if !valid_function(cx, id, &specs, &d) {
@@ -505,12 +505,12 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                 return false;
             }
             let Some(dn) = first.child("declarator") else { return true };
-            let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+            let mut d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
             if d.unsupported || !d.ty.is_func() {
                 cx.unsupported(first.span, "a member function definition of this form (build step 4)");
                 return false;
             }
-            if !modeled_function(cx, id, dn, &d) {
+            if !modeled_function(cx, id, dn, &mut d) {
                 return false;
             }
             if !valid_function(cx, id, &specs, &d) {
@@ -667,7 +667,7 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                     cx.unsupported(md.span, "a member declarator of this form (build step 4)");
                     return false;
                 }
-                let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+                let mut d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
                 if d.unsupported {
                     return false;
                 }
@@ -676,7 +676,7 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                         cx.unsupported(md.span, "a pure, defaulted, or deleted member function (build step 4)");
                         return false;
                     }
-                    if !modeled_function(cx, id, dn, &d) {
+                    if !modeled_function(cx, id, dn, &mut d) {
                         return false;
                     }
                     if !valid_function(cx, id, &specs, &d) {
@@ -849,12 +849,17 @@ fn using_member(cx: &mut Check, id: ClassId, n: &Node, access: Access) -> bool {
 /// a member of a class that is not local, and not of a qualified function
 /// type. True when it is modeled; otherwise an unsupported diagnostic is
 /// out.
-fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarations::declarators::check::Declared) -> bool {
-    let _ = id;
-    let qualified = d.ty.func().is_some_and(|f| f.qualified);
-    if qualified {
-        cx.unsupported(dn.span, "a member function of a local class or of a qualified function type (build step 4)");
-        return false;
+fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &mut crate::declarations::declarators::check::Declared) -> bool {
+    let _ = (id, &cx, dn);
+    // DCL-15: a member declared with a qualified function type takes its
+    // cv-qualifiers and ref-qualifier, as if they followed its
+    // parameters.
+    if let Some(f) = d.ty.func().filter(|f| f.qualified).cloned() {
+        d.obj_cv = f.obj_cv;
+        d.ref_q = f.ref_q.is_some();
+        d.ref_kind = f.ref_q;
+        let plain = crate::sem::types::FnType { qualified: false, obj_cv: (false, false), ref_q: None, ..f };
+        d.ty = QType::new(Type::Func(std::rc::Rc::new(plain)));
     }
     true
 }
