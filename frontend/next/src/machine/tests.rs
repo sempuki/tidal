@@ -2524,3 +2524,15 @@ fn more_sequence_tie_breakers() {
     assert_eq!(rule(&format!("{} void run(); One f(void (&)()); Two f(void (&&)()); static_assert(same<decltype(f(run)), One>); One g(int (&&)[2]); Two g(int (&&)[3]); static_assert(same<decltype(g({{1, 2}})), One>); int (*row)[3]; One h(const int (*)[3]); Two h(const int (*)[]); static_assert(same<decltype(h(row)), One>);", same)), None);
     assert_eq!(rule(&format!("{} struct I {{}}; struct S {{ operator I(); }}; S s; One t(I&&); Two t(const I&); static_assert(same<decltype(t(s)), One>);", same)), None);
 }
+
+#[test]
+fn conditional_throw_and_class_cv() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("int x = 4; int main() { (true ? x : throw 1) = 5; return x + (false ? throw 1 : 2); }"), RunOutcome::Result(7));
+    let same = "template <class T, class U> constexpr bool same = false; template <class T> constexpr bool same<T, T> = true; template <class T> T&& mv(T& v) { return static_cast<T&&>(v); }";
+    assert_eq!(rule(&format!("{} struct B {{}}; B b; const B f{{}}; B make(); int i; const int ci = 0; extern bool c; static_assert(same<decltype(c ? f : make()), const B>); static_assert(same<decltype(c ? b : mv(f)), const B>); static_assert(same<decltype(c ? mv(i) : mv(ci)), const int&&>);", same)), None);
+}

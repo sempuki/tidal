@@ -501,7 +501,10 @@ base pointer beats `void*`, a fixed enumeration's own type wins, an
 rvalue reference to an rvalue wins before fewer cv-qualifiers do, an
 array of known bound wins, and a list for an array with no more
 elements than the list wins. User-defined sequences by one conversion
-function compare their reference bindings. A reference that
+function compare their reference bindings. A conditional expression with
+a throw expression as one operand has the type and category of the
+other, two xvalues of one type give an xvalue of the more qualified
+type, and a class prvalue result keeps its cv-qualifiers. A reference that
 an alias or a template argument gives collapses with one that a
 declarator adds. A call deduces the arguments from the arguments of
 the call, after any explicit ones, and the specialization is the

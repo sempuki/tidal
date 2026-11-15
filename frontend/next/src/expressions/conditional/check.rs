@@ -129,7 +129,13 @@ fn apply(cx: &mut Check, x: Expr, t: Target, span: crate::source::Span) -> Optio
             };
             Some(r.conv(Conv::NoOp, ty, cat))
         }
-        Target::Prvalue(ty) => crate::declarations::initialization::forms::check::copy_init(cx, x, &ty, "COND-16"),
+        // A class prvalue keeps the target's cv-qualifiers (COND-16).
+        Target::Prvalue(ty) => crate::declarations::initialization::forms::check::copy_init(cx, x, &ty, "COND-16").map(|mut e| {
+            if ty.is_class() {
+                e.ty = ty;
+            }
+            e
+        }),
     }
 }
 
@@ -144,15 +150,17 @@ fn combine(cx: &mut Check, c: Expr, a: Expr, b: Expr, span: crate::source::Span,
         let cat = a.cat;
         return mk(c, a, b, t, cat);
     }
-    // COND-3: two lvalues of one type that differ in cv-qualifiers give
-    // an lvalue of the more qualified type.
-    if a.cat == Cat::L && b.cat == Cat::L && a.ty.unqual().t == b.ty.unqual().t && !a.ty.is_array() {
+    // COND-3: two lvalues, or two xvalues, of one type that differ in
+    // cv-qualifiers give a glvalue of that category and the more
+    // qualified type.
+    if a.cat == b.cat && a.cat != Cat::PR && a.ty.unqual().t == b.ty.unqual().t && !a.ty.is_array() {
+        let cat = a.cat;
         let t = a.ty.with_cv(b.ty.c, b.ty.v);
         let (ac, bc) = (a.ty.c != t.c || a.ty.v != t.v, b.ty.c != t.c || b.ty.v != t.v);
         if (ac && !bc) || (!ac && bc) || (!ac && !bc) {
-            let a = a.conv(Conv::NoOp, t.clone(), Cat::L);
-            let b = b.conv(Conv::NoOp, t.clone(), Cat::L);
-            return mk(c, a, b, t, Cat::L);
+            let a = a.conv(Conv::NoOp, t.clone(), cat);
+            let b = b.conv(Conv::NoOp, t.clone(), cat);
+            return mk(c, a, b, t, cat);
         }
     }
     // COND-3: glvalues of a derived class and its base give a glvalue of
@@ -230,13 +238,23 @@ fn combine(cx: &mut Check, c: Expr, a: Expr, b: Expr, span: crate::source::Span,
         if a.ty.is_void() && b.ty.is_void() {
             return mk(c, a, b, QType::void(), Cat::PR);
         }
+        // COND-4: with a throw expression as one operand, the result has
+        // the type and value category of the other.
+        let throws = |e: &Expr| matches!(e.k, EK::Throw(_));
+        if throws(&a) || throws(&b) {
+            let other = if throws(&a) { &b } else { &a };
+            let (ty, cat) = (other.ty.clone(), other.cat);
+            return mk(c, a, b, ty, cat);
+        }
         cx.error(span, "COND-13", "a void operand with a value operand");
         return bad(span);
     }
     let (an, bn) = (conv::is_null_constant(&a), conv::is_null_constant(&b));
+    let cv = (a.ty.nonref().c || b.ty.nonref().c, a.ty.nonref().v || b.ty.nonref().v);
     let (a, b) = (rvalue(cx, a), rvalue(cx, b));
     if a.ty.t == b.ty.t {
-        let t = a.ty.unqual();
+        // COND-3: a class prvalue keeps its cv-qualifiers.
+        let t = if a.ty.is_class() { a.ty.with_cv(cv.0, cv.1) } else { a.ty.unqual() };
         return mk(c, a, b, t, Cat::PR);
     }
     if arithmetic_operand(cx, &a.ty) && arithmetic_operand(cx, &b.ty) {
