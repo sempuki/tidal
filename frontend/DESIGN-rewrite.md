@@ -689,8 +689,10 @@ each class operand against the other, by a direct binding of an lvalue
 or an xvalue reference or by a conversion to a prvalue, and with
 neither, the built-in candidates that the operands' conversion
 functions reach. A class prvalue keeps its cv-qualifiers. A converting
-constructor makes an object from an object of another class when that
-class has no conversion functions. A member initializer in braces
+constructor makes an object from an object of another class when no
+conversion function of that class reaches the target class. In
+copy-initialization the constructor takes the object by a standard
+conversion sequence only. A member initializer in braces
 gives an array member its elements in order and value-initializes the
 rest, and a reference member binds the one value in braces. Member
 access names a static member function or an enumerator as a value and
@@ -699,7 +701,12 @@ finds in the object's class first. A qualified member call takes the
 function of that class without dispatch, a parenthesized member access
 calls as without the parentheses, and a conversion function can be
 called by its name. A non-static member function named without a call
-is an error. The
+is an error. An operator with operator functions and an operand whose
+class has conversion functions weighs the built-in candidate that the
+conversion functions reach against the best operator function, by the
+user-defined sequences of each, and an explicit conversion function
+counts for `!`, `&&`, and `||`. A const object is not const while its
+constructor runs. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

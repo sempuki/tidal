@@ -112,6 +112,15 @@ pub fn functions(u: &Unit, c: ClassId) -> Vec<EntityId> {
     out
 }
 
+/// A non-explicit conversion function of the class of `e` gives an object
+/// of class `c` or of a class derived from it, so that it competes with
+/// the converting constructors of `c` (OVL rules).
+pub fn reaches_class(cx: &Check, e: &Expr, c: ClassId) -> bool {
+    converting_class(cx, e).is_some_and(|k| {
+        functions(&cx.u, k).iter().any(|&f| cx.u.func(f).is_some_and(|x| !x.explicit && x.ty.ret.nonref().class().is_some_and(|d| d == c || crate::classes::derived::check::is_base(cx, d, c))))
+    })
+}
+
 /// The class of an operand whose class has conversion functions.
 pub fn converting_class(cx: &Check, e: &Expr) -> Option<ClassId> {
     e.ty.nonref().class().filter(|&c| cx.u.classes[c].complete && !functions(&cx.u, c).is_empty())

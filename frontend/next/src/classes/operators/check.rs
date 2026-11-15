@@ -216,7 +216,9 @@ fn sequences(cx: &Check, c: &Cand, args: &[Expr]) -> Option<Vec<Ics>> {
             Some(s) => out.push(s),
             // ICS-4: a converting constructor makes the parameter's object;
             // the object of a member takes no such conversion (OPR-6).
-            None if !(c.member && k == 0 && func.member_static && !func.explicit_object) => out.push(user_conversion(cx, a, p)?),
+            // A conversion function of the operand's class to the
+            // parameter's class (ICS-4).
+            None if !(c.member && k == 0 && func.member_static && !func.explicit_object) => out.push(user_conversion(cx, a, p).or_else(|| crate::classes::conversion_functions::check::user_sequence(cx, a, p).filter(|_| p.nonref().is_class()))?),
             None => return None,
         }
     }
@@ -231,13 +233,13 @@ fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
         return None;
     }
     let c = p.nonref().class()?;
-    // A source class with conversion functions waits for a later piece.
-    let converts = crate::classes::conversion_functions::check::converting_class(cx, a).is_some_and(|k| !crate::classes::conversion_functions::check::functions(&cx.u, k).is_empty());
-    if a.ty.nonref().class() == Some(c) || converts {
+    // A conversion function of the source class to the class competes
+    // with the constructors, which a later piece weighs.
+    if a.ty.nonref().class() == Some(c) || crate::classes::conversion_functions::check::reaches_class(cx, a, c) {
         return None;
     }
     let ok = crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| {
-        cx.u.func(f).is_some_and(|x| !x.explicit && !x.deleted && x.ty.params.len() == 1 && sequence(cx, a, &x.ty.params[0]).is_some())
+        cx.u.func(f).is_some_and(|x| !x.explicit && !x.deleted && !x.ty.params.is_empty() && (1..x.ty.params.len()).all(|k| x.defaults.get(k).is_some_and(|d| d.is_some())) && sequence(cx, a, &x.ty.params[0]).is_some_and(|i| i.user.is_none() && i.rank != crate::overloading::conversion_sequences::check::Rank::User))
     });
     ok.then(|| Ics { rank: crate::overloading::conversion_sequences::check::Rank::User, qual: false, binds: None, ellipsis: false, user: None })
 }
@@ -444,12 +446,16 @@ fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite
     if cands.is_empty() {
         return None;
     }
-    // OVL-9: the built-in candidates, which a conversion function can
-    // reach, are weighed against operator functions only with no
-    // conversion function in play.
-    if crate::classes::conversion_functions::check::converting_class(cx, l).is_some() || crate::classes::conversion_functions::check::converting_class(cx, r).is_some() {
-        let t = cx.unsupported(span, "an operator with operator functions and an operand whose class has conversion functions");
-        return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+    // OVL-9: the built-in candidate that the conversion functions of the
+    // operands reach competes with the operator functions.
+    match against_builtin(cx, op, &cands, &args, span) {
+        Compete::Builtin => return None,
+        Compete::Failed => return Some(bad(span)),
+        Compete::Unsupported => {
+            let t = cx.unsupported(span, "an operator with operator functions and an operand whose class has several conversion functions");
+            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
+        Compete::Functions => {}
     }
     let class = l.ty.nonref().is_class() || r.ty.nonref().is_class();
     if !class {
@@ -503,6 +509,84 @@ fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite
     Some(build(cx, c, args, span))
 }
 
+/// The outcome of the built-in candidate against the operator functions
+/// (OVL-9).
+enum Compete {
+    /// No built-in candidate, or the operator functions are better.
+    Functions,
+    /// The built-in operator is better, or the only viable candidate.
+    Builtin,
+    /// An error is out.
+    Failed,
+    /// A choice that the front end does not weigh.
+    Unsupported,
+}
+
+/// OVL-9: the built-in candidate that the conversion functions of the
+/// operands reach, against the best operator function. Each class
+/// operand of the built-in candidate converts by a conversion function
+/// to a scalar type, a user-defined sequence; an explicit one counts
+/// for `!`, `&&`, and `||`, whose operands are contextually converted.
+/// The candidate whose user-defined sequences are a strict subset of the
+/// other's is better; otherwise the choice is ambiguous (OVL-36).
+fn against_builtin(cx: &mut Check, op: &str, cands: &[Cand], args: &[Expr], span: Span) -> Compete {
+    use crate::classes::conversion_functions::check::{converting_class, functions};
+    if !args.iter().any(|a| converting_class(cx, a).is_some()) {
+        return Compete::Functions;
+    }
+    let logical = matches!(op, "!" | "&&" | "||");
+    let mut b_user = Vec::new();
+    for a in args {
+        let Some(k) = converting_class(cx, a) else {
+            if a.ty.nonref().is_class() {
+                return Compete::Functions;
+            }
+            b_user.push(false);
+            continue;
+        };
+        let obj = a.ty.nonref();
+        let mut tys: Vec<QType> = Vec::new();
+        for f in functions(&cx.u, k) {
+            let Some(g) = cx.u.func(f) else { continue };
+            let r = crate::declarations::auto::check::decay(&g.ty.ret.nonref()).unqual();
+            let scalar = r.is_arithmetic() || r.is_enum() || r.is_ptr() || r.is_member_ptr() || r.is_nullptr();
+            if scalar && (logical || !g.explicit) && (!obj.c || g.obj_cv.0) && !tys.contains(&r) {
+                tys.push(r);
+            }
+        }
+        match tys.len() {
+            0 => return Compete::Functions,
+            1 => b_user.push(true),
+            _ if logical => b_user.push(true),
+            _ => return Compete::Unsupported,
+        }
+    }
+    let viable: Vec<&Cand> = cands.iter().filter(|c| {
+        let ordered: Vec<Expr> = if c.reversed { args.iter().rev().cloned().collect() } else { args.to_vec() };
+        sequences(cx, c, &ordered).is_some()
+    }).collect();
+    if viable.is_empty() {
+        return Compete::Builtin;
+    }
+    let Some(c) = choose(cx, cands, args, span, op) else { return Compete::Failed };
+    let ordered: Vec<Expr> = if c.reversed { args.iter().rev().cloned().collect() } else { args.to_vec() };
+    let Some(seqs) = sequences(cx, &c, &ordered) else { return Compete::Functions };
+    let mut c_user: Vec<bool> = seqs.iter().map(|s| s.rank == crate::overloading::conversion_sequences::check::Rank::User).collect();
+    c_user.truncate(args.len());
+    if c.reversed {
+        c_user.reverse();
+    }
+    let subset = |a: &[bool], b: &[bool]| a.iter().zip(b).all(|(x, y)| !*x || *y) && a != b;
+    if subset(&b_user, &c_user) {
+        return Compete::Builtin;
+    }
+    if subset(&c_user, &b_user) {
+        return Compete::Functions;
+    }
+    cx.error_cause(span, "OVL-36", Some("OPR-15"), format!("the operator '{}' is ambiguous between an operator function and the built-in operator", op));
+    Compete::Failed
+}
+
 /// DCMP-13: an `operator!=` that matches the `operator==` `f`: a member
 /// of the same class or a non-member of the same namespace, with the
 /// same parameter types.
@@ -537,9 +621,14 @@ pub fn unary(cx: &mut Check, op: &str, e: &Expr, postfix: bool, span: Span) -> O
     if cands.is_empty() {
         return None;
     }
-    if crate::classes::conversion_functions::check::converting_class(cx, e).is_some() {
-        let t = cx.unsupported(span, "an operator with operator functions and an operand whose class has conversion functions");
-        return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+    match against_builtin(cx, op, &cands, &args[..1], span) {
+        Compete::Builtin => return None,
+        Compete::Failed => return Some(bad(span)),
+        Compete::Unsupported => {
+            let t = cx.unsupported(span, "an operator with operator functions and an operand whose class has several conversion functions");
+            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
+        Compete::Functions => {}
     }
     if cands.iter().any(|c| cx.u.func(c.f).is_some_and(|f| f.unsupported.is_some())) {
         let t = cx.unsupported(span, "an operator function that the front end does not model");

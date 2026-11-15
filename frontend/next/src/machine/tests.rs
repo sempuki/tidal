@@ -1833,3 +1833,24 @@ fn member_access_forms() {
     assert_eq!(run("struct S { operator int() const { return 3; } }; int main() { S s; return s.operator int(); }"), RunOutcome::Result(3));
     assert_eq!(rule("struct S { int f() { return 1; } }; void g(S s) { auto p = s.f; }"), Some("PFX-20"));
 }
+
+#[test]
+fn builtin_operators_against_operator_functions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // The operator function takes the class operand without a conversion
+    // function, so it is better than the built-in operator.
+    assert_eq!(run("struct S { operator int() const { return 1; } }; int operator+(S, int) { return 7; } int main() { S s; return s + 1; }"), RunOutcome::Result(7));
+    // No operator function is viable, so the built-in operator is used.
+    assert_eq!(run("struct S { operator int() const { return 2; } }; struct T {}; int operator+(T, T) { return 0; } int main() { S s; return s + 1; }"), RunOutcome::Result(3));
+    // Each candidate needs a user-defined conversion on a different operand.
+    assert_eq!(rule("struct S { S(int); operator int() const; }; int operator+(S, S); int f(S s) { return s + 1; }"), Some("OVL-36"));
+    // Copy-initialization from another class.
+    assert_eq!(rule("struct T { T(int); }; struct S { explicit operator T() const; }; S s; T t = s;"), Some("OVL-35"));
+    assert_eq!(rule("struct A { operator int() const; }; struct B { B(int); }; A a; B b = a;"), Some("CVF-10"));
+    // A const object is not const while its constructor runs.
+    assert_eq!(run("struct S { int x; S() { x = 3; } }; int main() { const S s; return s.x; }"), RunOutcome::Result(3));
+}

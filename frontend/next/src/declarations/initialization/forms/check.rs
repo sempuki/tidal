@@ -46,10 +46,28 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
             let span = e.span;
             // A conversion function of the source class competes with the
             // constructors, which a later piece weighs.
-            let competes = crate::classes::conversion_functions::check::converting_class(cx, &e).is_some_and(|k| !crate::classes::conversion_functions::check::functions(&cx.u, k).is_empty());
+            let competes = crate::classes::conversion_functions::check::reaches_class(cx, &e, c);
             if e.ty.nonref().class().is_some() && competes {
                 cx.unsupported(span, "a conversion between classes by a constructor or a conversion function (build step 4)");
                 return None;
+            }
+            // OVL-14: in copy-initialization a constructor takes an object
+            // of another class by a standard conversion sequence only.
+            if e.ty.nonref().class().is_some() {
+                // The sequence from the source to the first parameter of each
+                // constructor that can take one argument.
+                let seqs: Vec<_> = crate::classes::constructors::check::ctors(cx, c).into_iter().filter_map(|f| {
+                    let g = cx.u.func(f).filter(|g| !g.explicit && !g.ty.params.is_empty() && (1..g.ty.params.len()).all(|k| g.defaults.get(k).is_some_and(|d| d.is_some())))?;
+                    crate::overloading::conversion_sequences::check::sequence(cx, &e, &g.ty.params[0])
+                }).collect();
+                let user = |i: &crate::overloading::conversion_sequences::check::Ics| i.user.is_some() || i.rank == crate::overloading::conversion_sequences::check::Rank::User;
+                if !seqs.iter().any(|i| !user(i)) {
+                    // CVF-10: a constructor that takes the source by a
+                    // user-defined conversion needs a second one.
+                    let rule = if seqs.iter().any(user) { "CVF-10" } else { "OVL-35" };
+                    cx.error_cause(span, rule, Some("OVL-14"), format!("no constructor of {} takes {} by a standard conversion sequence", to.show(), e.ty.nonref().show()));
+                    return None;
+                }
             }
             let i = crate::classes::constructors::check::construct_init(cx, to, vec![e], false, true, span)?;
             return Some(Expr::new(EK::List(Box::new(i)), to.unqual(), crate::sem::tree::Cat::PR, span));

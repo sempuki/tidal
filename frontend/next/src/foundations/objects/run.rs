@@ -29,6 +29,11 @@ pub fn check_write(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     if konst && !string && through_mutable(m, p) {
         return Ok(());
     }
+    // CV-5: a const object is not const while its constructor or
+    // destructor runs.
+    if konst && !string && m.constructing.contains(&p.obj) {
+        return Ok(());
+    }
     if konst || string {
         return crate::declarations::declarators::run::write_const(m, p);
     }
