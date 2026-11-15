@@ -2008,3 +2008,8 @@ fn ended_subobjects_in_constant_evaluation() {
     // An ended element leaves the constant without a value.
     assert_eq!(rule("using I = int; struct R { int v[2]; constexpr R() : v{1, 2} { v[1].~I(); } }; constexpr R r;"), Some("CX-1"));
 }
+
+#[test]
+fn structured_bindings_in_init_statements() {
+    assert_eq!(run("struct P { int a, b; }; int main() { int r = 0; if (auto [a, b] = P{1, 2}; a < b) r += b; for (auto [i, n] = P{0, 3}; i < n; ++i) r += 1; switch (auto [a, b] = P{4, 5}; a) { case 4: r += b; } return r; }"), RunOutcome::Result(10));
+}

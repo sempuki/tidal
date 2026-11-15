@@ -10,8 +10,9 @@ use crate::sem::ScopeKind;
 use crate::statements::check::sub_statement;
 use crate::syntax::{Kid, Node};
 
-/// An init-statement (IF-2, IF-21): a simple declaration, an alias
-/// declaration, or an expression statement.
+/// An init-statement (IF-2, IF-21): a simple declaration, a structured
+/// binding declaration, an alias declaration, or an expression
+/// statement.
 pub fn init_stmt(cx: &mut Check, n: &Node) -> Option<Box<Stmt>> {
     let c = first_node(n)?;
     let s = match c.prod {
@@ -22,6 +23,8 @@ pub fn init_stmt(cx: &mut Check, n: &Node) -> Option<Box<Stmt>> {
         }
         "expression_stmt" => crate::statements::blocks::check::expression_stmt(cx, c),
         "null_stmt" => Stmt::new(SK::Null, c.span),
+        // SB rules: a structured binding declaration.
+        "sb_decl" => crate::declarations::structured_bindings::check::sb_decl(cx, c).unwrap_or(Stmt::new(SK::Null, c.span)),
         _ => {
             cx.unsupported(c.span, "a structured binding in an init-statement");
             Stmt::new(SK::Unsupported("a structured binding".into()), c.span)
