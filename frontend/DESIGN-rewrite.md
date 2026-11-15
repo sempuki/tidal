@@ -485,7 +485,7 @@ holds.
 
 Step 5 is begun (item RW3). A function template at namespace scope
 whose parameters are types or constants of integral or enumeration
-type, with no pack, has a function type with
+type, with no function parameter pack, has a function type with
 each type parameter as a dependent type (`DepType`, model section 1).
 A template argument is a type or a constant (`TArg`); a constant
 argument converts to its parameter's type without narrowing, and in a
@@ -539,7 +539,10 @@ ordering: one template's parameters as unique types deduce the other's,
 after the types lose references and top-level cv-qualifiers); pairs of
 references, non-deduced positions, constraints, operator templates of
 one name, default arguments in such a call, and overload sets outside a
-call wait for a later piece. A function template can be declared before
+call wait for a later piece. A class, variable, or alias template can end its head with a type
+parameter pack: the arguments after the others form the pack
+(`TArg::Pack`), `sizeof...` gives its length, and `P...` in a template
+argument list expands to one argument for each element. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a

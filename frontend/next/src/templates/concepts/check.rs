@@ -17,8 +17,8 @@ pub fn concept_definition(cx: &mut Check, n: &Node) -> bool {
         cx.error(n.span, "CPT-4", "a concept defined outside namespace scope");
         return true;
     }
-    let Some((params, defaults, constraints)) = n.child("template_head").and_then(|h| crate::templates::declarations::check::type_params(cx, h)) else { return false };
-    if defaults.iter().any(|d| d.is_some()) || !constraints.is_empty() {
+    let Some((params, defaults, constraints, pack)) = n.child("template_head").and_then(|h| crate::templates::declarations::check::type_params(cx, h)) else { return false };
+    if defaults.iter().any(|d| d.is_some()) || !constraints.is_empty() || pack {
         return false;
     }
     let words = cx.words(n);
@@ -477,7 +477,7 @@ pub fn function_satisfied(cx: &mut Check, t: usize, args: &[TArg]) -> Option<boo
                 None => constraint(cx, node)?,
                 Some(k) => match args.get(*k)? {
                     TArg::Type(t) => type_constraint(cx, node, t.clone())?,
-                    TArg::Value(..) => return None,
+                    TArg::Value(..) | TArg::Pack(_) => return None,
                 },
             };
             if !ok {

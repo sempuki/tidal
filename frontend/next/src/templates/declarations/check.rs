@@ -27,13 +27,15 @@ pub type Constraints = Vec<(Option<usize>, Node)>;
 /// parameters and constant parameters of integral or enumeration type,
 /// without a pack, with the default of each (TPL-13) and the head's
 /// constraints (CPT-8, CPT-17); None for another head.
-pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<Node>>, Constraints)> {
+pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<Node>>, Constraints, bool)> {
     let mut constraints: Constraints = Vec::new();
+    // PACK rules: a type parameter pack as the last parameter.
+    let mut pack = false;
     let mut out = Vec::new();
     let mut defaults = Vec::new();
     for tp in head.child("template_params")?.children("template_param") {
         // TARG-13: a constant parameter of integral or enumeration type.
-        if let Some(p) = tp.child("constant_param").and_then(|c| c.child("parameter")) {
+        if let Some(p) = tp.child("constant_param").and_then(|c| c.child("parameter")).filter(|_| !pack) {
             if cx.words(p).contains(&"...") || p.find("ptr_part").is_some() {
                 return None;
             }
@@ -59,8 +61,15 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
             continue;
         }
         let t = tp.child("type_param")?;
-        if t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") {
+        if pack {
             return None;
+        }
+        if t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") {
+            // TPL-34: a pack has no default.
+            if t.child("type_id").is_some() {
+                return None;
+            }
+            pack = true;
         }
         match (t.child("type_key"), t.child("type_constraint")) {
             (Some(_), None) => {}
@@ -78,7 +87,10 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
     if let Some(rc) = head.child("requires_clause") {
         constraints.push((None, rc.clone()));
     }
-    Some((out, defaults, constraints))
+    if pack && !constraints.is_empty() {
+        return None;
+    }
+    Some((out, defaults, constraints, pack))
 }
 
 /// TPL-14: unless the template is a function template, each parameter
@@ -106,10 +118,10 @@ fn merge_defaults(cx: &mut Check, earlier: &[Option<Node>], later: &[Option<Node
 /// The arguments of a template-id, with the defaults of the template for
 /// the parameters after them (TPL-13). Each default sees the parameters
 /// before it bound to their arguments.
-pub fn args_with_defaults(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId) -> Option<Vec<TArg>> {
+pub fn args_with_defaults(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId, pack: bool) -> Option<Vec<TArg>> {
     let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
-    if n >= kinds.len() {
-        return template_args(cx, tid, kinds);
+    if pack || n >= kinds.len() {
+        return template_args_packed(cx, tid, kinds, pack);
     }
     let mut args = template_args(cx, tid, &kinds[..n])?;
     fill_defaults(cx, kinds, defaults, names_, scope, limit, &mut args, tid.span).then_some(args)
@@ -177,6 +189,10 @@ pub fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], 
                 let id = names::declare_in(cx, ts, name, EntKind::Var(var), span, Linkage::None);
                 cx.template_constants.insert(id);
             }
+            // PACK rules: a type pack names its types.
+            TArg::Pack(xs) => {
+                names::declare_in(cx, ts, name, EntKind::TypePack(TArg::types(xs)), span, Linkage::None);
+            }
         }
     }
 }
@@ -185,19 +201,74 @@ pub fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], 
 /// type for a type parameter, and a constant for a constant parameter,
 /// converted to its type. None for another number or form of arguments.
 pub fn template_args(cx: &mut Check, tid: &Node, kinds: &[Option<QType>]) -> Option<Vec<TArg>> {
+    template_args_packed(cx, tid, kinds, false)
+}
+
+/// `template_args` for parameters whose last is a pack when `pack`
+/// holds: the arguments after the others form the pack (PACK rules). An
+/// argument `P...` expands to one argument for each element of the
+/// packs that its pattern names.
+pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], pack: bool) -> Option<Vec<TArg>> {
     let nodes: Vec<&Node> = tid.child("template_args").map(|ta| ta.children("template_arg").collect()).unwrap_or_default();
-    if nodes.len() != kinds.len() {
+    // Each argument, with the pack elements its pattern takes.
+    let mut items: Vec<(&Node, Vec<(Rc<str>, QType)>)> = Vec::new();
+    for a in nodes {
+        let expansion = a.child("type_id").and_then(|t| t.child("abstract_declarator")).is_some_and(|d| d.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "..."));
+        if !expansion {
+            if a.find("abstract_declarator").is_some_and(|d| cx.words(d).contains(&"...")) || cx.words(a).contains(&"...") {
+                return None;
+            }
+            items.push((a, Vec::new()));
+            continue;
+        }
+        let mut toks = Vec::new();
+        a.tokens(&mut toks);
+        let mut packs: Vec<(Rc<str>, Vec<QType>)> = Vec::new();
+        for &t in &toks {
+            let w = cx.toks[t].text.as_str();
+            if packs.iter().any(|(n, _)| n.as_ref() == w) {
+                continue;
+            }
+            if let Some(EntKind::TypePack(ts)) = names::lookup(cx, w).first().map(|&e| cx.u.entities[e].kind.clone()) {
+                packs.push((w.into(), ts));
+            }
+        }
+        // PACK-8: the pattern names a pack, and the packs have one length.
+        let Some(n) = packs.first().map(|p| p.1.len()) else { return None };
+        if packs.iter().any(|p| p.1.len() != n) {
+            return None;
+        }
+        for i in 0..n {
+            items.push((a, packs.iter().map(|(name, ts)| (name.clone(), ts[i].clone())).collect()));
+        }
+    }
+    let fixed = if pack { kinds.len().checked_sub(1)? } else { kinds.len() };
+    if items.len() < fixed || (!pack && items.len() != kinds.len()) {
         return None;
     }
     let mut out = Vec::new();
-    for (a, kind) in nodes.into_iter().zip(kinds) {
-        match kind {
-            None => out.push(TArg::Type(crate::declarations::declarators::check::type_id(cx, a.child("type_id")?))),
-            Some(ty) => {
-                let (e, v) = constant_arg(cx, a)?;
-                out.push(constant_of(cx, &e, v, ty, a.span)?);
+    for (k, (a, binds)) in items.into_iter().enumerate() {
+        let kind = if k < fixed { &kinds[k] } else { kinds.last()? };
+        let saved = cx.scope;
+        let saved_expanding = cx.expanding;
+        if !binds.is_empty() {
+            let s = cx.enter(ScopeKind::Template);
+            for (name, t) in &binds {
+                names::declare_in(cx, s, name, EntKind::Typedef(t.clone()), a.span, Linkage::None);
             }
+            cx.expanding = true;
         }
+        let arg = match kind {
+            None => a.child("type_id").map(|t| TArg::Type(crate::declarations::declarators::check::type_id(cx, t))),
+            Some(ty) => constant_arg(cx, a).and_then(|(e, v)| constant_of(cx, &e, v, ty, a.span)),
+        };
+        cx.leave(saved);
+        cx.expanding = saved_expanding;
+        out.push(arg?);
+    }
+    if pack {
+        let rest = out.split_off(fixed);
+        out.push(TArg::Pack(rest));
     }
     Some(out)
 }
@@ -249,7 +320,8 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     if c_linkage(cx, n) {
         return true;
     }
-    let Some((params, defaults, constraints)) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    let Some((params, defaults, constraints, pack)) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    cx.head_pack = pack;
     // Constraints wait for a later piece outside a function template.
     let fn_decl = n.child("declaration").is_some_and(|d| d.child("function_definition").is_some() || d.child("block_decl").and_then(|b| b.child("simple_decl")).is_some_and(|sd| sd.children("init_declarator").any(|i| i.child("init").is_none() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_some()))));
     if !constraints.is_empty() && !fn_decl {
@@ -384,7 +456,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -400,6 +472,9 @@ fn c_linkage(cx: &mut Check, n: &Node) -> bool {
 /// PACK-8: in a function body of a template with no pack, `x...` after a
 /// name or a parenthesized expression expands no pack.
 fn expands_no_pack(cx: &mut Check, fd: &Node) -> bool {
+    if cx.head_pack {
+        return false;
+    }
     let Some(body) = fd.find("compound_stmt") else { return false };
     let mut toks = Vec::new();
     body.tokens(&mut toks);
@@ -811,7 +886,7 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         || words.windows(3).any(|w| matches!(w[0], "." | "->") && is_word(w[1]) && w[2] == "<")
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
-        || words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x)))
+        || (!matches!(fd.prod, "class_def" | "union_def") && words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x))))
         // `using enum T::E`: a dependent enumeration (ENUM-20).
         || words.windows(3).any(|w| w[0] == "enum" && params.iter().any(|(p, _, _)| p.as_ref() == w[1]) && w[2] == "::")
         // `T::name x`: a type named after a parameter without `typename`
@@ -961,7 +1036,7 @@ fn ambiguous_base(cx: &Check, t: usize, bound: &[TArg], args: &[crate::sem::tree
     let tpl = &cx.u.templates[t];
     let types: Vec<QType> = bound.iter().filter_map(|a| match a {
         TArg::Type(t) => Some(t.clone()),
-        TArg::Value(..) => None,
+        TArg::Value(..) | TArg::Pack(_) => None,
     }).collect();
     tpl.fty.params.iter().zip(args).any(|(p, a)| {
         let inner = match &p.t {
@@ -1212,7 +1287,7 @@ fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: Ve
             }
             let id = cx.u.var_templates.len();
             let limit = cx.u.entities.len() + 1;
-            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), explicit: Vec::new(), span: dn.span, limit });
+            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), explicit: Vec::new(), span: dn.span, limit });
             names::declare_in(cx, saved, &name, EntKind::VarTemplate(id), dn.span, Linkage::External);
             true
         }
@@ -1281,7 +1356,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
     };
     let vt = cx.u.var_templates[v].clone();
     let marks = cx.u.diags.len();
-    let Some(args) = args_with_defaults(cx, tid, &vt.kinds, &vt.defaults, &vt.params, vt.scope, vt.limit) else {
+    let Some(args) = args_with_defaults(cx, tid, &vt.kinds, &vt.defaults, &vt.params, vt.scope, vt.limit, vt.pack) else {
         if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
             return Some(crate::expressions::check::bad(span));
         }
@@ -1302,7 +1377,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
     }
     let types: Vec<QType> = args.iter().filter_map(|a| match a {
         TArg::Type(t) => Some(t.clone()),
-        TArg::Value(..) => None,
+        TArg::Value(..) | TArg::Pack(_) => None,
     }).collect();
     let mut matches = Vec::new();
     for (k, (ps, pattern, _)) in vt.partials.iter().enumerate() {
@@ -1429,7 +1504,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         }
         let id = cx.u.class_templates.len();
         let limit = cx.u.entities.len() + 1;
-        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, span: et.span, limit });
+        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, span: et.span, limit });
         names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), et.span, Linkage::External);
         return true;
     }
@@ -1464,6 +1539,11 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         _ => None,
     }) {
         let ct = &cx.u.class_templates[v];
+        // TPL-20: the heads of two declarations of one template agree.
+        if ct.pack != cx.head_pack {
+            cx.error(head.span, "TPL-20", format!("a declaration of '{}' whose template head differs from an earlier one", name));
+            return true;
+        }
         if ct.defined || ct.kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() || !ct.specs.is_empty() {
             return false;
         }
@@ -1497,7 +1577,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
     }
     let id = cx.u.class_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, span: head.span, limit });
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
     true
 }
@@ -1511,7 +1591,10 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         cx.error(m.span, "TPL-2", "a member template of a local class");
         return true;
     }
-    let Some((params, defaults, constraints)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    let Some((params, defaults, constraints, pack)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    if pack {
+        return false;
+    }
     // A default sees the class incomplete (CLS-2), and constraints on a
     // member wait for a later piece.
     if defaults.iter().any(|d| d.is_some()) || !constraints.is_empty() {
@@ -1552,7 +1635,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
@@ -1573,7 +1656,7 @@ fn alias_template_decl(cx: &mut Check, ad: &Node, params: Vec<Param>, defaults: 
     }
     let id = cx.u.alias_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.alias_templates.push(crate::sem::AliasTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), defaults, node: node.clone(), scope: saved, span: ad.span, limit, specs: Vec::new() });
+    cx.u.alias_templates.push(crate::sem::AliasTemplate { name: name.as_str().into(), pack: cx.head_pack, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), defaults, node: node.clone(), scope: saved, span: ad.span, limit, specs: Vec::new() });
     names::declare_in(cx, saved, &name, EntKind::AliasTemplate(id), ad.span, Linkage::None);
     true
 }
@@ -1583,7 +1666,7 @@ fn alias_template_decl(cx: &mut Check, ad: &Node, params: Vec<Param>, defaults: 
 fn alias_use(cx: &mut Check, a: usize, tid: &Node) -> QType {
     let at = cx.u.alias_templates[a].clone();
     let marks = cx.u.diags.len();
-    let Some(args) = args_with_defaults(cx, tid, &at.kinds, &at.defaults, &at.params, at.scope, at.limit) else {
+    let Some(args) = args_with_defaults(cx, tid, &at.kinds, &at.defaults, &at.params, at.scope, at.limit, at.pack) else {
         if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
             return QType::error();
         }
@@ -1611,6 +1694,9 @@ fn alias_use(cx: &mut Check, a: usize, tid: &Node) -> QType {
 /// types.
 fn class_partial(cx: &mut Check, cd: &Node, tid: &Node, params: Vec<Param>) -> bool {
     let saved = cx.scope;
+    if cx.head_pack {
+        return false;
+    }
     let Some(name) = tid.child("template_name").map(|t| cx.source(t)) else { return false };
     let Some(v) = names::declared_here(cx, saved, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
         EntKind::ClassTemplate(v) => Some(v),
@@ -1712,7 +1798,7 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     })?;
     let ct = cx.u.class_templates[v].clone();
     let marks = cx.u.diags.len();
-    let Some(args) = args_with_defaults(cx, tid, &ct.kinds, &ct.defaults, &ct.params, ct.scope, ct.limit) else {
+    let Some(args) = args_with_defaults(cx, tid, &ct.kinds, &ct.defaults, &ct.params, ct.scope, ct.limit, ct.pack) else {
         if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
             return Some(QType::error());
         }

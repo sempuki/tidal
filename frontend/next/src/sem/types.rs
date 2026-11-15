@@ -70,6 +70,21 @@ pub enum Type {
     Dep(Rc<DepType>),
 }
 
+impl TArg {
+    /// The types among `args`, with the types of each pack.
+    pub fn types(args: &[TArg]) -> Vec<QType> {
+        let mut out = Vec::new();
+        for a in args {
+            match a {
+                TArg::Type(t) => out.push(t.clone()),
+                TArg::Value(..) => {}
+                TArg::Pack(xs) => out.extend(TArg::types(xs)),
+            }
+        }
+        out
+    }
+}
+
 impl PartialEq for DepType {
     fn eq(&self, other: &DepType) -> bool {
         match (self, other) {
@@ -87,6 +102,8 @@ impl PartialEq for DepType {
 pub enum TArg {
     Type(QType),
     Value(QType, i128),
+    /// The arguments of a template parameter pack (PACK rules).
+    Pack(Vec<TArg>),
 }
 
 /// The dependent forms of a type (`frontend/TEMPLATE-MODEL.md`, section

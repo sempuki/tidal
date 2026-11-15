@@ -2742,3 +2742,14 @@ fn overloaded_function_templates() {
     let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
     assert_eq!(rule(&format!("{} template <class T> struct Tag {{}}; template <class T> struct Base {{}}; template <> struct Base<int> : virtual Base<char> {{}}; struct Side : virtual Base<char> {{}}; struct Join : Base<int>, Side {{}}; template <class T> Tag<T> up(Base<T>&); Join j; static_assert(same<decltype(up(j)), Tag<int>>);", same)), None);
 }
+
+#[test]
+fn type_parameter_packs() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class... Ts> struct List { static constexpr int size = sizeof...(Ts); }; template <class... Ts> using L2 = List<Ts..., int>; template <class T, class... Ts> constexpr int count = 1 + sizeof...(Ts); static_assert(List<int, char>::size == 2 && L2<char>::size == 2 && count<int, int, int> == 3 && List<>::size == 0);"), None);
+    assert_eq!(rule("template <class T> struct Box; template <class... T> struct Box {};"), Some("TPL-20"));
+}

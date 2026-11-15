@@ -148,6 +148,9 @@ pub enum EntKind {
     AliasTemplate(usize),
     /// A concept, by its index in `Unit::concepts`.
     Concept(usize),
+    /// A template type parameter pack bound to its types in a
+    /// specialization (PACK rules).
+    TypePack(Vec<QType>),
 }
 
 /// A concept (`templates/concepts`): its parameters and its constraint
@@ -169,6 +172,8 @@ pub struct Concept {
 pub struct AliasTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The last parameter is a pack (PACK rules).
+    pub pack: bool,
     pub kinds: Vec<Option<QType>>,
     pub defaults: Vec<Option<crate::syntax::Node>>,
     pub node: crate::syntax::Node,
@@ -186,6 +191,8 @@ pub struct AliasTemplate {
 pub struct ClassTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The last parameter is a pack (PACK rules).
+    pub pack: bool,
     /// The default argument of each parameter, if any (TPL-13).
     pub defaults: Vec<Option<crate::syntax::Node>>,
     pub kinds: Vec<Option<QType>>,
@@ -216,6 +223,8 @@ pub struct ClassTemplate {
 pub struct VarTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The last parameter is a pack (PACK rules).
+    pub pack: bool,
     /// The default argument of each parameter, if any (TPL-13).
     pub defaults: Vec<Option<crate::syntax::Node>>,
     pub kinds: Vec<Option<QType>>,
@@ -244,6 +253,8 @@ pub struct VarTemplate {
 pub struct FnTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The last parameter is a pack (PACK rules).
+    pub pack: bool,
     /// The default argument of each parameter, if any (TPL-13).
     pub defaults: Vec<Option<crate::syntax::Node>>,
     /// For each parameter, None for a type parameter, or the type of a

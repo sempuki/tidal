@@ -188,7 +188,9 @@ fn apply(cx: &mut Check, t: QType, n: &Node, d: &mut Declared, top: bool) -> QTy
                     }
                     Kid::Node(c) => inner = Some(c),
                     _ => {
-                        if cx.text(k) == "..." {
+                        // PACK rules: the `...` of an expansion that is
+                        // being checked.
+                        if cx.text(k) == "..." && !cx.expanding {
                             d.unsupported = true;
                             cx.unsupported(n.span, "a pack in a declarator");
                         }
@@ -229,7 +231,9 @@ fn apply(cx: &mut Check, t: QType, n: &Node, d: &mut Declared, top: bool) -> QTy
                         cx.unsupported(c.span, format!("a declarator part of the form {}", c.prod));
                     }
                     _ => {
-                        if cx.text(k) == "..." {
+                        // PACK rules: the `...` of an expansion that is
+                        // being checked.
+                        if cx.text(k) == "..." && !cx.expanding {
                             d.unsupported = true;
                             cx.unsupported(n.span, "a pack in a declarator");
                         }
