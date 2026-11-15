@@ -790,12 +790,31 @@ fn valid_function(cx: &mut Check, id: ClassId, specs: &crate::declarations::chec
     // declaration of this class.
     let own = |cx: &Check, e: EntityId| cx.u.class_of_scope(cx.u.entities[e].scope) == Some(id);
     let mixed = names::declared_here(cx, cx.scope, &name).into_iter().filter(|&e| own(cx, e)).any(|e| cx.u.func(e).is_some_and(|f| Some(&f.ty.params) == fty0.as_ref().map(|t| &t.params) && f.obj_cv == d.obj_cv && f.ref_q.is_some() != d.ref_kind.is_some()));
-    if mixed {
-        cx.error(span, "CLS-26", format!("the overloads of '{}' mix a ref-qualifier and none", name));
+    // A function with an explicit object parameter of the class type,
+    // by value or by reference with the same cv-qualifiers, and one
+    // without a ref-qualifier clash when the other parameters match.
+    let same_object = |explicit: &[QType], implicit: &[QType], cv: (bool, bool)| {
+        explicit.first().is_some_and(|p| {
+            let t = p.nonref();
+            t.class() == Some(id) && if p.is_ref() { (t.c, t.v) == cv } else { cv == (false, false) }
+        }) && explicit[1..] == *implicit
+    };
+    let new_explicit = d.params.first().is_some_and(|p| p.this_param);
+    let new_params = fty0.as_ref().map(|t| t.params.clone()).unwrap_or_default();
+    let clash = names::declared_here(cx, cx.scope, &name).into_iter().filter(|&e| own(cx, e)).any(|e| {
+        cx.u.func(e).is_some_and(|f| match (f.explicit_object, new_explicit) {
+            (true, false) => d.ref_kind.is_none() && same_object(&f.ty.params, &new_params, d.obj_cv),
+            (false, true) => f.ref_q.is_none() && same_object(&new_params, &f.ty.params, f.obj_cv),
+            _ => false,
+        })
+    });
+    if mixed || clash {
+        let what = if clash { "an explicit object parameter and no ref-qualifier" } else { "a ref-qualifier and none" };
+        cx.error(span, "CLS-26", format!("the overloads of '{}' mix {}", name, what));
         return false;
     }
     let conversion = name.starts_with("operator ");
-    if conversion && !crate::classes::conversion_functions::check::declaration(cx, specs, &d.ty, true, span) {
+    if conversion && !crate::classes::conversion_functions::check::declaration(cx, specs, &d.ty, true, d.params.first().is_some_and(|p| p.this_param), span) {
         return false;
     }
     let fty = d.ty.func().cloned();

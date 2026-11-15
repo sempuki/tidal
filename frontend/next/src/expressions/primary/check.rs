@@ -26,6 +26,18 @@ pub fn primary(cx: &mut Check, n: &Node) -> Expr {
         }
         [k @ Kid::Tok(_)] if cx.text(k) == "this" => match cx.func.as_ref().and_then(|f| f.this.clone()) {
             Some(t) => Expr::new(EK::This, t, Cat::PR, n.span),
+            // PRIM-20: no `this` in a function body without an implicit
+            // object, or outside every class.
+            None if cx.func.is_some() || cx.member_of.is_none() => {
+                let func = cx.func.as_ref().and_then(|f| f.id).and_then(|id| cx.u.func(id));
+                let (cause, why) = match func {
+                    Some(f) if f.explicit_object => (Some("CLS-14"), "'this' in a member function with an explicit object parameter"),
+                    Some(f) if f.class.is_some() => (Some("CLS-27"), "'this' in a static member function"),
+                    _ => (None, "'this' outside a member function"),
+                };
+                cx.error_cause(n.span, "PRIM-20", cause, why);
+                bad(n.span)
+            }
             None => {
                 let t = cx.unsupported(n.span, "'this' outside a member function body (build step 4)");
                 Expr::new(EK::Int(0), t, Cat::PR, n.span)

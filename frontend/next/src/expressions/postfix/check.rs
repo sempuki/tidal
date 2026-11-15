@@ -372,6 +372,11 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         let func = cx.u.func(op).unwrap().clone();
         let fty = QType::new(Type::Func(func.ty.clone()));
         let callee = Expr::new(EK::Func(op), fty, Cat::L, f.span);
+        let mut args = args;
+        if func.explicit_object {
+            args.insert(0, f);
+            return finish_call(cx, callee, Some(op), args, span, None);
+        }
         let object = if func.member_static { None } else { Some(f) };
         return finish_call(cx, callee, Some(op), args, span, object);
     }
@@ -490,6 +495,12 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
     let fty = QType::new(Type::Func(func.ty.clone()));
     let kind = if cx.u.virt.contains_key(&f) && !qualified { EK::Virtual(f) } else { EK::Func(f) };
     let callee = Expr::new(kind, fty, Cat::L, nspan);
+    // CLS-13: the object is the first argument of a function with an
+    // explicit object parameter.
+    let mut args = args.to_vec();
+    if let Some(o) = object.clone().filter(|_| func.explicit_object) {
+        args.insert(0, o);
+    }
     let object = object.filter(|_| !func.member_static);
     // DER-3: the object of a member of a base is the base subobject.
     let object = match (object, func.class) {
@@ -527,7 +538,7 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             return Some(bad(span));
         }
     }
-    Some(finish_call(cx, callee, Some(f), args.to_vec(), span, object))
+    Some(finish_call(cx, callee, Some(f), args, span, object))
 }
 
 /// The call of a chosen function or of a function pointer: the

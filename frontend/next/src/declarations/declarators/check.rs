@@ -26,6 +26,8 @@ pub struct Param {
     pub default: Option<Node>,
     pub span: Span,
     pub maybe_unused: bool,
+    /// Declared with `this`, an explicit object parameter (CLS-13).
+    pub this_param: bool,
 }
 
 /// What a declarator declares.
@@ -514,6 +516,25 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
         cx.error(n.span, "DCL-21", "a function that is not a member has a ref-qualifier");
     }
     let (params, variadic) = parameters(cx, n.child("parameters"));
+    // CLS-14: an explicit object parameter is the first parameter of a
+    // member function without cv-qualifiers or a ref-qualifier, and has
+    // no default argument.
+    if let Some(k) = params.iter().position(|p| p.this_param) {
+        let why = if k > 0 {
+            Some("the explicit object parameter is not the first parameter")
+        } else if params[0].default.is_some() {
+            Some("the explicit object parameter has a default argument")
+        } else if !(member && declared) {
+            Some("an explicit object parameter outside a member function")
+        } else if obj_cv != (false, false) || ref_kind.is_some() {
+            Some("a member function with an explicit object parameter has a cv-qualifier or a ref-qualifier")
+        } else {
+            None
+        };
+        if let Some(why) = why {
+            cx.error(params[k].span, "CLS-14", why);
+        }
+    }
     let mut noexcept = false;
     if let Some(e) = n.child("exception_spec") {
         noexcept = crate::declarations::exception_specifications::check::exception_spec(cx, e, &params);
@@ -561,12 +582,7 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
     }
     let mut out = Vec::new();
     for p in &ps {
-        // CLS-14: an explicit object parameter belongs to a member
-        // function, which build step 4 part a does not model.
-        if p.kids.iter().any(|k| cx.text(k) == "this") {
-            cx.unsupported(p.span, "an explicit object parameter (member functions come with build step 4)");
-            return (Vec::new(), variadic);
-        }
+        let this_param = p.kids.iter().any(|k| cx.text(k) == "this");
         let mut attrs = crate::declarations::attributes::check::Attrs::default();
         for a in p.children("attribute_spec") {
             crate::declarations::attributes::check::attribute_spec(cx, a, &mut attrs);
@@ -632,7 +648,7 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             Kid::Node(e) => Some(e.clone()),
             _ => None,
         });
-        out.push(Param { name: d.name.clone(), ty: t, cv, was_array, default, span: p.span, maybe_unused: attrs.maybe_unused });
+        out.push(Param { name: d.name.clone(), ty: t, cv, was_array, default, span: p.span, maybe_unused: attrs.maybe_unused, this_param });
     }
     (out, variadic)
 }

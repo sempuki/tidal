@@ -60,7 +60,7 @@ pub fn target(cx: &mut Check, n: &Node) -> QType {
 
 /// CVF-7: the limits on a conversion function's declaration. True when
 /// it is valid.
-pub fn declaration(cx: &mut Check, specs: &crate::declarations::check::Specs, ty: &QType, member: bool, span: Span) -> bool {
+pub fn declaration(cx: &mut Check, specs: &crate::declarations::check::Specs, ty: &QType, member: bool, explicit_object: bool, span: Span) -> bool {
     if specs.ty.is_some() {
         cx.error(span, "CVF-7", "a conversion function with a return type before 'operator'");
         return false;
@@ -74,7 +74,8 @@ pub fn declaration(cx: &mut Check, specs: &crate::declarations::check::Specs, ty
         return false;
     }
     if let Type::Func(ft) = &ty.t {
-        if !ft.params.is_empty() || ft.variadic {
+        // The one parameter can be an explicit object parameter.
+        if ft.params.len() > usize::from(explicit_object) || ft.variadic {
             cx.error(span, "CVF-7", "a conversion function with parameters");
             return false;
         }
@@ -152,19 +153,26 @@ fn candidates(cx: &Check, e: &Expr, to: &QType, direct: bool) -> Vec<Cand> {
         if func.explicit && !(direct && ret.unqual().t == to.nonref().unqual().t) {
             continue;
         }
-        // CVF-9: a const object needs a const conversion function.
-        if (obj.c && !func.obj_cv.0) || (obj.v && !func.obj_cv.1) {
-            continue;
-        }
-        // CVF-4: the ref-qualifier takes the object by its category.
         let lvalue = e.cat == Cat::L;
-        let binds = match func.ref_q {
-            Some(true) => !lvalue,
-            Some(false) => lvalue || (func.obj_cv.0 && !func.obj_cv.1),
-            None => true,
-        };
-        if !binds {
-            continue;
+        if func.explicit_object {
+            // ICS-41: the object initializes the explicit object parameter.
+            if crate::overloading::overload_resolution::check::object_sequence(cx, f, e).is_none() {
+                continue;
+            }
+        } else {
+            // CVF-9: a const object needs a const conversion function.
+            if (obj.c && !func.obj_cv.0) || (obj.v && !func.obj_cv.1) {
+                continue;
+            }
+            // CVF-4: the ref-qualifier takes the object by its category.
+            let binds = match func.ref_q {
+                Some(true) => !lvalue,
+                Some(false) => lvalue || (func.obj_cv.0 && !func.obj_cv.1),
+                None => true,
+            };
+            if !binds {
+                continue;
+            }
         }
         let r = result_of(cx, f, e.span);
         // A class target takes a result of the class itself.
@@ -246,6 +254,9 @@ pub fn call(cx: &mut Check, f: EntityId, e: Expr, span: Span) -> Expr {
         }
         _ => e,
     };
+    if func.explicit_object {
+        return crate::expressions::postfix::check::finish_call(cx, callee, Some(f), vec![e], span, None);
+    }
     crate::expressions::postfix::check::finish_call(cx, callee, Some(f), Vec::new(), span, Some(e))
 }
 

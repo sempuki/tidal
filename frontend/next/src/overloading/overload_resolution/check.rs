@@ -89,6 +89,11 @@ pub fn resolve(cx: &mut Check, cands: &[EntityId], args: &[Expr], span: Span, na
 /// (ICS-13, ICS-40). A static member function matches any object.
 pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
     let func = cx.u.func(f)?;
+    // ICS-41: the object initializes an explicit object parameter as an
+    // argument.
+    if func.explicit_object {
+        return sequence(cx, object, &func.ty.params[0]);
+    }
     let Some(c) = func.class.filter(|_| !func.member_static) else {
         return Some(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Exact, qual: false, binds: None, ellipsis: false, user: None });
     };
@@ -146,16 +151,21 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
     let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
     for &f in cands {
         let Some(func) = cx.u.func(f) else { continue };
-        let ty = func.ty.clone();
-        let defaults = func.defaults.iter().filter(|d| d.is_some()).count();
+        // With an object, the arguments meet the parameters after an
+        // explicit object parameter.
+        let skip = usize::from(object.is_some() && func.explicit_object);
+        let params: Vec<QType> = func.ty.params[skip..].to_vec();
+        let variadic = func.ty.variadic;
+        let own_defaults = &func.defaults[skip.min(func.defaults.len())..];
+        let defaults = own_defaults.iter().filter(|d| d.is_some()).count();
         // OVL-22: one parameter for each argument, with defaults or an
         // ellipsis for the rest.
-        let n = ty.params.len();
-        if args.len() > n && !ty.variadic {
+        let n = params.len();
+        if args.len() > n && !variadic {
             continue;
         }
         if args.len() + defaults < n {
-            let first_default = func.defaults.iter().position(|d| d.is_some()).unwrap_or(n);
+            let first_default = own_defaults.iter().position(|d| d.is_some()).unwrap_or(n);
             if args.len() < first_default {
                 continue;
             }
@@ -181,7 +191,7 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                 seqs.push(Ics { rank: crate::overloading::conversion_sequences::check::Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None });
                 continue;
             }
-            match sequence(cx, a, &ty.params[k]) {
+            match sequence(cx, a, &params[k]) {
                 Some(s) => seqs.push(s),
                 None => {
                     ok = false;

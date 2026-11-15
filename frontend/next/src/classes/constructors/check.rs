@@ -143,6 +143,10 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
     }
     specs.ty = Some(QType::void());
     let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    if d.params.first().is_some_and(|p| p.this_param) {
+        cx.error(dn.span, "CTOR-1", "a constructor with an explicit object parameter");
+        return true;
+    }
     if d.unsupported || !d.ty.is_func() || d.obj_cv != (false, false) || d.ref_q {
         cx.unsupported(dn.span, "a constructor declaration of this form (build step 4)");
         return false;

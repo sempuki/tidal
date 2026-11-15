@@ -90,7 +90,7 @@ pub fn is_operator(name: &str) -> bool {
 /// OPR-2: the limits on the declaration of an operator function. `class`
 /// is the class of a member. True when the declaration is valid; an
 /// unsupported form gives false after its diagnostic too.
-pub fn declaration(cx: &mut Check, name: &str, ty: &QType, defaults: bool, class: Option<crate::sem::types::ClassId>, is_static: bool, span: Span) -> bool {
+pub fn declaration(cx: &mut Check, name: &str, ty: &QType, defaults: bool, class: Option<crate::sem::types::ClassId>, is_static: bool, explicit_object: bool, span: Span) -> bool {
     let op = &name["operator".len()..];
     // The allocation and deallocation functions have the rules of
     // `expressions/new-delete`.
@@ -132,7 +132,8 @@ pub fn declaration(cx: &mut Check, name: &str, ty: &QType, defaults: bool, class
     if any {
         return true;
     }
-    let count = f.params.len() + usize::from(class.is_some() && !is_static);
+    // An explicit object parameter is the first operand.
+    let count = f.params.len() + usize::from(class.is_some() && !is_static && !explicit_object);
     let ok = match op {
         "!" | "~" => count == 1,
         "++" | "--" => count == 1 || (count == 2 && f.params.last().is_some_and(|p| p.t == Type::int())),
@@ -194,7 +195,11 @@ fn sequences(cx: &Check, c: &Cand, args: &[Expr]) -> Option<Vec<Ics>> {
     let func = cx.u.func(c.f)?;
     let params = &func.ty.params;
     let mut out = Vec::new();
-    let rest = if c.member && !func.member_static {
+    // ICS-41: the object meets an explicit object parameter as any
+    // argument does.
+    let rest = if c.member && func.explicit_object {
+        args
+    } else if c.member && !func.member_static {
         out.push(crate::overloading::overload_resolution::check::object_sequence(cx, c.f, &args[0])?);
         &args[1..]
     } else if c.member {
@@ -211,7 +216,7 @@ fn sequences(cx: &Check, c: &Cand, args: &[Expr]) -> Option<Vec<Ics>> {
             Some(s) => out.push(s),
             // ICS-4: a converting constructor makes the parameter's object;
             // the object of a member takes no such conversion (OPR-6).
-            None if !(c.member && k == 0 && func.member_static) => out.push(user_conversion(cx, a, p)?),
+            None if !(c.member && k == 0 && func.member_static && !func.explicit_object) => out.push(user_conversion(cx, a, p)?),
             None => return None,
         }
     }
@@ -323,7 +328,16 @@ fn build_call(cx: &mut Check, c: Cand, args: Vec<Expr>, span: Span) -> Expr {
                 obj = crate::classes::derived::check::along(cx, o, oc, &ps[0]);
             }
         }
-        let obj = if func.member_static { None } else { Some(obj) };
+        // CLS-13: the object is the first argument of a function with an
+        // explicit object parameter.
+        let obj = if func.explicit_object {
+            args.insert(0, obj);
+            None
+        } else if func.member_static {
+            None
+        } else {
+            Some(obj)
+        };
         crate::expressions::postfix::check::finish_call(cx, callee, Some(c.f), args, span, obj)
     } else {
         crate::expressions::postfix::check::finish_call(cx, callee, Some(c.f), args, span, None)

@@ -27,16 +27,18 @@ pub fn copy_or_move(cx: &Check, c: ClassId, f: EntityId) -> Option<bool> {
 }
 
 /// A copy or move assignment operator of `c` (CPY-3): a member
-/// `operator=` with one parameter of the class or a reference to it.
+/// `operator=` with one parameter of the class or a reference to it,
+/// or with an explicit object parameter and one reference to the class.
 /// True for a move assignment.
 pub fn assignment_kind(cx: &Check, c: ClassId, f: EntityId) -> Option<bool> {
     let func = cx.u.func(f)?;
-    if func.ty.params.len() != 1 || func.class != Some(c) {
+    let params = func.own_params();
+    if params.len() != 1 || func.class != Some(c) {
         return None;
     }
-    match &func.ty.params[0].t {
+    match &params[0].t {
         Type::Ref(t, rv) if t.class() == Some(c) => Some(*rv),
-        Type::Class(d) if *d == c => Some(false),
+        Type::Class(d) if *d == c && !func.explicit_object => Some(false),
         _ => None,
     }
 }

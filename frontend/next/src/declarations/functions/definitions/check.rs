@@ -97,6 +97,13 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         default_arguments(cx, &d.params)
     };
     let linkage = if s.is_static && cx.member_of.is_none() { Linkage::Internal } else { stl::linkage(cx, s, false, false, false) };
+    // CLS-13: a member function whose first parameter is declared with
+    // `this`. CLS-14: such a function is not static.
+    let explicit_object = d.params.first().is_some_and(|p| p.this_param);
+    if explicit_object && s.is_static && cx.member_of.is_some() {
+        cx.error(span, "CLS-14", "a static member function with an explicit object parameter");
+        return None;
+    }
     let deleted = body.is_some_and(|b| cx.words(b).contains(&"delete"));
     let defaulted = body.is_some_and(|b| cx.words(b).contains(&"default"));
     // OPR-2: the limits on an operator function.
@@ -106,7 +113,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             _ => None,
         });
         let defaults = d.params.iter().any(|p| p.default.is_some());
-        if !crate::classes::operators::check::declaration(cx, &name, &d.ty, defaults, class, s.is_static, span) {
+        if !crate::classes::operators::check::declaration(cx, &name, &d.ty, defaults, class, s.is_static, explicit_object, span) {
             return None;
         }
 
@@ -285,7 +292,8 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 explicit: s.explicit,
                 // NEW-13: a class's allocation and deallocation functions
                 // are static members.
-                member_static: cx.member_of.is_some() && (s.is_static || crate::expressions::new_delete::check::is_allocation(&name)),
+                member_static: (cx.member_of.is_some() && (s.is_static || crate::expressions::new_delete::check::is_allocation(&name))) || explicit_object,
+                explicit_object,
                 obj_cv: d.obj_cv,
                 ref_q: d.ref_kind,
             };

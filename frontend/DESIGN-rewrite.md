@@ -647,7 +647,13 @@ is deleted, and a defaulted `<=>` declares a defaulted `==`. A
 literal with a user-defined suffix calls the literal operator for the
 suffix whose form fits the literal: the numeric form before the raw
 form for a number, and the form with a pointer and a length for joined
-string literals. A literal operator template waits for templates. The
+string literals. A literal operator template waits for templates. A
+member function with an explicit object parameter has no implicit
+object and no `this`, and its address is an ordinary pointer to
+function. A call with an object passes the object as the first
+argument, and overload resolution matches the object against that
+parameter. A lambda with an explicit object parameter waits for
+templates. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

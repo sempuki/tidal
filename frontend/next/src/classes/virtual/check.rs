@@ -41,7 +41,8 @@ pub fn overridden(cx: &Check, c: ClassId, f: EntityId) -> Vec<EntityId> {
         seen.push(b);
         for g in crate::foundations::names::check::declared_here(cx, cx.u.classes[b].scope, &name) {
             let Some(gf) = cx.u.func(g) else { continue };
-            let same = func.special == Special::Dtor || (gf.ty.params == func.ty.params && gf.ty.variadic == func.ty.variadic && gf.obj_cv == func.obj_cv && gf.ref_q == func.ref_q);
+            // An explicit object parameter takes no part.
+            let same = func.special == Special::Dtor || (gf.ty.params[..] == *func.own_params() && gf.ty.variadic == func.ty.variadic && (func.explicit_object || (gf.obj_cv == func.obj_cv && gf.ref_q == func.ref_q)));
             if cx.u.virt.contains_key(&g) && same && !out.contains(&g) {
                 out.push(g);
             }
@@ -59,6 +60,16 @@ pub fn member_function(cx: &mut Check, c: ClassId, f: EntityId, declared_virtual
     let Some((marked, is_final)) = specifiers(cx, n) else { return };
     let Some(func) = cx.u.func(f).cloned() else { return };
     let over = overridden(cx, c, f);
+    // CLS-14, VIRT-2, VIRT-19: a function with an explicit object
+    // parameter is not virtual and overrides nothing.
+    if func.explicit_object {
+        if declared_virtual {
+            cx.error_cause(span, "CLS-14", Some("VIRT-2"), "a member function with an explicit object parameter declared virtual");
+        } else if !over.is_empty() {
+            cx.error(span, "VIRT-19", format!("'{}' has an explicit object parameter and the name and parameters of a virtual function of a base", cx.u.entities[f].name));
+        }
+        return;
+    }
     if func.member_static {
         if declared_virtual {
             cx.error(span, "VIRT-2", "a static member function declared virtual");

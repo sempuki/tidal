@@ -97,13 +97,22 @@ pub struct Func {
     /// A constructor or a destructor.
     pub special: Special,
     pub explicit: bool,
+    /// No implicit object: a static member function, or one with an
+    /// explicit object parameter.
     pub member_static: bool,
+    /// The first parameter is an explicit object parameter (CLS-13).
+    pub explicit_object: bool,
     pub obj_cv: (bool, bool),
     /// The ref-qualifier: `&&` (true) or `&` (false) (CLS-6).
     pub ref_q: Option<bool>,
 }
 
 impl Func {
+    /// The parameters that the arguments of a call with an object meet:
+    /// all but an explicit object parameter.
+    pub fn own_params(&self) -> &[types::QType] {
+        &self.ty.params[usize::from(self.explicit_object)..]
+    }
     /// A function that a call with no argument can call, such as a
     /// default constructor: each parameter has a default argument.
     pub fn takes_no_argument(&self) -> bool {

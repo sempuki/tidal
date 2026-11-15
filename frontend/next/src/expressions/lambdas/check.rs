@@ -151,6 +151,12 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         cx.error(span, "LAM-27", "a static lambda is mutable");
         return bad(span);
     }
+    // LAM-17: a mutable lambda has no explicit object parameter.
+    let explicit_object = n.child("parameters").and_then(|ps| ps.children("parameter").next()).is_some_and(|p| p.kids.iter().any(|k| cx.text(k) == "this"));
+    if mutable && explicit_object {
+        cx.error(span, "LAM-17", "a mutable lambda with an explicit object parameter");
+        return bad(span);
+    }
     // The closure type, with its member scope inside the current scope.
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), "");
     let class = cx.u.classes.len();
@@ -198,6 +204,9 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     }
     // The parameters, declared as those of any function (LAM-18).
     let (params, variadic) = crate::declarations::declarators::check::parameters(cx, n.child("parameters"));
+    if explicit_object {
+        return unsupported(cx, span, "a lambda with an explicit object parameter");
+    }
     // LAM-17: a parameter does not have the name of an explicit capture.
     for p in &params {
         if let Some((pn, ps)) = &p.name {
@@ -240,6 +249,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         special: Special::None,
         explicit: false,
         member_static: is_static,
+        explicit_object: false,
         obj_cv: (!mutable && !is_static, false),
         ref_q: None,
     };

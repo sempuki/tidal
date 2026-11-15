@@ -493,6 +493,7 @@ fn declare_library(cx: &mut Check, forms: Vec<(&str, QType, Vec<QType>, bool)>) 
             special: crate::sem::Special::None,
             explicit: false,
             member_static: false,
+            explicit_object: false,
             obj_cv: (false, false),
             ref_q: None,
         };

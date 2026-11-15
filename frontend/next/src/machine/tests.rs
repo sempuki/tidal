@@ -1687,3 +1687,20 @@ fn literal_operators() {
     assert_eq!(rule("unsigned long long operator\"\"_u(unsigned long long n) { return n; } auto x = 1.5_u;"), Some("OPR-16"));
     assert_eq!(rule("int operator\"\"_b(int);"), Some("OPR-10"));
 }
+
+#[test]
+fn explicit_object_parameters() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // CLS-13: the object of the call initializes the parameter, and the
+    // overloads differ by its type.
+    assert_eq!(run("struct V { int v = 3; int f(this V& s) { return s.v; } int f(this const V& s) { return s.v * 10; } }; int main() { V v; const V& c = v; return v.f() + c.f(); }"), RunOutcome::Result(33));
+    // CLS-17: the address is an ordinary pointer to function.
+    assert_eq!(run("struct S { int v; int get(this const S& s, int k) { return s.v + k; } }; int main() { int (*p)(const S&, int) = &S::get; return p(S{4}, 1); }"), RunOutcome::Result(5));
+    assert_eq!(rule("struct S { int get(this S self) const; };"), Some("CLS-14"));
+    assert_eq!(rule("struct S { int v; int get(this S& s) { return this->v; } };"), Some("PRIM-20"));
+    assert_eq!(rule("struct S { void f(); void f(this S&); };"), Some("CLS-26"));
+}
