@@ -2314,3 +2314,13 @@ fn this_in_member_declarations() {
     assert_eq!(rule("struct S { int f(const S* p = this); };"), Some("DEFARG-4"));
     assert_eq!(rule("struct B { int size; int fill(unsigned long n = sizeof(*this)); };"), Some("DEFARG-4"));
 }
+
+#[test]
+fn common_initial_sequence_in_constant_evaluation() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].cause.or(ds[0].rule),
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct A { int t; int a; }; struct B { int t; double b; }; union U { A a; B b; }; constexpr int f() { U u{.a = {7, 1}}; return u.b.t; } static_assert(f() == 7);"), Some("UNI-12"));
+}

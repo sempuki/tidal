@@ -63,8 +63,21 @@ pub fn check_active(m: &mut Machine, p: &Ptr) -> R<()> {
                 Some(Val::Agg(xs)) => xs.iter().position(|x| *x != Val::Inactive),
                 _ => None,
             };
-            if other.is_some_and(|j| tys[j].is_class() && tys[i].is_class()) {
-                return unsup("a read through the common initial sequence of two members of a union");
+            if let Some(j) = other.filter(|&j| tys[j].is_class() && tys[i].is_class()) {
+                // UNI-10 at run time is not modeled.
+                if !m.constant {
+                    return unsup("a read through the common initial sequence of two members of a union");
+                }
+                // The member read lies in the common initial sequence of
+                // the two structs: members of the same types and widths.
+                let fields = |t: &QType| t.class().map(|k| m.u.classes[k].fields.iter().filter_map(|&f| m.u.field(f)).map(|x| (x.ty.unqual(), x.width)).collect::<Vec<_>>()).unwrap_or_default();
+                let (a, b) = (fields(&tys[i]), fields(&tys[j]));
+                let common = a.iter().zip(&b).take_while(|(x, y)| x == y).count();
+                let read = p.path.get(q.path.len() + 1).map(|&k| k as usize);
+                // UNI-12: constant evaluation does not permit such a read.
+                if read.is_some_and(|k| k < common) {
+                    return ub("UNI-12", "a read through the common initial sequence of the member of a union that is not active");
+                }
             }
             return ub("UNI-6", format!("an access to the member '{}' of a union, which is not its active member", member_name(m, c, i)));
         }
