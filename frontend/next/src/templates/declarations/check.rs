@@ -47,6 +47,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     }
     let Some(params) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
     if let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) {
+        if sd.child("init_declarator").is_none() {
+            return class_template_decl(cx, sd, params);
+        }
         return var_template_decl(cx, sd, params);
     }
     let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) else { return false };
@@ -179,10 +182,12 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], explicit: &[QType], a
     out
 }
 
-/// The function templates of the unit that nothing specialized: their
-/// definitions are not checked yet, so the unit is unsupported.
+/// The function and class templates of the unit that nothing
+/// specialized: their definitions are not checked yet, so the unit is
+/// unsupported.
 pub fn end_of_unit(cx: &mut Check) {
-    let unused: Vec<(Rc<str>, Span)> = cx.u.templates.iter().filter(|t| t.specs.is_empty()).map(|t| (t.name.clone(), t.span)).collect();
+    let mut unused: Vec<(Rc<str>, Span)> = cx.u.templates.iter().filter(|t| t.specs.is_empty()).map(|t| (t.name.clone(), t.span)).collect();
+    unused.extend(cx.u.class_templates.iter().filter(|t| t.specs.is_empty()).map(|t| (t.name.clone(), t.span)));
     for (name, span) in unused {
         cx.unsupported(span, format!("the function template '{}', which nothing specializes (its definition is not checked yet)", name));
     }
@@ -401,4 +406,108 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[QType],
         return None;
     }
     r
+}
+
+/// TPL rules: a class template definition at namespace scope whose
+/// parameters are types. False for another form, such as a declaration
+/// that is not a definition.
+fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) -> bool {
+    let Some(ds) = sd.child("decl_specifiers") else { return false };
+    let specs: Vec<&Node> = ds.children("decl_specifier").collect();
+    let [one] = specs[..] else { return false };
+    let Some(cd) = one.child("type_specifier").and_then(|t| t.child("class_def")) else { return false };
+    let Some(head) = cd.child("class_head") else { return false };
+    if head.child("nested_name").is_some() || head.child("template_id").is_some() {
+        return false;
+    }
+    let Some(name) = head.child("class_name").map(|c| cx.source(c)) else { return false };
+    let saved = cx.scope;
+    if !names::declared_here(cx, saved, &name).is_empty() || dependent_forms(cx, cd, &params) {
+        return false;
+    }
+    let id = cx.u.class_templates.len();
+    let limit = cx.u.entities.len() + 1;
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), span: head.span, limit });
+    names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
+    true
+}
+
+/// TARG-1: `C<A...>`, the class of a specialization of a class template
+/// with type arguments, made the first time. None when the name is no
+/// class template.
+pub fn class_template_use(cx: &mut Check, tid: &Node) -> Option<QType> {
+    let span = tid.span;
+    let name = cx.source(tid.child("template_name")?);
+    // Inside a specialization, the class's own name finds the class,
+    // which leads to its template (DEP-15).
+    let v = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::ClassTemplate(v) => Some(v),
+        EntKind::Class(c) => cx.u.class_templates.iter().position(|t| t.specs.iter().any(|&(_, k)| k == c)),
+        _ => None,
+    })?;
+    let Some(args) = template_type_args(cx, tid) else { return Some(cx.unsupported(span, "a class template with an argument that is not a type")) };
+    if args.iter().any(|a| a.is_error()) {
+        return Some(QType::error());
+    }
+    let ct = cx.u.class_templates[v].clone();
+    if args.len() != ct.params.len() || args.iter().any(crate::templates::deduction::check::has_dep) {
+        return Some(cx.unsupported(span, "a class template with another number of arguments or a dependent argument"));
+    }
+    if let Some(&(_, c)) = ct.specs.iter().find(|(a, _)| *a == args) {
+        return Some(QType::new(Type::Class(c)));
+    }
+    // INST rules: a member declared with a parameter that a function type
+    // binds is a data member of function type, which the first pieces of
+    // build step 5 do not tell from a member function.
+    if args.iter().any(|a| a.is_func()) {
+        return Some(cx.unsupported(span, "a class template with a function type as an argument"));
+    }
+    match instantiate_class(cx, v, &args) {
+        Some(c) => Some(QType::new(Type::Class(c))),
+        None => Some(cx.unsupported(span, format!("a specialization of the class template '{}' that the first pieces of build step 5 do not make", name))),
+    }
+}
+
+/// The class of a specialization: the definition checked with each
+/// parameter bound to its argument, as a class of the template's
+/// namespace. The class is recorded before its body, so the body finds
+/// it by the template-id. An error in it leaves the unit unsupported.
+fn instantiate_class(cx: &mut Check, v: usize, args: &[QType]) -> Option<crate::sem::types::ClassId> {
+    let ct = cx.u.class_templates[v].clone();
+    let saved_scope = cx.scope;
+    let saved_func = cx.func.take();
+    let saved_member = cx.member_of.take();
+    let saved_lambdas = std::mem::take(&mut cx.lambdas);
+    let saved_unevaluated = std::mem::replace(&mut cx.unevaluated, 0);
+    let saved_default = std::mem::replace(&mut cx.default_arg, false);
+    let saved_access = cx.access_class.take();
+    let saved_limit = cx.lookup_limit.replace(ct.limit);
+    cx.instantiating += 1;
+    let marks = cx.u.diags.len();
+    cx.scope = ct.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    for (k, name) in ct.params.iter().enumerate() {
+        names::declare_in(cx, ts, name, EntKind::Typedef(args[k].clone()), ct.span, Linkage::None);
+    }
+    // The class that `class_def` makes first is the specialization.
+    let predicted = cx.u.classes.len();
+    cx.u.class_templates[v].specs.push((args.to_vec(), predicted));
+    let t = crate::classes::members::check::class_def(cx, &ct.node);
+    cx.scope = saved_scope;
+    cx.func = saved_func;
+    cx.member_of = saved_member;
+    cx.lambdas = saved_lambdas;
+    cx.unevaluated = saved_unevaluated;
+    cx.default_arg = saved_default;
+    cx.access_class = saved_access;
+    cx.lookup_limit = saved_limit;
+    cx.instantiating -= 1;
+    let bad = cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported);
+    if t.class() != Some(predicted) || bad {
+        cx.u.class_templates[v].specs.retain(|(a, _)| a.as_slice() != args);
+        let tail = cx.u.diags.split_off(marks);
+        cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
+        return None;
+    }
+    Some(predicted)
 }

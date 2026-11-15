@@ -2475,3 +2475,15 @@ fn reference_collapsing() {
     assert_eq!(rule("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; using L = int&; using R = int&&; static_assert(same<L&, int&> && same<L&&, int&> && same<R&, int&> && same<R&&, int&&>); int x; L& a = x; R&& b = 1;"), None);
     assert_eq!(rule("int x; int& & r = x;"), Some("DCL-18"));
 }
+
+#[test]
+fn class_templates_with_type_parameters() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("template <class T> struct Box { T v; T get() const { return v; } Box<T> self() const { return *this; } }; template <class A, class B> struct Pair { A a; B b; }; int main() { Box<int> b{3}; Pair<Box<int>, long> p{b, 4}; return b.self().get() + p.a.v + int(p.b); }"), RunOutcome::Result(10));
+    assert_eq!(rule("template <class T> struct Box { T v; }; static_assert(sizeof(Box<char>) == 1 && sizeof(Box<long>) == 8);"), None);
+    assert_eq!(rule("template <class T> struct Box { T v; };"), Some("unsupported"));
+}

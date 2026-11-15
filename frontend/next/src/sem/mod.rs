@@ -142,6 +142,21 @@ pub enum EntKind {
     Template(usize),
     /// A variable template, by its index in `Unit::var_templates`.
     VarTemplate(usize),
+    /// A class template, by its index in `Unit::class_templates`.
+    ClassTemplate(usize),
+}
+
+/// A class template whose parameters are types (build step 5, fourth
+/// piece): its definition and its specializations by their arguments.
+#[derive(Clone, Debug)]
+pub struct ClassTemplate {
+    pub name: Rc<str>,
+    pub params: Vec<Rc<str>>,
+    pub node: crate::syntax::Node,
+    pub scope: ScopeId,
+    pub specs: Vec<(Vec<QType>, types::ClassId)>,
+    pub span: Span,
+    pub limit: EntityId,
 }
 
 /// A variable template whose parameters are types, with its partial
@@ -337,6 +352,8 @@ pub struct Unit {
     pub templates: Vec<FnTemplate>,
     /// The variable templates (`EntKind::VarTemplate`).
     pub var_templates: Vec<VarTemplate>,
+    /// The class templates (`EntKind::ClassTemplate`).
+    pub class_templates: Vec<ClassTemplate>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -431,6 +448,7 @@ impl Default for Unit {
             friend_classes: Default::default(),
             templates: Vec::new(),
             var_templates: Vec::new(),
+            class_templates: Vec::new(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }
