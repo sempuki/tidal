@@ -66,9 +66,10 @@ pub fn postfix_expr(cx: &mut Check, n: &Node) -> Expr {
                 return bad(n.span);
             }
             let arrow = toks.contains(&"->");
-            if arrow && crate::classes::operators::check::has_arrow(cx, &b.ty) {
-                let t = cx.unsupported(n.span, "an operator-> (OPR-5)");
-                return Expr::new(EK::Int(0), t, Cat::PR, n.span);
+            // OPR-5: `->` on a class object calls its operator->.
+            let b = if arrow && b.ty.nonref().is_class() { crate::classes::operators::check::arrow(cx, b, n.span) } else { b };
+            if b.ty.is_error() {
+                return bad(n.span);
             }
             let is_class = if arrow { b.ty.nonref().pointee().is_some_and(|p| p.is_class()) } else { b.ty.nonref().is_class() };
             if is_class && !cx.source(n).contains('~') {
@@ -630,6 +631,11 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
             return Some(bad(span));
         }
         let obj = if arrow {
+            // OPR-5: `->` on a class object calls its operator->.
+            let b = if b.ty.nonref().is_class() { crate::classes::operators::check::arrow(cx, b, span) } else { b };
+            if b.ty.is_error() {
+                return Some(bad(span));
+            }
             let b = rvalue(cx, b);
             match b.ty.pointee() {
                 Some(p) if p.is_class() => crate::expressions::unary::check::indirection(cx, b, span),

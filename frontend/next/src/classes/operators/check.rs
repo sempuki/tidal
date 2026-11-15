@@ -97,7 +97,7 @@ pub fn declaration(cx: &mut Check, name: &str, ty: &QType, defaults: bool, class
     if matches!(op, "new" | "delete" | "new[]" | "delete[]") {
         return true;
     }
-    if matches!(op, "co_await" | "->") {
+    if op == "co_await" {
         cx.unsupported(span, format!("the operator function '{}'", name));
         return false;
     }
@@ -135,7 +135,7 @@ pub fn declaration(cx: &mut Check, name: &str, ty: &QType, defaults: bool, class
     // An explicit object parameter is the first operand.
     let count = f.params.len() + usize::from(class.is_some() && !is_static && !explicit_object);
     let ok = match op {
-        "!" | "~" => count == 1,
+        "!" | "~" | "->" => count == 1,
         "++" | "--" => count == 1 || (count == 2 && f.params.last().is_some_and(|p| p.t == Type::int())),
         "+" | "-" | "*" | "&" => count == 1 || count == 2,
         _ => count == 2,
@@ -796,9 +796,51 @@ pub fn subscript(cx: &mut Check, a: &Expr, args: &[Expr], span: Span) -> Option<
     Some(build(cx, c, all, span))
 }
 
-/// The class has an `operator->` (OPR-5), which is unsupported.
-pub fn has_arrow(cx: &Check, t: &QType) -> bool {
-    t.nonref().class().is_some_and(|c| !crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, "operator->").is_empty())
+/// The `operator->` functions of class `c` or of its bases (DER-3).
+fn arrow_functions(cx: &Check, c: ClassId) -> Vec<EntityId> {
+    match crate::classes::derived::check::member_lookup(cx, c, "operator->") {
+        Ok(Some(x)) => x.ents,
+        _ => Vec::new(),
+    }
+}
+
+/// OPR-5: the left operand of `x->m` for a class object `x`. Each class
+/// object calls its `operator->`, until the result is a pointer to a
+/// class, whose `->` is built in. A class with no `operator->`, a result
+/// that is neither, and a chain that comes back to a class are errors
+/// (OPR-14).
+pub fn arrow(cx: &mut Check, b: Expr, span: Span) -> Expr {
+    let mut e = crate::foundations::values::check::deref_ref(b);
+    let mut seen: Vec<ClassId> = Vec::new();
+    while let Some(c) = e.ty.nonref().class() {
+        if seen.contains(&c) {
+            cx.error(span, "OPR-14", format!("the operator-> of '{}' leads back to an object of {}", cx.u.classes[seen[0]].name, e.ty.nonref().show()));
+            return bad(span);
+        }
+        seen.push(c);
+        let fs = arrow_functions(cx, c);
+        // PFX-11: the built-in `->` takes a pointer to a class.
+        if fs.is_empty() {
+            let rule = if seen.len() == 1 { "PFX-11" } else { "OPR-14" };
+            cx.error(span, rule, format!("'->' on {}, which is not a pointer to a class and has no operator->", e.ty.nonref().show()));
+            return bad(span);
+        }
+        let Some(f) = crate::overloading::overload_resolution::check::resolve_with(cx, &fs, Some(&e), &[], span, "operator->") else { return bad(span) };
+        let Some(func) = cx.u.func(f).cloned() else { return bad(span) };
+        let kind = if cx.u.virt.contains_key(&f) { EK::Virtual(f) } else { EK::Func(f) };
+        let callee = Expr::new(kind, QType::new(Type::Func(func.ty.clone())), Cat::L, span);
+        let r = crate::expressions::postfix::check::finish_call(cx, callee, Some(f), Vec::new(), span, Some(e));
+        if r.ty.is_error() {
+            return r;
+        }
+        e = crate::foundations::values::check::deref_ref(r);
+    }
+    let e = crate::foundations::values::check::rvalue(cx, e);
+    if !e.ty.pointee().is_some_and(|p| p.is_class()) {
+        cx.error(span, "OPR-14", format!("operator-> gives {}, which is not a pointer to a class", e.ty.show()));
+        return bad(span);
+    }
+    e
 }
 
 /// The operator functions named by an entity, for diagnostics.

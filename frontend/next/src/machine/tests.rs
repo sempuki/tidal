@@ -1920,3 +1920,19 @@ fn explicit_conditions() {
     // A plain argument and a braced one copy-initialize the parameter.
     assert_eq!(rule("struct S { explicit S(int); }; void f(S); void g() { f(1); }"), Some("PFX-16"));
 }
+
+#[test]
+fn arrow_operators() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A chain of operator-> calls ends at a pointer to a class, for member
+    // access and for a member call.
+    assert_eq!(run("struct T { int v = 6; int get() { return v + 1; } }; struct I { T t; T* operator->() { return &t; } }; struct O { I i; I& operator->() { return i; } }; int main() { O o; return o->v + o->get(); }"), RunOutcome::Result(13));
+    assert_eq!(rule("struct S { int operator->(); }; int f(S s) { return s->x; }"), Some("OPR-14"));
+    assert_eq!(rule("struct A { int x; A& operator->(); }; int f(A& a) { return a->x; }"), Some("OPR-14"));
+    assert_eq!(rule("struct S { int v; }; int f(S s) { return s->v; }"), Some("PFX-11"));
+    assert_eq!(rule("struct S {}; int* operator->(S);"), Some("OPR-2"));
+}
