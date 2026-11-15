@@ -167,7 +167,7 @@ full):
 The repository's history records each step. Each step is one commit,
 pushed when it is made, and the history is never rewritten.
 
-## How the Tidal specification improves
+## Evolution
 
 The Tidal specification improves through checks that never use the
 text of the ISO standard. Each check finds a fault in a specific rule.
