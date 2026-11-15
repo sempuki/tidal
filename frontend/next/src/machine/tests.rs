@@ -2158,3 +2158,21 @@ fn constructor_declaration_forms() {
         assert_eq!(rule(src), Some("CTOR-1"), "{}", src);
     }
 }
+
+#[test]
+fn consteval_and_nodiscard_constructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let src = "struct Id { const char* t; consteval Id(const char* s) : t(s) { if (s[0] >= '0' && s[0] <= '9') throw 0; } }; int len(Id id) { int n = 0; while (id.t[n]) ++n; return n; }";
+    assert_eq!(rule(&format!("{} Id a = \"abc\"; int u() {{ return len(\"total\"); }}", src)), None);
+    assert_eq!(rule(&format!("{} Id b = \"2x\";", src)), Some("CEV-1"));
+    let o = crate::Options { werror: true, ..Default::default() };
+    let warned = match crate::check_source("struct S { [[nodiscard]] S(int) {} }; void f() { S(1); }", Path::new("t.cpp"), &o).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(warned, Some("ATTR-5"));
+}

@@ -194,6 +194,16 @@ pub fn expression_stmt(cx: &mut Check, n: &Node) -> Stmt {
 }
 
 fn nodiscard(cx: &mut Check, e: &Expr) {
+    // ATTR-5: a discarded object made by a `nodiscard` constructor.
+    if let EK::List(i) = &e.k {
+        if let crate::sem::tree::Init::Ctor(f, _) = i.as_ref() {
+            if cx.u.func(*f).is_some_and(|x| x.nodiscard) {
+                let name = e.ty.show();
+                crate::declarations::attributes::check::discarded_nodiscard(cx, e.span, &name);
+            }
+        }
+        return;
+    }
     let EK::Call(f, _, _) = &e.k else { return };
     let id = match f.k {
         EK::Func(id) | EK::Virtual(id) => Some(id),

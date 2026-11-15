@@ -451,6 +451,6 @@ pub fn class_from_class(cx: &mut Check, ty: &QType, e: Expr, direct: bool, list:
         }
     }
     crate::declarations::functions::definitions::check::note_use(cx, f, span);
-    Some(Init::Ctor(f, out))
+    crate::classes::constructors::check::immediate(cx, ty, Init::Ctor(f, out), span)
 }
 

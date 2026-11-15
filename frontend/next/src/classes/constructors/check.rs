@@ -164,8 +164,14 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         return false;
     }
     let local = cx.u.is_local(cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0));
-    if local || specs.consteval || specs.attrs.nodiscard || specs.attrs.deprecated.is_some() || specs.attrs.noreturn || dn.find("attribute_spec").is_some() || def.is_some_and(|x| x.child("attribute_spec").is_some()) {
-        cx.unsupported(dn.span, "a constructor of a local class, a consteval constructor, or a constructor with attributes (build step 4)");
+    // An attribute before a constructor's definition applies to it.
+    if let Some(def) = def {
+        for a in def.children("attribute_spec") {
+            crate::declarations::attributes::check::attribute_spec(cx, a, &mut specs.attrs);
+        }
+    }
+    if local || specs.attrs.deprecated.is_some() || specs.attrs.noreturn || dn.find("attribute_spec").is_some() {
+        cx.unsupported(dn.span, "a constructor of a local class or a constructor with attributes other than nodiscard (build step 4)");
         return false;
     }
     // CPY-15: a constructor whose first parameter is the class itself.
@@ -186,6 +192,7 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
     if let Some(x) = cx.u.func_mut(f) {
         x.special = Special::Ctor;
         x.explicit = specs.explicit;
+        x.nodiscard |= specs.attrs.nodiscard;
     }
     let _ = copy_or_move;
     if let Some(def) = def {
@@ -872,7 +879,23 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
         items[k] = Init::Ctor(f, out);
         return Some(Init::List(items));
     }
-    Some(Init::Ctor(f, out))
+    immediate(cx, ty, Init::Ctor(f, out), span)
+}
+
+/// CEV-1: a call of a `consteval` constructor outside an immediate
+/// function context is a constant expression.
+pub fn immediate(cx: &mut Check, ty: &QType, init: Init, span: Span) -> Option<Init> {
+    let Init::Ctor(f, _) = &init else { return Some(init) };
+    if !cx.u.func(*f).is_some_and(|x| x.consteval) {
+        return Some(init);
+    }
+    let marks = cx.u.diags.len();
+    let e = Expr::new(crate::sem::tree::EK::List(Box::new(init.clone())), ty.unqual(), Cat::PR, span);
+    crate::declarations::constexpr::check::immediate_call(cx, *f, e);
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        return None;
+    }
+    Some(init)
 }
 
 /// The implicit default constructor's work: each member's default
@@ -1157,6 +1180,6 @@ pub fn construct_braced(cx: &mut Check, ty: &QType, nodes: &[&Node], list: bool,
         cx.unsupported(span, "an inherited constructor chosen for a braced argument");
         return None;
     }
-    Some(Init::Ctor(f, out))
+    immediate(cx, ty, Init::Ctor(f, out), span)
 }
 
