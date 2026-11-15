@@ -26,8 +26,10 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
         match crate::classes::conversion_functions::check::convert(cx, &e, rt, false) {
             Some(Ok(x)) if x.ty.is_error() => return None,
             Some(Ok(x)) => return bind(cx, x, rt, rule),
+            // OVL-15: copy-initialization takes no explicit conversion
+            // function.
             Some(Err(m)) if m.contains("(CVF-11)") => {
-                cx.unsupported(span, "a reference bound by an explicit conversion function");
+                cx.error_cause(span, "OVL-35", Some("OVL-15"), format!("{} converts to {} only by an explicit conversion function", e.ty.nonref().show(), rt.show()));
                 return None;
             }
             Some(Err(m)) => {
@@ -250,8 +252,18 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
         let c = first_node(its[0])?;
         let e = expr(cx, c);
         let inner = ty.nonref();
-        // REF-14: a braced class object that converts by a conversion
-        // function makes a temporary, which the front end does not model.
+        // REF-14: a braced class object of another type makes a temporary
+        // of the referenced type by its conversion function, and the
+        // reference binds the temporary.
+        if crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && e.ty.nonref().class() != inner.class() && !inner.is_class() {
+            let Type::Ref(_, rv) = ty.t else { return None };
+            if !rv && !(inner.c && !inner.v) {
+                cx.error(init.span, "REF-9", "a non-const lvalue reference bound to a temporary from a braced list");
+                return None;
+            }
+            let t = crate::declarations::initialization::forms::check::copy_init(cx, e, &inner.unqual(), "INIT-7")?;
+            return bind(cx, t, ty, "INIT-7").map(Init::Ref);
+        }
         if crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && e.ty.nonref().class() != inner.class() {
             cx.unsupported(init.span, "a braced class object for a reference, which converts by a conversion function");
             return None;
@@ -282,5 +294,15 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
         ns.first()?
     };
     let e = expr(cx, one);
+    // OVL-15: direct-initialization of a reference also takes an explicit
+    // conversion function.
+    if words.first() == Some(&"(") && crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() && e.ty.nonref().class() != ty.nonref().class() {
+        if let Some(Ok(x)) = crate::classes::conversion_functions::check::convert(cx, &e, ty, true) {
+            if x.ty.is_error() {
+                return None;
+            }
+            return bind(cx, x, ty, "INIT-7").map(Init::Ref);
+        }
+    }
     bind(cx, e, ty, "INIT-7").map(Init::Ref)
 }

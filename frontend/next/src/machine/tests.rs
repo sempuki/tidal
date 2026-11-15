@@ -2324,3 +2324,19 @@ fn common_initial_sequence_in_constant_evaluation() {
     };
     assert_eq!(rule("struct A { int t; int a; }; struct B { int t; double b; }; union U { A a; B b; }; constexpr int f() { U u{.a = {7, 1}}; return u.b.t; } static_assert(f() == 7);"), Some("UNI-12"));
 }
+
+#[test]
+fn references_from_braces_and_explicit_conversions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A braced class object makes a temporary of the referenced type.
+    assert_eq!(run("int t = 1; struct S { operator int&() { return t; } }; S s; int main() { const int& a{s}; t = 7; return a; }"), RunOutcome::Result(1));
+    assert_eq!(rule("int t = 1; struct S { operator int&() { return t; } }; S s; int& a{s};"), Some("REF-9"));
+    // Direct-initialization takes an explicit conversion function, and
+    // copy-initialization does not.
+    assert_eq!(run("int v = 5; struct S { explicit operator int&() const { return v; } }; S s; const int& r(s); int main() { return &r == &v ? 3 : 0; }"), RunOutcome::Result(3));
+    assert_eq!(rule("int v = 5; struct S { explicit operator int&() const { return v; } }; S s; const int& r = s;"), Some("OVL-35"));
+}

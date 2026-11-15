@@ -772,7 +772,10 @@ defined outside its class. A call of member functions with no object
 gives them a contrived object, and its best candidate must be static.
 `this` in the declaration of a member function points to the class,
 and in a default argument it is an error. Constant evaluation stops at
-a read through the common initial sequence of a union's members. The
+a read through the common initial sequence of a union's members. A
+braced class object for a reference to a scalar makes a temporary, and
+direct-initialization of a reference takes an explicit conversion
+function. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
