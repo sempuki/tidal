@@ -348,17 +348,25 @@ fn member<'n>(cx: &mut Check, id: ClassId, m: &'n Node, access: &mut Access, ini
     };
     if attrs.any || !aligns.is_empty() {
         // An attribute of a data member (ATTR-2); those of member
-        // functions and `[[no_unique_address]]` wait for a later part.
+        // functions and static members wait for a later part.
         let function = first.prod == "function_definition" || m.find("function_suffix").is_some();
-        if function || attrs.no_unique_address || (first.prod == "decl_specifiers" && cx.words(first).contains(&"static")) {
-            cx.unsupported(m.span, "an attribute or alignas on a member function or a static member, or [[no_unique_address]] (build step 4)");
+        if function || (first.prod == "decl_specifiers" && cx.words(first).contains(&"static")) {
+            cx.unsupported(m.span, "an attribute or alignas on a member function or a static member (build step 4)");
             return false;
+        }
+        // ATTR-2: `[[no_unique_address]]` applies to a non-static data
+        // member that is not a bit-field.
+        if attrs.no_unique_address && m.child("bitfield").is_some() {
+            cx.error(attrs.span, "ATTR-2", "'no_unique_address' applies only to a data member that is not a bit-field");
+            return true;
         }
         crate::declarations::attributes::check::on_variable(cx, &attrs);
     }
     let saved = std::mem::replace(&mut cx.member_aligns, aligns);
+    let saved_overlap = std::mem::replace(&mut cx.member_overlap, attrs.no_unique_address);
     let r = member_after(cx, id, m, first, access, inits, bodies, ctor_bodies);
     cx.member_aligns = saved;
+    cx.member_overlap = saved_overlap;
     r
 }
 
@@ -676,6 +684,9 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                 let f = Field { ty: d.ty.clone(), class: id, index, init: None, mutable: specs.mutable, access: *access, base: false, width: None, align };
                 let fid = names::declare_in(cx, cx.scope, &name, EntKind::Field(f), span, Linkage::None);
                 cx.u.classes[id].fields.push(fid);
+                if cx.member_overlap {
+                    cx.u.overlapping.insert(fid);
+                }
                 if let Some(i) = md.child("member_init") {
                     inits.push((fid, i));
                 }

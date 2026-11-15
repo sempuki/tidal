@@ -1776,3 +1776,18 @@ fn local_class_members() {
     assert_eq!(rule("int f() { int local = 1; struct S { int get() { return local; } }; return S{}.get(); }"), Some("CLS-12"));
     assert_eq!(rule("void f() { const int k = 1; struct S { const int* p() { return &k; } }; }"), Some("CLS-12"));
 }
+
+#[test]
+fn no_unique_address_layout() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // ATTR-9: empty members take no space, two of one type take two
+    // addresses, and a later member can start at 0.
+    assert_eq!(rule("struct E {}; struct T { [[no_unique_address]] E a; [[no_unique_address]] E b; int v; }; static_assert(sizeof(T) == sizeof(int)); struct O { [[no_unique_address]] E a; [[no_unique_address]] E b; }; static_assert(sizeof(O) == 2);"), None);
+    // The tail padding of a member that is not a POD holds what follows.
+    assert_eq!(rule("struct B { B() {} int a; char b; }; struct H { [[no_unique_address]] B part; char c; }; static_assert(sizeof(H) == 8);"), None);
+    assert_eq!(rule("struct S { [[no_unique_address]] int b : 3; };"), Some("ATTR-2"));
+}

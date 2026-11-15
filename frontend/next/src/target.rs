@@ -138,7 +138,7 @@ impl Target {
     /// complete object (CLS-35).
     pub fn layout_bits(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u64, u64, Vec<u128>)> {
         let info = u.classes.get(c)?;
-        let (mut end, mut align, mut offs, primary) = self.nv_layout(u, c)?;
+        let (mut end, mut align, mut offs, primary, floor) = self.nv_layout(u, c)?;
         let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
         for (k, &f) in info.fields.iter().enumerate() {
             if let Some(d) = u.field(f).and_then(|x| x.ty.base_elem().class()) {
@@ -171,27 +171,30 @@ impl Target {
             end = end.max(8 * at.checked_add(s)? as u128);
         }
         let align = align.max(info.align.unwrap_or(1));
-        let size = u64::try_from(end.div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
+        let size = u64::try_from(end.max(floor).div_ceil(8)).ok()?.div_ceil(align).max(1).checked_mul(align)?;
         Some((size.max(1), align, offs))
     }
     /// The alignment of a class without its virtual bases, which is that
     /// of a base subobject of it.
     fn nv_align(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<u64> {
-        let (_, a, _, _) = self.nv_layout(u, c)?;
+        let (_, a, _, _, _) = self.nv_layout(u, c)?;
         Some(a.max(u.classes[c].align.unwrap_or(1)))
     }
     /// The layout of the parts of class `c` other than its virtual bases:
     /// the end of the parts in bits, their alignment, the offset of each
-    /// data member, and the virtual base that shares the pointer at 0.
+    /// data member, the virtual base that shares the pointer at 0, and
+    /// the least size in bits that an empty part past the end asks for.
     #[allow(clippy::type_complexity)]
-    fn nv_layout(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u128, u64, Vec<u128>, Option<crate::sem::types::ClassId>)> {
+    fn nv_layout(self, u: &Unit, c: crate::sem::types::ClassId) -> Option<(u128, u64, Vec<u128>, Option<crate::sem::types::ClassId>, u128)> {
         let info = u.classes.get(c)?;
         if !info.complete {
             return None;
         }
         let union = info.key == crate::sem::ClassKey::Union;
-        // The end of the members placed so far, in bits.
-        let (mut end, mut align) = (0u128, 1u64);
+        // The end of the members placed so far, in bits. An empty part
+        // placed past 0 adds to the size but not to the end, so later
+        // members can start before it.
+        let (mut end, mut align, mut floor) = (0u128, 1u64, 0u128);
         // The empty classes among the subobjects placed so far, with their
         // offsets: two subobjects of one type never share an address.
         let mut placed: Vec<(crate::sem::types::ClassId, u64)> = Vec::new();
@@ -251,17 +254,25 @@ impl Target {
             let inner = t.base_elem().class().map(|k| self.empty_subobjects(u, k)).unwrap_or_default();
             let clash = |at: u64, placed: &[(crate::sem::types::ClassId, u64)]| inner.iter().any(|&(k, o)| placed.contains(&(k, at + o)));
             // An empty base takes no space (DER-2), at the first offset
-            // where it shares no address with a subobject of its type.
-            if x.base && t.class().is_some_and(|b| self.is_empty(u, b)) {
-                align = align.max(self.align_of(u, &t)?);
+            // where it shares no address with a subobject of its type, and
+            // so does an empty member declared `[[no_unique_address]]`
+            // (ATTR-9).
+            let overlap = x.base || u.overlapping.contains(&info.fields[k]);
+            if overlap && t.class().is_some_and(|b| self.is_empty(u, b)) {
+                let a = self.align_of(u, &t)?;
+                align = align.max(a);
+                // At 0, or else from the end of the parts so far.
                 let mut at = 0;
-                while clash(at, &placed) {
-                    at += 1;
+                if clash(0, &placed) {
+                    at = size.div_ceil(a).checked_mul(a)?;
+                    while clash(at, &placed) {
+                        at = at.checked_add(a)?;
+                    }
                 }
                 offs[k] = 8 * at as u128;
                 placed.extend(inner.iter().map(|&(e, o)| (e, at + o)));
                 if at > 0 {
-                    end = end.max(8 * (at as u128 + 1));
+                    floor = floor.max(8 * (at as u128 + 1));
                 }
                 continue;
             }
@@ -271,10 +282,11 @@ impl Target {
                 _ => a,
             };
             let a = a.max(x.align.unwrap_or(1));
-            // The tail padding of a base that is not a POD holds the
-            // members that follow (the matrix's ABI, CLS-35).
+            // The tail padding of a base or a `[[no_unique_address]]`
+            // member that is not a POD holds the members that follow (the
+            // matrix's ABI, CLS-35).
             let s = match t.class() {
-                Some(b) if x.base && !self.pod(u, b) => self.data_size(u, b)?,
+                Some(b) if overlap && !self.pod(u, b) => self.data_size(u, b)?,
                 _ => s,
             };
             align = align.max(a);
@@ -290,7 +302,7 @@ impl Target {
                 end = 8 * at.checked_add(s)? as u128;
             }
         }
-        Some((end, align, offs, primary))
+        Some((end, align, offs, primary, floor))
     }
     /// The size and alignment of a data member of type `t`: a reference
     /// member holds a pointer (CLS-35).
@@ -328,7 +340,8 @@ impl Target {
         let mut end = if u.dynamic(c) { self.ptr_size() } else { 0 };
         for (k, &f) in u.classes[c].fields.iter().enumerate() {
             let x = u.field(f)?;
-            if x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b)) {
+            let overlap = x.base || u.overlapping.contains(&f);
+            if overlap && x.ty.class().is_some_and(|b| self.is_empty(u, b)) {
                 continue;
             }
             if let Some(w) = x.width {
@@ -336,7 +349,7 @@ impl Target {
                 continue;
             }
             let s = match x.ty.class() {
-                Some(b) if x.base && !self.pod(u, b) => self.data_size(u, b)?,
+                Some(b) if overlap && !self.pod(u, b) => self.data_size(u, b)?,
                 _ => self.member_size(u, &x.ty)?.0,
             };
             end = end.max(offs[k] + s);
@@ -349,16 +362,28 @@ impl Target {
     fn pod(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
         let names = &u.scopes[u.classes[c].scope].names;
         let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !u.defaulted.contains(f)));
-        if u.dynamic(c) || provided("{ctor}") || provided("{dtor}") || provided("operator=") {
+        // Of the assignment operators, a copy assignment counts; a move
+        // assignment does not.
+        let copy_assign = names.get("operator=").is_some_and(|fs| {
+            fs.iter().any(|f| {
+                !u.defaulted.contains(f) && u.func(*f).is_some_and(|x| match x.own_params() {
+                    [p] => !matches!(p.t, Type::Ref(_, true)) && p.nonref().class() == Some(c),
+                    _ => false,
+                })
+            })
+        });
+        if u.dynamic(c) || provided("{ctor}") || provided("{dtor}") || copy_assign {
             return false;
         }
         u.classes[c].fields.iter().all(|&f| {
             u.field(f).is_some_and(|x| !x.base && x.init.is_none() && x.access == crate::sem::Access::Public && x.ty.base_elem().class().is_none_or(|d| self.pod(u, d)))
         })
     }
-    /// A class with no data member other than empty bases.
+    /// A class with no data member other than empty bases, empty members
+    /// declared `[[no_unique_address]]`, and bit-fields of width 0
+    /// (CLS-33).
     pub fn is_empty(self, u: &Unit, c: crate::sem::types::ClassId) -> bool {
-        !u.dynamic(c) && u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.base && x.ty.class().is_some_and(|b| self.is_empty(u, b))))
+        !u.dynamic(c) && u.classes[c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.width == Some(0) || ((x.base || u.overlapping.contains(&f)) && x.ty.class().is_some_and(|b| self.is_empty(u, b)))))
     }
     pub fn align_of(self, u: &Unit, q: &QType) -> Option<u64> {
         Some(match &q.t {

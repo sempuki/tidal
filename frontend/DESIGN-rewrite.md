@@ -679,7 +679,12 @@ when the class has both names and the functions of argument-dependent
 lookup otherwise. A call of a data member of class type goes through
 its call operator. The member functions of a local class are checked
 outside the enclosing function. They can read a constant of that
-function as a value and name its variables in unevaluated operands. The
+function as a value and name its variables in unevaluated operands. A
+member declared `[[no_unique_address]]` takes the layout of a base
+subobject: an empty one takes no space unless it would share an address
+with a subobject of its type, and one that is not a POD for the layout
+lends its tail padding. A class with a move assignment and no copy
+assignment is a POD for the layout. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -691,7 +696,7 @@ deallocation function of the dynamic class in a `delete` through a base,
 an object in allocated storage that would hold an object created there
 before, a nested named union, a read through the common
 initial sequence of two union members, the bytes of a class with a
-bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a qualified function type, a call without an object
+bit-field, an attribute on a class, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a qualified function type, a call without an object
 among ref-qualified member functions or among static and non-static
 ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload
