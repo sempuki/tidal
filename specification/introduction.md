@@ -49,7 +49,7 @@ back to the source reader to be reworded.
 <figure class="tidal-diagram" tabindex="0" role="button" aria-label="The Tidal workflow. Select to enlarge." title="Click to enlarge" onclick="this.classList.toggle('zoomed')" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.classList.toggle('zoomed'); } else if (event.key === 'Escape') { this.classList.remove('zoomed'); }">
 <svg font-family="sans-serif" viewBox="0 0 890 500" role="img" aria-labelledby="wf-title wf-desc">
   <title id="wf-title">The Tidal workflow</title>
-  <desc id="wf-desc">The clean room is the shaded area on the left. The numbers are the steps of the pipeline listed below the diagram. 1: a clean-room writer picks the topic. 2: the writer probes the baseline compilers for their behavior and diagnostics. 3: the writer reads the source readers' summaries that passed the non-similarity check. Outside the clean room, source readers read the ISO standard and other protected sources. 4: the writer classifies the behavior. 5 and 6: the writer writes the rules, tests, and questions. 7: the non-similarity check compares the page with the reference corpus. 8: the tests run on the compilers, and the results become each page's Evidence. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers.</desc>
+  <desc id="wf-desc">The clean room is the shaded area on the left. The numbers are the steps of the pipeline listed below the diagram. 1: a clean-room writer takes the topic from the status page. 2: the writer probes the baseline compilers for their behavior and diagnostics. 3: the writer reads the source readers' summaries that passed the non-similarity check. Outside the clean room, source readers read the ISO standard and other protected sources. 4, 5, and 6: the writer classifies the behavior and writes the rules with their kinds, the tests, and the questions. 7: the non-similarity check compares the page with the reference corpus. 8: the tests run on the compilers, and the results become each page's Evidence. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers.</desc>
   <defs>
     <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" class="wf-head" fill="currentColor"/>
@@ -81,9 +81,13 @@ back to the source reader to be reworded.
   <text x="775.0" y="74.0" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Protected sources</text>
   <text x="775.0" y="92.0" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">the ISO standard and others</text>
 
-  <!-- steps 1 and 4 -->
-  <rect x="204.0" y="191" width="36" height="18" rx="9" class="wf-badge" fill="currentColor"/>
-  <text x="222" y="204" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">1, 4</text>
+  <!-- step 1: the topic comes from the status page -->
+  <rect x="40" y="112" width="150" height="40" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="115" y="137" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Status page</text>
+  <path d="M190,132 L285,132 L285,198" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <rect x="198" y="114" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="207" y="127" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">1</text>
+  <text x="221" y="127" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">topic</text>
 
   <!-- step 2 -->
   <line x1="350" y1="90" x2="350" y2="198" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
@@ -92,12 +96,12 @@ back to the source reader to be reworded.
   <text x="382" y="144" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">behavior and</text>
   <text x="382" y="160" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">diagnostics</text>
 
-  <!-- steps 5 and 6 -->
+  <!-- steps 4, 5, and 6: classify, draft, questions -->
   <line x1="350" y1="250" x2="350" y2="368" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <rect x="357.0" y="296" width="36" height="18" rx="9" class="wf-badge" fill="currentColor"/>
-  <text x="375" y="309" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">5, 6</text>
-  <text x="396" y="309" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">rules, tests,</text>
-  <text x="396" y="325" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">questions</text>
+  <rect x="349" y="296" width="50" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="374" y="309" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">4, 5, 6</text>
+  <text x="405" y="309" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">rules and their kinds,</text>
+  <text x="405" y="325" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">tests, questions</text>
 
   <!-- step 7 -->
   <path d="M450,398 L540,398 L540,252" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
@@ -140,8 +144,9 @@ A page of the Tidal specification goes through these steps
 (`documentation/pipeline.md` in the repository gives each one in
 full):
 
-1. **Topic.** A clean-room writer picks the language feature that the
-   page will cover.
+1. **Topic.** A clean-room writer takes the next step of the status
+   page (`documentation/status.md`) and picks the language feature that
+   the page will cover.
 2. **Probe.** The writer runs small programs on the baseline compilers
    and records what each compiler accepts, rejects, and prints.
 3. **Read sources.** The writer reads the sanitized, permissively
