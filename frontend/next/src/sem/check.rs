@@ -135,6 +135,11 @@ pub struct LambdaCtx {
     pub init_vars: Vec<(EntityId, bool, EntityId)>,
     pub inits: Vec<super::tree::Init>,
     pub constants: Vec<(EntityId, Span)>,
+    /// The capture of `this`: its data member, and whether it holds a copy
+    /// of `*this` (LAM-8). `outer_this` is the type of `this` where the
+    /// outermost lambda stands, if any.
+    pub this_cap: Option<(EntityId, bool)>,
+    pub outer_this: Option<QType>,
 }
 
 /// A body of a member of a nested class, or the checks at its end, that

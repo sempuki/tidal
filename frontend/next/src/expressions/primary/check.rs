@@ -20,9 +20,10 @@ pub fn primary(cx: &mut Check, n: &Node) -> Expr {
             "id_expression" => id_expression(cx, c),
             _ => expr(cx, c),
         },
+        // LAM-8: `this` in a lambda body names the captured object.
         [k @ Kid::Tok(_)] if cx.text(k) == "this" && crate::expressions::lambdas::check::in_lambda_body(cx) => {
-            let t = cx.unsupported(n.span, "'this' in a lambda body (a capture of this, build step 4)");
-            Expr::new(EK::Int(0), t, Cat::PR, n.span)
+            let top = cx.lambdas.len().checked_sub(1);
+            crate::expressions::lambdas::check::this_at(cx, top, n.span).unwrap_or_else(|| bad(n.span))
         }
         [k @ Kid::Tok(_)] if cx.text(k) == "this" => match cx.func.as_ref().and_then(|f| f.this.clone()) {
             Some(t) => Expr::new(EK::This, t, Cat::PR, n.span),
@@ -366,9 +367,14 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
         // A data member of the class of a member function is `this->m`.
+        // LAM-8: a data member named in a lambda body is a member of the
+        // captured object.
         EntKind::Field(_) if crate::expressions::lambdas::check::in_lambda_body(cx) && cx.unevaluated == 0 => {
-            let t = cx.unsupported(span, "a data member named in a lambda body (a capture of this, build step 4)");
-            Expr::new(EK::Int(0), t, Cat::PR, span)
+            let top = cx.lambdas.len().checked_sub(1);
+            let Some(p) = crate::expressions::lambdas::check::this_at(cx, top, span) else { return bad(span) };
+            let t = p.ty.pointee().cloned().unwrap_or_else(QType::error);
+            let obj = Expr::new(EK::Deref(Box::new(p)), t, Cat::L, span);
+            crate::classes::members::check::field_of(cx, obj, pick, span)
         }
         // UNI-7: a member of an anonymous union of a block or a namespace
         // names the member of the union's variable.

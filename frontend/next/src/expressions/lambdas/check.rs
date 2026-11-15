@@ -79,6 +79,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     // The capture list.
     let mut default = None;
     let mut written: Vec<Written> = Vec::new();
+    let mut this_written: Option<(bool, Span)> = None;
     if let Some(cs) = n.child("captures") {
         if let Some(d) = cs.child("capture_default") {
             default = Some(cx.first_word(d) == "&");
@@ -86,7 +87,13 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         for c in cs.children("capture") {
             let words = cx.words(c);
             if words.contains(&"this") {
-                return unsupported(cx, c.span, "a capture of this (build step 4)");
+                // LAM-6: `this` is captured once.
+                if this_written.is_some() {
+                    cx.error(c.span, "LAM-6", "'this' is captured twice");
+                    return bad(span);
+                }
+                this_written = Some((words.contains(&"*"), c.span));
+                continue;
             }
             if words.contains(&"...") {
                 return unsupported(cx, c.span, "a capture of a pack (build step 5)");
@@ -143,7 +150,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         }
     }
     // LAM-27: a static lambda has no captures.
-    if is_static && (default.is_some() || !written.is_empty()) {
+    if is_static && (default.is_some() || !written.is_empty() || this_written.is_some()) {
         cx.error(span, "LAM-27", "a static lambda has a capture");
         return bad(span);
     }
@@ -161,7 +168,23 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), "");
     let class = cx.u.classes.len();
     cx.u.classes.push(ClassInfo { name: format!("(lambda at line {})", span.line).into(), key: ClassKey::Class, scope, fields: Vec::new(), complete: false, is_final: false, align: None, vdirect: Vec::new(), vbases: Vec::new(), vlayout: Vec::new(), nodiscard: false });
-    let mut ctx = LambdaCtx { class, default, mutable, caps: Vec::new(), init_vars: Vec::new(), inits: Vec::new(), constants: Vec::new() };
+    // The type of `this` where the outermost lambda stands: a member
+    // function's, or a default member initializer's.
+    let outer_this = match cx.lambdas.last() {
+        Some(l) => l.outer_this.clone(),
+        None => cx.func.as_ref().and_then(|f| f.this.clone()),
+    };
+    let mut ctx = LambdaCtx { class, default, mutable, caps: Vec::new(), init_vars: Vec::new(), inits: Vec::new(), constants: Vec::new(), this_cap: None, outer_this: outer_this.clone() };
+    // LAM-8: `this` captures the object by reference, `*this` by copy.
+    if let Some((copy, s)) = this_written {
+        if outer_this.is_none() {
+            cx.error(s, "LAM-24", "a capture of 'this' where there is no 'this'");
+            return bad(span);
+        }
+        let top = cx.lambdas.len().checked_sub(1);
+        let Some(p) = this_at(cx, top, s) else { return bad(span) };
+        add_this(cx, &mut ctx, p, copy);
+    }
     // The explicit captures, initialized in the enclosing context.
     for w in &written {
         if let Some(init) = &w.init {
@@ -468,6 +491,62 @@ fn use_at(cx: &mut Check, level: Option<usize>, v: EntityId, span: Span) -> Opti
     cx.lambdas[k] = ctx;
     let &(_, by_ref, field) = cx.lambdas[k].caps.last().unwrap();
     Some(member(cx, k, field, by_ref, span))
+}
+
+/// Capture `this` in `ctx` from the pointer `p` that names it where the
+/// lambda stands: the pointer, or a copy of the object (LAM-8).
+fn add_this(cx: &mut Check, ctx: &mut LambdaCtx, p: Expr, copy: bool) {
+    let (fty, init) = if copy {
+        let t = p.ty.pointee().cloned().unwrap_or_else(QType::error);
+        let obj = Expr::new(EK::Deref(Box::new(p)), t.clone(), Cat::L, Span::default());
+        let init = match crate::declarations::initialization::forms::check::copy_init(cx, obj, &t.unqual(), "LAM-8") {
+            Some(x) => Init::Expr(x),
+            None => Init::Default,
+        };
+        (t.unqual(), init)
+    } else {
+        (p.ty.clone(), Init::Expr(p))
+    };
+    let field = new_field(cx, ctx.class, fty);
+    ctx.this_cap = Some((field, copy));
+    ctx.inits.push(init);
+}
+
+/// The value of `this` in the body of lambda `level`, or where the
+/// outermost lambda stands for None: the pointer that the capture holds,
+/// or the address of the copy. A lambda with a capture default captures
+/// `this` at its first use (LAM-5). None after an error (LAM-17).
+pub fn this_at(cx: &mut Check, level: Option<usize>, span: Span) -> Option<Expr> {
+    let Some(k) = level else {
+        let t = cx.lambdas.first().and_then(|l| l.outer_this.clone()).or_else(|| cx.func.as_ref().and_then(|f| f.this.clone()))?;
+        return Some(Expr::new(EK::This, t, Cat::PR, span));
+    };
+    if cx.lambdas[k].this_cap.is_none() {
+        let Some(by_ref) = cx.lambdas[k].default else {
+            cx.error(span, "LAM-17", "the lambda uses 'this', which it does not capture");
+            return None;
+        };
+        if cx.lambdas[k].outer_this.is_none() {
+            cx.error(span, "LAM-24", "a use of 'this' in a lambda where there is no 'this'");
+            return None;
+        }
+        // LAM-21: `[=]` captures `this` implicitly, which is deprecated.
+        if !by_ref && cx.wflag(&["-Wextra", "-Wdeprecated", "-Wdeprecated-this-capture"]) {
+            cx.warning(span, "LAM-21", "the capture default '=' captures 'this' implicitly");
+        }
+        let outer = k.checked_sub(1);
+        let p = this_at(cx, outer, span)?;
+        let mut ctx = cx.lambdas[k].clone();
+        add_this(cx, &mut ctx, p, false);
+        cx.lambdas[k] = ctx;
+    }
+    let (field, copy) = cx.lambdas[k].this_cap?;
+    let m = member(cx, k, field, false, span);
+    if copy {
+        let t = QType::ptr_to(m.ty.clone());
+        return Some(Expr::new(EK::AddrOf(Box::new(m)), t, Cat::PR, span));
+    }
+    Some(rvalue(cx, m))
 }
 
 /// The expression that names `v` where the lambda expression stands.

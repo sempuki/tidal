@@ -2025,3 +2025,23 @@ fn structured_bindings_of_bit_fields() {
     assert_eq!(run("struct F { unsigned bits : 3; int o; }; int main() { F f{1, 2}; auto& [b, o] = f; b = 9; return f.bits * 10 + b; }"), RunOutcome::Result(11));
     assert_eq!(rule("struct F { int bits : 3; int o; }; void g(F& f) { auto& [b, o] = f; int* p = &b; }"), Some("SB-16"));
 }
+
+#[test]
+fn captures_of_this() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // `this` refers to the object; `*this` copies it; a default captures
+    // `this` at its first use, also through a nested lambda.
+    assert_eq!(run("struct C { int n = 0; auto add() { return [this] { ++n; }; } auto copy() { return [*this]() mutable { return ++n; }; } int nested() { return [&] { return [&] { return n + 10; }(); }(); } }; int main() { C c; c.add()(); auto k = c.copy(); int i = k(); return c.n * 100 + i * 10 + c.nested() - 11; }"), RunOutcome::Result(120));
+    assert_eq!(rule("struct S { int v; int f() { return [] { return v; }(); } };"), Some("LAM-17"));
+    assert_eq!(rule("void f() { auto g = [this] { return 1; }; }"), Some("LAM-24"));
+    let o = crate::Options { werror: true, wflags: vec!["-Wextra".into()], ..Default::default() };
+    let warned = match crate::check_source("struct S { int v = 0; int f() { return [=] { return v; }(); } };", Path::new("t.cpp"), &o).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        _ => None,
+    };
+    assert_eq!(warned, Some("LAM-21"));
+}
