@@ -186,18 +186,14 @@ pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
             return e;
         }
     }
-    if op == BOp::Spaceship && !crate::foundations::names::check::std_declares(cx, "strong_ordering") {
-        // The operands decide which ordering type the result has. Each
-        // needs std::strong_ordering or a weaker type, and a unit that
-        // declares none has none of them.
-        if !["partial_ordering", "weak_ordering"].iter().any(|t| crate::foundations::names::check::std_declares(cx, t)) {
-            cx.error_cause(n.span, "CMP-25", Some("LSUP-2"), "the three-way comparison needs a declaration of its ordering type in namespace std");
-            return bad(n.span);
-        }
-    }
     if op == BOp::Spaceship {
-        let t = cx.unsupported(n.span, "the three-way comparison (its result types come from the library)");
-        return Expr::new(EK::Int(0), t, Cat::PR, n.span);
+        let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
+        if let Some(e) = crate::classes::operators::check::binary(cx, "<=>", &l, &r, n.span) {
+            return e;
+        }
+        let Some((l, r)) = crate::classes::conversion_functions::check::builtin_operands(cx, l, r) else { return bad(n.span) };
+        crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
+        return three_way(cx, l, r, n.span);
     }
     let Some((l, r)) = operands(cx, n) else { return bad(n.span) };
     // OPR-6: an operand of class or enumeration type can select an
@@ -214,4 +210,92 @@ pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
     let Some((l, r)) = crate::classes::conversion_functions::check::builtin_operands(cx, l, r) else { return bad(n.span) };
     crate::foundations::evaluation_order::check::unsequenced(cx, &l, &r, n.span);
     operate(cx, op, l, r, n.span)
+}
+
+/// The ordering class `std::<name>`, if the unit declares it (LSUP-2).
+pub fn ordering_class(cx: &Check, name: &str) -> Option<crate::sem::types::ClassId> {
+    let std = crate::foundations::names::check::declared_here(cx, cx.u.root, "std").into_iter().find_map(|e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Namespace(sc) => Some(sc),
+        _ => None,
+    })?;
+    crate::foundations::names::check::declared_here(cx, std, name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Class(c) if cx.u.classes[c].complete => Some(c),
+        _ => None,
+    })
+}
+
+/// The static data members of the ordering class `c` that a result
+/// copies, in the order of `EK::ThreeWay` (LSUP-2), or None when one is
+/// missing.
+pub fn ordering_members(cx: &Check, c: crate::sem::types::ClassId, partial: bool) -> Option<Vec<crate::sem::EntityId>> {
+    let names: &[&str] = if partial { &["less", "equivalent", "greater", "unordered"] } else { &["less", "equal", "greater"] };
+    let scope = cx.u.classes[c].scope;
+    names.iter().map(|n| crate::foundations::names::check::declared_here(cx, scope, n).into_iter().find(|&e| cx.u.var(e).is_some())).collect()
+}
+
+/// A built-in `l <=> r` (CMP-12, CMP-13, CMP-17, CMP-18, CMP-24, CMP-25,
+/// CMP-27).
+pub fn three_way(cx: &mut Check, l: Expr, r: Expr, span: Span) -> Expr {
+    if l.ty.is_array() && r.ty.is_array() {
+        cx.error(span, "CMP-24", "a three-way comparison of two arrays");
+        return bad(span);
+    }
+    let (ln, rn) = (conv::is_null_constant(&l), conv::is_null_constant(&r));
+    let (l, r) = (rvalue(cx, l), rvalue(cx, r));
+    if l.ty.is_error() || r.ty.is_error() {
+        return bad(span);
+    }
+    let fnptr = |t: &QType| t.pointee().is_some_and(|p| p.is_func());
+    if l.ty.is_member_ptr() || r.ty.is_member_ptr() || (l.ty.is_nullptr() && r.ty.is_nullptr()) || fnptr(&l.ty) || fnptr(&r.ty) {
+        cx.error(span, "CMP-25", format!("a three-way comparison of {} and {}", l.ty.show(), r.ty.show()));
+        return bad(span);
+    }
+    // CMP-13: a bool with another type, and a pointer with the literal 0.
+    if l.ty.is_bool() != r.ty.is_bool() {
+        cx.error(span, "CMP-13", "a three-way comparison of a bool and another type");
+        return bad(span);
+    }
+    if (l.ty.is_ptr() && rn && !r.ty.is_nullptr()) || (r.ty.is_ptr() && ln && !l.ty.is_nullptr()) {
+        cx.error(span, "CMP-13", "a three-way comparison of a pointer and the literal 0");
+        return bad(span);
+    }
+    // CMP-18: two unscoped enumerations, or one and a floating-point value.
+    if let (Type::Enum(a), Type::Enum(b)) = (&l.ty.t, &r.ty.t) {
+        if a != b && !cx.u.enums[*a].scoped && !cx.u.enums[*b].scoped {
+            cx.error(span, "CMP-18", "a three-way comparison of two different enumeration types");
+            return bad(span);
+        }
+    }
+    if (l.ty.is_enum() && r.ty.is_floating()) || (r.ty.is_enum() && l.ty.is_floating()) {
+        cx.error(span, "CMP-18", "a three-way comparison of an enumeration and a floating-point value");
+        return bad(span);
+    }
+    // CMP-13: no narrowing conversion, other than an integer to a
+    // floating-point type.
+    if arithmetic_operand(cx, &l.ty) && arithmetic_operand(cx, &r.ty) && !l.ty.is_enum() && !r.ty.is_enum() {
+        let (cl, _, t) = conv::arithmetic(cx, l.clone(), r.clone());
+        let _ = cl;
+        for e in [&l, &r] {
+            let to_float = t.is_floating() && !e.ty.is_floating();
+            if !to_float && conv::is_narrowing(cx, e, &t) {
+                cx.error(span, "CMP-13", format!("the three-way comparison converts {} to {}, which narrows", e.ty.show(), t.show()));
+                return bad(span);
+            }
+        }
+    }
+    let partial = l.ty.is_floating() || r.ty.is_floating();
+    let name = if partial { "partial_ordering" } else { "strong_ordering" };
+    let Some(c) = ordering_class(cx, name) else {
+        cx.error_cause(span, "CMP-25", Some("LSUP-2"), format!("the three-way comparison needs a declaration of std::{}", name));
+        return bad(span);
+    };
+    let Some(members) = ordering_members(cx, c, partial) else {
+        cx.error(span, "LSUP-2", format!("std::{} does not declare the static data members of its values", name));
+        return bad(span);
+    };
+    // The operands convert as for `<` (CMP-3 and the usual arithmetic
+    // conversions).
+    let cmp = operate(cx, BOp::Lt, l, r, span);
+    let EK::Binary(_, a, b) = cmp.k else { return bad(span) };
+    Expr::new(EK::ThreeWay(a, b, members), QType::new(Type::Class(c)), Cat::PR, span)
 }

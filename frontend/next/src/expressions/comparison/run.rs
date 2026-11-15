@@ -144,3 +144,18 @@ pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, _ty: &QType) -> R<Val> 
         _ => unsup("a comparison of these values"),
     }
 }
+
+/// A built-in `a <=> b`: a copy of the static data member of the
+/// ordering class for less, equal, greater, or unordered (CMP-17,
+/// CMP-27).
+pub fn three_way(m: &mut Machine, a: &crate::sem::tree::Expr, b: &crate::sem::tree::Expr, members: &[crate::sem::EntityId], ty: &QType) -> R<Val> {
+    let x = crate::machine::eval::eval(m, a)?;
+    let y = crate::machine::eval::eval(m, b)?;
+    let lt = compare(m, BOp::Lt, x.clone(), y.clone(), &a.ty)?.truthy();
+    let eq = compare(m, BOp::Eq, x.clone(), y.clone(), &a.ty)?.truthy();
+    let gt = compare(m, BOp::Gt, x, y, &a.ty)?.truthy();
+    let k = if lt { 0 } else if eq { 1 } else if gt { 2 } else { 3 };
+    let Some(&id) = members.get(k) else { return unsup("the result of a three-way comparison of this form") };
+    let p = m.var_place(id)?;
+    crate::foundations::values::run::read(m, &p, ty)
+}

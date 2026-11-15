@@ -688,7 +688,7 @@ fn library_types_the_language_needs() {
     assert_eq!(rule("auto a = {1, 2};"), Some("LSUP-1"));
     assert_eq!(rule("int main() { int s = 0; for (int v : {1, 2}) s += v; return s; }"), Some("LSUP-1"));
     assert_eq!(rule("auto r = 1 <=> 2;"), Some("LSUP-2"));
-    assert_eq!(rule("namespace std { class strong_ordering; } auto r = 1 <=> 2;"), Some("unsupported"));
+    assert_eq!(rule("namespace std { class strong_ordering; } auto r = 1 <=> 2;"), Some("LSUP-2"));
 }
 
 #[test]
@@ -1633,4 +1633,25 @@ fn exceptions_throw_and_unwind() {
     assert_eq!(run("void f() noexcept { throw 1; } int main() { try { f(); } catch (...) {} return 0; }"), RunOutcome::Result(134));
     assert_eq!(rule("void f() { try {} catch (...) {} catch (int) {} }"), Some("TRY-3"));
     assert_eq!(rule("struct I; void f(I* p) { throw *p; }"), Some("THR-3"));
+}
+
+#[test]
+fn three_way_and_defaulted_comparisons() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    const ORD: &str = "namespace std { struct strong_ordering { signed char v; static const strong_ordering less, equal, equivalent, greater; friend constexpr bool operator==(strong_ordering, strong_ordering) = default; friend constexpr bool operator==(strong_ordering s, int) { return s.v == 0; } friend constexpr bool operator<(strong_ordering s, int) { return s.v < 0; } friend constexpr bool operator<(int, strong_ordering s) { return 0 < s.v; } }; inline constexpr strong_ordering strong_ordering::less{-1}; inline constexpr strong_ordering strong_ordering::equal{0}; inline constexpr strong_ordering strong_ordering::equivalent{0}; inline constexpr strong_ordering strong_ordering::greater{1}; } ";
+    // CMP-27: a built-in <=> copies a static data member.
+    assert_eq!(run(&format!("{ORD}int main() {{ return (1 <=> 2) < 0 ? 0 : 1; }}")), RunOutcome::Result(0));
+    // DCMP-1, DCMP-4: defaulted == and <=> compare the members in order;
+    // a relational operator is rewritten from <=>, and a defaulted <=>
+    // declares ==.
+    assert_eq!(run(&format!("{ORD}struct P {{ int x; int y; auto operator<=>(const P&) const = default; }}; int main() {{ P a{{3, 4}}, b{{3, 5}}; return (a < b) && !(b < a) && a != b && a == P{{3, 4}} ? 0 : 1; }}")), RunOutcome::Result(0));
+    assert_eq!(rule(&format!("{ORD}static_assert(0 < (2 <=> 1));")), None);
+    // DCMP-2: a reference member deletes the defaulted ==.
+    assert_eq!(rule("struct R { int& r; bool operator==(const R&) const = default; }; bool f(const R& a) { return a == a; }"), Some("DEL-1"));
+    assert_eq!(rule("struct S { int x; bool operator==(S) const = default; };"), Some("DCMP-3"));
+    assert_eq!(rule("auto r = 1 <=> 2;"), Some("CMP-25"));
 }

@@ -631,12 +631,21 @@ that leaves a non-throwing function, a destructor, or `main`, or a
 destructor that throws during unwinding, ends the program with the
 status of `SIGABRT`. The checks warn about a shadowed handler and about
 a `throw` that nothing in a non-throwing function catches. The
+classes of namespace `std` are ordinary classes. A built-in `<=>` gives
+a copy of the static data member of `std::strong_ordering` or
+`std::partial_ordering` that its result names. A relational operator
+or `<=>` on class operands also tries the candidates rewritten from
+`<=>`, and their comparison with 0 tries no rewritten candidate again.
+A defaulted comparison gets a body that compares the bases and members
+in order, and a defaulted `<=>` with the return type `auto` takes the
+weakest ordering of its parts. A comparison whose body cannot be made
+is deleted, and a defaulted `<=>` declares a defaulted `==`. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a subobject or with a qualified name, a
 literal operator, an
-`operator->`, a comparison that `<=>` rewrites,
+`operator->`,
 a failed `dynamic_cast` to a reference outside constant evaluation, a
 function try block, a destructor with an exception specification, a
 deallocation function of the dynamic class in a `delete` through a base,

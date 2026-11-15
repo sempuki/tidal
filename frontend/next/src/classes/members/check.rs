@@ -95,12 +95,12 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
         return cx.unsupported(head.span, "an attribute on a class (build step 4)");
     }
     let aligns: Vec<Node> = head.children("alignment_specifier").cloned().collect();
-    // The classes of namespace std have rules of their own (LSUP).
-    if cx.u.scopes[cx.scope].name.as_ref() == "std" {
-        return cx.unsupported(head.span, "a class of namespace std (build step 4)");
-    }
     let key = key_of(cx, head);
     let name = head.child("class_name").map(|c| cx.source(c)).unwrap_or_default();
+    // LSUP-5: `std::align_val_t` is a scoped enumeration.
+    if &*name == "align_val_t" && cx.u.scopes[cx.scope].name.as_ref() == "std" && cx.u.scopes[cx.scope].parent == Some(cx.u.root) {
+        cx.error(head.span, "LSUP-5", "std::align_val_t declared as a class, not as a scoped enumeration");
+    }
     let id = match declared_class(cx, &name).filter(|_| !name.is_empty()) {
         Some(c) if cx.u.classes[c].complete => {
             return cx.unsupported(head.span, format!("a second definition of the class '{}'", name));

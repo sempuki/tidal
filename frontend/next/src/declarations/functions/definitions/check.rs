@@ -109,10 +109,7 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         if !crate::classes::operators::check::declaration(cx, &name, &d.ty, defaults, class, s.is_static, span) {
             return None;
         }
-        if defaulted && matches!(&*name, "operator==" | "operator<=>" | "operator!=" | "operator<" | "operator>" | "operator<=" | "operator>=") {
-            cx.unsupported(d.span, "a defaulted comparison operator (classes/comparisons)");
-            return None;
-        }
+
     }
     let assign_default = defaulted && &*name == "operator=";
     // CPY-17: a defaulted assignment operator takes a reference and
@@ -126,7 +123,8 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             return None;
         }
     }
-    if defaulted && !assign_default {
+    let cmp_default = defaulted && crate::classes::comparisons::check::is_comparison(&name);
+    if defaulted && !assign_default && !cmp_default {
         cx.error(d.span, "DEL-4", "'= default' on a function that is not a special member function");
         return None;
     }
@@ -320,6 +318,17 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     if !cx.friend_decl && cx.u.scopes[scope].kind == ScopeKind::Namespace {
         cx.u.hidden.remove(&id);
     }
+    // DCMP-3: a defaulted comparison gets its body when its class is
+    // complete; one defaulted after its class is late (DCMP-8).
+    if cmp_default {
+        cx.u.defaulted.insert(id);
+        if let Some(x) = cx.u.func_mut(id) {
+            x.defined = true;
+            x.unsupported = None;
+        }
+        let late = cx.member_of.is_none() && !cx.friend_decl && d.qual != names::Qual::None;
+        crate::classes::comparisons::check::defaulted(cx, id, late, span);
+    }
     Some(id)
 }
 
@@ -334,7 +343,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
         EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This | EK::MemberPtr(..) | EK::Caught | EK::Throw(None) => None,
         EK::Throw(Some(x)) => sub(x),
         EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::Delete(x, ..) | EK::PtrMemFn(x) | EK::DynCast(x, ..) => sub(x),
-        EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => sub(a).or_else(|| sub(b)),
+        EK::Binary(_, a, b) | EK::ThreeWay(a, b, _) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => sub(a).or_else(|| sub(b)),
         EK::Cond(c, a, b) => sub(c).or_else(|| sub(a)).or_else(|| sub(b)),
         EK::Call(f, args, _) => sub(f).or_else(|| args.iter().find_map(|x| sub(&x.e))),
         EK::New(n) => n.bound.as_ref().and_then(sub).or_else(|| local_in(cx, &Expr::new(EK::List(Box::new(n.init.clone())), n.ty.clone(), crate::sem::tree::Cat::PR, e.span))),

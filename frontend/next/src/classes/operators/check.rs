@@ -158,6 +158,9 @@ struct Cand {
     member: bool,
     reversed: bool,
     negated: bool,
+    /// A candidate rewritten from `<=>` (DCMP-6): `(x <=> y) @ 0`, or
+    /// `0 @ (y <=> x)` when reversed.
+    three: bool,
 }
 
 /// The operator functions named `name` that an expression with the
@@ -259,7 +262,8 @@ fn choose(cx: &mut Check, cands: &[Cand], args: &[Expr], span: Span, op: &str) -
         }
         // A candidate that is not rewritten wins a tie, and a rewritten
         // one wins a tie with a reversed one (OVL rules).
-        some || (!(a.0.reversed || a.0.negated) && (b.0.reversed || b.0.negated)) || (!a.0.reversed && b.0.reversed)
+        let rewritten = |c: &Cand| c.reversed || c.negated || c.three;
+        some || (!rewritten(&a.0) && rewritten(&b.0)) || (!a.0.reversed && b.0.reversed)
     };
     let mut best = 0;
     for i in 1..viable.len() {
@@ -331,6 +335,28 @@ fn build_call(cx: &mut Check, c: Cand, args: Vec<Expr>, span: Span) -> Expr {
     call
 }
 
+/// OVL-13, LSUP-12: the comparison of the result of a rewritten `<=>`
+/// with a literal 0: `v @ 0`, or `0 @ v` for a reversed candidate.
+pub fn compare_zero(cx: &mut Check, op: &str, v: Expr, reversed: bool, span: Span) -> Expr {
+    if v.ty.is_error() {
+        return v;
+    }
+    let zero = Expr::int(0, QType::int(), span);
+    let (l, r) = if reversed { (zero, v) } else { (v, zero) };
+    if let Some(e) = binary_with(cx, op, &l, &r, span, false) {
+        return e;
+    }
+    if l.ty.nonref().is_class() || r.ty.nonref().is_class() {
+        cx.error_cause(span, "OVL-43", Some("OVL-35"), format!("no operator '{}' compares the result of the rewritten three-way comparison with 0", op));
+        return bad(span);
+    }
+    match crate::sem::tree::BOp::from_str(op) {
+        Some(crate::sem::tree::BOp::Spaceship) => crate::expressions::comparison::check::three_way(cx, l, r, span),
+        Some(b) => crate::expressions::comparison::check::operate(cx, b, l, r, span),
+        None => bad(span),
+    }
+}
+
 fn user_type(t: &QType) -> bool {
     let t = t.nonref();
     t.is_class() || t.is_enum()
@@ -341,17 +367,24 @@ fn user_type(t: &QType) -> bool {
 /// chooses. None when the built-in operator applies: no operand of such
 /// a type, or no operator function for an enumeration operand.
 pub fn binary(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span) -> Option<Expr> {
+    binary_with(cx, op, l, r, span, true)
+}
+
+/// `binary`, with the rewritten and reversed candidates of DCMP-6 when
+/// `rewrite`. The comparison with 0 of a rewritten `<=>` has none
+/// (OVL-43).
+fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite: bool) -> Option<Expr> {
     if l.ty.is_error() || r.ty.is_error() || !(user_type(&l.ty) || user_type(&r.ty)) {
         return None;
     }
     let name = name_of(op)?;
     let args = vec![l.clone(), r.clone()];
     let (members, others) = found(cx, name, &args, Some(l));
-    let mut cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false })).collect();
+    let mut cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false, three: false })).collect();
     // The rewritten candidates of `==` and `!=`: `y == x`, and the
     // opposite of `x == y` and `y == x`.
     let mut excluded = false;
-    if matches!(op, "==" | "!=") {
+    if rewrite && matches!(op, "==" | "!=") {
         let (m1, o1) = found(cx, "operator==", &args, Some(l));
         let (m2, _) = found(cx, "operator==", &args, Some(r));
         // DCMP-6, DCMP-13: an `==` with a matching `!=` rewrites nothing.
@@ -362,11 +395,11 @@ pub fn binary(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span) -> Optio
         excluded = m1.len() + o1.len() + m2.len() < before;
         let negated = op == "!=";
         if negated {
-            cands.extend(m1.iter().map(|&f| Cand { f, member: true, reversed: false, negated: true }));
-            cands.extend(o1.iter().map(|&f| Cand { f, member: false, reversed: false, negated: true }));
+            cands.extend(m1.iter().map(|&f| Cand { f, member: true, reversed: false, negated: true, three: false }));
+            cands.extend(o1.iter().map(|&f| Cand { f, member: false, reversed: false, negated: true, three: false }));
         }
-        cands.extend(m2.iter().map(|&f| Cand { f, member: true, reversed: true, negated }));
-        cands.extend(o1.iter().map(|&f| Cand { f, member: false, reversed: true, negated }));
+        cands.extend(m2.iter().map(|&f| Cand { f, member: true, reversed: true, negated, three: false }));
+        cands.extend(o1.iter().map(|&f| Cand { f, member: false, reversed: true, negated, three: false }));
     }
     if excluded && !cands.iter().any(|c| {
         let ordered: Vec<Expr> = if c.reversed { args.iter().rev().cloned().collect() } else { args.clone() };
@@ -375,26 +408,17 @@ pub fn binary(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span) -> Optio
         cx.error_cause(span, "DCMP-12", Some("DCMP-13"), format!("the operator '{}' needs an operator== that a matching operator!= keeps from rewriting", op));
         return Some(bad(span));
     }
-    // The reversed candidates of `<=>` are unsupported.
-    if op == "<=>" {
+    // DCMP-6: `y <=> x` reversed for `<=>`, and `x <=> y` and `y <=> x`
+    // for a relational operator; `<=>` never rewrites `==` or `!=`.
+    if rewrite && matches!(op, "<=>" | "<" | ">" | "<=" | ">=") {
+        let (m1, o1) = found(cx, "operator<=>", &args, Some(l));
         let (m2, o2) = found(cx, "operator<=>", &args, Some(r));
-        let reversed = m2.iter().chain(o2.iter()).any(|&f| {
-            let c = Cand { f, member: m2.contains(&f), reversed: true, negated: false };
-            let ordered: Vec<Expr> = args.iter().rev().cloned().collect();
-            sequences(cx, &c, &ordered).is_some()
-        });
-        if reversed {
-            let t = cx.unsupported(span, "a three-way comparison with a reversed candidate");
-            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        if op != "<=>" {
+            cands.extend(m1.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: true }));
+            cands.extend(o1.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false, three: true }));
         }
-    }
-    if matches!(op, "<" | ">" | "<=" | ">=" | "==" | "!=") {
-        let (m, o) = found(cx, "operator<=>", &args, Some(l));
-        let (m2, _) = found(cx, "operator<=>", &args, Some(r));
-        if !(m.is_empty() && o.is_empty() && m2.is_empty()) && !matches!(op, "==" | "!=") {
-            let t = cx.unsupported(span, "a comparison that a three-way comparison operator rewrites");
-            return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
-        }
+        cands.extend(m2.iter().map(|&f| Cand { f, member: true, reversed: true, negated: false, three: true }));
+        cands.extend(o2.iter().map(|&f| Cand { f, member: false, reversed: true, negated: false, three: true }));
     }
     // A defaulted comparison is unsupported.
     if cands.iter().any(|c| cx.u.func(c.f).is_some_and(|f| f.unsupported.is_some())) {
@@ -448,6 +472,10 @@ pub fn binary(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span) -> Optio
         return None;
     }
     let c = choose(cx, &cands, &args, span, op)?;
+    if c.three {
+        let v = build(cx, c, args, span);
+        return Some(compare_zero(cx, op, v, c.reversed, span));
+    }
     // DCMP-12: a rewritten or reversed `==` returns bool.
     if c.negated || c.reversed {
         let ret = cx.u.func(c.f).map(|f| f.ty.ret.clone()).unwrap_or_else(QType::error);
@@ -489,7 +517,7 @@ pub fn unary(cx: &mut Check, op: &str, e: &Expr, postfix: bool, span: Span) -> O
         args.push(Expr::int(0, QType::int(), span));
     }
     let (members, others) = found(cx, name, &args, Some(e));
-    let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false })).collect();
+    let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false, three: false })).collect();
     if cands.is_empty() {
         return None;
     }
@@ -546,7 +574,7 @@ pub fn assignment(cx: &mut Check, l: &Expr, r: &Expr, span: Span) -> Option<Expr
         let t = cx.unsupported(span, "an assignment operator that the front end does not model");
         return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
     }
-    let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false }).collect();
+    let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: false }).collect();
     let args = vec![l.clone(), r.clone()];
     // A defaulted copy or move assignment is the implicit one.
     let c2 = choose(cx, &cands, &args, span, "=")?;
@@ -646,7 +674,7 @@ pub fn subscript(cx: &mut Check, a: &Expr, args: &[Expr], span: Span) -> Option<
     if members.is_empty() {
         return None;
     }
-    let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false }).collect();
+    let cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: false }).collect();
     let mut all = vec![a.clone()];
     all.extend(args.iter().cloned());
     let c = choose(cx, &cands, &all, span, "[]")?;

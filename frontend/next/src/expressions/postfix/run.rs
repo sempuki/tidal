@@ -74,7 +74,8 @@ pub fn check_callable(m: &mut Machine, id: EntityId) -> R<()> {
         return Ok(());
     }
     let f = m.u.func(id);
-    if !f.is_some_and(|f| f.constexpr || f.consteval) {
+    // A defaulted function is constexpr when it can be (CX rules).
+    if !f.is_some_and(|f| f.constexpr || f.consteval) && !m.u.defaulted.contains(&id) {
         return ce::not_constexpr(&m.u.entities[id].name);
     }
     Ok(())

@@ -154,7 +154,15 @@ fn release(m: &mut Machine, n: &New, target: &Ptr, ty: &QType, place: Vec<Ret>) 
 /// not define, whose body the implementation gives (NEW-19).
 pub fn is_library(m: &Machine, f: crate::sem::EntityId) -> bool {
     let f = crate::expressions::postfix::run::defining(m, f);
-    m.u.library.contains(&f) && m.body(f).is_none()
+    (m.u.library.contains(&f) || nothrow_form(m, f)) && m.body(f).is_none()
+}
+
+/// LSUP-6: an allocation function with a `std::nothrow_t` parameter that
+/// the program declares without a definition is the implementation's.
+fn nothrow_form(m: &Machine, f: crate::sem::EntityId) -> bool {
+    let Some(func) = m.u.func(f) else { return false };
+    let name = &m.u.entities[f].name;
+    name.starts_with("operatornew") && func.ty.params.len() == 2 && func.ty.params[1].nonref().class().is_some_and(|c| &*m.u.classes[c].name == "nothrow_t")
 }
 
 /// The object of type `ty` that a `new` expression creates in the

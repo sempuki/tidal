@@ -67,6 +67,9 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
         };
     }
     let value = e.map(|c| expr(cx, c));
+    if let Some(v) = &value {
+        pessimizing_move(cx, v, &ctx, span);
+    }
     // JMP-12: a return in a constructor has no operand.
     if value.is_some() && ctx.id.and_then(|f| cx.u.func(f)).is_some_and(|f| f.special != crate::sem::Special::None) {
         cx.error(span, "JMP-12", "a return with an operand in a constructor");
@@ -120,6 +123,33 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
     }
     let ret = ctx.ret.clone().unwrap_or_else(QType::error);
     finish(cx, value, &ret, span, &ctx)
+}
+
+/// CPY-13: `return std::move(x);` of a local variable of the return
+/// type keeps the variable from being the return value.
+fn pessimizing_move(cx: &mut Check, v: &crate::sem::tree::Expr, ctx: &FnCtx, span: crate::source::Span) {
+    use crate::sem::tree::EK;
+    let mut v = v;
+    while let EK::Deref(x) | EK::Conv(_, x) = &v.k {
+        v = x;
+    }
+    let EK::Call(f, args, _) = &v.k else { return };
+    let EK::Func(id) = f.k else { return };
+    let ent = &cx.u.entities[id];
+    let in_std = cx.u.scopes[ent.scope].name.as_ref() == "std" && cx.u.scopes[ent.scope].parent == Some(cx.u.root);
+    if &*ent.name != "move" || !in_std || args.len() != 1 {
+        return;
+    }
+    let mut arg = &args[0].e;
+    while let EK::Deref(x) | EK::Conv(_, x) = &arg.k {
+        arg = x;
+    }
+    let EK::Var(x) = arg.k else { return };
+    let local = cx.u.var(x).is_some_and(|var| var.storage == crate::sem::Storage::Automatic && !var.param && !var.ty.is_ref());
+    let same = ctx.ret.as_ref().is_some_and(|r| r.unqual() == arg.ty.unqual() && r.is_class());
+    if local && same && cx.wflag(&["-Wall", "-Wpessimizing-move"]) {
+        cx.warning(span, "CPY-13", "std::move of a local variable in a return statement prevents copy elision");
+    }
 }
 
 fn finish(cx: &mut Check, value: Option<crate::sem::tree::Expr>, ret: &QType, span: crate::source::Span, ctx: &FnCtx) -> Stmt {

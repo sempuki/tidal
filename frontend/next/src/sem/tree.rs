@@ -225,6 +225,11 @@ pub enum EK {
     /// type; the target class, or None for `void*`; and whether the
     /// target is a reference.
     DynCast(Box<Expr>, Option<ClassId>, bool),
+    /// A built-in `a <=> b` on the converted operands, with the static
+    /// data members of the ordering class that the result copies: `less`,
+    /// `equal` or `equivalent`, `greater`, and `unordered` for
+    /// `partial_ordering` (CMP-17, CMP-27).
+    ThreeWay(Box<Expr>, Box<Expr>, Vec<crate::sem::EntityId>),
     /// `throw e`, with the prvalue that initializes the exception object
     /// (THR-1), or a rethrow (THR-6).
     Throw(Option<Box<Expr>>),
@@ -319,6 +324,7 @@ impl Expr {
             EK::New(n) => n.bound.as_ref().is_some_and(|b| b.any(f)) || n.init.any(f),
             EK::Delete(x, ..) => x.any(f),
             EK::Throw(x) => x.as_ref().is_some_and(|x| x.any(f)),
+            EK::ThreeWay(a, b, _) => a.any(f) || b.any(f),
             _ => false,
         }
     }

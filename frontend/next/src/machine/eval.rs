@@ -33,6 +33,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         EK::PtrMemFn(_) => unsup("a pointer to member function applied outside a call"),
         EK::DynCast(x, t, false) => crate::classes::r#virtual::run::dynamic_cast_ptr(m, x, *t),
         EK::Throw(x) => crate::exceptions::throw::run::throw(m, x.as_deref()),
+        EK::ThreeWay(a, b, members) => comparison::run::three_way(m, a, b, members, &e.ty),
         EK::Str(_) | EK::Var(_) | EK::Deref(_) | EK::Index(..) | EK::Member(..) | EK::PtrMem(..) | EK::DynCast(_, _, true) | EK::Caught => {
             // A glvalue in a value context: the place's value. Analysis
             // puts an lvalue-to-rvalue conversion here; a bare glvalue is
