@@ -335,12 +335,13 @@ pub fn after_bodies(cx: &mut Check, c: ClassId) {
     let own: Vec<EntityId> = cx.u.scopes[cx.u.classes[c].scope].names.values().flatten().copied().filter(|e| cx.u.virt.contains_key(e)).collect();
     for &f in &own {
         let Some(func) = cx.u.func(f) else { continue };
-        if func.special == Special::Dtor || func.ty.noexcept {
+        if func.ty.noexcept {
             continue;
         }
         if cx.u.virt[&f].overrides.iter().any(|&o| cx.u.func(o).is_some_and(|x| x.ty.noexcept)) {
             let span = cx.u.entities[f].span;
-            cx.error(span, "EXS-3", format!("'{}' can throw and overrides a non-throwing function", cx.u.entities[f].name));
+            let name = if func.special == Special::Dtor { format!("~{}", cx.u.classes[c].name) } else { cx.u.entities[f].name.to_string() };
+            cx.error(span, "EXS-3", format!("'{}' can throw and overrides a non-throwing function", name));
             return;
         }
     }

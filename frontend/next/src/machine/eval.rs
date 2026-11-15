@@ -636,6 +636,17 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
             super::exec::exec(m, &inner)
         }
     };
+    // TRY-10: a destructor's function try block also guards the
+    // destructors of its members and bases, which end before the
+    // handler.
+    if fn_handlers.is_some() && special == crate::sem::Special::Dtor {
+        if let (Some(this), Some(c)) = (m.frames.last().and_then(|f| f.this.clone()), m.u.func(id).and_then(|f| f.class)) {
+            r = match r {
+                Ok(f) => crate::classes::constructors::run::destroy_parts(m, &this, c).map(|_| f),
+                r => crate::exceptions::throw::run::unwind(m, r, |m| crate::classes::constructors::run::destroy_parts(m, &this, c)),
+            };
+        }
+    }
     if let (Some(hs), Err(Stop::Throw(o))) = (&fn_handlers, &r) {
         let o = *o;
         // The parts that the constructor built end before the handler
@@ -663,6 +674,9 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
                 e => e,
             };
         }
+    }
+    if matches!(r, Err(Stop::Throw(_))) {
+        r = crate::exceptions::throw::run::unwind(m, r, crate::exceptions::throw::run::drop_result);
     }
     m.depth -= 1;
     if structor {
@@ -701,8 +715,8 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
             }
         }
         // THR-9, UNW-5: an exception that leaves a non-throwing function,
-        // such as a destructor (DTOR-4), ends the program.
-        if func_noexcept || special == crate::sem::Special::Dtor {
+        // such as most destructors (DTOR-4), ends the program.
+        if func_noexcept {
             return crate::exceptions::throw::run::terminate("an exception leaves a non-throwing function");
         }
     }

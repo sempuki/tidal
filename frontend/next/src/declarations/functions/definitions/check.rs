@@ -80,6 +80,13 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
     if dealloc {
         fty.noexcept = true;
     }
+    // DTOR-4: a destructor without an exception specification is
+    // non-throwing unless the destructor of a member or a base can throw.
+    let spec = crate::declarations::declarators::syntax::function_suffix_of(&d.node).and_then(|fs| fs.child("exception_spec"));
+    if &*name == crate::classes::constructors::check::DTOR && spec.is_none() {
+        let class = cx.member_of.or_else(|| cx.u.class_of_scope(scope));
+        fty.noexcept = class.is_none_or(|c| crate::classes::constructors::check::parts_nothrow(cx, c));
+    }
     let deduce = d.placeholder.is_some();
     // A deduced return type is the error type until a return gives it.
     let known = if deduce { fty.params.iter().all(|p| !p.is_error()) } else { fty.is_error_free() };
@@ -609,7 +616,7 @@ pub fn define_full(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
     unused_locals(cx, fs);
     if let Some(b) = cx.u.func(id).and_then(|f| f.body.clone()) {
         crate::declarations::attributes::check::fallthrough_checks(cx, &b);
-        if cx.u.func(id).is_some_and(|f| f.ty.noexcept || f.special == crate::sem::Special::Dtor) {
+        if cx.u.func(id).is_some_and(|f| f.ty.noexcept) {
             crate::exceptions::throw::check::noexcept_throws(cx, &b);
         }
     }

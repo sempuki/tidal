@@ -46,6 +46,25 @@ pub fn unwind<T>(m: &mut Machine, r: R<T>, cleanup: impl FnOnce(&mut Machine) ->
     }
 }
 
+/// Q-0365: the result that a return statement of the current function
+/// built ends when an exception leaves the function or reaches a handler
+/// in it after the return.
+pub fn drop_result(m: &mut Machine) -> R<()> {
+    let Some(f) = m.frames.last_mut() else { return Ok(()) };
+    if !matches!(f.ret, Some(crate::machine::Ret::Val(_))) {
+        return Ok(());
+    }
+    let (Some(crate::machine::Ret::Val(v)), Some(id)) = (f.ret.take(), f.func) else { return Ok(()) };
+    let Some(ty) = m.u.func(id).map(|x| x.ty.ret.clone()) else { return Ok(()) };
+    if !crate::classes::constructors::run::needs(m, &ty) {
+        return Ok(());
+    }
+    let o = m.new_obj(&ty, v, "the result");
+    crate::classes::constructors::run::destroy(m, &Ptr::whole(o), &ty)?;
+    m.objs[o].alive = false;
+    Ok(())
+}
+
 /// The exception object `o` ends, after the last handler for it
 /// (THR-8).
 pub fn end_exception(m: &mut Machine, o: usize) -> R<()> {

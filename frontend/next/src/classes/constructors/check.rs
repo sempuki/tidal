@@ -224,7 +224,7 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
 /// parameters, no return type, not static, no cv-qualifiers.
 fn dtor_member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Node, def: Option<&'n Node>, access: crate::sem::Access, bodies: &mut Vec<(EntityId, &'n Node)>) -> bool {
     let mut specs = specs.cloned().unwrap_or_default();
-    if specs.unsupported || cx.u.is_local(cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0)) || specs.consteval || def.is_some_and(|x| x.child("attribute_spec").is_some()) || dn.find("exception_spec").is_some_and(|e| first_node(e).is_some()) {
+    if specs.unsupported || cx.u.is_local(cx.u.scopes[cx.u.classes[c].scope].parent.unwrap_or(0)) || specs.consteval || def.is_some_and(|x| x.child("attribute_spec").is_some()) {
         cx.unsupported(dn.span, "a destructor of this form (build step 4)");
         return false;
     }
@@ -277,6 +277,22 @@ fn dtor_member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n No
         bodies.push((f, def));
     }
     true
+}
+
+/// DTOR-4: the destructor of class `c` is non-throwing: as its exception
+/// specification says, or for an implicit one, when those of its members
+/// and bases are. A union's destructor runs none of its members'.
+pub fn dtor_nothrow(cx: &Check, c: ClassId) -> bool {
+    match names::declared_here(cx, cx.u.classes[c].scope, DTOR).first() {
+        Some(&d) => cx.u.func(d).is_none_or(|f| f.ty.noexcept),
+        None => parts_nothrow(cx, c),
+    }
+}
+
+/// The destructors of the members and bases of class `c` are all
+/// non-throwing.
+pub fn parts_nothrow(cx: &Check, c: ClassId) -> bool {
+    crate::classes::unions::check::is_union(cx, c) || cx.u.object_types(c).iter().all(|t| t.base_elem().class().is_none_or(|d| dtor_nothrow(cx, d)))
 }
 
 /// The destructor of class `c`, or of a member's class, is deleted or not

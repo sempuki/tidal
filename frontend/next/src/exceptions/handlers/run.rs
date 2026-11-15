@@ -19,6 +19,7 @@ pub fn try_block(m: &mut Machine, body: &Stmt, handlers: &[Handler], seek: Optio
     // UNW-1: the temporaries of the full expressions that the exception
     // left end first.
     crate::exceptions::throw::run::unwind(m, Ok(()), |m| crate::machine::exec::end_temps(m, t))?;
+    crate::exceptions::throw::run::unwind(m, Ok(()), crate::exceptions::throw::run::drop_result)?;
     catch(m, handlers, o)
 }
 

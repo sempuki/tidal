@@ -142,6 +142,15 @@ pub fn begin_member(m: &mut Machine, q: &Ptr, c: ClassId, i: usize) -> R<()> {
     }
 }
 
+/// The union at `q` has no active member.
+pub fn end_members(m: &mut Machine, q: &Ptr) {
+    if let Some(Val::Agg(xs)) = m.slot(q) {
+        for x in xs.iter_mut() {
+            *x = Val::Inactive;
+        }
+    }
+}
+
 /// UNI-14: an object created at the place `p` makes each union member on
 /// the way to it that is not active the active member of its union.
 pub fn begin_path(m: &mut Machine, p: &Ptr) -> R<()> {

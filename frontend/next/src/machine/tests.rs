@@ -1736,3 +1736,14 @@ fn union_special_members() {
     // UNI-5: an implicit assignment copies the active member.
     assert_eq!(run("struct P { P() = default; P(const P&) = default; P& operator=(const P&) = default; P& operator=(P&&) { return *this; } }; union U { P p; int n; }; int main() { U a; a.n = 4; U c; c = static_cast<U&&>(a); return c.n; }"), RunOutcome::Result(4));
 }
+
+#[test]
+fn destructor_exceptions() {
+    // DTOR-4: noexcept(false) lets an exception leave a destructor, and
+    // the members still end (UNW-2).
+    assert_eq!(run("int ended = 0; struct M { ~M() { ++ended; } }; struct S { M m; ~S() noexcept(false) { throw 3; } }; int main() { try { S s; } catch (int v) { return v * 10 + ended; } return 0; }"), RunOutcome::Result(31));
+    // A destructor without a specification is non-throwing.
+    assert_eq!(run("struct S { ~S() { throw 1; } }; int main() { try { S s; } catch (int) { return 1; } return 2; }"), RunOutcome::Result(134));
+    // UNW-5: a destructor that throws during unwinding ends the program.
+    assert_eq!(run("struct S { ~S() noexcept(false) { throw 1; } }; int main() { try { S s; throw 2; } catch (int) { return 1; } return 2; }"), RunOutcome::Result(134));
+}

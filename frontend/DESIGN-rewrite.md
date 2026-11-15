@@ -662,11 +662,21 @@ one, and a use of it is an error. For an anonymous union, the
 enclosing class's implicit functions are the ones deleted. A union's
 implicit copy and assignment copy the active member. A member function
 call on an inactive member is undefined, and a placement new inside an
-inactive member makes the members on the way active. The
+inactive member makes the members on the way active. A destructor can
+have an exception specification, and one without is non-throwing
+unless a member's or a base's destructor can throw. An exception ends
+the program when it leaves a non-throwing function. The members of an
+object still end after its destructor throws, the objects of a block
+still end after one of them throws, and a destructor's function try
+block guards its members' destructors. A result that a return built
+ends when an exception follows the return. The `noexcept` operator
+counts the destructors of temporaries, of `delete`, and of explicit
+destructor calls. An explicit destructor call on the active member of a
+union leaves the union with no active member. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. An explicit destructor call on a subobject or with a qualified name, an
+another entity. An explicit destructor call on a subobject other than a union member, or with a qualified name, an
 `operator->`,
 a failed `dynamic_cast` to a reference outside constant evaluation, a
 destructor with an exception specification, a

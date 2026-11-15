@@ -79,7 +79,13 @@ pub fn can_throw(cx: &Check, e: &Expr) -> bool {
             _ => false,
         }
     }
+    // DTOR-4: a destructor that can throw.
+    let dtor_throws = |t: &QType| t.base_elem().class().is_some_and(|c| !crate::classes::constructors::check::dtor_nothrow(cx, c));
     e.any(&|x| match &x.k {
+        // A temporary of class type ends in the expression.
+        _ if x.cat == crate::sem::tree::Cat::PR && x.ty.is_class() && dtor_throws(&x.ty) => true,
+        EK::Destroy(o) => dtor_throws(&o.ty),
+        EK::Delete(p, ..) => p.ty.pointee().is_some_and(dtor_throws),
         EK::List(i) => ctor_throws(cx, i),
         // The allocation can fail (NEW-38), unless its function is
         // non-throwing (NEW-31); the initialization can throw.
