@@ -177,7 +177,13 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                 if !p.nonref().is_class() {
                     return None;
                 }
-                crate::classes::operators::check::user_conversion(cx, a, p).or_else(|| crate::classes::conversion_functions::check::user_sequence(cx, a, p))
+                crate::classes::operators::check::user_conversion(cx, a, p).or_else(|| crate::classes::conversion_functions::check::user_sequence(cx, a, p)).map(|mut s| {
+                    // The reference binds the result of the conversion.
+                    if let crate::sem::types::Type::Ref(inner, rv) = &p.t {
+                        s.binds = Some((*rv, true, (**inner).clone()));
+                    }
+                    s
+                })
             });
             match s {
                 Some(s) => seqs.push(s),

@@ -1112,7 +1112,13 @@ pub fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Opti
             }
         }
         cx.u.diags.truncate(marks);
-        worst.extra.unknown_bound = matches!(target.t, Type::Array(_, None));
+        // ICS-23, ICS-46: an array of unknown bound, or one with more
+        // elements than the list, loses.
+        worst.extra.unknown_bound = match target.t {
+            Type::Array(_, None) => true,
+            Type::Array(_, Some(n)) => n > its.len() as u64,
+            _ => false,
+        };
         return Some(worst);
     }
     match &one {

@@ -2512,3 +2512,15 @@ fn standard_sequence_tie_breakers() {
     // void*; a fixed enumeration's own type wins; fewer cv-qualifiers win.
     assert_eq!(rule(&format!("{} int* p; One a(bool); Two a(void*); static_assert(same<decltype(a(p)), Two>); struct B {{}}; struct M : B {{}}; struct D : M {{}}; D* dp; One b(B*); Two b(M*); static_assert(same<decltype(b(dp)), Two>); One c(B*); Two c(void*); static_assert(same<decltype(c(dp)), One>); enum L : short {{ lo }}; One e(short); Two e(int); static_assert(same<decltype(e(lo)), One>); One q(const int*); Two q(const volatile int*); static_assert(same<decltype(q(p)), One>);", same)), None);
 }
+
+#[test]
+fn more_sequence_tie_breakers() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let same = "template <class T, class U> constexpr bool same = false; template <class T> constexpr bool same<T, T> = true; struct One {}; struct Two {};";
+    assert_eq!(rule(&format!("{} void run(); One f(void (&)()); Two f(void (&&)()); static_assert(same<decltype(f(run)), One>); One g(int (&&)[2]); Two g(int (&&)[3]); static_assert(same<decltype(g({{1, 2}})), One>); int (*row)[3]; One h(const int (*)[3]); Two h(const int (*)[]); static_assert(same<decltype(h(row)), One>);", same)), None);
+    assert_eq!(rule(&format!("{} struct I {{}}; struct S {{ operator I(); }}; S s; One t(I&&); Two t(const I&); static_assert(same<decltype(t(s)), One>);", same)), None);
+}

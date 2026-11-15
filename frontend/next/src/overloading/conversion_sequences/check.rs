@@ -141,6 +141,7 @@ fn rank_inner(cx: &Check, from: &QType, to: &QType, null: bool, x: &mut Extra) -
             }
             // A function pointer that loses `noexcept` is an exact match
             // (ICS-2's function pointer conversion).
+            x.qual_target = Some(t.clone());
             Some((Rank::Exact, true))
         }
         // MPTR rules: a pointer to a member of a base converts to one of a
@@ -198,7 +199,8 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
         let compatible = same && (!at.c || inner.c) && (!at.v || inner.v);
         if compatible && ((lvalue && !rv) || (!lvalue && (*rv || (inner.c && !inner.v)))) {
             // ICS-11: a direct binding is the identity.
-            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None, extra: Default::default() });
+            let extra = Extra { func_lref: at.is_func().then_some(!*rv), ..Default::default() };
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: Some((*rv, !lvalue, (**inner).clone())), ellipsis: false, user: None, extra });
         }
         if at.is_func() && inner.t == at.t {
             let extra = Extra { func_lref: Some(!*rv), ..Default::default() };
@@ -258,7 +260,10 @@ pub fn better(a: &Ics, b: &Ics) -> bool {
     // sequence after it; by two functions, neither is better.
     if a.rank == Rank::User {
         return match (a.user, b.user) {
-            (Some((f, x)), Some((g, y))) => f == g && x < y,
+            (Some((f, x)), Some((g, y))) if f == g && x != y => x < y,
+            // ICS-28: the same function, and an rvalue reference that
+            // binds the result beats an lvalue reference.
+            (Some((f, _)), Some((g, _))) if f == g => matches!((&a.binds, &b.binds), (Some((true, true, _)), Some((false, true, _)))),
             _ => false,
         };
     }
@@ -330,6 +335,8 @@ fn cv_within(a: &QType, b: &QType) -> bool {
     }
     match (&a.t, &b.t) {
         (Type::Ptr(x), Type::Ptr(y)) => cv_within(x, y),
+        // ICS-31: an array of known bound is within one of unknown bound.
+        (Type::Array(x, _), Type::Array(y, None)) => cv_within(x, y),
         (s, t) => s == t,
     }
 }

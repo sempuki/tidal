@@ -214,7 +214,14 @@ fn array_reference(cx: &mut Check, ty: &QType, b: &Node) -> Option<Expr> {
 /// takes.
 pub fn braced_argument(cx: &mut Check, b: &Node, p: &QType) -> Option<Expr> {
     if p.is_ref() && p.nonref().is_array() {
-        return array_reference(cx, p, b);
+        // An rvalue reference parameter takes the temporary as an xvalue.
+        let rv = matches!(p.t, Type::Ref(_, true));
+        return array_reference(cx, p, b).map(|mut e| {
+            if rv {
+                e.cat = Cat::X;
+            }
+            e
+        });
     }
     crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7")
 }
