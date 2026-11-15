@@ -182,18 +182,14 @@ pub fn fold_expr(cx: &mut Check, n: &Node) -> Expr {
         "," => "expression",
         _ => return unsupported(cx, "a fold of this operator"),
     };
-    let placeholder = |span| Kid::Node(Node { prod: "prechecked", ext: None, span, kids: Vec::new() });
     let combine = |cx: &mut Check, a: Expr, b: Expr| -> Expr {
         let mut a = a;
         let mut b = b;
         a.paren = true;
         b.paren = true;
-        let syn = Node { prod, ext: None, span, kids: vec![placeholder(a.span), Kid::Tok(op_tok), placeholder(b.span)] };
-        cx.prechecked.push_back(a);
-        cx.prechecked.push_back(b);
-        let e = crate::expressions::check::expr(cx, &syn);
-        cx.prechecked.clear();
-        e
+        let (sa, sb) = (a.span, b.span);
+        let syn = Node { prod, ext: None, span, kids: vec![Kid::Node(prechecked(cx, a, sa)), Kid::Tok(op_tok), Kid::Node(prechecked(cx, b, sb))] };
+        crate::expressions::check::expr(cx, &syn)
     };
     let mut it = es.into_iter();
     let mut acc;
@@ -211,4 +207,55 @@ pub fn fold_expr(cx: &mut Check, n: &Node) -> Expr {
     }
     acc.paren = true;
     acc
+}
+
+/// A node that stands for the checked expression `e`, which `expr`
+/// takes once (PACK rules).
+pub fn prechecked(cx: &mut Check, e: Expr, span: crate::source::Span) -> Node {
+    cx.prechecked.push(Some(e));
+    Node { prod: "prechecked", ext: None, span, kids: vec![Kid::Deferred(cx.prechecked.len() - 1)] }
+}
+
+/// PACK rules: `n` with each argument `E...` of its parenthesized or
+/// braced list replaced by the arguments of the expansion, checked
+/// already. None when the list holds no expansion, or one that the
+/// front end does not model.
+pub fn rewrite(cx: &mut Check, n: &Node) -> Option<Node> {
+    let k = n.kids.iter().position(|k| matches!(k, Kid::Node(c) if matches!(c.prod, "expression_list" | "braced_init") && has_expansion(cx, c)))?;
+    let Kid::Node(list) = &n.kids[k] else { return None };
+    let new_list = rewrite_list(cx, list)?;
+    let mut out = n.clone();
+    out.kids[k] = Kid::Node(new_list);
+    Some(out)
+}
+
+/// A list's `...` after an argument or an initializer clause.
+fn has_expansion(cx: &Check, list: &Node) -> bool {
+    list.kids.windows(2).any(|w| matches!(&w[0], Kid::Node(c) if matches!(c.prod, "argument" | "init_clause")) && matches!(&w[1], t @ Kid::Tok(_) if cx.text(t) == "..."))
+}
+
+/// The list `list` with its expansions replaced.
+pub fn rewrite_list(cx: &mut Check, list: &Node) -> Option<Node> {
+    let mut kids = Vec::new();
+    let mut i = 0;
+    while i < list.kids.len() {
+        let kid = &list.kids[i];
+        let next_ell = matches!(list.kids.get(i + 1), Some(t @ Kid::Tok(_)) if cx.text(t) == "...");
+        match kid {
+            Kid::Node(a) if next_ell && matches!(a.prod, "argument" | "init_clause") => {
+                let es = expand(cx, a, |cx, p| crate::expressions::check::expr(cx, p))?;
+                for e in es {
+                    let span = e.span;
+                    let p = prechecked(cx, e, span);
+                    kids.push(Kid::Node(Node { prod: a.prod, ext: None, span: a.span, kids: vec![Kid::Node(p)] }));
+                }
+                i += 2;
+            }
+            _ => {
+                kids.push(kid.clone());
+                i += 1;
+            }
+        }
+    }
+    Some(Node { prod: list.prod, ext: list.ext, span: list.span, kids })
 }

@@ -271,9 +271,9 @@ pub struct Check<'a> {
     /// A pack expansion's pattern is being checked: a declarator's `...`
     /// belongs to the expansion.
     pub expanding: bool,
-    /// The operands that a fold has checked, which `prechecked` nodes take
-    /// in order (PACK rules).
-    pub prechecked: std::collections::VecDeque<crate::sem::tree::Expr>,
+    /// The operands that a fold or an expansion has checked, which
+    /// `prechecked` nodes name by index (PACK rules).
+    pub prechecked: Vec<Option<crate::sem::tree::Expr>>,
     /// The lambda expressions whose bodies enclose the point of the
     /// check, innermost last.
     pub lambdas: Vec<LambdaCtx>,

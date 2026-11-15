@@ -46,9 +46,13 @@ pub fn expr(cx: &mut Check, n: &Node) -> Expr {
         "throw_expr" => crate::exceptions::throw::check::throw_expr(cx, n),
         "fold_expr" => crate::templates::packs::check::fold_expr(cx, n),
         // An operand that a fold checked already.
-        "prechecked" => match cx.prechecked.pop_front() {
-            Some(e) => return e,
-            None => error(cx, n),
+        "prechecked" => match n.kids.first() {
+            // A list can check its argument twice (LIST-3).
+            Some(Kid::Deferred(id)) => match cx.prechecked.get(*id).cloned().flatten() {
+                Some(e) => return e,
+                None => error(cx, n),
+            },
+            _ => error(cx, n),
         },
         "decltype_spec" | "decltype_expr" => {
             let t = decltype::check::decltype_spec(cx, n);

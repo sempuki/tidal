@@ -36,7 +36,10 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
     for tp in head.child("template_params")?.children("template_param") {
         // TARG-13: a constant parameter of integral or enumeration type.
         if let Some(p) = tp.child("constant_param").and_then(|c| c.child("parameter")).filter(|_| !pack) {
-            if cx.words(p).contains(&"...") || p.find("ptr_part").is_some() {
+            // A constant parameter pack waits for a later piece.
+            let mut toks = Vec::new();
+            p.tokens(&mut toks);
+            if toks.iter().any(|&t| cx.toks[t].text == "...") || p.find("ptr_part").is_some() {
                 return None;
             }
             // The default is the expression after `=`.
@@ -320,6 +323,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     if c_linkage(cx, n) {
         return true;
     }
+    if fold_expanded(cx, n) {
+        return true;
+    }
     let Some((params, defaults, constraints, pack)) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
     cx.head_pack = pack;
     // Constraints wait for a later piece outside a function template.
@@ -494,6 +500,58 @@ fn expands_no_pack(cx: &mut Check, fd: &Node) -> bool {
         if t == "..." && (name || prev == ")") {
             let span = cx.toks[w[1]].span;
             cx.error(span, "PACK-8", "an expansion whose pattern holds no pack");
+            return true;
+        }
+    }
+    false
+}
+
+/// PACK-8: `( ... )...` whose parenthesized pattern is a fold, which
+/// expands its pack itself, so the outer expansion holds no pack.
+fn fold_expanded(cx: &mut Check, n: &Node) -> bool {
+    let Some(d) = n.child("declaration") else { return false };
+    let mut toks = Vec::new();
+    d.tokens(&mut toks);
+    let w: Vec<&str> = toks.iter().map(|&t| cx.toks[t].text.as_str()).collect();
+    for i in 1..w.len() {
+        if w[i] != "..." || w[i - 1] != ")" {
+            continue;
+        }
+        // The group that the `)` closes.
+        let mut depth = 0;
+        let mut j = i - 1;
+        loop {
+            match w[j] {
+                ")" => depth += 1,
+                "(" => {
+                    depth -= 1;
+                    if depth == 0 {
+                        break;
+                    }
+                }
+                _ => {}
+            }
+            if j == 0 {
+                return false;
+            }
+            j -= 1;
+        }
+        // A fold: `...` beside an operator at the group's top level, with
+        // no call or cast before the group.
+        let inner = &w[j + 1..i - 1];
+        let call = j > 0 && (is_word(w[j - 1]) || matches!(w[j - 1], ">" | ")" | "]"));
+        let mut depth = 0;
+        let top_fold = inner.iter().enumerate().any(|(k, t)| {
+            match *t {
+                "(" | "[" | "{" => depth += 1,
+                ")" | "]" | "}" => depth -= 1,
+                _ => {}
+            }
+            depth == 0 && *t == "..." && (k > 0 && !is_word(inner[k - 1]) && !matches!(inner[k - 1], ")" | ">" | "]") || k + 1 < inner.len() && !is_word(inner[k + 1]) && !matches!(inner[k + 1], "(" | ")"))
+        });
+        if !call && top_fold {
+            let span = cx.toks[toks[i]].span;
+            cx.error(span, "PACK-8", "an expansion whose pattern is a fold, which holds no unexpanded pack");
             return true;
         }
     }

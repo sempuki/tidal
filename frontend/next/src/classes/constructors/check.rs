@@ -554,6 +554,9 @@ pub fn out_of_class(cx: &mut Check, n: &Node) -> bool {
 /// The arguments of a parenthesized list or a braced list.
 fn arg_exprs(cx: &mut Check, n: Option<&Node>, braced: bool) -> Option<Vec<Expr>> {
     let Some(n) = n else { return Some(Vec::new()) };
+    // PACK rules: the expansions of the list.
+    let rewritten = crate::templates::packs::check::rewrite_list(cx, n);
+    let n = rewritten.as_ref().unwrap_or(n);
     let items: Vec<&Node> = if braced { n.children("init_clause").collect() } else { n.children("argument").collect() };
     let mut out = Vec::new();
     for it in items {

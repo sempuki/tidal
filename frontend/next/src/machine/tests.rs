@@ -2777,3 +2777,17 @@ fn fold_expressions() {
     assert_eq!(rule("template <class... A> constexpr int f(A... a) { return (a + ...) + (... * a) + (1 + ... + a) + (a - ... - 0); } static_assert(f(1, 2, 3) == 6 + 6 + 7 + 2); template <class... A> constexpr bool all(A... a) { return (a && ...); } static_assert(all() && all(true, true) && !all(true, false)); template <class... A> constexpr int left(A... a) { return (... - a); } static_assert(left(10, 2, 3) == 5);"), None);
     assert_eq!(rule("template <class... A> constexpr int sum(A... a) { return (a + ...); } int x = sum();"), Some("unsupported"));
 }
+
+#[test]
+fn expansions_in_initializers_and_construct_at() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let ca = "inline void* operator new(decltype(sizeof 0), void* where) noexcept { return where; } namespace std { template <class T, class... Args> constexpr T* construct_at(T* location, Args&&... args) { return ::new (static_cast<void*>(location)) T(static_cast<Args&&>(args)...); } }";
+    assert_eq!(rule(&format!("{} struct Span {{ int low, high; constexpr Span(int a, int b) : low(a), high(b) {{}} }}; constexpr int rebuild() {{ Span span{{1, 2}}; span.~Span(); Span* fresh = std::construct_at(&span, 10, 20); return fresh->low + span.high; }} static_assert(rebuild() == 30);", ca)), None);
+    assert_eq!(rule(&format!("{} int global = 1; constexpr bool reset() {{ std::construct_at(&global, 5); return true; }} static_assert(reset());", ca)), Some("SA-7"));
+    assert_eq!(rule("template <class... T> constexpr int first(T... x) { int values[] = {x..., 0}; return values[0]; } static_assert(first(7, 8) == 7 && first() == 0);"), None);
+    assert_eq!(rule("template <class... T> int take(T...); template <int... N> void sum() { take((N + ...)...); }"), Some("PACK-8"));
+}

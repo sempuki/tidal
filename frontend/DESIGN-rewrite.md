@@ -548,7 +548,11 @@ pattern names the template's pack: deduction takes the arguments after
 the others for it, explicit arguments give its first elements, and a
 specialization has one parameter for each element, which the pack's
 name names (`EntKind::Pack`). `E...` in a call's arguments expands to
-one argument for each element; `sizeof...` gives the length.
+one argument for each element, as do expansions in a parenthesized or
+braced initializer, a functional cast, and a constructor's arguments,
+which the check replaces with arguments checked already
+(`prechecked`); `sizeof...` gives the length. A fold expanded as the
+whole pattern of another expansion is an error.
 A fold applies its operator between the elements of its pattern's
 expansion, right to left or left to right, with the initial value at
 the far end; an empty unary fold of `&&`, `||`, or `,` has its value,

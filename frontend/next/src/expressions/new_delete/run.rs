@@ -18,7 +18,9 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
     let user = n.alloc.as_ref().filter(|a| !is_library(m, a.f));
     let mut place = Vec::new();
     if let Some(a) = user {
-        if m.constant {
+        // LSUP-10: the placement `new` of `std::construct_at` creates the
+        // object in constant evaluation.
+        if m.constant && !in_construct_at(m) {
             return limit("NEW-37", "a new expression whose allocation function the program gives");
         }
         for arg in &a.args {
@@ -29,6 +31,15 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
                 m.elide = true;
                 Ret::Val(crate::machine::eval::eval_any(m, &arg.e)?)
             });
+        }
+        // LSUP-10: in constant evaluation, the object at the place began
+        // its lifetime in the same evaluation (CE-5).
+        if m.constant {
+            if let Some(Ret::Val(crate::machine::Val::Ptr(p))) = place.last() {
+                if let Some(o) = m.objs.get(p.obj).filter(|o| !o.own) {
+                    return limit("CE-5", format!("a placement new in {}, which the evaluation did not create", o.name));
+                }
+            }
         }
     }
     let count = match &n.bound {
@@ -61,7 +72,13 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
                 vals.push(Ret::Val(Val::Int(m.target.align_of(m.u, &n.ty).unwrap_or(1) as i128)));
             }
             vals.extend(place.iter().cloned());
-            match crate::machine::eval::call(m, a.f, vals)? {
+            // LSUP-7, LSUP-10: in constant evaluation, the placement form
+            // that std::construct_at calls gives its pointer.
+            let r = match place.as_slice() {
+                [Ret::Val(Val::Ptr(p))] if m.constant && placement_form(m, a.f) => Ok(Ret::Val(Val::Ptr(p.clone()))),
+                _ => crate::machine::eval::call(m, a.f, vals),
+            };
+            match r? {
                 // NEW-31: a null result initializes nothing; NEW-32: only a
                 // non-throwing function can give one.
                 Ret::Val(Val::Null) if m.u.func(a.f).is_some_and(|x| x.ty.noexcept) => return Ok(Val::Null),
@@ -69,6 +86,23 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
                 Ret::Val(Val::Ptr(p)) => create_at(m, p, &ty, count.is_some())?,
                 _ => return unsup("the result of an allocation function of this form"),
             }
+        }
+        // LSUP-7: the implementation's non-allocating placement form
+        // creates the object at its pointer.
+        None if n.alloc.as_ref().is_some_and(|a| a.args.len() == 1 && placement_form(m, a.f)) => {
+            let a = n.alloc.as_ref().unwrap();
+            let p = match crate::machine::eval::eval_any(m, &a.args[0].e)? {
+                Val::Ptr(p) => p,
+                Val::Null => return ub("NEW-31", "a placement new at a null pointer"),
+                _ => return unsup("a placement argument of this form"),
+            };
+            if m.constant && !in_construct_at(m) {
+                return limit("NEW-37", "a placement new outside std::construct_at");
+            }
+            if m.constant && m.objs.get(p.obj).is_some_and(|o| !o.own) {
+                return limit("CE-5", format!("a placement new in {}, which the evaluation did not create", m.objs[p.obj].name));
+            }
+            create_at(m, p, &ty, count.is_some())?
         }
         None => {
             let o = m.new_obj(&ty, m.uninit(&ty), "the object that new created");
@@ -158,6 +192,26 @@ fn release(m: &mut Machine, n: &New, target: &Ptr, ty: &QType, place: Vec<Ret>) 
 
 /// A global allocation or deallocation function that the program does
 /// not define, whose body the implementation gives (NEW-19).
+/// LSUP-7: a non-allocating placement form, `operator new(std::size_t,
+/// void*)`.
+fn placement_form(m: &Machine, f: crate::sem::EntityId) -> bool {
+    m.u.func(f).is_some_and(|x| x.ty.params.len() == 2 && x.ty.params[1].pointee().is_some_and(|q| q.is_void()))
+}
+
+/// LSUP-10: the innermost frame runs `std::construct_at`, a function
+/// template of namespace `std`.
+fn in_construct_at(m: &Machine) -> bool {
+    let Some(f) = m.frames.last().and_then(|fr| fr.func) else { return false };
+    if &*m.u.entities[f].name != "construct_at" {
+        return false;
+    }
+    let mut s = m.u.entities[f].scope;
+    while m.u.scopes[s].kind == crate::sem::ScopeKind::Template {
+        s = m.u.scopes[s].parent.unwrap_or(m.u.root);
+    }
+    m.u.scopes[s].name.as_ref() == "std" && m.u.scopes[s].parent == Some(m.u.root)
+}
+
 pub fn is_library(m: &Machine, f: crate::sem::EntityId) -> bool {
     let f = crate::expressions::postfix::run::defining(m, f);
     (m.u.library.contains(&f) || nothrow_form(m, f)) && m.body(f).is_none()
@@ -189,6 +243,16 @@ fn create_at(m: &mut Machine, p: Ptr, ty: &QType, array: bool) -> R<Ptr> {
             return ub("STG-17", format!("a new object of type {} at an address that is not aligned for it", ty.show()));
         }
     }
+    // A pointer that a cast to `void*` gave still points to its object
+    // (LSUP-10).
+    let p = match &p.view {
+        Some(_) if !array => {
+            let mut q = p.clone();
+            q.view = None;
+            if m.type_at(&q).is_some_and(|t| t.unqual() == ty.unqual()) { q } else { p }
+        }
+        _ => p,
+    };
     if p.view.is_none() && !array && m.type_at(&p).is_some_and(|t| t.unqual() == ty.unqual()) {
         crate::classes::unions::run::begin_path(m, &p)?;
         // The new object begins its life where an explicit destructor

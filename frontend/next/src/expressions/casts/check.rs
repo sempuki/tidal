@@ -347,6 +347,9 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
         let Some(e) = crate::declarations::initialization::list::check::scalar_list(cx, b, &to, "CAST-11") else { return bad(span) };
         return e;
     }
+    // PACK rules: the expansions of the list.
+    let rewritten = crate::templates::packs::check::rewrite(cx, n);
+    let n = rewritten.as_ref().unwrap_or(n);
     let args: Vec<&Node> = n.child("expression_list").map(|l| l.children("argument").collect()).unwrap_or_default();
     // NAM-40: a function or variable of the class's name hides the class,
     // so the form is a call, which the parser read as a cast.

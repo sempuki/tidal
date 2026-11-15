@@ -161,6 +161,9 @@ pub fn is_read(cx: &Check, id: EntityId) -> bool {
 /// The initializer of a variable from its `init` node (INIT-2 to INIT-8;
 /// lists in `list`, references in `references`).
 pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Option<Init> {
+    // PACK rules: the expansions of a parenthesized or braced list.
+    let rewritten = crate::templates::packs::check::rewrite(cx, init);
+    let init = rewritten.as_ref().unwrap_or(init);
     let words = cx.words(init);
     let ns = nodes(init);
     if ty.is_ref() {
