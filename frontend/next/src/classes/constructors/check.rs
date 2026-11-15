@@ -495,10 +495,7 @@ pub fn out_of_class(cx: &mut Check, n: &Node) -> bool {
         }
         return true;
     }
-    if dn.find("parameter").is_some_and(|_| cx.source(dn).contains('=')) {
-        cx.unsupported(dn.span, "a default argument on an out-of-class constructor definition (build step 4)");
-        return true;
-    }
+    let added = dn.find("parameter").is_some_and(|_| cx.source(dn).contains('='));
     let specs = Specs { ty: Some(QType::void()), ..Default::default() };
     let saved = cx.scope;
     let outer = cx.member_of.replace(c);
@@ -509,6 +506,23 @@ pub fn out_of_class(cx: &mut Check, n: &Node) -> bool {
     let ty = d.ty.func().cloned();
     let found = ctors(cx, c).into_iter().find(|&f| cx.u.func(f).is_some_and(|x| Some(&*x.ty) == ty.as_ref()));
     cx.scope = saved;
+    // DEFARG-12: a default argument outside the class must not make the
+    // constructor a default, copy, or move constructor.
+    if added {
+        if let (Some(f), Some(fty)) = (found, ty.as_ref()) {
+            let before: Vec<bool> = (0..fty.params.len()).map(|k| cx.u.func(f).is_some_and(|x| x.defaults.get(k).is_some_and(|d| d.is_some()))).collect();
+            let after: Vec<bool> = (0..fty.params.len()).map(|k| before[k] || d.params.get(k).is_some_and(|p| p.default.is_some())).collect();
+            let special = |dflt: &[bool]| dflt.iter().all(|&x| x) || fty.params.first().is_some_and(|p| p.is_ref() && p.nonref().class() == Some(c)) && dflt[1..].iter().all(|&x| x);
+            if special(&after) && !special(&before) {
+                cx.error(dn.span, "DEFARG-12", format!("the default argument outside the class makes a constructor of '{}' a default, copy, or move constructor", cname));
+                cx.member_of = outer;
+                return true;
+            }
+        }
+        cx.unsupported(dn.span, "a default argument on an out-of-class constructor definition (build step 4)");
+        cx.member_of = outer;
+        return true;
+    }
     match found {
         Some(f) if !cx.u.func(f).unwrap().defined => {
             cx.scope = cx.u.classes[c].scope;

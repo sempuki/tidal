@@ -2250,3 +2250,14 @@ fn delete_of_a_class_operand() {
     assert_eq!(rule("struct S {}; void f(S s) { delete s; }"), Some("NEW-8"));
     assert_eq!(rule("struct S { operator int*(); operator long*(); }; void f(S s) { delete s; }"), Some("NEW-15"));
 }
+
+#[test]
+fn default_arguments_that_make_special_constructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct C { int v; C(int x); }; C::C(int x = 5) : v(x) {}"), Some("DEFARG-12"));
+    assert_eq!(rule("struct C { C(); C(const C&, int); }; C::C(const C&, int = 0) {}"), Some("DEFARG-12"));
+}
