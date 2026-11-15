@@ -549,9 +549,15 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                 }
                 return true;
             }
-            if specs.is_extern || specs.thread_local {
-                cx.unsupported(m.span, "a member of this kind (extern or thread_local; build step 4)");
-                return false;
+            // CLS-9: no `extern` member, and `thread_local` only on a
+            // static data member (CLS-16).
+            if specs.is_extern {
+                cx.error(m.span, "CLS-9", "an extern member");
+                return true;
+            }
+            if specs.thread_local && !specs.is_static {
+                cx.error(m.span, "CLS-9", "a thread_local member that is not static");
+                return true;
             }
             // A nested class or enumeration: a member type with its access.
             if specs.defines_type && m.children("member_declarator").next().is_none() {

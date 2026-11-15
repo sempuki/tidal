@@ -1949,3 +1949,15 @@ fn bit_field_widths_of_class_type() {
     assert_eq!(rule("struct W { constexpr operator int() const { return 3; } constexpr operator long() const { return 3; } }; struct S { int b : W(); };"), Some("BF-2"));
     assert_eq!(rule("struct W { ~W() {} constexpr operator int() const { return 3; } }; struct S { int b : W(); };"), Some("BF-2"));
 }
+
+#[test]
+fn thread_local_and_extern_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct C { static thread_local int total; }; thread_local int C::total = 10; int main() { C::total += 1; return C::total; }"), RunOutcome::Result(11));
+    assert_eq!(rule("struct S { extern int v; };"), Some("CLS-9"));
+    assert_eq!(rule("struct S { thread_local int v; };"), Some("CLS-9"));
+}
