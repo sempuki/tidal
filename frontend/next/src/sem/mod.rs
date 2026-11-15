@@ -146,6 +146,21 @@ pub enum EntKind {
     ClassTemplate(usize),
     /// An alias template, by its index in `Unit::alias_templates`.
     AliasTemplate(usize),
+    /// A concept, by its index in `Unit::concepts`.
+    Concept(usize),
+}
+
+/// A concept (`templates/concepts`): its parameters and its constraint
+/// expression.
+#[derive(Clone, Debug)]
+pub struct Concept {
+    pub name: Rc<str>,
+    pub params: Vec<Rc<str>>,
+    pub kinds: Vec<Option<QType>>,
+    pub node: crate::syntax::Node,
+    pub scope: ScopeId,
+    pub span: Span,
+    pub limit: EntityId,
 }
 
 /// An alias template (TPL rules): its parameters and the type-id that a
@@ -242,6 +257,9 @@ pub struct FnTemplate {
     pub explicit: Vec<EntityId>,
     /// The class of a member function template.
     pub class: Option<types::ClassId>,
+    /// The constraints: a requires clause (None) or the type constraint
+    /// of a parameter (its index), each with its node (CNS-1).
+    pub constraints: Vec<(Option<usize>, crate::syntax::Node)>,
     pub span: Span,
     /// The first entity declared after the template (DEP-10).
     pub limit: EntityId,
@@ -404,6 +422,7 @@ pub struct Unit {
     /// The class templates (`EntKind::ClassTemplate`).
     pub class_templates: Vec<ClassTemplate>,
     pub alias_templates: Vec<AliasTemplate>,
+    pub concepts: Vec<Concept>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -500,6 +519,7 @@ impl Default for Unit {
             var_templates: Vec::new(),
             class_templates: Vec::new(),
             alias_templates: Vec::new(),
+            concepts: Vec::new(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }

@@ -18,6 +18,7 @@ pub fn primary(cx: &mut Check, n: &Node) -> Expr {
         [Kid::Node(c)] => match c.prod {
             "literal" => literal(cx, c),
             "id_expression" => id_expression(cx, c),
+            "requires_expression" => crate::templates::concepts::check::requires_expression(cx, c),
             _ => expr(cx, c),
         },
         // LAM-8: `this` in a lambda body names the captured object.
@@ -248,8 +249,12 @@ pub fn find(cx: &mut Check, n: &Node) -> Option<(Vec<EntityId>, &'static str, St
 
 /// `id_expression` as an operand.
 pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
-    // TARG-1: a specialization of a variable template.
+    // TARG-1: a specialization of a variable template, or a concept-id
+    // (CPT-1).
     if let Some(tid) = n.child("unqualified_id").and_then(|u| u.child("template_id")) {
+        if let Some(e) = crate::templates::concepts::check::concept_use(cx, tid) {
+            return e;
+        }
         if let Some(e) = crate::templates::declarations::check::var_template_use(cx, tid) {
             return e;
         }
@@ -417,7 +422,7 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, format!("the function template '{}' named outside a call", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
-        EntKind::VarTemplate(_) | EntKind::ClassTemplate(_) | EntKind::AliasTemplate(_) => {
+        EntKind::VarTemplate(_) | EntKind::ClassTemplate(_) | EntKind::AliasTemplate(_) | EntKind::Concept(_) => {
             let t = cx.unsupported(span, format!("the variable template '{}' named without arguments", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }

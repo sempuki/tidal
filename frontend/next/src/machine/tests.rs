@@ -2700,3 +2700,21 @@ fn member_function_templates() {
     assert_eq!(run("struct S { int base = 10; template <class T> int f(T v) const { return base + sizeof(v); } int g() const { return f('a'); } }; template <class U> struct W { U u; template <class T> U add(T t) { return u + t; } }; int main() { S s; W<int> w{5}; return s.f(1) + s.g() + w.add(2L) + s.f<short>(1); }"), RunOutcome::Result(44));
     assert_eq!(rule("int use() { struct Local { template <class T> T get(T v) { return v; } }; return Local().get(1); }"), Some("TPL-2"));
 }
+
+#[test]
+fn concepts_and_constraints() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let base = "template <class T> concept Small = sizeof(T) <= 4; struct HasType { using type = int; int v; HasType operator+(HasType) const; }; template <class T> concept Addable = requires (T a, T b) { a + b; typename T::type; { a.v } -> Small; requires Small<int>; };";
+    assert_eq!(rule(&format!("{} template <class T> requires Small<T> constexpr int f(T) {{ return 1; }} template <Small T> constexpr int g(T) {{ return 2; }} template <class T> constexpr int k(T) requires Small<T> {{ return 4; }} static_assert(Small<int> && !Small<double>); static_assert(Addable<HasType> && !Addable<int>); static_assert(f(1) + g('a') + k(2) == 7);", base)), None);
+    assert_eq!(rule(&format!("{} template <Small T> int g(T) {{ return 2; }} int x = g(1.0);", base)), Some("OVL-35"));
+    assert_eq!(rule("template <class T> concept Loop = sizeof(T) > 1 && Loop<T*>;"), Some("CPT-6"));
+    assert_eq!(rule("template <class T> concept Usable = requires (T t) { use(t); }; template <Usable T> void use(T); struct Item {}; bool usable = Usable<Item>;"), Some("CNS-35"));
+    assert_eq!(rule("int inner() requires (sizeof(int) > 1);"), Some("CPT-14"));
+    // ICS-45: an explicit conversion function whose result reaches the
+    // target by a qualification adjustment alone.
+    assert_eq!(rule("struct P { explicit operator int*(); }; struct R { explicit operator int&(); }; P p; R r; void f() { static_cast<const int*>(p); static_cast<const int&>(r); }"), None);
+}

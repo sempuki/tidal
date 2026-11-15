@@ -480,7 +480,7 @@ fn associated_in(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId
 /// those of its inline namespaces. Names that are not functions are
 /// skipped.
 pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QType]) -> Vec<EntityId> {
-    argument_dependent_with(cx, name, args, cx.lookup_limit)
+    argument_dependent_with(cx, name, args, cx.lookup_limit.filter(|_| !cx.adl_at_check))
 }
 
 /// `argument_dependent`, leaving out the functions from `limit` on.
@@ -550,7 +550,7 @@ fn argument_dependent_with(cx: &Check, name: &str, args: &[crate::sem::types::QT
 /// DEP-9: argument-dependent lookup finds a function declared after the
 /// template whose specialization is being checked.
 pub fn late_argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QType]) -> bool {
-    let Some(limit) = cx.lookup_limit else { return false };
+    let Some(limit) = cx.lookup_limit.filter(|_| !cx.adl_at_check) else { return false };
     argument_dependent_with(cx, name, args, None).into_iter().any(|e| e >= limit)
 }
 

@@ -252,6 +252,20 @@ pub struct Check<'a> {
     /// of instantiations went past it.
     pub depth_limit: u32,
     pub depth_exceeded: bool,
+    /// The last `call_candidates` dropped a deduced specialization whose
+    /// arguments did not satisfy the template's constraints (CNS-11).
+    pub constraints_failed: bool,
+    /// The parameter names of the constraint being checked (CPT-27).
+    pub constraint_names: Vec<Rc<str>>,
+    /// The concept satisfactions being checked, and whether one needed
+    /// its own result (CNS-35).
+    pub satisfying: Vec<(usize, Vec<crate::sem::types::TArg>)>,
+    pub satisfaction_loop: bool,
+    /// Argument-dependent lookup sees the declarations up to the point of
+    /// a concept's check, whatever `lookup_limit` says (CNS-7).
+    pub adl_at_check: bool,
+    /// The first result of each concept satisfaction (CNS-10).
+    pub satisfactions: Vec<(usize, Vec<crate::sem::types::TArg>, bool)>,
     /// The lambda expressions whose bodies enclose the point of the
     /// check, innermost last.
     pub lambdas: Vec<LambdaCtx>,
@@ -262,7 +276,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), binding_decl: HashMap::new(), template_constants: Default::default(), bit_binding_uses: Vec::new(), access_class: None, lookup_limit: None, declarator_made_part: false, instantiating: 0, explicit_head: false, depth_limit: 256, depth_exceeded: false, lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), binding_decl: HashMap::new(), template_constants: Default::default(), bit_binding_uses: Vec::new(), access_class: None, lookup_limit: None, declarator_made_part: false, instantiating: 0, explicit_head: false, depth_limit: 256, depth_exceeded: false, constraints_failed: false, constraint_names: Vec::new(), satisfying: Vec::new(), satisfaction_loop: false, adl_at_check: false, satisfactions: Vec::new(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

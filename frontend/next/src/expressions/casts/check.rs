@@ -78,6 +78,18 @@ fn try_cast(cx: &mut Check, k: Kind, e: &Expr, to: &QType) -> Result<Expr, (&'st
                 }
             }
         }
+        // ICS-45, CVF-3: a conversion function, also an explicit one,
+        // whose result binds the reference directly.
+        if matches!(k, Kind::Static) && !same && crate::classes::conversion_functions::check::converting_class(cx, &e).is_some() {
+            if let Some(Ok(x)) = crate::classes::conversion_functions::check::convert(cx, &e, to, true) {
+                let x = deref_ref(x);
+                let fits = x.ty.unqual().t == inner.unqual().t && (!x.ty.c || inner.c) && (!x.ty.v || inner.v);
+                if fits && (x.cat != Cat::PR || *rv) {
+                    let x = if x.cat == Cat::PR { x.conv(Conv::Materialize, (**inner).clone(), Cat::X) } else { x };
+                    return Ok(Expr::new(EK::Conv(Conv::NoOp, Box::new(x)), (**inner).clone(), cat, span));
+                }
+            }
+        }
         return match k {
             Kind::Const if same && e.cat != Cat::PR => Ok(Expr::new(EK::Conv(Conv::NoOp, Box::new(e)), (**inner).clone(), cat, span)),
             Kind::Static if same && (!e.ty.c || inner.c) && (!e.ty.v || inner.v) && (e.cat != Cat::PR || *rv || inner.c) => {

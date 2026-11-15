@@ -17,16 +17,18 @@ use std::rc::Rc;
 
 /// A template parameter: its name, where it is declared, and None for a
 /// type parameter or the type of a constant parameter.
-type Param = (Rc<str>, Span, Option<QType>);
+pub type Param = (Rc<str>, Span, Option<QType>);
+
+/// The constraints of a template head: its requires clause (None), and
+/// the type constraint of each parameter that has one (its index).
+pub type Constraints = Vec<(Option<usize>, Node)>;
 
 /// The parameters of a template head whose parameters are type
 /// parameters and constant parameters of integral or enumeration type,
-/// without a pack or a constraint, with the default of each (TPL-13);
-/// None for another head.
-fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<Node>>)> {
-    if head.child("requires_clause").is_some() {
-        return None;
-    }
+/// without a pack, with the default of each (TPL-13) and the head's
+/// constraints (CPT-8, CPT-17); None for another head.
+pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<Node>>, Constraints)> {
+    let mut constraints: Constraints = Vec::new();
     let mut out = Vec::new();
     let mut defaults = Vec::new();
     for tp in head.child("template_params")?.children("template_param") {
@@ -57,8 +59,13 @@ fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<No
             continue;
         }
         let t = tp.child("type_param")?;
-        if t.child("type_key").is_none() || t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") {
+        if t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") {
             return None;
+        }
+        match (t.child("type_key"), t.child("type_constraint")) {
+            (Some(_), None) => {}
+            (None, Some(tc)) => constraints.push((Some(out.len()), tc.clone())),
+            _ => return None,
         }
         let k = t.kids.iter().rev().find(|k| matches!(k, Kid::Tok(_)) && cx.text(k) != "=")?;
         let name: Rc<str> = cx.text(k).into();
@@ -68,7 +75,10 @@ fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<No
         out.push((name, cx.token(k).map(|t| t.span).unwrap_or(t.span), None));
         defaults.push(t.child("type_id").cloned());
     }
-    Some((out, defaults))
+    if let Some(rc) = head.child("requires_clause") {
+        constraints.push((None, rc.clone()));
+    }
+    Some((out, defaults, constraints))
 }
 
 /// TPL-14: unless the template is a function template, each parameter
@@ -155,7 +165,7 @@ fn declare_params(cx: &mut Check, ts: crate::sem::ScopeId, params: &[Param]) {
 /// Bind the parameters `names` to the arguments `args` in the scope `ts`
 /// of a specialization: a type parameter names its type, and a constant
 /// parameter is a constant of its value (TARG-13).
-fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], args: &[TArg], span: Span) {
+pub fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], args: &[TArg], span: Span) {
     for (name, a) in names_.iter().zip(args) {
         match a {
             TArg::Type(t) => {
@@ -239,7 +249,12 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     if c_linkage(cx, n) {
         return true;
     }
-    let Some((params, defaults)) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    let Some((params, defaults, constraints)) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    // Constraints wait for a later piece outside a function template.
+    let fn_decl = n.child("declaration").is_some_and(|d| d.child("function_definition").is_some() || d.child("block_decl").and_then(|b| b.child("simple_decl")).is_some_and(|sd| sd.children("init_declarator").any(|i| i.child("init").is_none() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_some()))));
+    if !constraints.is_empty() && !fn_decl {
+        return false;
+    }
     if let Some(done) = outside_member(cx, n, &params) {
         // TPL-17: a member defined after the class body gives no default.
         if done && defaults.iter().any(|d| d.is_some()) {
@@ -259,19 +274,29 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
         let one = ids.next().filter(|i| i.child("init").is_none() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_some()));
         if let (Some(one), None) = (one, ids.next()) {
             let (Some(ds), Some(dn)) = (sd.child("decl_specifiers"), one.child("declarator")) else { return false };
-            return function_template(cx, sd, ds, dn, params, defaults);
+            return function_template(cx, sd, ds, dn, params, defaults, constraints);
         }
         return var_template_decl(cx, sd, params, defaults);
     }
     let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) else { return false };
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
-    function_template(cx, fd, ds, dn, params, defaults)
+    function_template(cx, fd, ds, dn, params, defaults, constraints)
 }
 
 /// TPL rules: a function template's declaration `fd`, a definition or
 /// not, with its decl-specifiers `ds` and its declarator `dn`. A
 /// definition after a declaration completes the template.
-fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>) -> bool {
+fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>, constraints: Constraints) -> bool {
+    // CPT-11: a trailing requires clause adds to the head's constraints.
+    let mut constraints = constraints;
+    if let Some(rc) = fd.child("requires_clause") {
+        constraints.push((None, rc.clone()));
+    }
+    for (k, c) in &constraints {
+        if k.is_none() && !crate::templates::concepts::check::definition_checks(cx, c, &params) {
+            return true;
+        }
+    }
     if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
         return true;
     }
@@ -311,7 +336,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
         let EntKind::Template(t) = cx.u.entities[e].kind else { return false };
         let tpl = &cx.u.templates[t];
         let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
-        if *tpl.fty != fty || tpl.kinds != kinds {
+        if *tpl.fty != fty || tpl.kinds != kinds || !constraints.is_empty() || !tpl.constraints.is_empty() {
             return false;
         }
         // DEFARG-13: a later declaration adds no default argument.
@@ -348,7 +373,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: None, span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -581,6 +606,17 @@ fn explicit_function(cx: &mut Check, fd: &Node) -> bool {
         Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
     }).collect();
     let Some(args) = args else { return done(cx) };
+    // CNS-13: the arguments of an explicit specialization satisfy the
+    // template's constraints.
+    match crate::templates::concepts::check::function_satisfied(cx, t, &args) {
+        Some(true) => {}
+        Some(false) => {
+            cx.leave(saved);
+            cx.error(dn.span, "CNS-13", format!("an explicit specialization of '{}' whose arguments do not satisfy its constraints", name));
+            return true;
+        }
+        None => return done(cx),
+    }
     if let Some(&(_, f)) = tpl.specs.iter().find(|(a, _)| *a == args) {
         cx.leave(saved);
         if tpl.explicit.contains(&f) {
@@ -753,7 +789,10 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
     });
     incomplete
         || dependent_base
-        || words.iter().any(|w| matches!(*w, "requires" | "concept"))
+        || words.iter().any(|w| *w == "concept")
+        // A requires clause on a member of a class template waits for a
+        // later piece.
+        || (matches!(fd.prod, "class_def" | "union_def") && words.contains(&"requires"))
         // `x.template f<A>()`: a dependent member template (DEP rules),
         // and `x.f<A>()`, which needs `template` when `x` is dependent
         // (DEP-24).
@@ -905,6 +944,7 @@ fn define_later(cx: &mut Check, t: usize, args: &[TArg], f: EntityId) {
 /// whose arguments deduce (DED-P3), with the explicit arguments first.
 pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
     let mut out = Vec::new();
+    cx.constraints_failed = false;
     for &e in found {
         let EntKind::Template(t) = cx.u.entities[e].kind else { continue };
         // The explicit arguments, which fill the first parameters.
@@ -932,6 +972,19 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
         }
         if bound.len() < partial.len() {
             continue;
+        }
+        // CNS-11: a specialization whose arguments do not satisfy the
+        // constraints is no candidate.
+        match crate::templates::concepts::check::function_satisfied(cx, t, &bound) {
+            Some(true) => {}
+            Some(false) => {
+                cx.constraints_failed = true;
+                continue;
+            }
+            None => {
+                cx.unsupported(tpl.span, format!("the constraints of the function template '{}', which the first pieces of build step 5 do not check", tpl.name));
+                continue;
+            }
         }
         if let Some(f) = specialize(cx, t, &bound) {
             out.push(f);
@@ -1334,10 +1387,10 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         cx.error(m.span, "TPL-2", "a member template of a local class");
         return true;
     }
-    let Some((params, defaults)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
-    // A default sees the class incomplete (CLS-2), which waits for a
-    // later piece.
-    if defaults.iter().any(|d| d.is_some()) {
+    let Some((params, defaults, constraints)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    // A default sees the class incomplete (CLS-2), and constraints on a
+    // member wait for a later piece.
+    if defaults.iter().any(|d| d.is_some()) || !constraints.is_empty() {
         return false;
     }
     let Some(inner) = m.child("member_decl") else { return false };
@@ -1375,7 +1428,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: Some(class), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true

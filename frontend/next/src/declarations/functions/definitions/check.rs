@@ -427,6 +427,15 @@ fn default_arguments_in(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
 
 /// `function_definition`.
 pub fn function_definition(cx: &mut Check, n: &Node) {
+    // CPT-14: a trailing requires clause only on a templated function.
+    if let Some(rc) = n.child("requires_clause") {
+        if cx.instantiating == 0 && cx.member_of.is_none() {
+            cx.error(rc.span, "CPT-14", "a trailing requires clause on a function that is not templated");
+        } else {
+            cx.unsupported(rc.span, "a trailing requires clause on a member function (build step 5)");
+        }
+        return;
+    }
     if cx.in_function() {
         cx.error(n.span, "FN-9", "a function definition inside a function body");
         return;

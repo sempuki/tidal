@@ -74,6 +74,7 @@ pub fn declaration(cx: &mut Check, n: &Node) {
             "empty_decl" | "null_stmt" => {}
             "template_decl" if crate::templates::declarations::check::template_decl(cx, c) => {}
             "explicit_specialization" if crate::templates::declarations::check::explicit_specialization(cx, c) => {}
+            "concept_definition" if crate::templates::concepts::check::concept_definition(cx, c) => {}
             _ => {
                 cx.unsupported(c.span, format!("a declaration of the form {}", c.prod));
             }
@@ -92,6 +93,16 @@ pub fn block_decl(cx: &mut Check, n: &Node, local: bool) -> Option<Stmt> {
         _ => None,
     })?;
     match c.prod {
+        // CPT-14: a trailing requires clause only on a templated function,
+        // never at block scope.
+        "simple_decl" if c.children("init_declarator").any(|i| i.child("requires_clause").is_some()) => {
+            if cx.func.is_some() || cx.instantiating == 0 {
+                cx.error(c.span, "CPT-14", "a trailing requires clause on a function that is not templated");
+            } else {
+                cx.unsupported(c.span, "a trailing requires clause on a function declaration (build step 5)");
+            }
+            None
+        }
         "simple_decl" => simple_decl(cx, c),
         "static_assert_decl" => {
             static_assert::check::static_assert_decl(cx, c);

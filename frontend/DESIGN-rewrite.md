@@ -485,7 +485,7 @@ holds.
 
 Step 5 is begun (item RW3). A function template at namespace scope
 whose parameters are types or constants of integral or enumeration
-type, with no pack or constraint, has a function type with
+type, with no pack, has a function type with
 each type parameter as a dependent type (`DepType`, model section 1).
 A template argument is a type or a constant (`TArg`); a constant
 argument converts to its parameter's type without narrowing, and in a
@@ -522,7 +522,17 @@ function templates with no default, other than operators, conversion
 functions, constructors, and destructors; a specialization is a member
 of the class, and a call through an object or by name in a member, with
 or without explicit arguments, takes it. A local class has no member
-template. A function template can be declared before
+template. A concept at namespace scope has a constraint expression; a
+concept-id is a `bool` constant that tells whether its arguments
+satisfy it, checked with the parameters bound: conjunctions and
+disjunctions left to right, an atomic constraint whose substitution
+fails as false, and a requires expression's requirements in order. A
+satisfaction keeps its first result, and one that needs its own result
+is an error. A function template's requires clauses and type
+constraints remove a specialization whose arguments do not satisfy
+them from the candidates, and an explicit specialization must satisfy
+them. A requires expression outside a constraint, and constraints on a
+class, variable, or member template, wait for a later piece. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a

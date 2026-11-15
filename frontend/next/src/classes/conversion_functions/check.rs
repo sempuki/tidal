@@ -149,6 +149,19 @@ fn result_of(cx: &Check, f: EntityId, span: Span) -> Expr {
 /// The viable conversion functions from the object `e` to `to` (CVF-2,
 /// CVF-3, CVF-4, CVF-9). With `direct`, an `explicit` function counts
 /// when its result has the target type.
+/// ICS-45: the result type `ret` reaches `to` by a qualification
+/// adjustment alone: a pointer to a type that gains cv-qualifiers, or a
+/// reference to a type that does.
+fn qualification_only(ret: &QType, to: &QType) -> bool {
+    let wider = |a: &QType, b: &QType| a.unqual().t == b.unqual().t && (!a.c || b.c) && (!a.v || b.v);
+    match (&ret.t, &to.t) {
+        (Type::Ref(a, _), Type::Ref(b, _)) => wider(a, b),
+        (_, Type::Ref(..)) => false,
+        (Type::Ptr(a), Type::Ptr(b)) => wider(a, b),
+        _ => false,
+    }
+}
+
 fn candidates(cx: &Check, e: &Expr, to: &QType, direct: bool) -> Vec<Cand> {
     let Some(c) = converting_class(cx, e) else { return Vec::new() };
     let obj = e.ty.nonref();
@@ -160,7 +173,9 @@ fn candidates(cx: &Check, e: &Expr, to: &QType, direct: bool) -> Vec<Cand> {
         if ret.is_void() || ret.class().is_some_and(|r| r == c || crate::classes::derived::check::is_base(cx, c, r)) {
             continue;
         }
-        if func.explicit && !(direct && ret.unqual().t == to.nonref().unqual().t) {
+        // ICS-45: direct initialization takes an explicit function whose
+        // result reaches the target by a qualification adjustment alone.
+        if func.explicit && !(direct && (ret.unqual().t == to.nonref().unqual().t || qualification_only(&func.ty.ret, to))) {
             continue;
         }
         let lvalue = e.cat == Cat::L;

@@ -113,6 +113,8 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
                 return cx.unsupported(c.span, format!("a type named by {}", c.prod));
             }
             Kid::Node(c) => return cx.unsupported(c.span, format!("a type named by {}", c.prod)),
+            // A type requirement's `typename` and `;` (CPT-32).
+            _ if matches!(cx.text(k), "typename" | ";") => {}
             _ => name = Some((cx.text(k), cx.token(k).map(|t| t.span).unwrap_or(n.span))),
         }
     }

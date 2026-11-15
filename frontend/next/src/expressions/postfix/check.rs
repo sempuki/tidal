@@ -476,6 +476,12 @@ fn choose_with_templates(cx: &mut Check, plain: &[EntityId], specs: &[EntityId],
     }
     // A call that no template's arguments deduce for: the first piece of
     // build step 5 deduces only some forms of parameters.
+    // CNS-11: the one template's arguments deduce and do not satisfy its
+    // constraints.
+    if specs.is_empty() && plain.is_empty() && cx.constraints_failed {
+        cx.error(span, "OVL-35", format!("no function '{}' fits the arguments: the deduced arguments do not satisfy the constraints (CNS-11)", name));
+        return None;
+    }
     if specs.is_empty() && plain.is_empty() {
         let t = cx.unsupported(span, format!("a call of the function template '{}' whose arguments the first piece of build step 5 does not deduce", name));
         let _ = t;
