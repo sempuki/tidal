@@ -2074,3 +2074,16 @@ fn parenthesized_aggregate_initialization() {
     // expression.
     assert_eq!(rule("struct H { const int& n; }; constexpr int f() { H h(1); return h.n; } static_assert(f() == 1);"), Some("SA-7"));
 }
+
+#[test]
+fn calls_through_the_address_of_a_member_set() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct I { int reset() { return 1; } static int reset(int v) { return v; } int use() { return (&I::reset)(7); } }; int main() { I i; return i.use(); }"), RunOutcome::Result(7));
+    assert_eq!(rule("struct I { void reset(); static void reset(int); void use() { (&I::reset)(); } };"), Some("OVL-21"));
+    assert_eq!(rule("struct I { int f() &; static int f(int = 0); int use() { return (&(I::f))(1); } };"), Some("OVL-44"));
+    assert_eq!(rule("struct S { ~S() {} }; auto p = &S::~S;"), Some("DTOR-8"));
+}

@@ -297,6 +297,10 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         return bad(span);
     }
     cx.no_temporary = top;
+    if let Some(r) = address_call(cx, callee, &args, span) {
+        cx.no_temporary = false;
+        return r;
+    }
     if let Some(r) = member_call(cx, callee, &args, span) {
         cx.no_temporary = false;
         return r;
@@ -355,6 +359,55 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         Err(f) => f,
     };
     call_value(cx, f, args, span)
+}
+
+/// OVL-21: a call `(&C::f)(a)` whose set `C::f` holds a member function
+/// with an implicit object parameter. The call is by name with no
+/// implied object argument, so only the other functions of the set are
+/// candidates. With the qualified name in parentheses, `&(C::f)`, the
+/// call is an error (OVL-44). None for a callee of another form.
+fn address_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Option<Expr> {
+    let ("primary", [_, Kid::Node(u), _]) = (callee.prod, callee.kids.as_slice()) else { return None };
+    if u.prod != "unary_expr" || cx.first_word(u) != "&" {
+        return None;
+    }
+    let operand = nodes(u).last().copied()?;
+    let (inner, paren) = match (operand.prod, operand.kids.as_slice()) {
+        ("primary", [_, Kid::Node(x), _]) => (x, true),
+        _ => (operand, false),
+    };
+    let id = callee_name(inner)?;
+    id.find("qualified_name")?;
+    let (found, _, text, nspan) = primary::check::find(cx, id)?;
+    let funcs: Vec<EntityId> = found.iter().copied().filter(|&e| cx.u.func(e).is_some()).collect();
+    if funcs.is_empty() || funcs.len() != found.len() {
+        return None;
+    }
+    let object = |cx: &Check, f: EntityId| cx.u.func(f).is_some_and(|x| x.class.is_some() && !x.member_static);
+    if !funcs.iter().any(|&f| object(cx, f)) {
+        return None;
+    }
+    let written = cx.source(id);
+    if paren {
+        cx.error_cause(span, "OVL-44", Some("MPTR-2"), format!("'&({})' names a member function with an implicit object parameter in parentheses", written));
+        return Some(bad(span));
+    }
+    // The functions whose parameters the arguments can fill.
+    let fits = |cx: &Check, f: EntityId| cx.u.func(f).is_some_and(|x| {
+        let n = x.ty.params.len();
+        let defaults = x.defaults.iter().filter(|d| d.is_some()).count();
+        (args.len() <= n || x.ty.variadic) && args.len() + defaults >= n
+    });
+    let others: Vec<EntityId> = funcs.iter().copied().filter(|&f| !object(cx, f) && fits(cx, f)).collect();
+    if others.is_empty() {
+        cx.error(span, "OVL-21", format!("the call '(&{})(...)' has no implied object argument, so no function of the set fits", written));
+        return Some(bad(span));
+    }
+    let f = ovl::resolve(cx, &others, args, span, &text)?;
+    crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
+    let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
+    let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
+    Some(finish_call(cx, callee, Some(f), args.to_vec(), span, None))
 }
 
 /// A call with a braced list as an argument, whose name finds one

@@ -734,7 +734,9 @@ capture default, and its body names `this` and the data members through
 that capture. `this` in a default member initializer names the object
 whose member it initializes, wherever the initializer runs. An
 aggregate class takes values in parentheses, each for one whole member,
-and keeps no temporary there. The
+and keeps no temporary there. A call `(&C::f)(a)` of a set with a
+member function that has an implicit object parameter takes only the
+other functions of the set. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

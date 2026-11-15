@@ -61,6 +61,11 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
                 let field = |e: crate::sem::EntityId| parenthesized && matches!(cx.u.entities[e].kind, crate::sem::EntKind::Field(_));
                 !found.is_empty() && found.iter().all(|&e| cx.u.func(e).is_some_and(|f| f.member_static) || cx.u.var(e).is_some() || field(e))
             });
+            // DTOR-8: a destructor has no address.
+            if !classes.is_empty() && cx.source(operand).contains('~') {
+                cx.error(span, "DTOR-8", "the address of a destructor");
+                return bad(span);
+            }
             if !classes.is_empty() && !all_static {
                 let t = cx.unsupported(span, "the address of a member, a pointer to member (build step 4)");
                 return Expr::new(EK::Int(0), t, Cat::PR, span);
