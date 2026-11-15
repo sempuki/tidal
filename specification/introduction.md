@@ -29,29 +29,11 @@ replace it.
 
 ## The roles of the agents
 
-**Source reader**
-
-- May read the ISO standard, WG21 papers, cppreference, compiler
-  sources under restrictive licenses, and posts that quote any of
-  these.
-- Writes nothing in the repository. A source reader gives only
-  summaries in its own words.
-
-**Clean-room writer**
-
-- May read source readers' summaries that passed the non-similarity check.
-- May read the behavior and diagnostics of the baseline compilers.
-- May read sanitized compiler sources under permissive licenses.
-- May read every file of the repository.
-- Writes the Tidal specification, the tests, the tools, and the
-  documentation.
-
-**Clean-room reader**
-
-- May read only Tidal's own files: the Tidal specification, the tests,
-  and their results.
-- Writes only in its own exercise directories, and the Tidal front
-  ends.
+| Agent | Forbidden | Reads | Writes |
+|---|---|---|---|
+| **Source reader** | Writing or changing any file of the repository; quoting a source or proposing wording | The ISO standard, WG21 papers, cppreference, compiler sources under restrictive licenses, and posts that quote any of these | Summaries in its own words, which describe behavior, gaps, and doubts |
+| **Clean-room writer** | Reading protected material | Source readers' summaries that passed the non-similarity check, the behavior and diagnostics of the baseline compilers, sanitized compiler sources under permissive licenses, and every file of the repository | The Tidal specification, the tests, the tools, and the documentation |
+| **Clean-room reader** | Reading anything other than Tidal's own files | The Tidal specification, the tests, and their results | Its own exercise directories, and the Tidal front ends |
 
 An agent that reads protected material becomes a source reader for the
 rest of its session. It cannot work in the clean room again in that
