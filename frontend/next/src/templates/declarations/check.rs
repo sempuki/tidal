@@ -393,6 +393,12 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
         cx.error(span, "TPL-29", "the function 'main' declared as a template");
         return true;
     }
+    // PACK rules: a function parameter pack as the last parameter, whose
+    // pattern names the template's pack.
+    let pack_param = d.params.last().is_some_and(|p| p.pack.is_some());
+    if d.params.iter().rev().skip(1).any(|p| p.pack.is_some()) || (pack_param && (!cx.head_pack || fty.variadic)) {
+        return false;
+    }
     // An operator function template beside another of its name waits for
     // a later piece.
     if (name.starts_with("operator") || dn.find("operator_function_id").is_some() || dn.find("literal_operator_id").is_some()) && !names::declared_here(cx, saved, &name).is_empty() {
@@ -413,7 +419,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
     let same = found.iter().find_map(|&e| match cx.u.entities[e].kind {
-        EntKind::Template(t) if *cx.u.templates[t].fty == fty && cx.u.templates[t].kinds == kinds => Some(e),
+        EntKind::Template(t) if *cx.u.templates[t].fty == fty && cx.u.templates[t].kinds == kinds && cx.u.templates[t].pack_param == pack_param => Some(e),
         _ => None,
     });
     if let Some(e) = same {
@@ -456,7 +462,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -886,7 +892,7 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         || words.windows(3).any(|w| matches!(w[0], "." | "->") && is_word(w[1]) && w[2] == "<")
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
-        || (!matches!(fd.prod, "class_def" | "union_def") && words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x))))
+        || (!matches!(fd.prod, "class_def" | "union_def") && !cx.head_pack && words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x))))
         // `using enum T::E`: a dependent enumeration (ENUM-20).
         || words.windows(3).any(|w| w[0] == "enum" && params.iter().any(|(p, _, _)| p.as_ref() == w[1]) && w[2] == "::")
         // `T::name x`: a type named after a parameter without `typename`
@@ -1075,6 +1081,10 @@ pub fn template_of(cx: &Check, f: EntityId) -> Option<usize> {
 /// (both types references, ORD-10, ORD-11; a non-deduced position).
 fn at_least_as_specialized(cx: &Check, t1: usize, t2: usize) -> Option<bool> {
     let (a, b) = (&cx.u.templates[t1], &cx.u.templates[t2]);
+    // A function parameter pack (ORD-4) waits for a later piece.
+    if a.pack_param || b.pack_param {
+        return None;
+    }
     if a.fty.params.len() != b.fty.params.len() || a.fty.variadic != b.fty.variadic {
         return Some(false);
     }
@@ -1136,8 +1146,11 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
             Some(tid) => {
                 let kinds = cx.u.templates[t].kinds.clone();
                 let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
-                match template_args(cx, tid, &kinds[..n.min(kinds.len())]) {
-                    Some(a) if n <= kinds.len() => a,
+                // PACK rules: explicit arguments for a pack come last.
+                let packed = cx.u.templates[t].pack && n + 1 >= kinds.len();
+                let a = if packed { template_args_packed(cx, tid, &kinds, true) } else { template_args(cx, tid, &kinds[..n.min(kinds.len())]) };
+                match a {
+                    Some(a) if packed || n <= kinds.len() => a,
                     _ => continue,
                 }
             }
@@ -1164,6 +1177,11 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
             }
         }
         if bound.len() < partial.len() {
+            continue;
+        }
+        // PACK-27, PACK-28: a pack of `T...` with a void element fails
+        // substitution.
+        if tpl.pack_param && matches!(tpl.fty.params.last().map(|p| &p.t), Some(Type::Dep(_))) && bound.last().is_some_and(|a| matches!(a, TArg::Pack(xs) if TArg::types(xs).iter().any(|t| t.is_void()))) {
             continue;
         }
         // DED-15: an argument whose class has the deduced base more than
@@ -1232,7 +1250,18 @@ fn trial(cx: &mut Check, t: Option<usize>, v: Option<usize>) -> bool {
     if kinds.iter().any(|k| k.is_some()) {
         return false;
     }
-    let args: Vec<TArg> = kinds.iter().map(|_| TArg::Type(QType::new(Type::Int(crate::sem::types::IntK::Int)))).collect();
+    let mut args: Vec<TArg> = kinds.iter().map(|_| TArg::Type(QType::new(Type::Int(crate::sem::types::IntK::Int)))).collect();
+    // A pack takes one `int`.
+    let pack = match (t, v) {
+        (Some(t), _) => cx.u.templates[t].pack,
+        (_, Some(v)) => cx.u.class_templates[v].pack,
+        _ => false,
+    };
+    if pack {
+        if let Some(last) = args.pop() {
+            args.push(TArg::Pack(vec![last]));
+        }
+    }
     let marks = cx.u.diags.len();
     let statics = cx.u.statics.len();
     let ok = match (t, v) {
@@ -1625,7 +1654,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         cx.u.diags.truncate(marks);
         return false;
     };
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || d.placeholder.is_some() || specs.is_static {
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || d.placeholder.is_some() || specs.is_static || d.params.iter().any(|p| p.pack.is_some()) {
         cx.u.diags.truncate(marks);
         return false;
     }
@@ -1635,7 +1664,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true

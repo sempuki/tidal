@@ -26,6 +26,10 @@ pub struct Param {
     pub default: Option<Node>,
     pub span: Span,
     pub maybe_unused: bool,
+    /// The function parameter pack that the parameter belongs to: its
+    /// pattern in a template's definition, or one of its elements in a
+    /// specialization (PACK rules).
+    pub pack: Option<Rc<str>>,
     /// Declared with `this`, an explicit object parameter (CLS-13).
     pub this_param: bool,
 }
@@ -643,7 +647,7 @@ pub fn deferred_noexcept(cx: &Check, e: &Node) -> bool {
 pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
     let Some(n) = n else { return (Vec::new(), false) };
     let words = cx.words(n);
-    let variadic = words.contains(&"...");
+    let mut variadic = words.contains(&"...");
     let ps: Vec<&Node> = n.children("parameter").collect();
     if words == ["void"] {
         return (Vec::new(), false);
@@ -656,6 +660,19 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             crate::declarations::attributes::check::attribute_spec(cx, a, &mut attrs);
         }
         let Some(ds) = p.child("decl_specifiers") else { continue };
+        // PACK rules: a function parameter pack. In a specialization it
+        // gives one parameter for each element; in a template's
+        // definition, the one parameter of its pattern.
+        let decl0 = p.child("declarator").or_else(|| p.child("abstract_declarator"));
+        let pack_name: Option<Rc<str>> = decl0.filter(|dn| pack_declarator(cx, dn)).map(|dn| dn.find("declarator_id").map(|id| Rc::from(cx.source(id).as_str())).unwrap_or_else(|| Rc::from("")));
+        if let Some(name) = &pack_name {
+            if let Some(ps) = pack_parameters(cx, p, name) {
+                out.extend(ps);
+                continue;
+            }
+        }
+        let saved_expanding = cx.expanding;
+        cx.expanding = saved_expanding || pack_name.is_some();
         let specs = crate::declarations::check::decl_specifiers(cx, ds, attrs.clone());
         if specs.is_static || specs.is_extern || specs.thread_local || specs.mutable {
             crate::declarations::storage_linkage::check::parameter_storage(cx, ds.span);
@@ -716,9 +733,96 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
             Kid::Node(e) => Some(e.clone()),
             _ => None,
         });
-        out.push(Param { name: d.name.clone(), ty: t, cv, was_array, default, span: p.span, maybe_unused: attrs.maybe_unused, this_param });
+        cx.expanding = saved_expanding;
+        // PACK-2: a pack's type names a template parameter pack. An
+        // unnamed `T...` whose type names none is the variable argument
+        // part (DCL-9).
+        let mut pack = pack_name.clone();
+        if pack.is_some() && !crate::templates::deduction::check::has_dep(&t) {
+            if d.name.is_some() {
+                cx.error(p.span, "PACK-2", "a function parameter pack whose type names no template parameter pack");
+                t = QType::error();
+            } else {
+                variadic = true;
+            }
+            pack = None;
+        }
+        if pack.is_some() {
+            // PACK-2: an unnamed pack's `...` is not inside parentheses.
+            if d.name.is_none() && decl0.is_some_and(|dn| dn.find("abstract_direct").is_some_and(|inner| pack_declarator(cx, inner))) {
+                cx.error(p.span, "PACK-2", "an unnamed function parameter pack with '...' inside parentheses");
+                t = QType::error();
+            }
+            // PACK-4: a function parameter pack has no default argument.
+            if default.is_some() {
+                cx.error(p.span, "PACK-4", "a function parameter pack with a default argument");
+            }
+        }
+        out.push(Param { name: d.name.clone(), ty: t, cv, was_array, default, span: p.span, maybe_unused: attrs.maybe_unused, this_param, pack });
     }
     (out, variadic)
+}
+
+/// The `...` of a function parameter pack in a parameter's declarator,
+/// outside the parameters of a function type inside it.
+fn pack_declarator(cx: &Check, n: &Node) -> bool {
+    n.kids.iter().any(|k| match k {
+        Kid::Tok(_) => cx.text(k) == "...",
+        Kid::Node(c) => !matches!(c.prod, "parameters" | "function_suffix") && pack_declarator(cx, c),
+        _ => false,
+    })
+}
+
+/// PACK rules: the parameters that a function parameter pack `p` gives in
+/// a specialization, one for each element of the type packs that its
+/// pattern names; None when the pattern names no bound type pack.
+fn pack_parameters(cx: &mut Check, p: &Node, name: &Rc<str>) -> Option<Vec<Param>> {
+    let mut toks = Vec::new();
+    p.tokens(&mut toks);
+    let mut packs: Vec<(Rc<str>, Vec<QType>)> = Vec::new();
+    for &t in &toks {
+        let w = cx.toks[t].text.as_str();
+        if packs.iter().any(|(n, _)| n.as_ref() == w) {
+            continue;
+        }
+        if let Some(crate::sem::EntKind::TypePack(ts)) = names::lookup(cx, w).first().map(|&e| cx.u.entities[e].kind.clone()) {
+            packs.push((w.into(), ts));
+        }
+    }
+    let n = packs.first()?.1.len();
+    if packs.iter().any(|q| q.1.len() != n) {
+        return None;
+    }
+    let ds = p.child("decl_specifiers")?;
+    let decl = p.child("declarator").or_else(|| p.child("abstract_declarator"));
+    let mut out = Vec::new();
+    for i in 0..n {
+        let saved = cx.scope;
+        let s = cx.enter(crate::sem::ScopeKind::Template);
+        for (pn, ts) in &packs {
+            names::declare_in(cx, s, pn, crate::sem::EntKind::Typedef(ts[i].clone()), p.span, crate::sem::Linkage::None);
+        }
+        let saved_expanding = std::mem::replace(&mut cx.expanding, true);
+        let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+        let mut d = Declared { name: None, qual: Qual::None, ty: QType::error(), params: Vec::new(), span: p.span, unsupported: false, placeholder: None, trailing: false, attrs: Default::default(), node: p.clone(), obj_cv: (false, false), ref_q: false, ref_kind: None };
+        let base = specs.ty.clone().unwrap_or_else(QType::error);
+        let t = match decl {
+            Some(dn) => apply(cx, base, dn, &mut d, false),
+            None => base,
+        };
+        cx.expanding = saved_expanding;
+        cx.leave(saved);
+        // PACK-28: an expansion gives no parameter of type void.
+        if t.is_void() {
+            cx.error(p.span, "PACK-28", "a function parameter pack whose expansion gives a parameter of type void");
+            return Some(Vec::new());
+        }
+        let cv = if t.is_array() || t.is_func() { (false, false) } else { (t.c, t.v) };
+        let was_array = t.is_array();
+        let span = d.name.as_ref().map(|(_, s)| *s).unwrap_or(p.span);
+        out.push(Param { name: Some((format!("{}#{}", name, i).as_str().into(), span)), ty: adjust_parameter(t), cv, was_array, default: None, span: p.span, maybe_unused: true, this_param: false, pack: Some(name.clone()) });
+    }
+    Some(out)
 }
 
 /// DCL-9's adjustments of a parameter type.

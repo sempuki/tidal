@@ -260,10 +260,7 @@ fn size_or_align(cx: &mut Check, n: &Node, align: bool) -> Expr {
     } else if cx.has_word(n, "...") {
         // PACK-19: `sizeof...(P)`, the number of elements of the pack.
         let name = cx.words(n).into_iter().rev().find(|w| !matches!(*w, "(" | ")" | "..." | "sizeof")).unwrap_or("").to_string();
-        let len = crate::foundations::names::check::lookup(cx, &name).first().and_then(|&e| match &cx.u.entities[e].kind {
-            crate::sem::EntKind::TypePack(ts) => Some(ts.len()),
-            _ => None,
-        });
+        let len = crate::templates::packs::check::pack_len(cx, &name);
         return match len {
             Some(k) => Expr::int(k as i128, st, span),
             None => {

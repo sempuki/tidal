@@ -200,53 +200,93 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
     if explicit.len() > n {
         return None;
     }
+    // PACK rules: explicit arguments of the pack give its first elements.
+    let explicit_pack: Vec<QType> = match explicit.get(n.wrapping_sub(1)) {
+        Some(TArg::Pack(xs)) if tpl.pack => TArg::types(xs),
+        _ => Vec::new(),
+    };
     let mut bound: Vec<Option<QType>> = (0..n).map(|k| match explicit.get(k) {
         Some(TArg::Type(t)) => Some(t.clone()),
         _ => None,
     }).collect();
     let fty = &tpl.fty;
-    if args.len() > fty.params.len() && !fty.variadic {
+    // PACK rules: a trailing function parameter pack takes the arguments
+    // after the others.
+    let fixed = if tpl.pack_param { fty.params.len() - 1 } else { fty.params.len() };
+    if (args.len() > fty.params.len() && !fty.variadic && !tpl.pack_param) || args.len() < fixed {
         return None;
     }
-    if args.len() < fty.params.len() {
-        return None;
-    }
-    for (p, a) in fty.params.iter().zip(args) {
-        let known: Vec<QType> = bound.iter().map(|b| b.clone().unwrap_or_else(QType::error)).collect();
-        let p = if explicit.is_empty() { p.clone() } else { substitute_known(p, &bound, &known) };
-        if !has_dep(&p) {
-            continue;
-        }
-        let ok = match &p.t {
-            Type::Ref(inner, rv) => {
-                // A forwarding reference: an lvalue deduces `A&`.
-                let forwarding = *rv && !inner.c && !inner.v && matches!(inner.t, Type::Dep(_));
-                if forwarding && a.cat == Cat::L {
-                    match_type(&cx.u, inner, &QType::lref(a.ty.nonref().clone()), &mut bound)
-                } else {
-                    match_type(&cx.u, inner, &a.ty.nonref(), &mut bound)
-                }
-            }
-            _ => {
-                let at = a.ty.nonref();
-                let decayed = match &at.t {
-                    Type::Array(el, _) => QType::ptr_to((**el).clone()),
-                    Type::Func(_) => QType::ptr_to(at.clone()),
-                    _ => at.unqual(),
-                };
-                match_type(&cx.u, &p.unqual(), &decayed, &mut bound)
-            }
-        };
-        if !ok {
+    for (p, a) in fty.params[..fixed].iter().zip(args) {
+        if !match_arg(cx, p, a, explicit, &mut bound) {
             return None;
         }
+    }
+    let mut pack: Vec<QType> = Vec::new();
+    if tpl.pack_param {
+        let p = fty.params.last()?;
+        let k = n - 1;
+        for (j, a) in args[fixed..].iter().enumerate() {
+            if let Some(t) = explicit_pack.get(j) {
+                pack.push(t.clone());
+                continue;
+            }
+            let mut each = bound.clone();
+            each[k] = None;
+            if !match_arg(cx, p, a, explicit, &mut each) {
+                return None;
+            }
+            // The other parameters deduce alike from each element.
+            for (j, b) in each.iter().enumerate() {
+                if j != k && b.is_some() {
+                    match &bound[j] {
+                        Some(x) if Some(x) != b.as_ref() => return None,
+                        _ => bound[j] = b.clone(),
+                    }
+                }
+            }
+            pack.push(each[k].clone()?);
+        }
+    }
+    if explicit_pack.len() > pack.len() {
+        pack = explicit_pack.clone();
     }
     // A constant parameter takes its explicit argument; the first piece
     // of build step 5 deduces none.
     Some((0..n).map(|k| match &tpl.kinds[k] {
+        None if tpl.pack && k == n - 1 => Some(TArg::Pack(pack.iter().cloned().map(TArg::Type).collect())),
         None => bound[k].clone().map(TArg::Type),
         Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
     }).collect())
+}
+
+/// Match the parameter type `p` against the argument `a` of a call,
+/// binding the template parameters in `bound` (DED rules).
+fn match_arg(cx: &Check, p: &QType, a: &Expr, explicit: &[TArg], bound: &mut [Option<QType>]) -> bool {
+    let known: Vec<QType> = bound.iter().map(|b| b.clone().unwrap_or_else(QType::error)).collect();
+    let p = if explicit.is_empty() { p.clone() } else { substitute_known(p, bound, &known) };
+    if !has_dep(&p) {
+        return true;
+    }
+    match &p.t {
+        Type::Ref(inner, rv) => {
+            // A forwarding reference: an lvalue deduces `A&`.
+            let forwarding = *rv && !inner.c && !inner.v && matches!(inner.t, Type::Dep(_));
+            if forwarding && a.cat == Cat::L {
+                match_type(&cx.u, inner, &QType::lref(a.ty.nonref().clone()), bound)
+            } else {
+                match_type(&cx.u, inner, &a.ty.nonref(), bound)
+            }
+        }
+        _ => {
+            let at = a.ty.nonref();
+            let decayed = match &at.t {
+                Type::Array(el, _) => QType::ptr_to((**el).clone()),
+                Type::Func(_) => QType::ptr_to(at.clone()),
+                _ => at.unqual(),
+            };
+            match_type(&cx.u, &p.unqual(), &decayed, bound)
+        }
+    }
 }
 
 /// `p` with the template parameters that `bound` already holds replaced.

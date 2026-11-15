@@ -7,4 +7,5 @@ pub mod declarations;
 pub mod deduction;
 pub mod dependent_names;
 pub mod instantiation;
+pub mod packs;
 pub mod specialization;

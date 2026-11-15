@@ -2753,3 +2753,16 @@ fn type_parameter_packs() {
     assert_eq!(rule("template <class... Ts> struct List { static constexpr int size = sizeof...(Ts); }; template <class... Ts> using L2 = List<Ts..., int>; template <class T, class... Ts> constexpr int count = 1 + sizeof...(Ts); static_assert(List<int, char>::size == 2 && L2<char>::size == 2 && count<int, int, int> == 3 && List<>::size == 0);"), None);
     assert_eq!(rule("template <class T> struct Box; template <class... T> struct Box {};"), Some("TPL-20"));
 }
+
+#[test]
+fn function_parameter_packs() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("constexpr int sum() { return 0; } constexpr int sum(int a) { return a; } constexpr int sum(int a, int b) { return a + b; } template <class... A> constexpr int f(A... a) { return sum(a...) + sizeof...(a) * 100; } template <class T, class... A> constexpr int g(T t, A&&... a) { return t + f(static_cast<A&&>(a)...); } static_assert(f() == 0 && f(1) == 101 && f(1, 2) == 203 && g(10, 1, 2) == 213);"), None);
+    assert_eq!(rule("template <class... T> constexpr int f(T...) { return 1; } template <class T> constexpr int f(...) { return 2; } static_assert(f<void>() == 2 && f<int>(1) == 1);"), None);
+    assert_eq!(rule("void count(int... x);"), Some("PACK-2"));
+    assert_eq!(rule("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; void f(int, ...); void g(int...); static_assert(same<decltype(f), decltype(g)>);"), None);
+}

@@ -151,6 +151,9 @@ pub enum EntKind {
     /// A template type parameter pack bound to its types in a
     /// specialization (PACK rules).
     TypePack(Vec<QType>),
+    /// A function parameter pack in a specialization: the parameters it
+    /// gives (PACK rules).
+    Pack(Vec<EntityId>),
 }
 
 /// A concept (`templates/concepts`): its parameters and its constraint
@@ -262,7 +265,12 @@ pub struct FnTemplate {
     pub kinds: Vec<Option<QType>>,
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
+    /// The function type, whose last parameter is the pattern of a
+    /// function parameter pack when `pack_param` holds.
     pub fty: Rc<FnType>,
+    pub pack_param: bool,
+    /// The name of the function parameter pack.
+    pub pack_name: Option<Rc<str>>,
     pub specs: Vec<(Vec<types::TArg>, EntityId)>,
     /// The functions of `specs` that explicit specializations define.
     pub explicit: Vec<EntityId>,

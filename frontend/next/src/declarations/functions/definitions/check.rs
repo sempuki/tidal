@@ -555,6 +555,32 @@ pub fn define_full(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
         }
         params.push(pid);
     }
+    // PACK rules: a function parameter pack names the parameters it gave.
+    let mut packs: Vec<(Rc<str>, Vec<EntityId>)> = Vec::new();
+    for (p, &pid) in d.params.iter().zip(&params) {
+        if let Some(n) = &p.pack {
+            match packs.iter_mut().find(|(m, _)| m == n) {
+                Some((_, ids)) => ids.push(pid),
+                None => packs.push((n.clone(), vec![pid])),
+            }
+        }
+    }
+    // A specialization whose pack has no element names it too.
+    if let Some(t) = crate::templates::declarations::check::template_of(cx, id) {
+        let tpl = &cx.u.templates[t];
+        if tpl.pack_param {
+            if let Some(n) = tpl.pack_name.clone() {
+                if !packs.iter().any(|(m, _)| *m == n) {
+                    packs.push((n, Vec::new()));
+                }
+            }
+        }
+    }
+    for (n, ids) in packs {
+        if !n.is_empty() && !d.params.iter().any(|p| p.name.as_ref().is_some_and(|(m, _)| *m == n)) {
+            names::declare_in(cx, fs, &n, EntKind::Pack(ids), d.span, Linkage::None);
+        }
+    }
     let f = cx.u.func(id).unwrap().clone();
     let ret = fty.ret.clone();
     // FN-12, TYN-7: a definition does not return an incomplete class.
