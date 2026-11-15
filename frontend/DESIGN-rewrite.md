@@ -712,7 +712,9 @@ it, and one that the object of a `new` expression binds ends with the
 full expression, with a warning. A call of a class object weighs a
 surrogate call function for each conversion function to a pointer or
 reference to function against the call operators, and the surrogate
-takes the object by a user-defined sequence. The
+takes the object by a user-defined sequence. A braced list as an
+argument of a call whose name finds one function copy-list-initializes
+its parameter and adds no associated namespace. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

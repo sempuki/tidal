@@ -281,12 +281,11 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
     if let Some((base, arrow, id)) = destructor_name(cx, callee) {
         return pseudo_destructor(cx, base, arrow, id, !arg_nodes(list).is_empty(), span);
     }
+    if arg_nodes(list).iter().any(|a| first_node(a).is_some_and(|c| c.prod == "braced_init")) {
+        return braced_call(cx, callee, list, span);
+    }
     let mut args = Vec::new();
     for a in arg_nodes(list) {
-        if first_node(a).is_some_and(|c| c.prod == "braced_init") {
-            let t = cx.unsupported(a.span, "a braced list as an argument");
-            return Expr::new(EK::Int(0), t, Cat::PR, span);
-        }
         args.push(expr(cx, a));
     }
     if list.is_some_and(|l| cx.has_word(l, "...")) {
@@ -355,6 +354,81 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         Err(f) => f,
     };
     call_value(cx, f, args, span)
+}
+
+/// A call with a braced list as an argument, whose name finds one
+/// function (PFX-6). The list copy-list-initializes its parameter, and
+/// it adds no associated namespace (NAM-28). A list for a parameter of
+/// several candidates needs the list sequences of ICS-17, which a later
+/// piece weighs.
+fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -> Expr {
+    let unsupported = |cx: &mut Check, why: &str| {
+        let t = cx.unsupported(span, why.to_string());
+        Expr::new(EK::Int(0), t, Cat::PR, span)
+    };
+    let Some(name) = callee_name(callee) else { return unsupported(cx, "a braced list as an argument of a call that is not of a name") };
+    let nodes = arg_nodes(list);
+    let mut args: Vec<Option<Expr>> = Vec::new();
+    for a in &nodes {
+        if first_node(a).is_some_and(|c| c.prod == "braced_init") {
+            args.push(None);
+        } else {
+            let e = expr(cx, a);
+            if e.ty.is_error() {
+                return bad(span);
+            }
+            args.push(Some(e));
+        }
+    }
+    let Some((mut found, rule, text, nspan)) = primary::check::find(cx, name) else { return bad(span) };
+    if rule == "NAM-8" && found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_)) && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Namespace) {
+        let tys: Vec<QType> = args.iter().flatten().map(|a| a.ty.clone()).collect();
+        for e in crate::foundations::names::check::argument_dependent(cx, &text, &tys) {
+            if !found.contains(&e) {
+                found.push(e);
+            }
+        }
+    }
+    if found.is_empty() {
+        if !rule.is_empty() {
+            cx.not_found(nspan, rule, &text);
+        }
+        return bad(span);
+    }
+    let [f] = found[..] else { return unsupported(cx, "a braced list as an argument of a call of several functions") };
+    let Some(func) = cx.u.func(f).cloned() else { return unsupported(cx, "a braced list as an argument of a call of a name that is not a function") };
+    if func.class.is_some() && !func.member_static {
+        return unsupported(cx, "a braced list as an argument of a member function call");
+    }
+    let mut out = Vec::new();
+    for (k, (a, n)) in args.into_iter().zip(&nodes).enumerate() {
+        match a {
+            Some(e) => out.push(e),
+            None => {
+                // ICS-6: a braced list has no sequence to an ellipsis.
+                let Some(p) = func.ty.params.get(k) else {
+                    cx.error(span, "PFX-5", format!("the call gives {} arguments for {} parameters", nodes.len(), func.ty.params.len()));
+                    return bad(span);
+                };
+                let b = first_node(n).unwrap();
+                // PFX-16: the parameter is copy-initialized, so an explicit
+                // constructor takes no part.
+                let n_errs = cx.u.diags.len();
+                let Some(e) = crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7") else {
+                    if let Some(d) = cx.u.diags[n_errs..].iter_mut().find(|d| d.sev == crate::diag::Severity::Error && d.rule == Some("CTOR-9")) {
+                        d.rule = Some("PFX-16");
+                        d.cause = Some("CTOR-9");
+                    }
+                    return bad(span);
+                };
+                out.push(e);
+            }
+        }
+    }
+    crate::declarations::attributes::check::use_entity(cx, f, nspan);
+    crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
+    let callee = Expr::new(EK::Func(f), QType::new(Type::Func(func.ty.clone())), Cat::L, nspan);
+    finish_call(cx, callee, Some(f), out, span, None)
 }
 
 /// A call of the value `f`: a function, a pointer to function, or a class

@@ -1888,3 +1888,19 @@ fn surrogate_call_functions() {
     // The call operator wins on the object and the surrogate on the argument.
     assert_eq!(rule("using F = int (*)(int); struct S { int operator()(long); operator F(); }; int f(S s) { return s(1); }"), Some("OVL-36"));
 }
+
+#[test]
+fn braced_list_arguments() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // The list copy-list-initializes a class, an aggregate, a scalar,
+    // and the object a reference binds.
+    assert_eq!(run("struct P { int x, y; P(int a, int b) : x(a), y(b) {} }; struct A { int a, b; }; int f(P p, A a, int i, const P& r) { return p.x + p.y + a.a + a.b + i + r.y; } int main() { return f({1, 2}, {3, 4}, {5}, {0, 6}); }"), RunOutcome::Result(21));
+    // An explicit constructor takes no part in the copy.
+    assert_eq!(rule("struct S { explicit S(int, int); }; void f(S); void g() { f({1, 2}); }"), Some("PFX-16"));
+    // A list adds no associated namespace.
+    assert_eq!(rule("namespace n { struct S {}; int probe(S); } int g() { return probe({}); }"), Some("NAM-8"));
+}
