@@ -2406,3 +2406,8 @@ fn operator_functions_for_enumeration_operands() {
     // candidate, so the built-in operator applies.
     assert!(rule("enum class M { on }; struct W { W(M); }; bool operator+(W, W); auto r = M::on + M::on;").is_some());
 }
+
+#[test]
+fn member_calls_in_lambda_bodies() {
+    assert_eq!(run("struct S { int v = 3; int get() { return v; } int f() { return [&] { return get() + [this] { return get(); }(); }(); } }; int main() { S s; return s.f(); }"), RunOutcome::Result(6));
+}

@@ -842,7 +842,16 @@ fn member_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opti
         let class = cx.u.func(members[0]).unwrap().class.unwrap();
         // Inside a member function of the class, the object is `*this`.
         let this = cx.func.as_ref().and_then(|f| f.this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
-        let obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
+        let mut obj = this.map(|t| Expr::new(EK::Deref(Box::new(Expr::new(EK::This, t.clone(), Cat::PR, nspan))), t.pointee().unwrap().clone(), Cat::L, nspan));
+        // LAM-8: in a lambda body, the object is the one that the capture
+        // of `this` holds, captured at this use under a capture default.
+        let outer = cx.lambdas.last().and_then(|l| l.outer_this.clone()).filter(|t| t.pointee().and_then(|p| p.class()).is_some_and(|k| crate::classes::derived::check::derives(cx, k, class)));
+        if obj.is_none() && crate::expressions::lambdas::check::in_lambda_body(cx) && outer.is_some() && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static) {
+            let top = cx.lambdas.len().checked_sub(1);
+            let Some(p) = crate::expressions::lambdas::check::this_at(cx, top, nspan) else { return Some(bad(span)) };
+            let t = p.ty.pointee().cloned().unwrap_or_else(QType::error);
+            obj = Some(Expr::new(EK::Deref(Box::new(p)), t, Cat::L, nspan));
+        }
         let mixed = members.iter().any(|&f| cx.u.func(f).unwrap().member_static) && members.iter().any(|&f| !cx.u.func(f).unwrap().member_static);
         let other_this = cx.func.as_ref().is_some_and(|f| f.this.is_some());
         if obj.is_none() && (members.iter().any(|&f| cx.u.func(f).unwrap().ref_q.is_some()) || (mixed && (other_this || members.iter().any(|&f| cx.u.func(f).unwrap().defaults.iter().any(|d| d.is_some()))))) {
