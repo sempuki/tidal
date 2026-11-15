@@ -1980,3 +1980,16 @@ fn attributes_on_a_class() {
     // A vendor attribute does not change the layout.
     assert_eq!(werror("struct [[gnu::packed]] R { char k; int v; }; static_assert(sizeof(R) == 8);"), None);
 }
+
+#[test]
+fn classes_with_qualified_names() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // The definition sees the members of the qualifier's namespace.
+    assert_eq!(run("namespace lib { struct Root { int r = 1; }; using len = int; struct Leaf; } struct lib::Leaf : Root { len x = 4; }; int main() { lib::Leaf l; return l.r + l.x; }"), RunOutcome::Result(5));
+    assert_eq!(rule("struct P { union F; }; union P::F final { short h; }; static_assert(sizeof(P::F) == sizeof(short));"), None);
+    assert_eq!(rule("struct O { struct I; }; struct O::M { int v; };"), Some("TYN-7"));
+}

@@ -36,7 +36,12 @@ fn new_class(cx: &mut Check, name: &str, key: ClassKey, span: Span) -> ClassId {
 
 /// The key of a class head.
 fn key_of(cx: &Check, head: &Node) -> ClassKey {
-    match cx.first_word(head) {
+    // An elaborated type holds its key in a `class_key` node.
+    let word = match head.child("class_key") {
+        Some(k) => cx.first_word(k),
+        None => cx.first_word(head),
+    };
+    match word {
         "class" => ClassKey::Class,
         "union" => ClassKey::Union,
         _ => ClassKey::Struct,
@@ -88,9 +93,30 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
             None => return QType::error(),
         }
     };
-    if head.child("nested_name").is_some() || head.child("template_id").is_some() {
+    if head.child("template_id").is_some() {
         return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
+    let Some(nn) = head.child("nested_name") else { return class_def_in(cx, n, head) };
+    // TYN-6: a class declared in a namespace or a class is defined after
+    // with a qualified name. The definition is in the scope of the
+    // qualifier, so its bases and body see the members there (NAM-21).
+    let s = match names::nested_name(cx, nn) {
+        names::Qual::Scope(s) => s,
+        _ => return QType::error(),
+    };
+    let name = head.child("class_name").map(|c| cx.source(c)).unwrap_or_default();
+    if !names::declared_here(cx, s, &name).into_iter().any(|e| matches!(cx.u.entities[e].kind, EntKind::Class(_))) {
+        cx.error(head.span, "TYN-7", format!("'{}' has no class '{}' declared to define here", cx.source(nn).trim_end_matches("::"), name));
+        return QType::error();
+    }
+    let saved = std::mem::replace(&mut cx.scope, s);
+    let t = class_def_in(cx, n, head);
+    cx.scope = saved;
+    t
+}
+
+/// `class_def` in the scope of the class's name.
+fn class_def_in(cx: &mut Check, n: &Node, head: &Node) -> QType {
     // ATTR-19: an attribute after the class key applies to the class.
     let mut attrs = crate::declarations::attributes::check::Attrs::default();
     for a in head.children("attribute_spec") {

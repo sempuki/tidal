@@ -540,9 +540,9 @@ pub fn define_full(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
     }
     let f = cx.u.func(id).unwrap().clone();
     let ret = fty.ret.clone();
-    // TYN-7: a definition does not return an incomplete class.
+    // FN-12, TYN-7: a definition does not return an incomplete class.
     if ret.class().is_some_and(|c| !cx.u.classes[c].complete) {
-        cx.error(cx.u.entities[id].span, "TYN-7", "a function definition whose return type is an incomplete class");
+        cx.error_cause(cx.u.entities[id].span, "FN-12", Some("TYN-7"), "a function definition whose return type is an incomplete class");
     } else {
         let at = cx.u.entities[id].span;
         crate::classes::r#virtual::check::not_abstract(cx, &ret, at);
