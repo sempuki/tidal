@@ -717,7 +717,9 @@ argument of a call whose name finds one function copy-list-initializes
 its parameter and adds no associated namespace. `explicit(c)` makes a
 constructor or conversion function explicit when the constant `c`,
 converted to `bool` without narrowing, is true. `->` on a class object
-calls its `operator->` until the result is a pointer to a class. The
+calls its `operator->` until the result is a pointer to a class. A
+bit-field width of class type converts by its one non-explicit
+conversion function to an integral or unscoped enumeration type. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

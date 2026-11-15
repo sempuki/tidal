@@ -207,9 +207,38 @@ pub fn bitfield<'n>(cx: &mut Check, c: ClassId, specs: &crate::declarations::che
     if e.ty.is_error() {
         return Some(false);
     }
-    if e.ty.is_class() {
-        cx.unsupported(e.span, "a bit-field width of class type");
-        return None;
+    // BF-1: a width of class type converts by its one non-explicit
+    // conversion function to an integral or unscoped enumeration type.
+    let e = match e.ty.class().filter(|_| crate::classes::conversion_functions::check::converting_class(cx, &e).is_some()) {
+        Some(k) => {
+            let obj = e.ty.clone();
+            // CE-23: the operand has a literal type, whose destructor is
+            // constexpr.
+            if crate::classes::constructors::run::needs_in(&cx.u, &obj) && !crate::classes::constructors::check::dtor_constexpr(cx, k) {
+                cx.error_cause(e.span, "BF-2", Some("CE-23"), format!("the width of a bit-field has type {}, whose destructor is not constexpr", obj.show()));
+                return Some(false);
+            }
+            let fs = crate::classes::conversion_functions::check::operand_functions(cx, k, &obj, |r| r.is_integral() || matches!(r.t, Type::Enum(en) if !cx.u.enums[en].scoped));
+            match fs.as_slice() {
+                [f] => {
+                    let span = e.span;
+                    let r = crate::classes::conversion_functions::check::call(cx, *f, e, span);
+                    rvalue(cx, r)
+                }
+                [] => {
+                    cx.error(e.span, "BF-2", format!("the width of a bit-field has type {}, which has no conversion to an integral type", obj.show()));
+                    return Some(false);
+                }
+                _ => {
+                    cx.error(e.span, "BF-2", format!("the width of a bit-field has type {}, whose conversion to an integral type is ambiguous", obj.show()));
+                    return Some(false);
+                }
+            }
+        }
+        None => e,
+    };
+    if e.ty.is_error() {
+        return Some(false);
     }
     let unscoped = matches!(e.ty.t, Type::Enum(en) if !cx.u.enums[en].scoped);
     if !(e.ty.is_integral() || unscoped) {

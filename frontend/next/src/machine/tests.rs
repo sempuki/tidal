@@ -1936,3 +1936,16 @@ fn arrow_operators() {
     assert_eq!(rule("struct S { int v; }; int f(S s) { return s->v; }"), Some("PFX-11"));
     assert_eq!(rule("struct S {}; int* operator->(S);"), Some("OPR-2"));
 }
+
+#[test]
+fn bit_field_widths_of_class_type() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct W { constexpr explicit operator int() const { return 3; } constexpr operator long() const { return 4; } }; struct S { unsigned f : W{}; }; constexpr S s{15}; static_assert(s.f == 15);"), None);
+    assert_eq!(rule("struct W { operator int() const { return 3; } }; struct S { int b : W(); };"), Some("BF-2"));
+    assert_eq!(rule("struct W { constexpr operator int() const { return 3; } constexpr operator long() const { return 3; } }; struct S { int b : W(); };"), Some("BF-2"));
+    assert_eq!(rule("struct W { ~W() {} constexpr operator int() const { return 3; } }; struct S { int b : W(); };"), Some("BF-2"));
+}

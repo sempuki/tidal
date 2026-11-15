@@ -310,20 +310,7 @@ pub fn user_sequence(cx: &Check, e: &Expr, to: &QType) -> Option<Ics> {
 pub fn builtin_operand(cx: &mut Check, e: Expr) -> Option<Expr> {
     let Some(c) = converting_class(cx, &e) else { return Some(e) };
     let obj = e.ty.nonref();
-    let fs: Vec<EntityId> = functions(&cx.u, c).into_iter().filter(|&f| {
-        cx.u.func(f).is_some_and(|x| {
-            let r = x.ty.ret.nonref();
-            !x.explicit && (!obj.c || x.obj_cv.0) && (r.is_arithmetic() || r.is_enum() || r.is_ptr() || r.is_member_ptr() || r.is_nullptr())
-        })
-    }).collect();
-    // Functions with one result type differ in their object binding only
-    // (CVF-4): an exact one wins.
-    let fs = if fs.len() > 1 && fs.iter().all(|&f| cx.u.func(f).map(|x| x.ty.ret.nonref().unqual().t.clone()) == cx.u.func(fs[0]).map(|x| x.ty.ret.nonref().unqual().t.clone())) {
-        let exact: Vec<EntityId> = fs.iter().copied().filter(|&f| cx.u.func(f).is_some_and(|x| x.obj_cv == (obj.c, obj.v))).collect();
-        if exact.len() == 1 { exact } else { fs }
-    } else {
-        fs
-    };
+    let fs = operand_functions(cx, c, &obj, |r| r.is_arithmetic() || r.is_enum() || r.is_ptr() || r.is_member_ptr() || r.is_nullptr());
     match fs.as_slice() {
         // CVF-11: an explicit conversion function does not convert an
         // operand of a built-in operator.
@@ -341,6 +328,23 @@ pub fn builtin_operand(cx: &mut Check, e: Expr) -> Option<Expr> {
             None
         }
     }
+}
+
+/// The non-explicit conversion functions of class `c` that an object of
+/// type `obj` can call and whose result type meets `wanted`. Functions
+/// with one result type differ in their object binding only (CVF-4), and
+/// an exact one wins.
+pub fn operand_functions(cx: &Check, c: ClassId, obj: &QType, wanted: impl Fn(&QType) -> bool) -> Vec<EntityId> {
+    let fs: Vec<EntityId> = functions(&cx.u, c).into_iter().filter(|&f| {
+        cx.u.func(f).is_some_and(|x| !x.explicit && (!obj.c || x.obj_cv.0) && wanted(&x.ty.ret.nonref()))
+    }).collect();
+    if fs.len() > 1 && fs.iter().all(|&f| cx.u.func(f).map(|x| x.ty.ret.nonref().unqual().t.clone()) == cx.u.func(fs[0]).map(|x| x.ty.ret.nonref().unqual().t.clone())) {
+        let exact: Vec<EntityId> = fs.iter().copied().filter(|&f| cx.u.func(f).is_some_and(|x| x.obj_cv == (obj.c, obj.v))).collect();
+        if exact.len() == 1 {
+            return exact;
+        }
+    }
+    fs
 }
 
 /// `builtin_operand` for both operands of a binary operator.
