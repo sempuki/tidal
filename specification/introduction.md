@@ -47,7 +47,7 @@ roles, defined by what can be read.
 
 **Clean-room writer**
 
-- May read source readers' summaries after the similarity check.
+- May read source readers' summaries that passed the non-similarity check.
 - May read the behavior and diagnostics of the baseline compilers.
 - May read sanitized compiler sources under permissive licenses.
 - May read every file of the repository.
@@ -78,7 +78,7 @@ back to the source reader to be reworded.
 <figure class="tidal-diagram">
 <svg font-family="sans-serif" viewBox="0 0 840 480" role="img" aria-labelledby="wf-title wf-desc">
   <title id="wf-title">The Tidal workflow</title>
-  <desc id="wf-desc">Protected sources reach only source readers. Their summaries pass the similarity check before clean-room writers read them. Writers also use the behavior of the baseline compilers, and write the Tidal specification and tests. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers. The tests run on the compilers, and the results become each page's Evidence.</desc>
+  <desc id="wf-desc">Protected sources reach only source readers. Their summaries pass the non-similarity check before clean-room writers read them. Writers also use the behavior of the baseline compilers, and write the Tidal specification and tests. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers. The tests run on the compilers, and the results become each page's Evidence.</desc>
   <defs>
     <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" class="wf-head" fill="currentColor"/>
@@ -99,8 +99,9 @@ back to the source reader to be reworded.
   <text x="110" y="225" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Source readers</text>
 
   <rect x="240" y="190" width="130" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="305" y="215" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Similarity check</text>
-  <text x="305" y="234" class="wf-label wf-mono" fill="currentColor" font-size="13" text-anchor="middle">tools/similarity.py</text>
+  <text x="305" y="207" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Non-similarity</text>
+  <text x="305" y="223" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">check</text>
+  <text x="305" y="241" class="wf-label wf-mono" fill="currentColor" font-size="13" text-anchor="middle">tools/similarity.py</text>
 
   <rect x="400" y="30" width="200" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
   <text x="500" y="56" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Baseline compilers</text>
@@ -147,7 +148,7 @@ back to the source reader to be reworded.
   <text x="663" y="454" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">results go to each page's Evidence</text>
 </svg>
 <figcaption>Protected sources reach only source readers. Everything
-inside the clean room comes from summaries that passed the similarity
+inside the clean room comes from summaries that passed the non-similarity
 check, from the baseline compilers, and from Tidal's own files.</figcaption>
 </figure>
 ```
@@ -162,14 +163,14 @@ full):
    and records what each compiler accepts, rejects, and prints.
 3. **Read sources.** The writer reads the sanitized, permissively
    licensed compiler sources where they help, and the source readers'
-   summaries that passed the similarity check.
+   summaries that passed the non-similarity check.
 4. **Classify.** The writer sorts the behavior into kinds: required,
    rejected, undefined, unspecified, implementation-defined.
 5. **Draft.** The writer writes the page's principles and rules. Each
    rule has an ID, a kind, and test programs that show it.
 6. **Questions.** Where the compilers disagree, the writer adopts a
    provisional answer, records it as a question, and goes on.
-7. **Similarity check.** `tools/similarity.py` compares the page with
+7. **Non-similarity check.** `tools/similarity.py` compares the page with
    the reference corpus, and the writer rewrites each flagged passage.
 8. **Evidence.** Every test runs on every baseline compiler, and the
    results go into the Evidence segment of the page.
@@ -213,10 +214,10 @@ try a change of wording against the whole test suite at once.
 
 **Source readers add coverage, not text.** A source reader can report
 that the Tidal specification misses a case, or that a rule is too
-broad. The report passes the similarity check, and a clean-room writer
+broad. The report passes the non-similarity check, and a clean-room writer
 then probes the compilers and writes the rule independently.
 
 **Closeness to the ISO standard is measured.** Tidal is also an
 experiment in how close independent text ends up to the wording of the
-ISO standard. The similarity checks that guard each step also measure
+ISO standard. The non-similarity checks that guard each step also measure
 that closeness.
