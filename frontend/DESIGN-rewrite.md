@@ -571,7 +571,13 @@ has one declarator, a class key that agrees with the template's, no
 `inline`, `constexpr`, storage class but `thread_local`, or attribute,
 and comes once per specialization, before any explicit specialization
 of it. An explicit instantiation declaration is checked and waits for a
-later piece. A function template can be declared before
+later piece. A function template can have a deduced return type, which each
+specialization deduces from its body. An unqualified name that lookup
+does not find, followed by a template argument list and a call, names a
+template that argument-dependent lookup finds; a function's name before
+`<` waits for a later piece. Explicit arguments that do not convert to
+their parameters remove the candidate. A constant parameter's
+declaration has no storage class and defines no type. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a
@@ -616,7 +622,8 @@ specialization sees only the declarations at namespace scope before
 the template. Because the definition checks of model section 5 and the
 points of instantiation of model section 3 are not there yet, a
 template that nothing specializes and that a trial specialization with
-`int` for each parameter does not check without a diagnostic, an error in a
+`int` for each type parameter and 1 for each constant parameter does
+not check without a diagnostic, an error in a
 specialization, a call whose argument-dependent lookup would see later
 declarations, a definition with a dependent form (`.template`, a
 member named with template arguments after `.` or `->`, a type named

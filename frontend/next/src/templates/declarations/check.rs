@@ -51,6 +51,15 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
                 false => None,
             };
             let ds = p.child("decl_specifiers")?;
+            // TPL-33: no storage class, and no class or enumeration defined.
+            if let Some(d) = ds.children("decl_specifier").find(|d| matches!(cx.source(d).as_str(), "static" | "extern" | "thread_local" | "register" | "mutable")) {
+                cx.error(d.span, "TPL-33", format!("the storage class '{}' on a constant template parameter", cx.source(d)));
+                return None;
+            }
+            if ds.find("enum_def").is_some() || ds.find("class_def").is_some() || ds.find("union_def").is_some() {
+                cx.error(ds.span, "TPL-33", "a constant template parameter that defines a class or an enumeration");
+                return None;
+            }
             let marks = cx.u.diags.len();
             let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
             let ty = specs.ty.clone().filter(|t| (t.is_integral() || t.is_enum()) && cx.u.diags.len() == marks && !specs.unsupported);
@@ -390,7 +399,11 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
         cx.u.diags.truncate(marks);
         return false;
     };
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || d.placeholder.is_some() {
+    // A deduced return type (`auto`) is deduced in each specialization;
+    // `decltype(auto)` and a constrained placeholder wait for a later
+    // piece.
+    let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok {
         cx.u.diags.truncate(marks);
         return false;
     }
@@ -1504,7 +1517,14 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
                 let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
                 // PACK rules: explicit arguments for a pack come last.
                 let packed = cx.u.templates[t].pack && n + 1 >= kinds.len();
+                // DED-5: explicit arguments that do not fit remove the
+                // candidate.
+                let marks = cx.u.diags.len();
                 let a = if packed { template_args_packed(cx, tid, &kinds, true) } else { template_args(cx, tid, &kinds[..n.min(kinds.len())]) };
+                if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+                    cx.u.diags.truncate(marks);
+                    continue;
+                }
                 match a {
                     Some(a) if packed || n <= kinds.len() => a,
                     _ => continue,
@@ -1615,10 +1635,11 @@ fn trial(cx: &mut Check, t: Option<usize>, v: Option<usize>) -> bool {
         (_, Some(v)) => cx.u.class_templates[v].kinds.clone(),
         _ => return false,
     };
-    if kinds.iter().any(|k| k.is_some()) {
-        return false;
-    }
-    let mut args: Vec<TArg> = kinds.iter().map(|_| TArg::Type(QType::new(Type::Int(crate::sem::types::IntK::Int)))).collect();
+    // A constant parameter takes 1.
+    let mut args: Vec<TArg> = kinds.iter().map(|k| match k {
+        None => TArg::Type(QType::new(Type::Int(crate::sem::types::IntK::Int))),
+        Some(t) => TArg::Value(t.clone(), 1),
+    }).collect();
     // A pack takes one `int`.
     let pack = match (t, v) {
         (Some(t), _) => cx.u.templates[t].pack,
@@ -2022,7 +2043,8 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         cx.u.diags.truncate(marks);
         return false;
     };
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || d.placeholder.is_some() || specs.is_static || d.params.iter().any(|p| p.pack.is_some()) {
+    let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || specs.is_static || d.params.iter().any(|p| p.pack.is_some()) {
         cx.u.diags.truncate(marks);
         return false;
     }

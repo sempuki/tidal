@@ -503,7 +503,18 @@ fn choose_with_templates(cx: &mut Check, plain: &[EntityId], specs: &[EntityId],
 /// function template, or arguments that are not types.
 fn template_id_call(cx: &mut Check, tid: &Node, args: &[Expr], span: Span) -> Option<Expr> {
     let name = cx.source(tid.child("template_name")?);
-    let found: Vec<EntityId> = crate::foundations::names::check::lookup(cx, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))).collect();
+    let ordinary = crate::foundations::names::check::lookup(cx, &name);
+    let mut found: Vec<EntityId> = ordinary.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))).collect();
+    // TARG-23: a name that finds no template, or only functions, before
+    // `<` names a template that argument-dependent lookup finds.
+    if ordinary.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_)) && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Namespace) {
+        let tys: Vec<QType> = args.iter().map(|a| a.ty.clone()).collect();
+        for e in crate::foundations::names::check::argument_dependent(cx, &name, &tys) {
+            if matches!(cx.u.entities[e].kind, EntKind::Template(_)) && !found.contains(&e) {
+                found.push(e);
+            }
+        }
+    }
     if found.is_empty() {
         return None;
     }

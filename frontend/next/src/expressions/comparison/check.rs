@@ -178,6 +178,20 @@ fn warnings(cx: &mut Check, op: BOp, l: &Expr, r: &Expr, span: Span) {
 /// `relational_expr`, `equality_expr`, `three_way_expr`.
 pub fn comparison(cx: &mut Check, n: &Node) -> Expr {
     let op = BOp::from_str(operator(cx, n)).unwrap_or(BOp::Eq);
+    // TARG-23: an unqualified name of functions before `<` names a
+    // template that argument-dependent lookup can find, which the parser
+    // does not read so yet.
+    if op == BOp::Lt {
+        let left = crate::expressions::check::nodes(n).first().copied();
+        let name = left.filter(|l| l.prod == "primary" && l.kids.len() == 1).and_then(|l| l.child("id_expression")).filter(|id| id.child("unqualified_id").is_some_and(|u| u.kids.len() == 1));
+        if let Some(id) = name {
+            let found = crate::foundations::names::check::lookup(cx, &cx.source(id));
+            if !found.is_empty() && found.iter().all(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Func(_))) {
+                let t = cx.unsupported(n.span, "a function name before '<', which can name a template (TARG-23)");
+                return Expr::new(EK::Int(0), t, crate::sem::tree::Cat::PR, n.span);
+            }
+        }
+    }
     // OPR-6: a three-way comparison of class or enumeration operands can
     // select an operator function.
     if op == BOp::Spaceship && cx.u.entities.iter().any(|e| &*e.name == "operator<=>") {

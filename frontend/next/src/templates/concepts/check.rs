@@ -359,6 +359,11 @@ fn requirements(cx: &mut Check, n: &Node) -> Option<bool> {
         }
         for r in n.children("requirement") {
             let Some(Kid::Node(k)) = r.kids.first() else { return None };
+            // A destructor call's validity needs the eligibility of
+            // destructors (CNS-21), which waits for a later piece.
+            if cx.words(r).contains(&"~") || { let mut t = Vec::new(); r.tokens(&mut t); t.iter().any(|&x| cx.toks[x].text == "~") } {
+                return None;
+            }
             let holds = match k.prod {
                 // CPT-31: the expression is valid.
                 "simple_requirement" => {

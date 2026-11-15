@@ -2830,3 +2830,17 @@ fn tuple_protocol_bindings() {
     assert_eq!(rule(&format!("{} template <decltype(sizeof 0) I> struct std::tuple_element<I, lib::Two> {{ using type = int; }}; constexpr int f() {{ auto [x, y] = lib::Two{{3, 4}}; return x * 10 + y; }} static_assert(f() == 34);", base)), None);
     assert_eq!(rule(&format!("{} template <decltype(sizeof 0) I> struct std::tuple_element<I, lib::Two> {{ using type = int; }}; void g() {{ auto [x, y, z] = lib::Two{{3, 4}}; }}", base)), Some("SB-2"));
 }
+
+#[test]
+fn deduced_returns_and_template_names() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class T> constexpr auto twice(T v) { return v + v; } static_assert(twice(2) == 4 && twice(1.5) == 3.0);"), None);
+    assert_eq!(run("namespace lib { struct Tag {}; template <int N> int pick(Tag) { return N; } } int first() { return pick<3>(lib::Tag{}); } int main() { return first(); }"), RunOutcome::Result(3));
+    assert_eq!(rule("template <static int N> struct Fixed {};"), Some("TPL-33"));
+    let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
+    assert_eq!(rule(&format!("{} struct One {{}}; struct Two {{}}; template <unsigned char C> One code(); template <int C> Two code(); static_assert(same<decltype(code<300>()), Two>);", same)), None);
+}

@@ -164,6 +164,16 @@ pub fn unqualified_id(p: &mut Parser, q: Qual, tkw: bool) -> PResult<Node> {
             let (t, _) = arguments::syntax::template_id(p, q, tkw)?;
             return Ok(p.node("unqualified_id", sp, vec![Kid::Node(t)]));
         }
+        // TARG-23: an unqualified name that lookup does not find, before
+        // `<`, names a template; a call follows its argument list.
+        if q == Qual::None && matches!(p.find(q, name).kind, crate::syntax::names::Kind::Unknown) {
+            if let Ok((t, _)) = p.attempt(|p| {
+                let r = arguments::syntax::template_id(p, q, tkw)?;
+                if p.at("(") { Ok(r) } else { Err(p.fail("a call after a template-id")) }
+            }) {
+                return Ok(p.node("unqualified_id", sp, vec![Kid::Node(t)]));
+            }
+        }
     }
     let id = identifier(p)?;
     Ok(p.node("unqualified_id", sp, vec![id]))
