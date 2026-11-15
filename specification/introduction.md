@@ -1,4 +1,4 @@
-# 0. How Tidal is made
+# 0. Provenance
 
 Tidal is made with deep respect for copyright, and for the years of
 careful work that the many contributors to the ISO C++ standard have
@@ -53,7 +53,7 @@ back to the source reader to be reworded.
 ```{raw} html
 <figure class="tidal-diagram">
 <svg font-family="sans-serif" viewBox="0 0 840 480" role="img" aria-labelledby="wf-title wf-desc">
-  <title id="wf-title">How Tidal is made</title>
+  <title id="wf-title">The Tidal workflow</title>
   <desc id="wf-desc">Protected sources reach only source readers. Their summaries pass the similarity check before clean-room writers read them. Writers also use the behavior of the baseline compilers, and write the Tidal specification and tests. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers. The tests run on the compilers, and the results become each page's Evidence.</desc>
   <defs>
     <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

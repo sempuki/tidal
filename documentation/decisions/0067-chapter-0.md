@@ -14,7 +14,7 @@ easy to find, on the site, as chapter 0.
 
 ## Decision
 
-- `specification/introduction.md` is chapter 0, "How Tidal is made". It
+- `specification/introduction.md` is chapter 0, "Provenance". It
   is the statement of provenance of the specification: the front matter
   that says who writes the text, what each writer may read, and how the
   text improves without the text of the ISO standard. It states no
