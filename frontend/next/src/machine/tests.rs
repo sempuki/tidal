@@ -2261,3 +2261,15 @@ fn default_arguments_that_make_special_constructors() {
     assert_eq!(rule("struct C { int v; C(int x); }; C::C(int x = 5) : v(x) {}"), Some("DEFARG-12"));
     assert_eq!(rule("struct C { C(); C(const C&, int); }; C::C(const C&, int = 0) {}"), Some("DEFARG-12"));
 }
+
+#[test]
+fn braced_lists_assigned_to_class_objects() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct V { int x, y; V(int a, int b) : x(a), y(b) {} V& operator+=(V o) { x += o.x; y += o.y; return *this; } }; struct P { int a, b; }; int main() { V v{1, 1}; v += {2, 3}; P p{0, 0}; p = {4, 5}; return v.x * 1000 + v.y * 100 + p.a * 10 + p.b; }"), RunOutcome::Result(3445));
+    // The implicit assignment takes a class prvalue on the left.
+    assert_eq!(rule("struct P { int a, b; }; P make(); void f() { make() = {1, 2}; make() = P{3, 4}; }"), None);
+}

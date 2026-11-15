@@ -763,7 +763,9 @@ conversion functions to integral types. `decltype(e)` names a type in
 a functional cast. A class operand of `delete` converts by its one
 conversion function to a pointer to an object type. A default argument
 outside the class that makes a default, copy, or move constructor is an
-error. The
+error. A braced list on the right of an assignment to a class object is
+a prvalue of the parameter of its assignment operator, and the implicit
+assignment takes a class rvalue on the left. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

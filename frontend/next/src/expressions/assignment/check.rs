@@ -13,10 +13,8 @@ use crate::syntax::Node;
 /// ASN-2: the left operand is a modifiable lvalue.
 fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
     if let Some(c) = l.ty.class() {
-        if l.cat != Cat::L {
-            cx.unsupported(span, "an assignment to a class prvalue (member functions come with build step 4)");
-            return false;
-        }
+        // VC-2: the implicit assignment operators of a class take an
+        // rvalue object too; `assign_value` materializes a prvalue.
         // VOL-11, CPY-23: the implicit copy assignment is not volatile,
         // and a const member deletes it.
         if l.ty.v {
@@ -36,7 +34,7 @@ fn modifiable(cx: &mut Check, l: &Expr, span: Span) -> bool {
             return false;
         }
     }
-    if l.cat != Cat::L {
+    if l.cat != Cat::L && !l.ty.is_class() {
         // VC-12: a prvalue of a type that is not a class is not assigned
         // to.
         let mul = matches!(l.k, EK::Binary(crate::sem::tree::BOp::Mul | crate::sem::tree::BOp::Div | crate::sem::tree::BOp::Rem, ..));
@@ -83,11 +81,19 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
         *cx.assigned.entry(*id).or_insert(0) += 1;
     }
     let rhs = ns[2];
-    if rhs.prod == "braced_init" {
-        if l.ty.is_class() {
-            let t = cx.unsupported(span, "a braced list on the right of an assignment to a class object");
+    // ASN-6: a braced list on the right of an assignment to a class object
+    // is the argument of its assignment operator, a prvalue of the
+    // parameter's type.
+    let braced_class = rhs.prod == "braced_init" && l.ty.is_class();
+    if braced_class {
+        let Some(t) = braced_target(cx, &l, op) else {
+            let t = cx.unsupported(span, "a braced list on the right of an assignment to a class object with several assignment operators");
             return Expr::new(EK::Int(0), t, Cat::PR, span);
-        }
+        };
+        let Some(r) = crate::declarations::initialization::list::check::scalar_list(cx, rhs, &t, "ASN-6") else { return bad(span) };
+        return assign_value(cx, op, l, r, span);
+    }
+    if rhs.prod == "braced_init" {
         if op != "=" {
             cx.error(span, "ASN-14", "a braced list on the right of a compound assignment");
             return bad(span);
@@ -100,9 +106,46 @@ pub fn assignment_expr(cx: &mut Check, n: &Node) -> Expr {
         return Expr::new(EK::Assign(Box::new(l), Box::new(r)), t, Cat::L, span);
     }
     let r = expr(cx, rhs);
+    assign_value(cx, op, l, r, span)
+}
+
+/// The type of the prvalue that a braced list on the right of `l op {...}`
+/// makes: the class for `=` when the class's assignment operators take
+/// the class, or the parameter of the one operator function of a
+/// compound assignment. None for another set of operators.
+fn braced_target(cx: &mut Check, l: &Expr, op: &str) -> Option<crate::sem::types::QType> {
+    let c = l.ty.class()?;
+    let name = format!("operator{}", op);
+    let members = match crate::classes::derived::check::member_lookup(cx, c, &name) {
+        Ok(Some(x)) => x.ents,
+        _ => Vec::new(),
+    };
+    let others = crate::foundations::names::check::lookup_where(cx, &name, |k| matches!(k, crate::sem::EntKind::Func(_)));
+    if !others.is_empty() {
+        return None;
+    }
+    let params: Vec<crate::sem::types::QType> = members.iter().filter_map(|&f| cx.u.func(f)).map(|x| x.ty.params.get(usize::from(x.explicit_object)).cloned().unwrap_or_else(crate::sem::types::QType::error)).collect();
+    if op == "=" {
+        return params.iter().all(|p| p.nonref().class() == Some(c)).then(|| l.ty.unqual());
+    }
+    match params.as_slice() {
+        [p] => Some(p.nonref().unqual()),
+        _ => None,
+    }
+}
+
+/// `l op r` with the right operand checked.
+fn assign_value(cx: &mut Check, op: &str, l: Expr, r: Expr, span: Span) -> Expr {
     if r.ty.is_error() {
         return bad(span);
     }
+    // VC-2: a class prvalue on the left is materialized as an xvalue.
+    let l = if l.ty.is_class() && l.cat == Cat::PR {
+        let t = l.ty.clone();
+        l.conv(crate::sem::tree::Conv::Materialize, t, Cat::X)
+    } else {
+        l
+    };
     // CPY-3, OPR-6: a user-declared assignment operator.
     let chosen = if op == "=" { crate::classes::operators::check::assignment(cx, &l, &r, span) } else { crate::classes::operators::check::binary(cx, op, &l, &r, span) };
     if let Some(e) = chosen {
