@@ -172,7 +172,7 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     }
     let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) else { return false };
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
-    if shadows_param(cx, fd, &params) {
+    if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
         return true;
     }
     let saved = cx.scope;
@@ -190,6 +190,11 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || d.placeholder.is_some() {
         cx.u.diags.truncate(marks);
         return false;
+    }
+    // TPL-29: `main` is no template.
+    if name.as_ref() == "main" && saved == cx.u.root {
+        cx.error(span, "TPL-29", "the function 'main' declared as a template");
+        return true;
     }
     // The definition checks of model section 5 wait for a later piece, so
     // a definition with a dependent construct that the first piece does
@@ -211,6 +216,28 @@ fn c_linkage(cx: &mut Check, n: &Node) -> bool {
         cx.error(n.span, "TPL-3", "a template or a specialization with C language linkage");
     }
     cx.lang_c
+}
+
+/// PACK-8: in a function body of a template with no pack, `x...` after a
+/// name or a parenthesized expression expands no pack.
+fn expands_no_pack(cx: &mut Check, fd: &Node) -> bool {
+    let Some(body) = fd.find("compound_stmt") else { return false };
+    let mut toks = Vec::new();
+    body.tokens(&mut toks);
+    // A generic lambda's pack (`auto...`) can be expanded.
+    if toks.windows(3).any(|w| cx.toks[w[0]].text == "auto" && (cx.toks[w[1]].text == "..." || cx.toks[w[2]].text == "...")) {
+        return false;
+    }
+    for w in toks.windows(2) {
+        let (prev, t) = (cx.toks[w[0]].text.as_str(), cx.toks[w[1]].text.as_str());
+        let name = is_word(prev) && !crate::foundations::types::check::is_fundamental(prev) && !matches!(prev, "sizeof" | "auto" | "const" | "volatile");
+        if t == "..." && (name || prev == ")") {
+            let span = cx.toks[w[1]].span;
+            cx.error(span, "PACK-8", "an expansion whose pattern holds no pack");
+            return true;
+        }
+    }
+    false
 }
 
 /// TPL-18: a declaration in the template of a name that one of its
@@ -702,7 +729,7 @@ pub fn end_of_unit(cx: &mut Check) {
     let mut unused: Vec<(Rc<str>, Span)> = Vec::new();
     for t in 0..cx.u.templates.len() {
         let tpl = &cx.u.templates[t];
-        if tpl.specs.iter().all(|(_, f)| tpl.explicit.contains(f)) {
+        if tpl.specs.iter().all(|(_, f)| tpl.explicit.contains(f)) && !trial(cx, Some(t), None) {
             unused.push((cx.u.templates[t].name.clone(), cx.u.templates[t].span));
         }
     }

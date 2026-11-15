@@ -310,6 +310,14 @@ fn combine(cx: &mut Check, c: Expr, a: Expr, b: Expr, span: crate::source::Span,
             let b = b.conv(Conv::PtrNoOp, t.clone(), Cat::PR);
             return mk(c, a, b, t, Cat::PR);
         }
+        // A pointer to an object type and a pointer to void: a pointer to
+        // void with the cv-qualifiers of both.
+        if (pa.is_void() || pb.is_void()) && !pa.is_func() && !pb.is_func() {
+            let t = QType::ptr_to(QType::void().with_cv(pa.c || pb.c, pa.v || pb.v));
+            if let (Ok(a), Ok(b)) = (conv::implicit(cx, a.clone(), &t, false), conv::implicit(cx, b.clone(), &t, false)) {
+                return mk(c, a, b, t, Cat::PR);
+            }
+        }
     }
     // MPTR-4: a pointer to member and a null pointer constant or another
     // pointer to member that converts to its type.

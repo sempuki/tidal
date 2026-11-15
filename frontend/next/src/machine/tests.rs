@@ -2448,8 +2448,10 @@ fn function_templates_with_type_parameters() {
     assert_eq!(rule("template <class T> constexpr T sq(T v) { return v * v; } static_assert(sq(3) == 9 && sq(2.0) == 4.0);"), None);
     // Two deductions that differ give no candidate.
     assert_eq!(rule("template <class T> T pick(T a, T b) { return a; } int f() { return pick(1, 2L); }"), Some("unsupported"));
-    // A template that nothing specializes is not checked yet.
-    assert_eq!(rule("template <class T> T id(T v) { return v; }"), Some("unsupported"));
+    // A template that nothing specializes is checked with `int` for its
+    // parameters; one that this trial does not check stays unsupported.
+    assert_eq!(rule("template <class T> T id(T v) { return v; }"), None);
+    assert_eq!(rule("template <class T> T id(T v) { return v.x; }"), Some("unsupported"));
 }
 
 #[test]
@@ -2619,4 +2621,18 @@ fn class_partial_specializations_and_typename() {
     assert_eq!(rule("extern \"C\" { template <class T> struct Box {}; }"), Some("TPL-3"));
     // A constructor's parameter owns its argument's object.
     assert_eq!(run("int frees = 0, x; struct B { int* p; explicit B(int* q) : p(q) {} B(B&& o) noexcept : p(o.p) { o.p = nullptr; } ~B() { if (p) ++frees; } }; struct S { B b; S(B v) : b(static_cast<B&&>(v)) {} }; int main() { { B c(&x); S s(static_cast<B&&>(c)); } return frees; }"), RunOutcome::Result(1));
+}
+
+#[test]
+fn function_template_trials_and_adl() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class T> T twice(T v) { return v + v; }"), None);
+    assert_eq!(rule("template <class T> int main() { return 0; }"), Some("TPL-29"));
+    assert_eq!(rule("template <class T> void one(T x) { int y{x...}; }"), Some("PACK-8"));
+    assert_eq!(rule("namespace n { template <class T> int probe(T) { return 1; } struct S {}; } int r = probe(n::S{});"), None);
+    assert_eq!(rule("template <class X, class Y> constexpr bool same = false; template <class X> constexpr bool same<X, X> = true; struct A { operator const int*(); }; struct B { operator void*(); }; A a; B b; extern bool c; static_assert(same<decltype(c ? a : b), const void*>);"), None);
 }

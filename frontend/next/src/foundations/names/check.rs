@@ -529,7 +529,7 @@ fn argument_dependent_with(cx: &Check, name: &str, args: &[crate::sem::types::QT
             // tell an independent call, which binds at the definition
             // (DEP-5), so the declarations after the template stay out.
             let late = limit.is_some_and(|l| e >= l);
-            if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && !late && !out.contains(&e) && (!cx.u.hidden.contains(&e) || befriends(e)) {
+            if matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_)) && !late && !out.contains(&e) && (!cx.u.hidden.contains(&e) || befriends(e)) {
                 out.push(e);
             }
         }
