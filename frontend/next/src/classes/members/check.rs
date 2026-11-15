@@ -257,12 +257,16 @@ fn class_def_in(cx: &mut Check, n: &Node, head: &Node) -> QType {
             // such an initializer with a later part.
             let this = QType::ptr_to(QType::new(Type::Class(id)));
             let saved_func = cx.func.replace(crate::sem::check::FnCtx { this: Some(this), ..Default::default() });
-            let i = member_init(cx, &ty, init);
+            let mut i = member_init(cx, &ty, init);
             cx.func = saved_func;
-            if i.as_ref().is_some_and(|i| i.any(&|e| matches!(e.k, EK::This))) {
-                cx.unsupported(init.span, "a default member initializer that uses this or another member (build step 4)");
-                ok = false;
-                break;
+            // `this` names the object whose member the initializer
+            // initializes, wherever the initializer runs.
+            if let Some(i) = i.as_mut() {
+                i.each_mut(&mut |e| {
+                    if matches!(e.k, EK::This) {
+                        e.k = EK::InitThis;
+                    }
+                });
             }
             if let EntKind::Field(x) = &mut cx.u.entities[f].kind {
                 x.init = i;

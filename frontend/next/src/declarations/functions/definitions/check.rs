@@ -366,7 +366,7 @@ fn local_in(cx: &Check, e: &Expr) -> Option<EntityId> {
     let sub = |x: &Expr| local_in(cx, x);
     match &e.k {
         EK::Var(v) => cx.u.var(*v).filter(|x| x.storage == Storage::Automatic || x.param).map(|_| *v),
-        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This | EK::MemberPtr(..) | EK::Caught | EK::Throw(None) => None,
+        EK::Unevaluated(_) | EK::Int(_) | EK::Float(_) | EK::LongDouble(_) | EK::Str(_) | EK::Func(_) | EK::Virtual(_) | EK::Closure(_) | EK::This | EK::InitThis | EK::MemberPtr(..) | EK::Caught | EK::Throw(None) => None,
         EK::Throw(Some(x)) => sub(x),
         EK::Conv(_, x) | EK::Unary(_, x) | EK::IncDec(_, _, x) | EK::Deref(x) | EK::AddrOf(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::Delete(x, ..) | EK::PtrMemFn(x) | EK::DynCast(x, ..) => sub(x),
         EK::Binary(_, a, b) | EK::ThreeWay(a, b, _) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => sub(a).or_else(|| sub(b)),

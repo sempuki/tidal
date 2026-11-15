@@ -722,10 +722,16 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, ty: &QType, span: Spa
                 _ => false,
             }
         }
-        if has_ctor(init) && ty.is_class() {
+        // A default member initializer that uses `this` runs on the
+        // object, so the list is evaluated as a whole.
+        let this = init.any(&|e| matches!(e.k, EK::InitThis));
+        if (has_ctor(init) || this) && ty.is_class() {
             let e = Expr::new(EK::List(Box::new(init.clone())), ty.unqual(), crate::sem::tree::Cat::PR, span);
             if let Err(why) = ce::evaluate(cx, &e) {
                 ce::report(cx, span, rule, why);
+                return;
+            }
+            if this {
                 return;
             }
         }

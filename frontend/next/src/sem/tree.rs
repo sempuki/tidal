@@ -158,6 +158,9 @@ pub enum EK {
     Member(Box<Expr>, usize),
     /// `this` in a non-static member function.
     This,
+    /// `this` in a default member initializer: the object whose member
+    /// the initializer initializes (CLS-2).
+    InitThis,
     /// A pointer to a derived class converted to a pointer to a base
     /// subobject along the positions of the path; null stays null
     /// (DER-5).
@@ -328,6 +331,39 @@ impl Expr {
             _ => false,
         }
     }
+    /// Apply `f` to the expression and to each of its operands, at any
+    /// depth, as `any` visits them.
+    pub fn each_mut(&mut self, f: &mut dyn FnMut(&mut Expr)) {
+        f(self);
+        match &mut self.k {
+            EK::Conv(_, x) | EK::Unary(_, x) | EK::Deref(x) | EK::AddrOf(x) | EK::IncDec(_, _, x) | EK::Unevaluated(x) | EK::Assume(x) | EK::EndLife(x) | EK::Destroy(x) | EK::Member(x, _) | EK::BasePtr(x, _) | EK::DerivedPtr(x, _) | EK::PtrMemFn(x) | EK::DynCast(x, ..) => x.each_mut(f),
+            EK::Binary(_, a, b) | EK::PtrAdd(a, b, _) | EK::PtrDiff(a, b) | EK::Logical(_, a, b) | EK::Assign(a, b) | EK::Compound(_, a, b, _) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) | EK::ThreeWay(a, b, _) => {
+                a.each_mut(f);
+                b.each_mut(f);
+            }
+            EK::Cond(c, a, b) => {
+                c.each_mut(f);
+                a.each_mut(f);
+                b.each_mut(f);
+            }
+            EK::Call(c, args, _) => {
+                c.each_mut(f);
+                for a in args.iter_mut() {
+                    a.e.each_mut(f);
+                }
+            }
+            EK::List(i) => i.each_mut(f),
+            EK::New(n) => {
+                if let Some(b) = n.bound.as_mut() {
+                    b.each_mut(f);
+                }
+                n.init.each_mut(f);
+            }
+            EK::Delete(x, ..) => x.each_mut(f),
+            EK::Throw(Some(x)) => x.each_mut(f),
+            _ => {}
+        }
+    }
     /// The integer value of a literal node, through no-op conversions.
     pub fn as_int_literal(&self) -> Option<i128> {
         match &self.k {
@@ -367,6 +403,15 @@ impl Init {
             Init::List(xs) => xs.iter().any(|x| x.constructs()),
             Init::Expr(e) => matches!(&e.k, EK::List(i) if i.constructs()),
             _ => false,
+        }
+    }
+    /// Apply `f` to each expression of the initializer, at any depth.
+    pub fn each_mut(&mut self, f: &mut dyn FnMut(&mut Expr)) {
+        match self {
+            Init::Expr(e) | Init::Ref(e) => e.each_mut(f),
+            Init::List(xs) => xs.iter_mut().for_each(|x| x.each_mut(f)),
+            Init::Ctor(_, args) => args.iter_mut().for_each(|a| a.e.each_mut(f)),
+            Init::Default | Init::Zero => {}
         }
     }
     pub fn any(&self, f: &dyn Fn(&Expr) -> bool) -> bool {

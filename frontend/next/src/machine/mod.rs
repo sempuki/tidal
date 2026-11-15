@@ -262,6 +262,9 @@ pub struct Machine<'a> {
     /// The subobjects whose life a pseudo-destructor call ended in
     /// constant evaluation, as object and path (OBJ-2).
     pub ended: Vec<(usize, Vec<i64>)>,
+    /// The objects whose members default member initializers initialize,
+    /// innermost last (`EK::InitThis`).
+    pub init_this: Vec<Ptr>,
     /// The static objects in the order their initialization completed,
     /// which their destruction reverses after main (OBJ-12).
     pub static_order: Vec<usize>,
@@ -317,6 +320,7 @@ impl<'a> Machine<'a> {
             keep_temps: false,
             extending: None,
             ended: Vec::new(),
+            init_this: Vec::new(),
             static_order: Vec::new(),
             undeclared: Default::default(),
         }

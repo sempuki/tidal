@@ -24,6 +24,10 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             Some(p) => Ok(Val::Ptr(p)),
             None => unsup("'this' outside a member function"),
         },
+        EK::InitThis => match m.init_this.last() {
+            Some(p) => Ok(Val::Ptr(p.clone())),
+            None => unsup("'this' of a default member initializer outside the initialization of its object"),
+        },
         // UN-5: `*p` for a pointer to a function names the function.
         EK::Deref(x) if e.ty.is_func() => match eval(m, x)? {
             Val::Fn(id) => Ok(Val::Fn(id)),

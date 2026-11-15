@@ -731,7 +731,8 @@ init-statement can be a structured binding declaration, and a binding
 to a bit-field names the bit-field. A lambda captures `this` by its
 pointer or `*this` by a copy, explicitly or at the first use under a
 capture default, and its body names `this` and the data members through
-that capture. The
+that capture. `this` in a default member initializer names the object
+whose member it initializes, wherever the initializer runs. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

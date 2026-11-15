@@ -2045,3 +2045,16 @@ fn captures_of_this() {
     };
     assert_eq!(warned, Some("LAM-21"));
 }
+
+#[test]
+fn default_member_initializers_that_use_this() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // `this` is the object, for a variable, a member of another class, a
+    // lambda that captures it, and a constructor that leaves the member out.
+    assert_eq!(run("struct S { S* self = this; }; struct T { S s; int v = 5; int got = [this] { return v; }(); T() {} }; int main() { S a; T t; return (a.self == &a) + (t.s.self == &t.s) + t.got; }"), RunOutcome::Result(7));
+    assert_eq!(rule("struct C { int base = 6; constexpr int start() const { return base + 1; } int value = start(); }; static_assert(C{}.value == 7); constexpr C c{}; static_assert(c.value == 7);"), None);
+}

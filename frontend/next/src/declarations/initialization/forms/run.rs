@@ -56,6 +56,8 @@ pub fn constructs(init: &Init) -> bool {
     match init {
         Init::Ctor(..) => true,
         Init::List(xs) => xs.iter().any(constructs),
+        // A default member initializer that uses `this` needs the object.
+        Init::Expr(e) if e.any(&|x| matches!(x.k, crate::sem::tree::EK::InitThis)) => true,
         Init::Expr(e) => matches!(&e.k, crate::sem::tree::EK::List(i) if constructs(i)),
         _ => false,
     }
@@ -120,6 +122,10 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
             };
             let mut built = Vec::new();
             let mut extended = Vec::new();
+            let class = ty.class().is_some_and(|c| uses_init_this(m, c));
+            if class {
+                m.init_this.push(p.clone());
+            }
             let r = (|| -> R<()> {
                 // DER-7: a complete object initializes its virtual bases
                 // first.
@@ -152,6 +158,9 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                 }
                 Ok(())
             })();
+            if class {
+                m.init_this.pop();
+            }
             if matches!(r, Err(crate::machine::Stop::Throw(_))) {
                 m.temps.retain(|o| !extended.contains(o));
                 if let Some(v) = m.extending.as_mut() {
@@ -165,6 +174,14 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
             set(m, p, v)
         }
     }
+}
+
+/// A default member initializer of class `c` uses `this`, so a list for
+/// the class makes its object the one that `EK::InitThis` names. A list
+/// of another class, such as a closure in such an initializer, leaves
+/// `this` to the enclosing object.
+fn uses_init_this(m: &Machine, c: crate::sem::types::ClassId) -> bool {
+    m.u.classes[c].fields.iter().any(|&f| m.u.field(f).and_then(|x| x.init.as_ref()).is_some_and(|i| i.any(&|e| matches!(e.k, crate::sem::tree::EK::InitThis))))
 }
 
 /// Store an initial value: no check of `const`, which an initialization
@@ -184,6 +201,14 @@ fn set(m: &mut Machine, p: &Ptr, v: Val) -> R<()> {
 /// innermost frame (CTOR-5, CTOR-6).
 pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemInits) -> R<()> {
     let Some(this) = m.frames.last().and_then(|fr| fr.this.clone()) else { return crate::machine::unsup("a constructor without its object") };
+    // The default member initializers name the object as `this`.
+    m.init_this.push(this.clone());
+    let r = mem_inits_of(m, f, mi, this);
+    m.init_this.pop();
+    r
+}
+
+fn mem_inits_of(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemInits, this: Ptr) -> R<()> {
     let Some(c) = m.u.func(f).and_then(|x| x.class) else { return Ok(()) };
     let ty = QType::new(Type::Class(c));
     match mi {
@@ -327,6 +352,18 @@ fn value_in(m: &mut Machine, ty: &QType, init: &Init, complete: bool) -> R<Val> 
                 }
             }
             Ok(Val::Agg(out))
+        }
+        // A list whose default member initializers use `this` is made in
+        // a temporary object, whose value is the result.
+        Init::List(_) if ty.is_class() && constructs(init) => {
+            let p = crate::machine::eval::temp(m, ty, m.uninit(ty))?;
+            let ext = m.extending.take();
+            let r = construct(m, &p, ty, init);
+            m.extending = ext;
+            r?;
+            m.temps.retain(|&o| o != p.obj);
+            m.objs[p.obj].alive = false;
+            Ok(m.objs[p.obj].val.clone())
         }
         Init::List(items) if ty.is_class() => {
             let c = ty.class().unwrap();
