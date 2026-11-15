@@ -2791,3 +2791,19 @@ fn expansions_in_initializers_and_construct_at() {
     assert_eq!(rule("template <class... T> constexpr int first(T... x) { int values[] = {x..., 0}; return values[0]; } static_assert(first(7, 8) == 7 && first() == 0);"), None);
     assert_eq!(rule("template <class... T> int take(T...); template <int... N> void sum() { take((N + ...)...); }"), Some("PACK-8"));
 }
+
+#[test]
+fn explicit_instantiations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let base = "template <class T> struct Box { T v; }; template <class T> int get(T) { return 1; } template <class T> int zero = 0;";
+    assert_eq!(rule(&format!("{} template struct Box<int>; template int get(int); template int get<long>(long); template int zero<int>;", base)), None);
+    assert_eq!(rule(&format!("{} template union Box<int>;", base)), Some("INST-23"));
+    assert_eq!(rule(&format!("{} template inline int get(int);", base)), Some("INST-25"));
+    assert_eq!(rule(&format!("{} template int get(int); template int get(int);", base)), Some("INST-26"));
+    assert_eq!(rule("template <class T> int get(T); template int get(int);"), Some("INST-20"));
+    assert_eq!(rule(&format!("{} template int get(int); template <> int get(int) {{ return 2; }}", base)), Some("INST-19"));
+}

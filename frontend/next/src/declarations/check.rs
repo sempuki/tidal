@@ -75,6 +75,7 @@ pub fn declaration(cx: &mut Check, n: &Node) {
             "template_decl" if crate::templates::declarations::check::template_decl(cx, c) => {}
             "explicit_specialization" if crate::templates::declarations::check::explicit_specialization(cx, c) => {}
             "concept_definition" if crate::templates::concepts::check::concept_definition(cx, c) => {}
+            "explicit_instantiation" if crate::templates::declarations::check::explicit_instantiation(cx, c) => {}
             _ => {
                 cx.unsupported(c.span, format!("a declaration of the form {}", c.prod));
             }

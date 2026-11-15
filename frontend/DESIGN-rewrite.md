@@ -558,7 +558,14 @@ expansion, right to left or left to right, with the initial value at
 the far end; an empty unary fold of `&&`, `||`, or `,` has its value,
 and of another operator is an error. Expansions in a signature's
 template arguments, folds of assignment operators, partial ordering
-with a pack, and constant packs wait for a later piece. A function template can be declared before
+with a pack, and constant packs wait for a later piece. An explicit instantiation definition of a class, a function, or a
+variable of a template of the scope makes the specialization, and the
+function's type gives the arguments that its template-id leaves out; it
+has one declarator, a class key that agrees with the template's, no
+`inline`, `constexpr`, storage class but `thread_local`, or attribute,
+and comes once per specialization, before any explicit specialization
+of it. An explicit instantiation declaration is checked and waits for a
+later piece. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a

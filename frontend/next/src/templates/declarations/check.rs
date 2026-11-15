@@ -630,6 +630,12 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
             cx.error(head.span, "TSP-32", format!("an explicit specialization of '{}' with a class key that does not agree with the template's", name));
             return true;
         }
+        // INST-19: no explicit specialization after an explicit
+        // instantiation of it.
+        if cx.explicit_insts.iter().any(|(k, w, a, _, _)| *k == 'c' && *w == v && *a == args) {
+            cx.error(head.span, "INST-19", format!("an explicit specialization of '{}' after an explicit instantiation of it", name));
+            return true;
+        }
         let ct = &cx.u.class_templates[v];
         if ct.specs.iter().any(|(a, c)| *a == args && ct.explicit.contains(c)) {
             return false;
@@ -675,6 +681,10 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
         cx.u.diags.truncate(marks);
         return false;
     };
+    if cx.explicit_insts.iter().any(|(k, w, a, _, _)| *k == 'v' && *w == v && *a == args) {
+        cx.error(tid.span, "INST-19", format!("an explicit specialization of '{}' after an explicit instantiation of it", name));
+        return true;
+    }
     let vt = &cx.u.var_templates[v];
     if vt.explicit.iter().any(|(a, _)| *a == args) {
         return false;
@@ -685,6 +695,248 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
     }
     let Some(id) = instantiate_var(cx, v, &[], &[], sd) else { return false };
     cx.u.var_templates[v].explicit.push((args, id));
+    true
+}
+
+/// INST-16 to INST-29: `template D;` or `extern template D;`, an explicit
+/// instantiation definition or declaration of a class, a function, or a
+/// variable of a template of the scope. A definition makes the
+/// specialization. False for a form that waits for a later piece, such
+/// as a declaration of a function or a member.
+pub fn explicit_instantiation(cx: &mut Check, n: &Node) -> bool {
+    let ext = cx.first_word(n) == "extern";
+    // INST-21: at namespace scope.
+    if cx.func.is_some() || cx.member_of.is_some() {
+        cx.error(n.span, "INST-21", "an explicit instantiation outside namespace scope");
+        return true;
+    }
+    let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) else { return false };
+    let Some(ds) = sd.child("decl_specifiers") else { return false };
+    // INST-25: no `inline`, `constexpr`, or `consteval`, no storage class
+    // but `thread_local`, and no attribute.
+    if sd.find("attribute_spec").is_some() {
+        cx.error(n.span, "INST-25", "an attribute on an explicit instantiation");
+        return true;
+    }
+    if let Some(d) = ds.children("decl_specifier").find(|d| matches!(cx.source(d).as_str(), "inline" | "constexpr" | "consteval" | "static" | "extern" | "register" | "mutable")) {
+        cx.error(d.span, "INST-25", format!("'{}' on an explicit instantiation", cx.source(d)));
+        return true;
+    }
+    let saved = cx.scope;
+    let decls: Vec<&Node> = sd.children("init_declarator").collect();
+    // A class: `template struct C<A...>;`.
+    if decls.is_empty() {
+        let Some(et) = ds.find("elaborated_type") else {
+            // INST-23: a class has a class key.
+            if ds.find("template_id").is_some() {
+                cx.error(n.span, "INST-23", "an explicit instantiation of a class without a class key");
+                return true;
+            }
+            return false;
+        };
+        let Some(tid) = et.child("template_id") else { return false };
+        if et.child("nested_name").is_some() {
+            return false;
+        }
+        let Some(name) = tid.child("template_name").map(|t| cx.source(t)) else { return false };
+        let Some(v) = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+            EntKind::ClassTemplate(v) => Some(v),
+            _ => None,
+        }) else {
+            cx.error(n.span, "INST-22", format!("an explicit instantiation of '{}', which names no class template", name));
+            return true;
+        };
+        let ct = cx.u.class_templates[v].clone();
+        if ct.scope != saved {
+            cx.error(n.span, "INST-21", format!("an explicit instantiation of '{}' outside its namespace with an unqualified name", name));
+            return true;
+        }
+        // INST-23: `union` for a union template, `class` or `struct` for
+        // another.
+        let key_union = et.child("class_key").is_some_and(|k| cx.first_word(k) == "union");
+        let primary_union = ct.node.prod == "union_def" || (ct.node.prod == "elaborated_type" && cx.first_word(ct.node.child("class_key").unwrap_or(&ct.node)) == "union");
+        if key_union != primary_union {
+            cx.error(n.span, "INST-23", format!("an explicit instantiation of '{}' with a class key that does not agree with the template's", name));
+            return true;
+        }
+        // INST-20: the class template is defined before.
+        if !ct.defined {
+            cx.error(n.span, "INST-20", format!("an explicit instantiation of '{}', whose template is not defined", name));
+            return true;
+        }
+        let marks = cx.u.diags.len();
+        let Some(args) = args_with_defaults(cx, tid, &ct.kinds, &ct.defaults, &ct.params, ct.scope, ct.limit, ct.pack) else {
+            if cx.u.diags.len() > marks {
+                return true;
+            }
+            return false;
+        };
+        if !record_inst(cx, 'c', v, &args, !ext, n.span) {
+            return true;
+        }
+        if ext {
+            return false;
+        }
+        // INST-18: an explicit specialization stays the definition.
+        let _ = class_template_use_in(cx, tid, None);
+        return true;
+    }
+    // INST-23: one declarator, with no initializer.
+    let [idecl] = decls[..] else {
+        cx.error(n.span, "INST-23", "an explicit instantiation with more than one declarator");
+        return true;
+    };
+    if idecl.child("init").is_some() {
+        cx.error(n.span, "INST-23", "an explicit instantiation with an initializer");
+        return true;
+    }
+    let Some(dn) = idecl.child("declarator") else { return false };
+    let Some(did) = dn.find("declarator_id") else { return false };
+    if did.find("nested_name").is_some() {
+        return false;
+    }
+    let tid = did.find("template_id");
+    let name = match tid {
+        Some(tid) => tid.child("template_name").map(|t| cx.source(t)),
+        None => did.find("unqualified_id").map(|u| cx.source(u)),
+    };
+    let Some(name) = name else { return false };
+    let found = names::lookup(cx, &name);
+    // A variable of a variable template.
+    if dn.find("function_suffix").is_none() {
+        let Some(tid) = tid else { return false };
+        let Some(v) = found.iter().find_map(|&e| match cx.u.entities[e].kind {
+            EntKind::VarTemplate(v) => Some(v),
+            _ => None,
+        }) else {
+            cx.error(n.span, "INST-22", format!("an explicit instantiation of '{}', which names no variable template", name));
+            return true;
+        };
+        let vt = cx.u.var_templates[v].clone();
+        if vt.scope != saved {
+            cx.error(n.span, "INST-21", format!("an explicit instantiation of '{}' outside its namespace with an unqualified name", name));
+            return true;
+        }
+        let marks = cx.u.diags.len();
+        let Some(args) = args_with_defaults(cx, tid, &vt.kinds, &vt.defaults, &vt.params, vt.scope, vt.limit, vt.pack) else {
+            return cx.u.diags.len() > marks;
+        };
+        // INST-22: the declared type is the specialization's.
+        let declared = {
+            cx.explicit_head = true;
+            let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+            let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+            cx.explicit_head = false;
+            if specs.unsupported || d.unsupported || specs.placeholder.is_some() {
+                return false;
+            }
+            d.ty.unqual()
+        };
+        if !record_inst(cx, 'v', v, &args, !ext, n.span) {
+            return true;
+        }
+        let Some(e) = var_template_use(cx, tid) else { return false };
+        if e.ty.is_error() {
+            return true;
+        }
+        if declared.t != e.ty.unqual().t && !declared.is_error() {
+            cx.error(n.span, "INST-22", format!("an explicit instantiation of '{}' with the type {}, not {}", name, declared.show(), e.ty.show()));
+            return true;
+        }
+        return !ext;
+    }
+    // A function of a function template, whose type gives the arguments
+    // that the template-id leaves out (DED-32).
+    let templates: Vec<usize> = found.iter().filter_map(|&e| match cx.u.entities[e].kind {
+        EntKind::Template(t) => Some(t),
+        _ => None,
+    }).collect();
+    if templates.is_empty() {
+        cx.error(n.span, "INST-22", format!("an explicit instantiation of '{}', which names no function template", name));
+        return true;
+    }
+    // INST-21: outside the template's namespace, the name is qualified.
+    if templates.iter().any(|&t| cx.u.templates[t].scope != saved) {
+        cx.error(n.span, "INST-21", format!("an explicit instantiation of '{}' outside its namespace with an unqualified name", name));
+        return true;
+    }
+    let marks = cx.u.diags.len();
+    cx.enter(ScopeKind::Template);
+    cx.explicit_head = true;
+    let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+    let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    cx.explicit_head = false;
+    cx.leave(saved);
+    let Some(fty) = d.ty.func().cloned().filter(|_| !specs.unsupported && !d.unsupported && cx.u.diags.len() == marks) else {
+        cx.u.diags.truncate(marks);
+        return false;
+    };
+    let mut chosen: Vec<(usize, Vec<TArg>)> = Vec::new();
+    for t in templates {
+        let tpl = cx.u.templates[t].clone();
+        if tpl.pack_param || !tpl.constraints.is_empty() {
+            return false;
+        }
+        let explicit = match tid {
+            Some(tid) => {
+                let k = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
+                match template_args(cx, tid, &tpl.kinds[..k.min(tpl.kinds.len())]) {
+                    Some(a) if k <= tpl.kinds.len() => a,
+                    _ => continue,
+                }
+            }
+            None => Vec::new(),
+        };
+        let mut bound: Vec<Option<QType>> = (0..tpl.params.len()).map(|k| match explicit.get(k) {
+            Some(TArg::Type(t)) => Some(t.clone()),
+            _ => None,
+        }).collect();
+        let same_shape = fty.params.len() == tpl.fty.params.len() && fty.variadic == tpl.fty.variadic;
+        if !same_shape || !tpl.fty.params.iter().zip(&fty.params).all(|(p, a)| match_exact(&cx.u, p, a, &mut bound)) || !match_exact(&cx.u, &tpl.fty.ret, &fty.ret, &mut bound) {
+            continue;
+        }
+        let args: Option<Vec<TArg>> = (0..tpl.params.len()).map(|k| match &tpl.kinds[k] {
+            None => bound[k].clone().map(TArg::Type),
+            Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
+        }).collect();
+        if let Some(args) = args {
+            chosen.push((t, args));
+        }
+    }
+    let [(t, args)] = chosen.as_slice() else {
+        if chosen.is_empty() {
+            cx.error(n.span, "INST-22", format!("an explicit instantiation of '{}' whose type matches no specialization of its templates", name));
+            return true;
+        }
+        return false;
+    };
+    let (t, args) = (*t, args.clone());
+    // The noexcept of the declaration is the specialization's.
+    if fty.noexcept && !cx.u.templates[t].fty.noexcept {
+        cx.error(n.span, "INST-22", format!("an explicit instantiation of '{}' whose exception specification differs from the template's", name));
+        return true;
+    }
+    if !record_inst(cx, 'f', t, &args, !ext, n.span) {
+        return true;
+    }
+    if ext {
+        return false;
+    }
+    let _ = specialize(cx, t, &args);
+    true
+}
+
+/// INST-26: one explicit instantiation definition of a specialization, and
+/// no declaration after it. False after an error.
+fn record_inst(cx: &mut Check, kind: char, v: usize, args: &[TArg], def: bool, span: Span) -> bool {
+    if let Some(&(_, _, _, d, _)) = cx.explicit_insts.iter().find(|(k, w, a, _, _)| *k == kind && *w == v && a.as_slice() == args) {
+        if d {
+            let what = if def { "a second explicit instantiation definition" } else { "an explicit instantiation declaration after the definition" };
+            cx.error(span, "INST-26", format!("{} of one specialization", what));
+            return false;
+        }
+    }
+    cx.explicit_insts.push((kind, v, args.to_vec(), def, span));
     true
 }
 
@@ -756,6 +1008,13 @@ fn explicit_function(cx: &mut Check, fd: &Node) -> bool {
         Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
     }).collect();
     let Some(args) = args else { return done(cx) };
+    // INST-19: no explicit specialization after an explicit instantiation
+    // of it.
+    if cx.explicit_insts.iter().any(|(k, w, a, _, _)| *k == 'f' && *w == t && *a == args) {
+        cx.leave(saved);
+        cx.error(dn.span, "INST-19", format!("an explicit specialization of '{}' after an explicit instantiation of it", name));
+        return true;
+    }
     // CNS-13: the arguments of an explicit specialization satisfy the
     // template's constraints.
     match crate::templates::concepts::check::function_satisfied(cx, t, &args) {
@@ -1272,6 +1531,14 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
 /// specialized: their definitions are not checked yet, so the unit is
 /// unsupported.
 pub fn end_of_unit(cx: &mut Check) {
+    // INST-20: an explicit instantiation definition of a function needs
+    // the template's definition in the unit.
+    for (kind, t, _, def, span) in cx.explicit_insts.clone() {
+        if kind == 'f' && def && cx.u.templates[t].node.prod != "function_definition" {
+            let name = cx.u.templates[t].name.clone();
+            cx.error(span, "INST-20", format!("an explicit instantiation definition of '{}', whose template the unit does not define", name));
+        }
+    }
     // The templates that a chain past the limit used are specialized.
     if cx.u.diags.iter().any(|d| d.rule == Some("TR-13")) {
         return;
