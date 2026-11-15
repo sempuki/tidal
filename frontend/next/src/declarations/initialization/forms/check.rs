@@ -227,9 +227,14 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
     if words.first() == Some(&"(") {
         let args: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
         let other = ty.is_class() && args.len() == 1 && first_node(args[0]).is_some_and(|c| c.prod == "braced_init");
-        if ty.base_elem().is_class() && (args.len() != 1 || ty.is_array() || other) {
+        if ty.base_elem().is_class() && (ty.is_array() || ty.is_class() && args.is_empty()) {
             cx.unsupported(init.span, "a parenthesized initializer for a class (build step 4)");
             return None;
+        }
+        // LIST-3: a class without constructors from values of other types
+        // in parentheses is aggregate initialization.
+        if ty.is_class() && (args.len() != 1 || other) {
+            return list::check::paren_aggregate(cx, ty, &args, init.span);
         }
         if let Type::Array(el, n) = &ty.t {
             // INIT-5: an array from a parenthesized list of values, with
@@ -266,6 +271,11 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
         // A class from a value of another type needs a constructor, or
         // parenthesized aggregate initialization.
         if ty.is_class() && !e.ty.is_error() && e.ty.nonref().unqual().t != ty.unqual().t {
+            // LIST-3: aggregate initialization, unless a conversion
+            // function of a class value can make the object.
+            if !e.ty.nonref().is_class() || !crate::classes::conversion_functions::check::reaches_class(cx, &e, ty.class().unwrap()) && !e.ty.nonref().class().is_some_and(|d| crate::classes::derived::check::is_base(cx, d, ty.class().unwrap())) {
+                return list::check::paren_aggregate(cx, ty, &args, init.span);
+            }
             cx.unsupported(init.span, "a class from a parenthesized value of another type (build step 4)");
             return None;
         }

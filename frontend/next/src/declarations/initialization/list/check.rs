@@ -234,6 +234,71 @@ fn members(cx: &Check, ty: &QType, left: usize, top: bool) -> Option<Vec<(QType,
     }
 }
 
+/// LIST-3, LIST-9: parenthesized aggregate initialization of the class
+/// `ty` from the values `args`. Each value copy-initializes one whole
+/// member or base, in order, with no brace elision; a narrowing
+/// conversion is allowed. The members after the values take their
+/// default member initializers or are value-initialized. A temporary
+/// that a reference member binds is not kept (REF-5).
+pub fn paren_aggregate(cx: &mut Check, ty: &QType, args: &[&Node], span: Span) -> Option<Init> {
+    let ms = members(cx, ty, args.len(), true)?;
+    let named = ms.iter().filter(|m| m.2 != Some(true)).count();
+    if args.len() > named {
+        cx.error_cause(span, "LIST-3", Some("LIST-9"), format!("{} values in parentheses for an aggregate with {} members", args.len(), named));
+        return None;
+    }
+    let mut out = Vec::new();
+    let mut k = 0;
+    for (mty, dmi, bits) in ms {
+        if bits == Some(true) {
+            out.push(Init::Default);
+            continue;
+        }
+        let Some(a) = args.get(k) else {
+            out.push(dmi.unwrap_or_else(|| crate::classes::members::check::value_init(cx, &mty)));
+            continue;
+        };
+        k += 1;
+        let c = first_node(a)?;
+        if c.prod == "braced_init" {
+            out.push(aggregate_or_scalar(cx, c, &mty)?);
+            continue;
+        }
+        let e = expr(cx, c);
+        if e.ty.is_error() {
+            return None;
+        }
+        if mty.is_ref() {
+            out.push(Init::Ref(crate::declarations::initialization::references::check::bind(cx, e, &mty, "INIT-7")?));
+            continue;
+        }
+        // LIST-9: a value for a member that is an aggregate initializes
+        // the whole member, so the braces of the member are not left out.
+        let aggregate = mty.class().is_some_and(|m| !crate::classes::constructors::check::has_ctors(cx, m)) || mty.is_array();
+        if aggregate && !e.ty.nonref().class().is_some_and(|d| Some(d) == mty.class() || mty.class().is_some_and(|m| crate::classes::derived::check::is_base(cx, d, m))) {
+            cx.error(e.span, "LIST-9", format!("a value of type {} for the aggregate member of type {}, which parentheses do not split", e.ty.nonref().show(), mty.show()));
+            return None;
+        }
+        out.push(Init::Expr(crate::declarations::initialization::forms::check::copy_init(cx, e, &mty, "INIT-7")?));
+    }
+    // REF-5: a reference member keeps no temporary here, so the list is a
+    // prvalue of the class, whose temporaries end with the full
+    // expression.
+    Some(Init::Expr(Expr::new(EK::List(Box::new(Init::List(out))), ty.unqual(), Cat::PR, span)))
+}
+
+/// A braced list for one member of a parenthesized aggregate
+/// initialization: its own list, as a braced initializer.
+fn aggregate_or_scalar(cx: &mut Check, b: &Node, ty: &QType) -> Option<Init> {
+    if ty.is_array() || ty.is_class() {
+        return aggregate(cx, b, ty);
+    }
+    if items(b).is_empty() {
+        return Some(Init::Zero);
+    }
+    Some(Init::Expr(scalar_list(cx, b, ty, "LIST-2")?))
+}
+
 /// The span of a list, for a diagnostic about a member it omits.
 fn b_span(its: &[&Node]) -> Span {
     its.last().map(|n| n.span).unwrap_or_default()

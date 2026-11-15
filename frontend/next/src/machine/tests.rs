@@ -2058,3 +2058,19 @@ fn default_member_initializers_that_use_this() {
     assert_eq!(run("struct S { S* self = this; }; struct T { S s; int v = 5; int got = [this] { return v; }(); T() {} }; int main() { S a; T t; return (a.self == &a) + (t.s.self == &t.s) + t.got; }"), RunOutcome::Result(7));
     assert_eq!(rule("struct C { int base = 6; constexpr int start() const { return base + 1; } int value = start(); }; static_assert(C{}.value == 7); constexpr C c{}; static_assert(c.value == 7);"), None);
 }
+
+#[test]
+fn parenthesized_aggregate_initialization() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // Each value initializes one whole member, and the rest take their
+    // defaults.
+    assert_eq!(rule("struct I { int a, b; }; struct O { I i; int c; int d = 7; }; constexpr O o(I{1, 2}, 3); static_assert(o.i.b == 2 && o.c == 3 && o.d == 7); constexpr I one(5); static_assert(one.a == 5 && one.b == 0);"), None);
+    assert_eq!(rule("struct I { int a, b; }; struct O { I i; int c; }; O o(1, 2);"), Some("LIST-9"));
+    // A temporary that a reference member binds ends with the full
+    // expression.
+    assert_eq!(rule("struct H { const int& n; }; constexpr int f() { H h(1); return h.n; } static_assert(f() == 1);"), Some("SA-7"));
+}
