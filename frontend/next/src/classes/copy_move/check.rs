@@ -57,15 +57,16 @@ fn user(cx: &Check, c: ClassId) -> Vec<(EntityId, bool)> {
 }
 
 /// The class, or a member of it at any depth, has a user-declared copy
-/// or move constructor, so that a copy of its object runs code.
+/// or move constructor or a virtual base, so that a copy of its object
+/// runs code.
 pub fn needs_copy_function(cx: &Check, c: ClassId) -> bool {
-    !user(cx, c).is_empty() || !user_assignments(cx, c).is_empty() || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| needs_copy_function(cx, d)))
+    !user(cx, c).is_empty() || !user_assignments(cx, c).is_empty() || has_virtual_part(cx, c) || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| needs_copy_function(cx, d)))
 }
 
 /// A member at any depth whose copy or move constructor runs code, or
 /// is deleted by a user-declared move assignment.
 fn members_run_code(cx: &Check, c: ClassId) -> bool {
-    cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| !user(cx, d).is_empty() || user_assignments(cx, d).iter().any(|&(_, m)| m) || members_run_code(cx, d)))
+    cx.u.object_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| !user(cx, d).is_empty() || user_assignments(cx, d).iter().any(|&(_, m)| m) || members_run_code(cx, d)))
 }
 
 /// A user-declared destructor (CPY-5).
@@ -212,7 +213,7 @@ fn move_deleted(cx: &Check, c: ClassId) -> bool {
 /// copied or moved in turn.
 fn implicit(cx: &mut Check, e: Expr, c: ClassId, span: Span) -> Option<Expr> {
     let ty = e.ty.unqual();
-    if !members_run_code(cx, c) {
+    if !members_run_code(cx, c) && !has_virtual_part(cx, c) {
         return Some(e.conv(crate::sem::tree::Conv::LToR, ty, Cat::PR));
     }
     // The object is named once for each member.
@@ -232,7 +233,20 @@ fn implicit(cx: &mut Check, e: Expr, c: ClassId, span: Span) -> Option<Expr> {
         let m = crate::classes::members::check::field_of(cx, e.clone(), f, span);
         inits.push(member_copy(cx, m, span)?);
     }
+    // The virtual bases, which only the copy of a complete object copies.
+    for v in cx.u.classes[c].vbases.clone() {
+        let path = cx.u.base_paths(c, v).into_iter().next()?;
+        let m = crate::classes::derived::check::along(cx, e.clone(), c, &path);
+        inits.push(member_copy(cx, m, span)?);
+    }
     Some(Expr::new(EK::List(Box::new(Init::List(inits))), ty, Cat::PR, span))
+}
+
+/// The class, or the class of a member or base at any depth, has a
+/// virtual base, so a copy of its object goes part by part: the bytes of
+/// a base subobject do not hold the virtual bases.
+pub fn has_virtual_part(cx: &Check, c: ClassId) -> bool {
+    !cx.u.classes[c].vbases.is_empty() || cx.u.field_types(c).iter().any(|t| t.base_elem().class().is_some_and(|d| has_virtual_part(cx, d)))
 }
 
 /// The copy of one member: an element at a time for an array.

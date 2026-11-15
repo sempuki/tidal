@@ -465,7 +465,9 @@ impl Unit {
         }
         out
     }
-    fn all_base_paths(&self, from: types::ClassId, to: types::ClassId) -> Vec<Vec<usize>> {
+    /// Every path from `from` to a base subobject of class `to`, also
+    /// those that reach one subobject twice.
+    pub fn all_base_paths(&self, from: types::ClassId, to: types::ClassId) -> Vec<Vec<usize>> {
         if from == to {
             return vec![Vec::new()];
         }
@@ -493,7 +495,8 @@ impl Unit {
         }
         key
     }
-    fn path_public(&self, from: types::ClassId, path: &[usize]) -> bool {
+    /// Each step of the path goes into a public base.
+    pub fn path_public(&self, from: types::ClassId, path: &[usize]) -> bool {
         let mut c = from;
         for &i in path {
             if self.step_access(c, i) != Access::Public {

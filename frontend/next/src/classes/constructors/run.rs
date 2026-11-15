@@ -25,7 +25,7 @@ pub fn needs_in(u: &crate::sem::Unit, ty: &QType) -> bool {
         Type::Array(e, _) => needs_in(u, e),
         Type::Class(c) => {
             let user = u.scopes[u.classes[*c].scope].names.get(crate::classes::constructors::check::DTOR).and_then(|v| v.first()).is_some_and(|&d| !u.defaulted.contains(&d));
-            user || u.field_types(*c).iter().any(|t| needs_in(u, t))
+            user || u.object_types(*c).iter().any(|t| needs_in(u, t))
         }
         _ => false,
     }
@@ -50,8 +50,12 @@ pub fn destroy(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
                 m.constructing.pop();
                 r?;
             }
-            let tys = m.u.field_types(*c);
-            for (k, t) in tys.iter().enumerate().rev() {
+            // DER-7: a complete object destroys its virtual bases last.
+            let complete = crate::classes::derived::run::is_complete(m, p);
+            let n = m.u.classes[*c].fields.len();
+            let tys = if complete { m.u.object_types(*c) } else { m.u.field_types(*c) };
+            let order = (0..n).rev().chain((n..tys.len()).rev());
+            for (k, t) in order.map(|k| (k, &tys[k])) {
                 if needs(m, t) {
                     let mut q = p.clone();
                     q.path.push(k as i64);

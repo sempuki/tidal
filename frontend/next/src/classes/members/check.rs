@@ -1020,10 +1020,11 @@ pub fn default_init(cx: &Check, ty: &QType) -> Init {
         return Init::List(cx.u.classes[c].fields.iter().map(|&f| cx.u.field(f).and_then(|x| x.init.clone()).unwrap_or(Init::Default)).collect());
     }
     match &ty.t {
+        // The virtual bases follow the members (DER-7).
         Type::Class(c) => Init::List(cx.u.classes[*c].fields.iter().map(|&f| {
             let x = cx.u.field(f).unwrap();
             x.init.clone().unwrap_or_else(|| default_init(cx, &x.ty))
-        }).collect()),
+        }).chain(cx.u.classes[*c].vbases.iter().map(|&v| default_init(cx, &QType::new(Type::Class(v))))).collect()),
         Type::Array(e, Some(n)) if e.base_elem().is_class() => Init::List((0..*n).map(|_| default_init(cx, e)).collect()),
         _ => Init::Default,
     }
@@ -1054,7 +1055,7 @@ pub fn value_init(cx: &Check, ty: &QType) -> Init {
         Type::Class(c) => Init::List(cx.u.classes[*c].fields.iter().map(|&f| {
             let x = cx.u.field(f).unwrap();
             x.init.clone().unwrap_or_else(|| value_init(cx, &x.ty))
-        }).collect()),
+        }).chain(cx.u.classes[*c].vbases.iter().map(|&v| value_init(cx, &QType::new(Type::Class(v))))).collect()),
         Type::Array(e, Some(n)) if e.base_elem().is_class() => Init::List((0..*n).map(|_| value_init(cx, e)).collect()),
         _ => Init::Zero,
     }

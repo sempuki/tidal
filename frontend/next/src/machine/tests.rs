@@ -1569,5 +1569,17 @@ fn virtual_bases_in_checks_and_layout() {
     assert_eq!(rule("struct A { A(int) {} }; struct B : virtual A { B() : A(1) {} }; struct D : B { D() : A(2) {} };"), None);
     assert_eq!(rule("struct A { A(int) {} }; struct B : virtual A { B() : A(1) {} }; struct D : B { D() {} };"), Some("DER-13"));
     assert_eq!(rule("struct A { virtual void f(); }; struct B : virtual A { void f() override; }; struct C : virtual A { void f() override; }; struct D : B, C {};"), Some("VIRT-5"));
-    assert_eq!(run("struct A {}; struct B : virtual A {}; int main() { B b; return 0; }"), RunOutcome::Unsupported("a run of a program with a virtual base (build step 4)".into(), 0));
+}
+
+#[test]
+fn virtual_bases_at_run_time() {
+    // DER-6: one subobject, which both paths reach.
+    assert_eq!(run("struct A { int v = 0; }; struct B : virtual A {}; struct C : virtual A {}; struct D : B, C {}; int main() { D d; static_cast<B&>(d).v = 5; return static_cast<C&>(d).v; }"), RunOutcome::Result(5));
+    // DER-7: the virtual base first and once, from the most derived
+    // class's initializer; destruction in reverse.
+    assert_eq!(run("int t = 0; void mark(int d) { t = t * 10 + d; } struct V { int v; V(int x) : v(x) { mark(1); } ~V() { mark(1); } }; struct B { B() { mark(2); } ~B() { mark(2); } }; struct C : virtual V { C() : V(7) { mark(3); } ~C() { mark(3); } }; struct D : B, C { D() : V(9) { mark(4); } ~D() { mark(4); } }; int main() { int v; { D d; v = d.v; } return t == 12344321 ? v : 0; }"), RunOutcome::Result(9));
+    // VIRT-5: the final overrider, from a pointer to the shared base.
+    assert_eq!(run("struct A { virtual int f() { return 1; } }; struct B : virtual A { int f() override { return 2; } }; struct C : virtual A {}; struct D : B, C {}; int main() { D d; A& r = d; C& c = d; return r.f() * 10 + c.f(); }"), RunOutcome::Result(22));
+    // A copy of a complete object copies its virtual base.
+    assert_eq!(run("struct A { int v = 1; }; struct B : virtual A { int w = 2; }; int main() { B x; x.v = 6; B y = x; return y.v + y.w; }"), RunOutcome::Result(8));
 }

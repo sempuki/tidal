@@ -83,7 +83,7 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
             m.constructing.pop();
             r.map(|_| ())
         }
-        Init::Expr(e) if matches!(&e.k, crate::sem::tree::EK::List(i) if constructs(i)) => {
+        Init::Expr(e) if matches!(&e.k, crate::sem::tree::EK::List(i) if constructs(i) || has_vbases(m, ty)) => {
             let crate::sem::tree::EK::List(i) = &e.k else { unreachable!() };
             construct(m, p, ty, i)
         }
@@ -111,6 +111,10 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                 Type::Array(e, Some(n)) => (0..*n).map(|_| (**e).clone()).collect(),
                 _ => Vec::new(),
             };
+            // DER-7: a complete object initializes its virtual bases first.
+            if let Some(c) = ty.class() {
+                vbases_first(m, p, c, items)?;
+            }
             for (k, t) in tys.iter().enumerate() {
                 let mut q = p.clone();
                 q.path.push(k as i64);
@@ -161,9 +165,14 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
             let tys = m.u.field_types(c);
             // CTOR-12: until the last base is initialized, no member
             // function runs on the object.
-            let last_base = m.u.bases(c).last().map(|&(i, _)| i);
-            if last_base.is_some() {
+            let last_base = m.u.nv_bases(c).last().map(|&(i, _)| i);
+            let vbases = !m.u.classes[c].vbases.is_empty();
+            if last_base.is_some() || vbases {
                 m.early.push((this.obj, this.path.clone()));
+            }
+            vbases_first(m, &this, c, inits)?;
+            if vbases && last_base.is_none() {
+                m.early.pop();
             }
             let union = crate::classes::unions::run::union_of(m.u, &ty).is_some();
             for (k, t) in tys.iter().enumerate() {
@@ -205,6 +214,12 @@ pub fn mem_inits(m: &mut Machine, f: crate::sem::EntityId, mi: &crate::sem::MemI
 /// INIT-4): none for default-initialization of a scalar (INIT-1), zero
 /// for value-initialization, the converted value, or the list.
 pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
+    value_in(m, ty, init, true)
+}
+
+/// `value` for a complete object, or for a base subobject, which holds
+/// no virtual bases (`classes::derived::run`).
+fn value_in(m: &mut Machine, ty: &QType, init: &Init, complete: bool) -> R<Val> {
     if !matches!(init, Init::Ref(_)) {
         virtual_base_constant(m, ty)?;
     }
@@ -220,8 +235,8 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
             m.objs[p.obj].alive = false;
             Ok(m.objs[p.obj].val.clone())
         }
-        Init::Default => Ok(m.uninit(ty)),
-        Init::Zero => Ok(m.zero(ty)),
+        Init::Default => Ok(m.uninit_as(ty, complete)),
+        Init::Zero => Ok(m.zero_as(ty, complete)),
         Init::Expr(e) => {
             if let Some(v) = indeterminate_copy(m, ty, e) {
                 return v;
@@ -251,11 +266,23 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
         Init::List(items) if ty.is_class() => {
             let c = ty.class().unwrap();
             let tys = m.u.field_types(c);
+            // DER-7: the virtual bases of the complete object come first, and
+            // a base subobject has none.
+            let mut vals = Vec::new();
+            let vbases = if complete { m.u.classes[c].vbases.clone() } else { Vec::new() };
+            for (j, &v) in vbases.iter().enumerate() {
+                let vt = QType::new(Type::Class(v));
+                vals.push(match items.get(tys.len() + j) {
+                    Some(i) => value(m, &vt, i)?,
+                    None => m.zero_as(&vt, false),
+                });
+            }
             let mut out = Vec::new();
             for (k, t) in tys.iter().enumerate() {
+                let base = m.u.classes[c].fields.get(k).and_then(|&f| m.u.field(f)).is_some_and(|x| x.base);
                 let v = match items.get(k) {
-                    Some(i) => value(m, t, i)?,
-                    None => m.zero(t),
+                    Some(i) => value_in(m, t, i, !base)?,
+                    None => m.zero_as(t, !base),
                 };
                 // BF-10: a bit-field holds the value wrapped to its width.
                 let width = m.u.classes[c].fields.get(k).and_then(|&f| m.u.field(f)).and_then(|x| x.width);
@@ -264,6 +291,7 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
                     None => v,
                 });
             }
+            out.extend(vals);
             Ok(Val::Agg(out))
         }
         Init::List(items) => {
@@ -278,6 +306,35 @@ pub fn value(m: &mut Machine, ty: &QType, init: &Init) -> R<Val> {
             Ok(Val::Agg(out))
         }
     }
+}
+
+/// The type is a class with a virtual base.
+fn has_vbases(m: &Machine, ty: &QType) -> bool {
+    ty.class().is_some_and(|c| !m.u.classes[c].vbases.is_empty())
+}
+
+/// DER-7: the constructor of the complete object at `p` of class `c`
+/// initializes each virtual base from its initializer in `inits`, after
+/// those of the data members. A base subobject leaves them to the
+/// complete object.
+fn vbases_first(m: &mut Machine, p: &Ptr, c: crate::sem::types::ClassId, inits: &[Init]) -> R<()> {
+    if m.u.classes[c].vbases.is_empty() || !crate::classes::derived::run::is_complete(m, p) {
+        return Ok(());
+    }
+    let n = m.u.classes[c].fields.len();
+    for (j, v) in m.u.classes[c].vbases.clone().into_iter().enumerate() {
+        let vt = QType::new(Type::Class(v));
+        let mut q = p.clone();
+        q.path.push((n + j) as i64);
+        q.array = false;
+        let from = m.temps.len();
+        match inits.get(n + j) {
+            Some(i) => construct(m, &q, &vt, i)?,
+            None => set(m, &q, m.zero_as(&vt, false))?,
+        }
+        crate::machine::exec::end_temps(m, from)?;
+    }
+    Ok(())
 }
 
 /// CE-2, DER-12: no constructor of a class with a virtual base is

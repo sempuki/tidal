@@ -60,15 +60,13 @@ pub fn locate(m: &Machine, p: &Ptr, anchor: ClassId) -> R<Ptr> {
         let Some(c) = m.type_at(&q).and_then(|t| t.class()) else { break };
         let ps = m.u.base_paths(c, anchor);
         if ps.len() == 1 {
-            q.path.extend(ps[0].iter().map(|&i| i as i64));
-            q.array = false;
-            return Ok(q);
+            return crate::classes::derived::run::along(m, q, c, &ps[0]);
         }
         // The object that holds this one as a base subobject.
         let Some(&last) = q.path.last() else { break };
         let mut up = q.clone();
         up.path.pop();
-        let base = m.type_at(&up).and_then(|t| t.class()).and_then(|u| m.u.classes[u].fields.get(last as usize).copied()).and_then(|f| m.u.field(f)).is_some_and(|f| f.base);
+        let base = m.type_at(&up).and_then(|t| t.class()).is_some_and(|u| crate::classes::derived::run::base_step(m.u, u, last as usize));
         if !base {
             break;
         }

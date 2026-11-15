@@ -563,7 +563,7 @@ pub fn assignment(cx: &mut Check, l: &Expr, r: &Expr, span: Span) -> Option<Expr
 /// A member of the class at any depth has a user-provided assignment
 /// operator, so an implicit assignment runs code.
 pub fn needs_assign(cx: &Check, c: ClassId) -> bool {
-    cx.u.field_types(c).iter().any(|t| {
+    crate::classes::copy_move::check::has_virtual_part(cx, c) || cx.u.field_types(c).iter().any(|t| {
         t.base_elem().class().is_some_and(|d| {
             crate::foundations::names::check::declared_here(cx, cx.u.classes[d].scope, "operator=").iter().any(|f| !cx.u.defaulted.contains(f)) || needs_assign(cx, d)
         })
@@ -588,10 +588,17 @@ fn memberwise(cx: &mut Check, l: &Expr, r: &Expr, c: ClassId, span: Span) -> Exp
         r.cat = Cat::L;
     }
     let l = crate::foundations::values::check::deref_ref(l.clone());
-    let mut parts: Vec<Expr> = Vec::new();
+    // The direct virtual bases first, then the members (CPY-18: a virtual
+    // base can be assigned more than once).
+    let mut pairs: Vec<(Expr, Expr)> = Vec::new();
+    for (i, _) in cx.u.bases(c).into_iter().filter(|&(i, _)| i >= crate::sem::VSTEP) {
+        pairs.push((crate::classes::derived::check::along(cx, l.clone(), c, &[i]), crate::classes::derived::check::along(cx, r.clone(), c, &[i])));
+    }
     for f in cx.u.classes[c].fields.clone() {
-        let lm = crate::classes::members::check::field_of(cx, l.clone(), f, span);
-        let rm = crate::classes::members::check::field_of(cx, r.clone(), f, span);
+        pairs.push((crate::classes::members::check::field_of(cx, l.clone(), f, span), crate::classes::members::check::field_of(cx, r.clone(), f, span)));
+    }
+    let mut parts: Vec<Expr> = Vec::new();
+    for (lm, rm) in pairs {
         if lm.ty.is_array() {
             let t = cx.unsupported(span, "a memberwise assignment of an array member");
             return Expr::new(EK::Int(0), t, Cat::PR, span);

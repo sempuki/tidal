@@ -318,37 +318,59 @@ impl<'a> Machine<'a> {
     /// The value of an object of type `ty` with no initialization: no
     /// value for a scalar, and one such value per array element.
     pub fn uninit(&self, ty: &QType) -> Val {
+        self.uninit_as(ty, true)
+    }
+    /// `uninit` for a complete object, or for a base subobject, which
+    /// holds no virtual bases (`classes::derived::run`).
+    pub fn uninit_as(&self, ty: &QType, complete: bool) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.uninit(e)).collect()),
             // A union has no active member.
             Type::Class(c) if self.u.classes[*c].key == crate::sem::ClassKey::Union => Val::Agg(self.u.field_types(*c).iter().map(|_| Val::Inactive).collect()),
-            Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.uninit(t)).collect()),
+            Type::Class(c) => Val::Agg(self.parts(*c, complete).iter().map(|(t, whole)| self.uninit_as(t, *whole)).collect()),
             _ => Val::Uninit,
         }
+    }
+    /// The types of the parts of an object of class `c`, each with
+    /// whether it is a complete object: the data members, then the
+    /// virtual bases of a complete object.
+    pub fn parts(&self, c: crate::sem::types::ClassId, complete: bool) -> Vec<(QType, bool)> {
+        let mut out: Vec<(QType, bool)> = self.u.classes[c].fields.iter().filter_map(|&f| self.u.field(f)).map(|x| (x.ty.clone(), !x.base)).collect();
+        if complete {
+            out.extend(self.u.classes[c].vbases.iter().map(|&v| (QType::new(Type::Class(v)), false)));
+        }
+        out
     }
     /// A static object's value after its initializer: the parts that
     /// default-initialization left without a value keep the zero of the
     /// zero-initialization before it (SINIT rules).
     pub fn fill_zero(&self, ty: &QType, v: Val) -> Val {
+        self.fill_zero_as(ty, v, true)
+    }
+    fn fill_zero_as(&self, ty: &QType, v: Val, complete: bool) -> Val {
         match (v, &ty.t) {
-            (Val::Uninit, _) => self.zero(ty),
+            (Val::Uninit, _) => self.zero_as(ty, complete),
             (Val::Agg(xs), Type::Array(e, _)) => Val::Agg(xs.into_iter().map(|x| self.fill_zero(e, x)).collect()),
             // A union with no active member gets its first member zero.
             (Val::Agg(xs), Type::Class(_)) if !xs.is_empty() && xs.iter().all(|x| *x == Val::Inactive) => self.zero(ty),
             (Val::Agg(xs), Type::Class(c)) => {
-                let tys = self.u.field_types(*c);
-                Val::Agg(xs.into_iter().zip(tys.iter()).map(|(x, t)| self.fill_zero(t, x)).collect())
+                let parts = self.parts(*c, complete);
+                Val::Agg(xs.into_iter().zip(parts.iter()).map(|(x, (t, whole))| self.fill_zero_as(t, x, *whole)).collect())
             }
             (v, _) => v,
         }
     }
     /// The zero value of a type (value-initialization of a scalar).
     pub fn zero(&self, ty: &QType) -> Val {
+        self.zero_as(ty, true)
+    }
+    /// `zero` for a complete object or a base subobject.
+    pub fn zero_as(&self, ty: &QType, complete: bool) -> Val {
         match &ty.t {
             Type::Array(e, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(e)).collect()),
             // A union's first member is zero and active.
             Type::Class(c) if self.u.classes[*c].key == crate::sem::ClassKey::Union => Val::Agg(self.u.field_types(*c).iter().enumerate().map(|(k, t)| if k == 0 { self.zero(t) } else { Val::Inactive }).collect()),
-            Type::Class(c) => Val::Agg(self.u.field_types(*c).iter().map(|t| self.zero(t)).collect()),
+            Type::Class(c) => Val::Agg(self.parts(*c, complete).iter().map(|(t, whole)| self.zero_as(t, *whole)).collect()),
             Type::Float(crate::sem::types::FloatK::LongDouble) => Val::Ext(crate::foundations::types::run::F80::ZERO),
             Type::Float(_) => Val::Float(0.0),
             Type::Ptr(_) | Type::NullPtr | Type::MemPtr(..) => Val::Null,
@@ -365,7 +387,7 @@ impl<'a> Machine<'a> {
                 return Some(t);
             }
             t = match &t.t {
-                Type::Class(c) => self.u.field_types(*c).get(i as usize)?.clone(),
+                Type::Class(c) => self.u.object_types(*c).get(i as usize)?.clone(),
                 _ => t.elem()?.clone(),
             };
         }

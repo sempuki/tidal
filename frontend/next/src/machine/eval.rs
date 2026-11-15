@@ -123,11 +123,10 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         EK::Closure(id) => Ok(Val::Fn(*id)),
         // DER-5: the base subobject's address; null stays null.
         EK::BasePtr(p, path) => match eval(m, p)? {
-            Val::Ptr(mut q) if q.view.is_none() => {
-                q.path.extend(path.iter().map(|&i| i as i64));
-                q.array = false;
-                Ok(Val::Ptr(q))
-            }
+            Val::Ptr(q) if q.view.is_none() => match p.ty.pointee().and_then(|t| t.class()) {
+                Some(c) => Ok(Val::Ptr(crate::classes::derived::run::along(m, q, c, path)?)),
+                None => unsup("a conversion to a base of a pointer of this form"),
+            },
             Val::Null => Ok(Val::Null),
             _ => unsup("a conversion to a base of a pointer of this form"),
         },
@@ -231,9 +230,14 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
                 // STG-23: no object of the class is at the address.
                 return crate::machine::ub("STG-23", format!("an access through a member of {}, where no object of that class is", x.ty.show()));
             }
-            p.path.push(*i as i64);
-            p.array = false;
-            Ok(p)
+            match x.ty.class() {
+                Some(c) if *i >= crate::sem::VSTEP => crate::classes::derived::run::step(m, p, c, *i),
+                _ => {
+                    p.path.push(*i as i64);
+                    p.array = false;
+                    Ok(p)
+                }
+            }
         }
         EK::Index(p, i) => {
             let pv = eval(m, p)?;

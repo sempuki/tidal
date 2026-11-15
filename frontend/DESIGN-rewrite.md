@@ -597,13 +597,19 @@ virtual base is an error. The layout places each virtual base once,
 after the other parts of the complete object. The most derived class
 initializes the virtual bases, and an abstract class skips them. A
 class with a virtual base has no constexpr constructor or destructor.
-Each virtual function needs a unique final overrider. The
+Each virtual function needs a unique final overrider. At run time a
+complete object holds its virtual bases after its other parts, and a
+base subobject holds none. A step to a virtual base finds it in the
+complete object. The constructor of the complete object initializes the
+virtual bases first, and its destructor destroys them last. A copy of
+an object with a virtual base goes part by part, and a virtual call
+finds the final overrider among all the paths to the shared base. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a subobject or with a qualified name, a
 literal operator, an
-`operator->`, a comparison that `<=>` rewrites, a run of a program with a virtual base,
+`operator->`, a comparison that `<=>` rewrites,
 a failed `dynamic_cast` to a reference outside constant evaluation, an allocation or deallocation function that the
 program declares or calls by name, a `new` expression with placement
 arguments, a nested named union, a union member whose class has special
