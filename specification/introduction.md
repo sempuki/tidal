@@ -46,7 +46,7 @@ writer reads a summary, the tool `tools/similarity.py` compares the
 summary with a reference corpus. A summary with a flagged passage goes
 back to the source reader to be reworded.
 
-## The workflow
+## Workflow
 
 ```{raw} html
 <figure class="tidal-diagram">
