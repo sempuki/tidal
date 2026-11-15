@@ -130,17 +130,31 @@ fn match_type(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QT
         // argument, or from one of its bases.
         (Type::Dep(d), Type::Class(c)) if matches!(&**d, DepType::Spec { .. }) => {
             let DepType::Spec { template, args, .. } = &**d else { return false };
-            let mut classes = vec![*c];
-            classes.extend(u.bases(*c).into_iter().map(|(_, b)| b));
-            for k in classes {
-                let Some(xs) = spec_args(u, *template, k) else { continue };
+            // DED-35: the class itself, or else the one base that matches.
+            let try_class = |k: crate::sem::types::ClassId| {
+                let xs = spec_args(u, *template, k)?;
                 let mut trial = bound.to_vec();
-                if match_args(u, args, xs, &mut trial) {
-                    bound.clone_from_slice(&trial);
-                    return true;
+                match_args(u, args, xs, &mut trial).then_some(trial)
+            };
+            if let Some(t) = try_class(*c) {
+                bound.clone_from_slice(&t);
+                return true;
+            }
+            let mut found: Vec<Vec<Option<QType>>> = Vec::new();
+            for (_, b) in u.bases(*c) {
+                if let Some(t) = try_class(b) {
+                    if !found.contains(&t) {
+                        found.push(t);
+                    }
                 }
             }
-            false
+            match &found[..] {
+                [t] => {
+                    bound.clone_from_slice(t);
+                    true
+                }
+                _ => false,
+            }
         }
         (Type::Dep(d), _) => {
             // A type after a dependent qualifier deduces nothing.

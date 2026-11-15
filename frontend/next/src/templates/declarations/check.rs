@@ -644,7 +644,25 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         }
     }
     let _ = dependent_decltype;
+    // DEP-12: unqualified lookup skips a dependent base, which the first
+    // pieces of build step 5 do not tell from another base.
+    let dependent_base = fd.find("base_clause").is_some_and(|bc| {
+        let mut ts = Vec::new();
+        bc.tokens(&mut ts);
+        let words: Vec<&str> = ts.iter().map(|&t| cx.toks[t].text.as_str()).collect();
+        // A base `C<..T..>`: a parameter between `<` and `>`.
+        let mut depth = 0;
+        words.iter().any(|w| {
+            match *w {
+                "<" => depth += 1,
+                ">" => depth -= 1,
+                _ => {}
+            }
+            depth > 0 && params.iter().any(|(p, _, _)| p.as_ref() == *w)
+        })
+    });
     incomplete
+        || dependent_base
         || words.iter().any(|w| matches!(*w, "template" | "requires" | "concept"))
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.

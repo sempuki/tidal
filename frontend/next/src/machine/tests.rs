@@ -2649,3 +2649,16 @@ fn function_template_declarations_and_dependent_specializations() {
     assert_eq!(rule("template <class T> void place(T, int); template <class T> void place(T, int = 1);"), Some("DEFARG-13"));
     assert_eq!(run("template <class T> T twice(T); int main() { return twice(4); } template <class T> T twice(T v) { return v + v; }"), RunOutcome::Result(8));
 }
+
+#[test]
+fn template_id_bases() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("template <int K, class T> struct Slot { T held; Slot(T v) : held(v) {} }; struct Couple : Slot<0, int>, Slot<1, int> { Couple(int a, int b) : Slot<0, int>(a), Slot<1, int>(b) {} }; int main() { Couple c(5, 9); const Slot<1, int>& s = c; return s.held; }"), RunOutcome::Result(9));
+    // A class can be a template argument of its own base (CRTP).
+    assert_eq!(run("template <class D> struct Base { int three() { return 3; } }; struct R : Base<R> {}; int main() { R r; return r.three(); }"), RunOutcome::Result(3));
+    assert_eq!(rule("template <class T> struct Base {}; struct Both : Base<int>, Base<char> {}; template <class T> void up(Base<T>&); Both b; void use() { up(b); }"), Some("unsupported"));
+}

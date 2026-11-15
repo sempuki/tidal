@@ -114,7 +114,24 @@ pub fn base_clause(cx: &mut Check, c: ClassId, key: ClassKey, n: &Node) -> bool 
 /// The class that a `base_type` names: a class name, possibly qualified,
 /// or a type alias of a class.
 fn base_type(cx: &mut Check, n: &Node) -> Option<QType> {
-    if n.child("template_id").is_some() || n.child("decltype_expr").is_some() || cx.has_word(n, "template") {
+    // TARG-1: a specialization of a class template, also after a
+    // qualifier.
+    if let Some(tid) = n.child("template_id").filter(|_| !cx.has_word(n, "template")) {
+        let scope = match n.child("nested_name").map(|nn| crate::foundations::names::check::nested_name(cx, nn)) {
+            None => None,
+            Some(crate::foundations::names::check::Qual::Scope(s)) => Some(s),
+            Some(_) => return None,
+        };
+        return match crate::templates::declarations::check::class_template_use_in(cx, tid, scope) {
+            Some(t) if t.is_error() => None,
+            Some(t) => Some(t),
+            None => {
+                cx.unsupported(n.span, "a base named by a template-id of no class template");
+                None
+            }
+        };
+    }
+    if n.child("decltype_expr").is_some() || cx.has_word(n, "template") {
         cx.unsupported(n.span, "a base named by a template-id or decltype (build step 5)");
         return None;
     }

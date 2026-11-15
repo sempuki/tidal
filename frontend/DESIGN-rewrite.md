@@ -515,11 +515,12 @@ its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a
 parameter is a dependent type, and deduction finds its arguments from
-the argument's class or one of its bases; `decltype` of an operand that
+the argument's class or else the one base that matches; `decltype` of an operand that
 names a parameter is a dependent type that deduction does not look
 into. A
 union template
-works the same way, a template-id can follow a qualifier and can be one, and the
+works the same way, a template-id can follow a qualifier, can be one,
+and can name a base or a base in a member initializer, and the
 namespaces of a specialization's arguments are associated for
 argument-dependent lookup. An explicit specialization of a class
 template, a variable template, or a function template is the
@@ -556,7 +557,8 @@ template that nothing specializes and that a trial specialization with
 `int` for each parameter does not check without a diagnostic, an error in a
 specialization, a call whose argument-dependent lookup would see later
 declarations, a definition with a dependent form (`template`, a name
-qualified by a parameter) or an incomplete class, and a name that a
+qualified by a parameter, a base whose template arguments hold a
+parameter) or an incomplete class, and a name that a
 function template shares with another declaration leave the unit
 unsupported.
 

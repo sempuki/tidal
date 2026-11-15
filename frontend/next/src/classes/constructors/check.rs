@@ -622,11 +622,16 @@ pub fn mem_inits(cx: &mut Check, f: EntityId, ctor_init: Option<&Node>) -> Optio
         // CTOR-5: a mem-init that names a direct base initializes its
         // subobject.
         // The name can be a type alias of the base (DER-1).
-        let named_class = names::lookup_where(cx, &name, |k| matches!(k, crate::sem::EntKind::Class(_) | crate::sem::EntKind::Typedef(_))).first().and_then(|&e| match &cx.u.entities[e].kind {
-            crate::sem::EntKind::Class(k) => Some(*k),
-            crate::sem::EntKind::Typedef(t) => t.class(),
-            _ => None,
-        });
+        // A specialization of a class template names its class (TARG-1).
+        let tid = mi.child("mem_init_id").and_then(|x| x.find("template_id"));
+        let named_class = match tid {
+            Some(tid) => crate::templates::declarations::check::class_template_use(cx, tid).and_then(|t| t.class()),
+            None => names::lookup_where(cx, &name, |k| matches!(k, crate::sem::EntKind::Class(_) | crate::sem::EntKind::Typedef(_))).first().and_then(|&e| match &cx.u.entities[e].kind {
+                crate::sem::EntKind::Class(k) => Some(*k),
+                crate::sem::EntKind::Typedef(t) => t.class(),
+                _ => None,
+            }),
+        };
         let names_class = |b: ClassId| *cx.u.classes[b].name == *name || named_class == Some(b);
         // DER-7: a mem-init can also name a virtual base, direct or not.
         let base_k = fields.iter().position(|&x| cx.u.field(x).is_some_and(|y| y.base && y.ty.class().is_some_and(names_class))).or_else(|| vbases.iter().position(|&v| names_class(v)).map(|j| fields.len() + j));

@@ -409,10 +409,20 @@ pub fn declared_here(cx: &Check, scope: ScopeId, name: &str) -> Vec<EntityId> {
 /// and return types of a function. Fundamental types add nothing
 /// (NAM-28).
 fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) {
+    associated_in(cx, t, out, &mut Vec::new());
+}
+
+/// `associated`, with the classes already visited in `seen`, since a
+/// class can be a template argument of its own base.
+fn associated_in(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>, seen: &mut Vec<crate::sem::types::ClassId>) {
     use crate::sem::types::Type;
     match &t.t {
         // NAM rules on ADL: the namespace that holds the class.
         Type::Class(c) => {
+            if seen.contains(c) {
+                return;
+            }
+            seen.push(*c);
             let mut ns = cx.u.enclosing_namespace(cx.u.classes[*c].scope);
             loop {
                 if !out.contains(&ns) {
@@ -425,7 +435,7 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
             }
             // NAM-27: the namespaces of the bases too.
             for (_, b) in cx.u.bases(*c) {
-                associated(cx, &crate::sem::types::QType::new(Type::Class(b)), out);
+                associated_in(cx, &crate::sem::types::QType::new(Type::Class(b)), out, seen);
             }
             // NAM-27: and of the template arguments of a specialization.
             let args: Vec<crate::sem::types::QType> = cx.u.class_templates.iter().flat_map(|t| t.specs.iter()).filter(|(_, k)| k == c).flat_map(|(a, _)| a.clone()).filter_map(|a| match a {
@@ -433,7 +443,7 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
                 crate::sem::types::TArg::Value(..) => None,
             }).collect();
             for a in args {
-                associated(cx, &a, out);
+                associated_in(cx, &a, out, seen);
             }
         }
         Type::Enum(e) => {
@@ -448,16 +458,16 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
                 s = cx.u.scopes[sc].parent;
             }
         }
-        Type::Ptr(x) | Type::Array(x, _) | Type::Ref(x, _) => associated(cx, x, out),
+        Type::Ptr(x) | Type::Array(x, _) | Type::Ref(x, _) => associated_in(cx, x, out, seen),
         // A pointer to member: its class and its member type.
         Type::MemPtr(c, x) => {
-            associated(cx, &crate::sem::types::QType::new(Type::Class(*c)), out);
-            associated(cx, x, out);
+            associated_in(cx, &crate::sem::types::QType::new(Type::Class(*c)), out, seen);
+            associated_in(cx, x, out, seen);
         }
         Type::Func(f) => {
-            associated(cx, &f.ret, out);
+            associated_in(cx, &f.ret, out, seen);
             for p in &f.params {
-                associated(cx, p, out);
+                associated_in(cx, p, out, seen);
             }
         }
         _ => {}
