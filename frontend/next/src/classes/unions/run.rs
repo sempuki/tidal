@@ -6,7 +6,7 @@
 
 use crate::machine::{ub, unsup, Machine, Ptr, Val, R};
 use crate::sem::types::{ClassId, QType, Type};
-use crate::sem::{ClassKey, Unit};
+use crate::sem::{ClassKey, EntityId, Unit};
 
 /// The union class of a type, if it is one.
 pub fn union_of(u: &Unit, ty: &QType) -> Option<ClassId> {
@@ -83,8 +83,13 @@ pub fn trivial_default(u: &Unit, ty: &QType) -> bool {
             if u.dynamic(*c) {
                 return false;
             }
-            let own = u.scopes[u.classes[*c].scope].names.get(crate::classes::constructors::check::CTOR).into_iter().flatten().copied();
-            let provided = own.filter_map(|f| u.func(f).map(|x| (f, x))).any(|(f, x)| x.takes_no_argument() && !x.deleted && !u.defaulted.contains(&f));
+            let own: Vec<EntityId> = u.scopes[u.classes[*c].scope].names.get(crate::classes::constructors::check::CTOR).into_iter().flatten().copied().collect();
+            let provided = own.iter().filter_map(|&f| u.func(f).map(|x| (f, x))).any(|(f, x)| x.takes_no_argument() && !x.deleted && !u.defaulted.contains(&f));
+            // Constructors without a default one leave the class with none.
+            let none = !own.is_empty() && !own.iter().any(|&f| u.func(f).is_some_and(|x| x.takes_no_argument()));
+            if none {
+                return false;
+            }
             let dmi = u.classes[*c].fields.iter().any(|&f| u.field(f).is_some_and(|x| x.init.is_some()));
             !provided && !dmi && u.field_types(*c).iter().all(|t| trivial_default(u, t))
         }
@@ -135,6 +140,20 @@ pub fn begin_member(m: &mut Machine, q: &Ptr, c: ClassId, i: usize) -> R<()> {
         }
         _ => crate::foundations::objects::run::outside(m, q),
     }
+}
+
+/// UNI-14: an object created at the place `p` makes each union member on
+/// the way to it that is not active the active member of its union.
+pub fn begin_path(m: &mut Machine, p: &Ptr) -> R<()> {
+    if p.view.is_some() {
+        return Ok(());
+    }
+    for (q, c, i) in union_steps(m, p) {
+        if active(m, &q, i) == Some(false) {
+            begin_member(m, &q, c, i)?;
+        }
+    }
+    Ok(())
 }
 
 /// Whether the left operand of an assignment names its object through a

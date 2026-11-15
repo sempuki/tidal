@@ -593,6 +593,10 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
             if m.early.iter().any(|(o, q)| *o == p.obj && p.path.starts_with(q)) {
                 return crate::declarations::initialization::forms::run::before_bases(m, id);
             }
+            // UNI-6: the object is not inside a member of a union that is
+            // not active.
+            let p = p.clone();
+            crate::classes::unions::run::check_active(m, &p)?;
             // STG-22: no object of a polymorphic class is at the address.
             if p.view.is_some() && func.class.is_some_and(|c| m.u.polymorphic(c)) {
                 return crate::foundations::storage::run::no_object_call(m, id);

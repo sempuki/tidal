@@ -1,8 +1,8 @@
 //! The check part of `classes/unions`: the limits on the members of a
-//! union (UNI-2, UNI-8) and the members that the rewrite models. A union
-//! whose member has a non-trivial special member function (UNI-3,
-//! UNI-11) and an anonymous union (UNI-7, UNI-9) are unsupported. The
-//! page's bit-fields are here too (BF rules).
+//! union (UNI-2, UNI-8), anonymous unions (UNI-7, UNI-9), and the
+//! special member functions of a union that a variant member with a
+//! non-trivial one deletes (UNI-3, UNI-11). The page's bit-fields are
+//! here too (BF rules).
 
 use crate::expressions::check::{expr, nodes};
 use crate::foundations::constant_evaluation::check as ce;
@@ -21,23 +21,110 @@ pub fn is_union(cx: &Check, c: ClassId) -> bool {
     cx.u.classes[c].key == ClassKey::Union
 }
 
-/// Whether the special member functions of a type are all trivial and
-/// not declared by the program: no constructor, destructor, or
-/// assignment that the program provides, no virtual function or virtual
-/// base, and no default member initializer, in the type and in its
-/// members.
-fn plain(u: &Unit, ty: &QType) -> bool {
-    match &ty.t {
-        Type::Array(e, _) => plain(u, e),
-        Type::Class(c) => {
-            let names = &u.scopes[u.classes[*c].scope].names;
-            let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !u.defaulted.contains(f)));
-            let ctor = crate::classes::constructors::check::CTOR;
-            let dtor = crate::classes::constructors::check::DTOR;
-            !u.dynamic(*c) && !provided(ctor) && !provided(dtor) && !provided("operator=") && u.classes[*c].fields.iter().all(|&f| u.field(f).is_some_and(|x| x.init.is_none() && plain(u, &x.ty)))
+/// A special member function of a union that UNI-3 can delete.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum Special {
+    Default,
+    Copy,
+    Move,
+    CopyAssign,
+    MoveAssign,
+    Dtor,
+}
+
+impl Special {
+    fn what(self) -> &'static str {
+        match self {
+            Special::Default => "default constructor",
+            Special::Copy => "copy constructor",
+            Special::Move => "move constructor",
+            Special::CopyAssign => "copy assignment operator",
+            Special::MoveAssign => "move assignment operator",
+            Special::Dtor => "destructor",
         }
-        _ => true,
     }
+}
+
+/// A declared special member that is trivial: defaulted and not deleted
+/// (CTOR-23, DTOR-9, CPY-27).
+fn trivial_decl(cx: &Check, f: EntityId) -> bool {
+    cx.u.defaulted.contains(&f) && !cx.u.func(f).is_some_and(|x| x.deleted) && !cx.u.virt.contains_key(&f)
+}
+
+/// Whether the special member `which` of a type is trivial and usable.
+/// For a copy or move, the function that a copy or move of the type
+/// selects decides: a move takes the copy constructor when the class
+/// declares a copy and no move (Q-0339).
+pub fn trivial(cx: &Check, ty: &QType, which: Special) -> bool {
+    let c = match &ty.t {
+        Type::Array(e, _) => return trivial(cx, e, which),
+        Type::Class(c) => *c,
+        _ => return true,
+    };
+    use crate::classes::constructors::check::{ctors, DTOR};
+    use crate::classes::copy_move::check::{assignment_kind, copy_or_move};
+    let parts = |cx: &Check| cx.u.field_types(c).iter().all(|t| trivial(cx, t, which));
+    match which {
+        Special::Default => crate::classes::unions::run::trivial_default(&cx.u, ty),
+        Special::Dtor => match names::declared_here(cx, cx.u.classes[c].scope, DTOR).first() {
+            Some(&d) => trivial_decl(cx, d) && parts(cx),
+            None => parts(cx),
+        },
+        Special::Copy | Special::Move => {
+            if cx.u.dynamic(c) {
+                return false;
+            }
+            let fs: Vec<(EntityId, bool)> = ctors(cx, c).into_iter().filter_map(|f| copy_or_move(cx, c, f).map(|m| (f, m))).collect();
+            let want = which == Special::Move;
+            match fs.iter().find(|&&(_, m)| m == want).or_else(|| fs.iter().find(|&&(_, m)| !m && want)) {
+                Some(&(f, _)) => trivial_decl(cx, f) && parts(cx),
+                // A declared move deletes the implicit copy (CPY-4).
+                None if !fs.is_empty() => false,
+                None => parts(cx),
+            }
+        }
+        Special::CopyAssign | Special::MoveAssign => {
+            if cx.u.dynamic(c) {
+                return false;
+            }
+            let fs: Vec<(EntityId, bool)> = names::declared_here(cx, cx.u.classes[c].scope, "operator=").into_iter().filter_map(|f| assignment_kind(cx, c, f).map(|m| (f, m))).collect();
+            let want = which == Special::MoveAssign;
+            match fs.iter().find(|&&(_, m)| m == want).or_else(|| fs.iter().find(|&&(_, m)| !m && want)) {
+                Some(&(f, _)) => trivial_decl(cx, f) && parts(cx),
+                None if !fs.is_empty() => false,
+                None => parts(cx),
+            }
+        }
+    }
+}
+
+/// UNI-3: the variant member of the union `c` whose non-trivial special
+/// member `which` deletes the union's implicit one, if any. A default
+/// member initializer on a variant member gives the union a default
+/// constructor.
+pub fn deleting_member(cx: &Check, c: ClassId, which: Special) -> Option<EntityId> {
+    if !is_union(cx, c) {
+        return None;
+    }
+    let fields = cx.u.classes[c].fields.clone();
+    if which == Special::Default && fields.iter().any(|&f| cx.u.field(f).is_some_and(|x| x.init.is_some())) {
+        return None;
+    }
+    fields.into_iter().find(|&f| cx.u.field(f).is_some_and(|x| !trivial(cx, &x.ty, which)))
+}
+
+/// UNI-11: a use of the implicit special member `which` of the union `c`
+/// that UNI-3 deletes. True when the use is valid.
+pub fn usable(cx: &mut Check, c: ClassId, which: Special, span: Span) -> bool {
+    let Some(f) = deleting_member(cx, c, which) else { return true };
+    let name = cx.u.entities[f].name.clone();
+    let shown = if name.is_empty() { "an anonymous member".to_string() } else { format!("the member '{}'", name) };
+    let union = match &*cx.u.classes[c].name {
+        "" => "an anonymous union".to_string(),
+        n => format!("the union '{}'", n),
+    };
+    cx.error(span, "UNI-11", format!("the {} of {} is deleted, because {} has a non-trivial one", which.what(), union, shown));
+    false
 }
 
 /// A non-static data member of the union `c`: no reference (UNI-2). True
@@ -50,10 +137,6 @@ pub fn member(cx: &mut Check, c: ClassId, ty: &QType, name: &str, span: Span) ->
     if ty.is_ref() {
         cx.error(span, "UNI-2", format!("the union member '{}' has a reference type", name));
         return Some(false);
-    }
-    if !plain(&cx.u, ty) {
-        cx.unsupported(span, "a union member of a class with special member functions that are not trivial (build step 4)");
-        return None;
     }
     Some(true)
 }

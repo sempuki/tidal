@@ -573,9 +573,19 @@ pub fn assignment(cx: &mut Check, l: &Expr, r: &Expr, span: Span) -> Option<Expr
     }
     let members: Vec<EntityId> = crate::foundations::names::check::declared_here(cx, cx.u.classes[c].scope, "operator=").into_iter().filter(|&e| cx.u.func(e).is_some()).collect();
     if members.iter().all(|f| cx.u.defaulted.contains(f)) {
+        // UNI-3: a variant member deletes the implicit assignment of a
+        // union. A deleted move assignment gives way to the copy.
+        if members.is_empty() && r.ty.nonref().class() == Some(c) {
+            use crate::classes::unions::check::{deleting_member, usable, Special};
+            let which = if r.cat != Cat::L && deleting_member(cx, c, Special::MoveAssign).is_none() { Special::MoveAssign } else { Special::CopyAssign };
+            if !usable(cx, c, which, span) {
+                return Some(bad(span));
+            }
+        }
         // The implicit or defaulted assignment: each member in turn where
         // a member runs code (CPY-8).
-        if r.ty.nonref().class() == Some(c) && needs_assign(cx, c) && !l.ty.c {
+        // A union copies its active member (UNI-5).
+        if r.ty.nonref().class() == Some(c) && needs_assign(cx, c) && !l.ty.c && !crate::classes::unions::check::is_union(cx, c) {
             return Some(memberwise(cx, l, r, c, span));
         }
         return None;

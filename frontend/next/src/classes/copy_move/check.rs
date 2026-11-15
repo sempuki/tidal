@@ -87,6 +87,13 @@ pub fn copy(cx: &mut Check, e: Expr, copy_init: bool, span: Span) -> Option<Expr
     let users = user(cx, c);
     let rvalue = e.cat != Cat::L;
     if users.is_empty() {
+        // UNI-3: a variant member deletes the implicit copy or move
+        // constructor of a union. A deleted move gives way to the copy.
+        use crate::classes::unions::check::{deleting_member, usable, Special};
+        let which = if rvalue && deleting_member(cx, c, Special::Move).is_none() { Special::Move } else { Special::Copy };
+        if !usable(cx, c, which, span) {
+            return None;
+        }
         // CPY-4: a user-declared move assignment deletes the implicit
         // copy constructor.
         if !rvalue && user_assignments(cx, c).iter().any(|&(_, m)| m) {
@@ -215,7 +222,8 @@ fn move_deleted(cx: &Check, c: ClassId) -> bool {
 /// copied or moved in turn.
 fn implicit(cx: &mut Check, e: Expr, c: ClassId, span: Span) -> Option<Expr> {
     let ty = e.ty.unqual();
-    if !members_run_code(cx, c) && !has_virtual_part(cx, c) {
+    // A union copies its active member (UNI-5).
+    if (!members_run_code(cx, c) && !has_virtual_part(cx, c)) || crate::classes::unions::check::is_union(cx, c) {
         return Some(e.conv(crate::sem::tree::Conv::LToR, ty, Cat::PR));
     }
     // The object is named once for each member.

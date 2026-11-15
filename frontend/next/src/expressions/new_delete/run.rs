@@ -184,6 +184,7 @@ fn create_at(m: &mut Machine, p: Ptr, ty: &QType, array: bool) -> R<Ptr> {
         }
     }
     if p.view.is_none() && !array && m.type_at(&p).is_some_and(|t| t.unqual() == ty.unqual()) {
+        crate::classes::unions::run::begin_path(m, &p)?;
         // The new object begins its life where an explicit destructor
         // call ended the old one.
         if p.path.is_empty() {

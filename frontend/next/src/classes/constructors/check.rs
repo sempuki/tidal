@@ -296,8 +296,18 @@ fn blocked_in(cx: &Check, c: ClassId, top: bool, base: bool, from: Option<ClassI
         let ok = if top { crate::classes::members::check::accessible(cx, d) } else { access == crate::sem::Access::Public || (base && access == crate::sem::Access::Protected) || friend };
         cx.u.func(d).is_some_and(|f| f.deleted) || !ok
     });
+    // UNI-3: the destructor of a union runs none of its members'. A
+    // variant member deletes an implicit one.
+    if crate::classes::unions::check::is_union(cx, c) {
+        let declared = !names::declared_here(cx, cx.u.classes[c].scope, DTOR).is_empty();
+        return own || (!declared && crate::classes::unions::check::deleting_member(cx, c, crate::classes::unions::check::Special::Dtor).is_some());
+    }
     let vbases = if complete { cx.u.classes[c].vbases.clone() } else { Vec::new() };
-    own || cx.u.classes[c].fields.clone().iter().any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| blocked_in(cx, d, false, x.base, Some(c), !x.base))))
+    // The members of an anonymous union are variant members of the
+    // class, whose own destructor does not end them (UNI-3).
+    let provided = names::declared_here(cx, cx.u.classes[c].scope, DTOR).first().is_some_and(|d| !cx.u.defaulted.contains(d));
+    let anonymous = |cx: &Check, f: EntityId| cx.u.entities[f].name.is_empty() && cx.u.field(f).and_then(|x| x.ty.class()).is_some_and(|d| crate::classes::unions::check::is_union(cx, d));
+    own || cx.u.classes[c].fields.clone().iter().filter(|&&f| !(provided && anonymous(cx, f))).any(|&f| cx.u.field(f).is_some_and(|x| x.ty.base_elem().class().is_some_and(|d| blocked_in(cx, d, false, x.base, Some(c), !x.base))))
         || vbases.into_iter().any(|v| blocked_in(cx, v, false, true, Some(c), false))
 }
 
@@ -306,6 +316,10 @@ fn blocked_in(cx: &Check, c: ClassId, top: bool, base: bool, from: Option<ClassI
 /// when it can.
 pub fn dtor_usable(cx: &mut Check, ty: &QType, span: Span) -> bool {
     let Some(c) = ty.base_elem().class() else { return true };
+    let declared = !names::declared_here(cx, cx.u.classes[c].scope, DTOR).is_empty();
+    if !declared && !crate::classes::unions::check::usable(cx, c, crate::classes::unions::check::Special::Dtor, span) {
+        return false;
+    }
     if dtor_blocked(cx, c, true, false) {
         let cause = if cx.unevaluated > 0 { "UNEV-5" } else { "VC-11" };
         cx.error_cause(span, "DTOR-3", Some(cause), format!("the destructor of '{}' is deleted or not accessible", cx.u.classes[c].name));

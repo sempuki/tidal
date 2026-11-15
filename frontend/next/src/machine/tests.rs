@@ -1718,3 +1718,21 @@ fn noexcept_on_members() {
     assert_eq!(rule("struct S { void f() noexcept(sizeof(S) > 64); int a; }; static_assert(!noexcept(S{}.f()));"), None);
     assert_eq!(rule("struct B { virtual void f() noexcept; }; struct D : B { void f() override; };"), Some("EXS-3"));
 }
+
+#[test]
+fn union_special_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // UNI-3: a variant member with a non-trivial function deletes the
+    // union's implicit one, and a use is an error (UNI-11).
+    assert_eq!(rule("struct S { ~S() {} }; union U { S s; int i; U() : i(0) {} }; void f() { U u; }"), Some("UNI-11"));
+    assert_eq!(rule("struct S { S() {} S(const S&) {} }; union U { S s; int i; U() : i(0) {} }; U a; U b(a);"), Some("UNI-11"));
+    assert_eq!(rule("struct S { S() {} ~S() {} }; union U { S s; int i; U() : i(0) {} ~U() {} }; U u;"), None);
+    // A default member initializer gives the union a default constructor.
+    assert_eq!(rule("struct S { S() {} ~S() {} }; union U { int i = 0; S s; ~U() {} }; void f() { U u; }"), None);
+    // UNI-5: an implicit assignment copies the active member.
+    assert_eq!(run("struct P { P() = default; P(const P&) = default; P& operator=(const P&) = default; P& operator=(P&&) { return *this; } }; union U { P p; int n; }; int main() { U a; a.n = 4; U c; c = static_cast<U&&>(a); return c.n; }"), RunOutcome::Result(4));
+}

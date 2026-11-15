@@ -656,7 +656,13 @@ parameter. A lambda with an explicit object parameter waits for
 templates. A member function can be `noexcept`, and a noexcept operand
 in its class waits for the complete class, where it sees the later
 members and `this`. An override of a non-throwing function is checked
-there too. The
+there too. A variant member whose default constructor, copy or move,
+assignment, or destructor is not trivial deletes the union's implicit
+one, and a use of it is an error. For an anonymous union, the
+enclosing class's implicit functions are the ones deleted. A union's
+implicit copy and assignment copy the active member. A member function
+call on an inactive member is undefined, and a placement new inside an
+inactive member makes the members on the way active. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -666,8 +672,7 @@ a failed `dynamic_cast` to a reference outside constant evaluation, a
 destructor with an exception specification, a
 deallocation function of the dynamic class in a `delete` through a base,
 an object in allocated storage that would hold an object created there
-before, a nested named union, a union member whose class has special
-member functions that are not trivial, a read through the common
+before, a nested named union, a read through the common
 initial sequence of two union members, the bytes of a class with a
 bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a call without an object
 among ref-qualified member functions or among static and non-static

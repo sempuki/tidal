@@ -987,6 +987,21 @@ pub fn check_default_init(cx: &mut Check, ty: &QType, span: Span) -> bool {
         cx.error(span, "LAM-26", "the closure type of a lambda with captures has no default constructor");
         return false;
     }
+    // UNI-4: default-initialization of a union starts no member. UNI-3: a
+    // variant member deletes the implicit default constructor of a named
+    // union, and that of a class for an anonymous union in it.
+    use crate::classes::unions::check::{is_union, usable, Special};
+    if is_union(cx, c) {
+        return cx.u.classes[c].name.is_empty() || crate::classes::constructors::check::has_ctors(cx, c) || usable(cx, c, Special::Default, span);
+    }
+    for f in cx.u.classes[c].fields.clone() {
+        let anonymous = cx.u.field(f).and_then(|x| x.ty.class()).filter(|&d| cx.u.entities[f].name.is_empty() && is_union(cx, d));
+        if let Some(d) = anonymous {
+            if !usable(cx, d, Special::Default, span) {
+                return false;
+            }
+        }
+    }
     for f in cx.u.classes[c].fields.clone() {
         let x = cx.u.field(f).unwrap().clone();
         // A member whose destructor is deleted or not accessible.
