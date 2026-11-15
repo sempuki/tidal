@@ -27,7 +27,7 @@ fn declared_class(cx: &Check, name: &str) -> Option<ClassId> {
 fn new_class(cx: &mut Check, name: &str, key: ClassKey, span: Span) -> ClassId {
     let scope = cx.u.new_scope(ScopeKind::Class, Some(cx.scope), name);
     let id = cx.u.classes.len();
-    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false, align: None, vdirect: Vec::new(), vbases: Vec::new(), vlayout: Vec::new() });
+    cx.u.classes.push(ClassInfo { name: name.into(), key, scope, fields: Vec::new(), complete: false, is_final: false, align: None, vdirect: Vec::new(), vbases: Vec::new(), vlayout: Vec::new(), nodiscard: false });
     if !name.is_empty() {
         names::declare_in(cx, cx.scope, name, EntKind::Class(id), span, Linkage::None);
     }
@@ -91,9 +91,12 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     if head.child("nested_name").is_some() || head.child("template_id").is_some() {
         return cx.unsupported(head.span, "a class with a qualified name (build step 4)");
     }
-    if head.kids.iter().any(|k| matches!(k, Kid::Node(x) if x.prod == "attribute_spec")) {
-        return cx.unsupported(head.span, "an attribute on a class (build step 4)");
+    // ATTR-19: an attribute after the class key applies to the class.
+    let mut attrs = crate::declarations::attributes::check::Attrs::default();
+    for a in head.children("attribute_spec") {
+        crate::declarations::attributes::check::attribute_spec(cx, a, &mut attrs);
     }
+    crate::declarations::attributes::check::on_class(cx, &attrs);
     let aligns: Vec<Node> = head.children("alignment_specifier").cloned().collect();
     let key = key_of(cx, head);
     let name = head.child("class_name").map(|c| cx.source(c)).unwrap_or_default();
@@ -115,6 +118,12 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
     }
     cx.u.classes[id].key = key;
     cx.u.classes[id].is_final = cx.has_word(head, "final");
+    cx.u.classes[id].nodiscard |= attrs.nodiscard;
+    if let Some(msg) = attrs.deprecated.clone() {
+        if let Some(e) = names::declared_here(cx, cx.scope, &name).into_iter().find(|&e| matches!(cx.u.entities[e].kind, EntKind::Class(k) if k == id)) {
+            cx.u.entities[e].deprecated = Some(msg);
+        }
+    }
     // DER-1, DER-2: the base subobjects come first.
     if let Some(bc) = head.child("base_clause") {
         if !crate::classes::derived::check::base_clause(cx, id, key, bc) {

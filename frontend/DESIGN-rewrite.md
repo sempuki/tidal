@@ -720,7 +720,9 @@ converted to `bool` without narrowing, is true. `->` on a class object
 calls its `operator->` until the result is a pointer to a class. A
 bit-field width of class type converts by its one non-explicit
 conversion function to an integral or unscoped enumeration type. A
-static data member can be `thread_local`. The
+static data member can be `thread_local`. An attribute after the class
+key applies to the class, and a discarded call that returns a
+`nodiscard` class by value warns. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

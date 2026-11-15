@@ -108,6 +108,14 @@ pub fn on_type(cx: &mut Check, a: &Attrs) {
     }
 }
 
+/// ATTR-2: on a class, `deprecated`, `nodiscard`, and `maybe_unused`
+/// apply.
+pub fn on_class(cx: &mut Check, a: &Attrs) {
+    if a.noreturn || a.fallthrough || a.likely || a.unlikely || a.carries_dependency || a.no_unique_address || a.assume.is_some() {
+        cx.error(a.span, "ATTR-2", "a standard attribute that does not apply to a class");
+    }
+}
+
 /// ATTR-2: on a type alias, only `deprecated` and `maybe_unused` apply.
 pub fn on_alias(cx: &mut Check, a: &Attrs) {
     if a.nodiscard || a.noreturn || a.fallthrough || a.likely || a.unlikely || a.carries_dependency || a.assume.is_some() {

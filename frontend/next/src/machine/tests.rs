@@ -1961,3 +1961,22 @@ fn thread_local_and_extern_members() {
     assert_eq!(rule("struct S { extern int v; };"), Some("CLS-9"));
     assert_eq!(rule("struct S { thread_local int v; };"), Some("CLS-9"));
 }
+
+#[test]
+fn attributes_on_a_class() {
+    let werror = |src: &str| {
+        let o = crate::Options { werror: true, ..Default::default() };
+        match crate::check_source(src, Path::new("t.cpp"), &o).0 {
+            Outcome::Reject(ds) => ds[0].rule,
+            Outcome::Accept => None,
+            Outcome::Unsupported(_) => Some("unsupported"),
+        }
+    };
+    // A call that returns a nodiscard class by value warns when discarded;
+    // one that returns a reference does not.
+    assert_eq!(werror("struct [[nodiscard]] E { int c; }; E f() { return {0}; } void g() { f(); }"), Some("ATTR-5"));
+    assert_eq!(werror("struct [[nodiscard]] E { int c; }; E e; E& f() { return e; } void g() { f(); }"), None);
+    assert_eq!(werror("struct [[noreturn]] S {};"), Some("ATTR-2"));
+    // A vendor attribute does not change the layout.
+    assert_eq!(werror("struct [[gnu::packed]] R { char k; int v; }; static_assert(sizeof(R) == 8);"), None);
+}

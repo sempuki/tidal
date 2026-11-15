@@ -230,6 +230,8 @@ pub struct ClassInfo {
     pub vbases: Vec<types::ClassId>,
     /// All virtual bases in the order of the layout (CLS-35).
     pub vlayout: Vec<types::ClassId>,
+    /// Declared `[[nodiscard]]` (ATTR-5).
+    pub nodiscard: bool,
 }
 
 /// A step of a path to a base subobject that names the virtual base

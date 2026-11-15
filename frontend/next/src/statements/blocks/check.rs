@@ -195,9 +195,18 @@ pub fn expression_stmt(cx: &mut Check, n: &Node) -> Stmt {
 
 fn nodiscard(cx: &mut Check, e: &Expr) {
     let EK::Call(f, _, _) = &e.k else { return };
-    let EK::Func(id) = f.k else { return };
-    if crate::declarations::functions::definitions::check::is_nodiscard(cx, id) && !e.ty.is_void() {
-        let name = cx.u.entities[id].name.clone();
+    let id = match f.k {
+        EK::Func(id) | EK::Virtual(id) => Some(id),
+        _ => None,
+    };
+    let func = id.is_some_and(|id| crate::declarations::functions::definitions::check::is_nodiscard(cx, id)) && !e.ty.is_void();
+    // ATTR-5: a call that returns a `nodiscard` class by value.
+    let class = e.cat == crate::sem::tree::Cat::PR && e.ty.class().is_some_and(|c| cx.u.classes[c].nodiscard);
+    if func || class {
+        let name = match id {
+            Some(id) => cx.u.entities[id].name.to_string(),
+            None => e.ty.show(),
+        };
         crate::declarations::attributes::check::discarded_nodiscard(cx, e.span, &name);
     }
 }
