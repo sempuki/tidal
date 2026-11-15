@@ -2146,3 +2146,15 @@ fn braced_constructor_arguments() {
     assert_eq!(rule("struct S { S(int); }; S s{{1, 2}};"), Some("CTOR-25"));
     assert_eq!(rule("struct S { int x; S(int v) : x(v) {} }; S s{.x = 1};"), Some("ILC-7"));
 }
+
+#[test]
+fn constructor_declaration_forms() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    for src in ["struct S { S() const; };", "struct S { S() &; };", "struct S { static S(); };", "struct S { S() volatile; };", "struct S { int S(); };"] {
+        assert_eq!(rule(src), Some("CTOR-1"), "{}", src);
+    }
+}

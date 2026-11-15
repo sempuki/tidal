@@ -745,7 +745,8 @@ the constructors against the conversion functions to the class in
 copy-initialization, and takes a conversion function only for the copy
 or move constructor in direct-initialization. A braced list as a
 constructor argument has the sequence that a trial initialization of
-its parameter finds. The
+its parameter finds. A constructor declared static, with a return
+type, or with a qualifier is an error. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

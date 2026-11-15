@@ -137,7 +137,12 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         cx.error(dn.span, "CTOR-1", "a constructor declared virtual");
         return true;
     }
-    if specs.unsupported || specs.is_static || specs.typedef || specs.ty.is_some() {
+    // CTOR-1: a constructor is not static and has no return type.
+    if !specs.unsupported && (specs.is_static || specs.typedef || specs.ty.is_some()) {
+        cx.error(dn.span, "CTOR-1", "a constructor declared static, typedef, or with a return type");
+        return true;
+    }
+    if specs.unsupported {
         cx.unsupported(dn.span, "a constructor declaration of this form (build step 4)");
         return false;
     }
@@ -147,7 +152,14 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
         cx.error(dn.span, "CTOR-1", "a constructor with an explicit object parameter");
         return true;
     }
-    if d.unsupported || !d.ty.is_func() || d.obj_cv != (false, false) || d.ref_q {
+    // CTOR-1, VOL-7: a constructor has no cv-qualifier and no
+    // ref-qualifier.
+    if !d.unsupported && d.ty.is_func() && (d.obj_cv != (false, false) || d.ref_q) {
+        let cause = d.obj_cv.1.then_some("VOL-7");
+        cx.error_cause(dn.span, "CTOR-1", cause, "a constructor with a cv-qualifier or a ref-qualifier");
+        return true;
+    }
+    if d.unsupported || !d.ty.is_func() {
         cx.unsupported(dn.span, "a constructor declaration of this form (build step 4)");
         return false;
     }
