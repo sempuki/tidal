@@ -73,11 +73,13 @@ figure.tidal-diagram figcaption { font-size: 0.85rem; color: var(--color-foregro
 .tidal-diagram .wf-box { fill: var(--color-background-secondary); stroke: var(--color-foreground-muted); stroke-width: 1.2; }
 .tidal-diagram .wf-accent { stroke: var(--color-brand-primary); stroke-width: 2; }
 .tidal-diagram .wf-protected { stroke-dasharray: 5 4; }
-.tidal-diagram .wf-label { fill: currentColor; font-size: 13px; text-anchor: middle; }
+.tidal-diagram .wf-label { fill: currentColor; font-size: 13px; }
 .tidal-diagram .wf-strong { font-weight: 600; font-size: 14px; }
 .tidal-diagram .wf-mono { font-family: var(--font-stack--monospace); font-size: 11px; }
-.tidal-diagram .wf-edge { fill: var(--color-foreground-muted); font-size: 12px; text-anchor: middle; }
+.tidal-diagram .wf-edge { fill: var(--color-foreground-muted); font-size: 12px; }
 .tidal-diagram .wf-note { fill: var(--color-foreground-muted); font-size: 11px; font-style: italic; }
 .tidal-diagram .wf-arrow { fill: none; stroke: currentColor; stroke-width: 1.4; marker-end: url(#wf-arrow); }
 .tidal-diagram .wf-head { fill: currentColor; }
+.tidal-diagram .wf-badge { fill: var(--color-brand-primary); }
+.tidal-diagram .wf-badge-text { fill: var(--color-background-primary); font-size: 11px; font-weight: 600; }
 .tidal-diagram .wf-boundary { stroke: var(--color-foreground-muted); stroke-width: 1.2; stroke-dasharray: 6 5; }

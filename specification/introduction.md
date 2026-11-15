@@ -78,78 +78,86 @@ back to the source reader to be reworded.
 <figure class="tidal-diagram">
 <svg font-family="sans-serif" viewBox="0 0 840 480" role="img" aria-labelledby="wf-title wf-desc">
   <title id="wf-title">The Tidal workflow</title>
-  <desc id="wf-desc">Protected sources reach only source readers. Their summaries pass the non-similarity check before clean-room writers read them. Writers also use the behavior of the baseline compilers, and write the Tidal specification and tests. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers. The tests run on the compilers, and the results become each page's Evidence.</desc>
+  <desc id="wf-desc">The clean room is on the left. 1: clean-room writers probe the baseline compilers for their behavior and diagnostics. 2: the writers write the rules, tests, and questions of the Tidal specification. 3: the tests run on the compilers, and the results become each page's Evidence. 4: clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers. 5: outside the clean room, source readers read the ISO standard and other protected sources, and report gaps as summaries. A summary reaches the writers only after it passes the non-similarity check, and the writers then probe the compilers again.</desc>
   <defs>
     <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" class="wf-head" fill="currentColor"/>
     </marker>
   </defs>
   <!-- the clean-room boundary -->
-  <line x1="218" y1="16" x2="218" y2="464" class="wf-boundary" stroke="currentColor" stroke-dasharray="6 5"/>
-  <text x="34" y="460" class="wf-note" fill="currentColor" font-size="11" font-style="italic">outside the clean room</text>
-  <text x="232" y="460" class="wf-note" fill="currentColor" font-size="11" font-style="italic">inside the clean room</text>
+  <line x1="622" y1="28" x2="622" y2="470" class="wf-boundary" stroke="currentColor" stroke-dasharray="6 5"/>
+  <text x="20" y="18" class="wf-note" fill="currentColor" font-size="11" font-style="italic" text-anchor="start">inside the clean room</text>
+  <text x="636" y="18" class="wf-note" fill="currentColor" font-size="11" font-style="italic" text-anchor="start">outside the clean room</text>
 
   <!-- boxes -->
-  <rect x="20" y="40" width="180" height="76" rx="6" class="wf-box wf-protected" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="110" y="66" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">The ISO standard,</text>
-  <text x="110" y="84" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">WG21 papers, other</text>
-  <text x="110" y="102" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">protected sources</text>
+  <rect x="240" y="30" width="200" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="340" y="56" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Baseline compilers</text>
+  <text x="340" y="75" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">Clang, GCC, EDG</text>
+  <rect x="240" y="190" width="200" height="60" rx="6" class="wf-box wf-accent" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="340" y="225" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Clean-room writers</text>
+  <rect x="240" y="340" width="200" height="70" rx="6" class="wf-box wf-accent" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="340" y="368" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">The Tidal specification</text>
+  <text x="340" y="388" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">and its tests</text>
+  <rect x="30" y="340" width="170" height="70" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="115" y="364" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Clean-room readers</text>
+  <text x="115" y="383" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">exercises and</text>
+  <text x="115" y="400" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">the Tidal front ends</text>
+  <rect x="470" y="190" width="130" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="535" y="207" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Non-similarity</text>
+  <text x="535" y="223" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">check</text>
+  <text x="535" y="241" class="wf-label wf-mono" fill="currentColor" font-size="13" text-anchor="middle">tools/similarity.py</text>
+  <rect x="640" y="190" width="180" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="730" y="225" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Source readers</text>
+  <rect x="640" y="40" width="180" height="76" rx="6" class="wf-box wf-protected" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="730" y="66" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">The ISO standard,</text>
+  <text x="730" y="84" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">WG21 papers, other</text>
+  <text x="730" y="102" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">protected sources</text>
 
-  <rect x="20" y="190" width="180" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="110" y="225" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Source readers</text>
+  <!-- 1. probe -->
+  <line x1="340" y1="90" x2="340" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <circle cx="358" cy="131" r="9" class="wf-badge" fill="currentColor"/>
+  <text x="358" y="135" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">1</text>
+  <text x="372" y="135" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">behavior and</text>
+  <text x="372" y="151" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">diagnostics</text>
 
-  <rect x="240" y="190" width="130" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="305" y="207" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Non-similarity</text>
-  <text x="305" y="223" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">check</text>
-  <text x="305" y="241" class="wf-label wf-mono" fill="currentColor" font-size="13" text-anchor="middle">tools/similarity.py</text>
+  <!-- 2. draft -->
+  <line x1="340" y1="250" x2="340" y2="338" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <circle cx="358" cy="286" r="9" class="wf-badge" fill="currentColor"/>
+  <text x="358" y="290" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">2</text>
+  <text x="372" y="290" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">rules, tests,</text>
+  <text x="372" y="306" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">questions</text>
 
-  <rect x="400" y="30" width="200" height="60" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="500" y="56" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Baseline compilers</text>
-  <text x="500" y="75" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">Clang, GCC, EDG</text>
+  <!-- 3. evidence -->
+  <path d="M340,410 L340,440 L14,440 L14,60 L238,60" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <circle cx="30" cy="454" r="9" class="wf-badge" fill="currentColor"/>
+  <text x="30" y="458" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">3</text>
+  <text x="46" y="458" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">tests run on the compilers; results go to each page's Evidence</text>
 
-  <rect x="400" y="190" width="200" height="60" rx="6" class="wf-box wf-accent" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="500" y="225" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Clean-room writers</text>
+  <!-- 4. findings -->
+  <line x1="240" y1="375" x2="202" y2="375" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <path d="M115,340 L115,220 L238,220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <circle cx="133" cy="266" r="9" class="wf-badge" fill="currentColor"/>
+  <text x="133" y="270" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">4</text>
+  <text x="147" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">findings: gaps,</text>
+  <text x="147" y="286" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">doubts, failures</text>
 
-  <rect x="400" y="340" width="200" height="70" rx="6" class="wf-box wf-accent" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="500" y="368" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">The Tidal specification</text>
-  <text x="500" y="388" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">and its tests</text>
-
-  <rect x="640" y="340" width="170" height="70" rx="6" class="wf-box" fill="none" stroke="currentColor" stroke-width="1.2"/>
-  <text x="725" y="364" class="wf-label wf-strong" fill="currentColor" font-size="13" text-anchor="middle">Clean-room readers</text>
-  <text x="725" y="383" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">exercises and</text>
-  <text x="725" y="400" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">the Tidal front ends</text>
-
-  <!-- arrows -->
-  <line x1="110" y1="116" x2="110" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="118" y="157" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">read</text>
-
-  <line x1="200" y1="220" x2="238" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="219" y="182" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">summaries</text>
-
-  <line x1="370" y1="220" x2="398" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="385" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">passed</text>
-
-  <line x1="500" y1="90" x2="500" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="508" y="135" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">behavior and</text>
-  <text x="508" y="151" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">diagnostics</text>
-
-  <line x1="500" y1="250" x2="500" y2="338" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="508" y="290" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">rules, tests,</text>
-  <text x="508" y="306" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">questions</text>
-
-  <line x1="600" y1="375" x2="638" y2="375" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-
-  <path d="M725,340 L725,220 L602,220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="733" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">findings: gaps,</text>
-  <text x="733" y="286" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">doubts, failures</text>
-
-  <path d="M500,410 L500,440 L826,440 L826,60 L602,60" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <text x="663" y="432" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">tests run on the compilers;</text>
-  <text x="663" y="454" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">results go to each page's Evidence</text>
+  <!-- 5. gap reports from outside -->
+  <line x1="730" y1="116" x2="730" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <text x="738" y="157" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">read</text>
+  <line x1="640" y1="220" x2="602" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <circle cx="538" cy="176" r="9" class="wf-badge" fill="currentColor"/>
+  <text x="538" y="180" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">5</text>
+  <text x="552" y="180" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">summaries</text>
+  <line x1="470" y1="220" x2="442" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <text x="456" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">passed</text>
 </svg>
-<figcaption>Protected sources reach only source readers. Everything
-inside the clean room comes from summaries that passed the non-similarity
-check, from the baseline compilers, and from Tidal's own files.</figcaption>
+<figcaption>The numbers give the order of the work. Steps 1 to 4 run
+inside the clean room. In step 5, a source reader reports a gap from
+outside it, and the report reaches the writers only through the
+non-similarity check. The writers then probe the compilers again, at
+step 1. Everything inside the clean room comes from the baseline
+compilers, from summaries that passed the check, and from Tidal's own
+files.</figcaption>
 </figure>
 ```
 
