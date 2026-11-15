@@ -236,6 +236,9 @@ pub struct Check<'a> {
     /// namespace scope does not see (DEP-10), and the nesting of such
     /// checks (`templates/declarations`).
     pub lookup_limit: Option<EntityId>,
+    /// The declarator being checked has made a pointer or reference part
+    /// of its type (DCL-4, DCL-18).
+    pub declarator_made_part: bool,
     pub instantiating: u32,
     /// The lambda expressions whose bodies enclose the point of the
     /// check, innermost last.
@@ -247,7 +250,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), bit_binding_uses: Vec::new(), access_class: None, lookup_limit: None, instantiating: 0, lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), bit_binding_uses: Vec::new(), access_class: None, lookup_limit: None, declarator_made_part: false, instantiating: 0, lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

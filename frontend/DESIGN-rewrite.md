@@ -489,7 +489,9 @@ a function type with each parameter as a dependent type (`DepType`,
 model section 1). A variable template of that kind, with one declarator
 and an initializer, has partial specializations, and a use of it takes
 the one partial specialization whose pattern its arguments match, or
-the primary, and makes a constexpr variable from it. A call deduces the arguments from the arguments of
+the primary, and makes a constexpr variable from it. A reference that
+an alias or a template argument gives collapses with one that a
+declarator adds. A call deduces the arguments from the arguments of
 the call, after any explicit ones, and the specialization is the
 definition checked again with each parameter bound to its argument,
 recorded before its body so that a recursive call finds it. Lookup in a

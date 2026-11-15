@@ -2464,3 +2464,14 @@ fn variable_templates_with_partial_specializations() {
     assert_eq!(rule(&format!("{} static_assert(same<int, long>);", same)), Some("SA-1"));
     assert_eq!(rule("template <class T> constexpr int size = sizeof(T); template <class T> constexpr int size<T*> = 1; static_assert(size<long> == 8 && size<char*> == 1);"), None);
 }
+
+#[test]
+fn reference_collapsing() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; using L = int&; using R = int&&; static_assert(same<L&, int&> && same<L&&, int&> && same<R&, int&> && same<R&&, int&&>); int x; L& a = x; R&& b = 1;"), None);
+    assert_eq!(rule("int x; int& & r = x;"), Some("DCL-18"));
+}

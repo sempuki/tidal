@@ -95,7 +95,7 @@ pub fn declarator(cx: &mut Check, specs: &Specs, n: &Node) -> Declared {
         }
     };
     let saved = std::mem::replace(&mut cx.naming_type, specs.typedef);
-    let t = apply(cx, base, n, &mut d, true);
+    let t = apply_top(cx, base, n, &mut d, true);
     cx.naming_type = saved;
     d.ty = t;
     d
@@ -119,7 +119,7 @@ pub fn with_base(cx: &mut Check, base: QType, n: &Node) -> QType {
         ref_kind: None,
     };
     let marks = cx.u.diags.len();
-    let t = apply(cx, base, n, &mut d, false);
+    let t = apply_top(cx, base, n, &mut d, false);
     cx.u.diags.truncate(marks);
     t
 }
@@ -154,10 +154,19 @@ pub fn type_id(cx: &mut Check, n: &Node) -> QType {
                 ref_q: false,
             ref_kind: None,
             };
-            apply(cx, base, a, &mut d, false)
+            apply_top(cx, base, a, &mut d, false)
         }
         None => base,
     }
+}
+
+/// `apply` for a whole declarator, which has made no part of its type
+/// yet.
+fn apply_top(cx: &mut Check, t: QType, n: &Node, d: &mut Declared, top: bool) -> QType {
+    let saved = std::mem::replace(&mut cx.declarator_made_part, false);
+    let r = apply(cx, t, n, d, top);
+    cx.declarator_made_part = saved;
+    r
 }
 
 /// The type of the name inside `n`, when the part of the declaration
@@ -170,7 +179,13 @@ fn apply(cx: &mut Check, t: QType, n: &Node, d: &mut Declared, top: bool) -> QTy
             let mut inner = None;
             for k in &n.kids {
                 match k {
-                    Kid::Node(c) if c.prod == "ptr_part" => t = ptr_part(cx, t, c),
+                    // DCL-4: a reference that the declaration's own type
+                    // gives, from an alias, collapses; one that the
+                    // declarator makes does not (DCL-18).
+                    Kid::Node(c) if c.prod == "ptr_part" => {
+                        t = if t.is_ref() && !cx.declarator_made_part { collapse(cx, t, c) } else { ptr_part(cx, t, c) };
+                        cx.declarator_made_part = true;
+                    }
                     Kid::Node(c) => inner = Some(c),
                     _ => {
                         if cx.text(k) == "..." {
@@ -357,6 +372,17 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
 /// A function type with a cv-qualifier or a ref-qualifier (DCL-16).
 pub fn qualified_func(t: &QType) -> bool {
     matches!(&t.t, Type::Func(f) if f.qualified)
+}
+
+/// DCL-4: `&` or `&&` on a reference type that an alias, a template
+/// argument, or `decltype` gives collapses into one reference, an rvalue
+/// reference only if both are. A cv-qualifier on it has no effect.
+fn collapse(cx: &mut Check, t: QType, n: &Node) -> QType {
+    let words = cx.words(n);
+    match (words.first().copied(), &t.t) {
+        (Some(r @ ("&" | "&&")), Type::Ref(inner, rv)) => QType::new(Type::Ref(inner.clone(), *rv && r == "&&")),
+        _ => ptr_part(cx, t, n),
+    }
 }
 
 pub fn ptr_part(cx: &mut Check, t: QType, n: &Node) -> QType {
