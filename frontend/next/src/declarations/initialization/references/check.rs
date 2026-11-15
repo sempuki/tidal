@@ -206,6 +206,17 @@ fn array_reference(cx: &mut Check, ty: &QType, b: &Node) -> Option<Expr> {
     Some(temp.conv(Conv::Materialize, arr, Cat::L))
 }
 
+/// The argument that a braced list `b` makes for the parameter `p`: the
+/// temporary array that a reference to an array binds (REF-14), or a
+/// prvalue of the parameter's type, which the parameter's initialization
+/// takes.
+pub fn braced_argument(cx: &mut Check, b: &Node, p: &QType) -> Option<Expr> {
+    if p.is_ref() && p.nonref().is_array() {
+        return array_reference(cx, p, b);
+    }
+    crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7")
+}
+
 /// The initializer of a reference variable (REF-11).
 pub fn initializer(cx: &mut Check, ty: &QType, init: &Node) -> Option<Init> {
     let ns = nodes(init);

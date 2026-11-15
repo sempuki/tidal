@@ -1056,7 +1056,7 @@ pub fn explicit_condition(cx: &mut Check, n: &Node) -> bool {
 /// conversion, which `no_user` rules out (the first parameter of a copy
 /// or move constructor for a list of one element). None when the list
 /// does not convert; an unsupported construct stays reported.
-fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Option<crate::overloading::conversion_sequences::check::Ics> {
+pub fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Option<crate::overloading::conversion_sequences::check::Ics> {
     use crate::overloading::conversion_sequences::check::{sequence, Ics, Rank};
     let its = crate::declarations::initialization::list::check::items(b);
     let target = p.nonref().clone();
@@ -1086,6 +1086,22 @@ fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Option<c
     let plain = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None };
     if target.is_class() {
         return Some(Ics { rank: Rank::User, ..plain });
+    }
+    // ICS-17: a list for an array has the worst sequence of its elements.
+    if let Some(el) = target.elem().cloned() {
+        let mut worst = plain.clone();
+        for it in &its {
+            let Some(c) = first_node(it).filter(|c| c.prod != "braced_init" && c.prod != "designator") else { continue };
+            let e = expr(cx, c);
+            let s = sequence(cx, &e, &el).or_else(|| crate::classes::conversion_functions::check::user_sequence(cx, &e, &el));
+            if let Some(s) = s {
+                if crate::overloading::conversion_sequences::check::better(&worst, &s) {
+                    worst = s;
+                }
+            }
+        }
+        cx.u.diags.truncate(marks);
+        return Some(worst);
     }
     match &one {
         Some(e) => {
@@ -1180,7 +1196,7 @@ pub fn construct_braced(cx: &mut Check, ty: &QType, nodes: &[&Node], list: bool,
     for (a, p) in args.into_iter().zip(g.ty.params.iter()) {
         let e = match a {
             Ok(e) => e,
-            Err(b) => crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7")?,
+            Err(b) => crate::declarations::initialization::references::check::braced_argument(cx, b, p)?,
         };
         out.push(crate::declarations::initialization::forms::check::init_parameter(cx, e, p)?);
     }

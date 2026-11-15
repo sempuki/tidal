@@ -449,7 +449,13 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
         }
         return bad(span);
     }
-    let [f] = found[..] else { return unsupported(cx, "a braced list as an argument of a call of several functions") };
+    let f = match found[..] {
+        [f] => f,
+        _ => match braced_choice(cx, &found, &args, &nodes, span, &text) {
+            Some(f) => f,
+            None => return bad(span),
+        },
+    };
     let Some(func) = cx.u.func(f).cloned() else { return unsupported(cx, "a braced list as an argument of a call of a name that is not a function") };
     if func.class.is_some() && !func.member_static {
         return unsupported(cx, "a braced list as an argument of a member function call");
@@ -468,7 +474,7 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
                 // PFX-16: the parameter is copy-initialized, so an explicit
                 // constructor takes no part.
                 let n_errs = cx.u.diags.len();
-                let Some(e) = crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7") else {
+                let Some(e) = crate::declarations::initialization::references::check::braced_argument(cx, b, p) else {
                     explicit_in_argument(cx, n_errs);
                     return bad(span);
                 };
@@ -490,6 +496,61 @@ fn explicit_in_argument(cx: &mut Check, from: usize) {
         d.rule = Some("PFX-16");
         d.cause = Some("CTOR-9");
     }
+}
+
+/// OVL-29, ICS-17: the best of the functions `found` for arguments that
+/// hold braced lists. A list has the sequence of a trial initialization
+/// of its parameter and no sequence to an ellipsis (ICS-6). None after an
+/// error.
+fn braced_choice(cx: &mut Check, found: &[EntityId], args: &[Option<Expr>], nodes: &[&Node], span: Span, name: &str) -> Option<EntityId> {
+    use crate::overloading::conversion_sequences::check::{better, sequence, Ics, Rank};
+    let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
+    for &f in found {
+        let Some(g) = cx.u.func(f).cloned() else {
+            cx.unsupported(span, "a braced list as an argument of a call of a name that is not only functions");
+            return None;
+        };
+        if g.class.is_some() && !g.member_static {
+            cx.unsupported(span, "a braced list as an argument of a member function call");
+            return None;
+        }
+        let n = g.ty.params.len();
+        if (args.len() > n && !g.ty.variadic) || (args.len()..n).any(|k| g.defaults.get(k).is_none_or(|d| d.is_none())) {
+            continue;
+        }
+        let mut seqs = Vec::new();
+        for (k, a) in args.iter().enumerate() {
+            let s = match (a, g.ty.params.get(k)) {
+                (Some(e), Some(p)) => sequence(cx, e, p),
+                (Some(_), None) => Some(Ics { rank: Rank::Conversion, qual: false, binds: None, ellipsis: true, user: None }),
+                (None, Some(p)) => crate::classes::constructors::check::list_sequence(cx, first_node(nodes[k]).unwrap(), p, false),
+                (None, None) => None,
+            };
+            match s {
+                Some(s) => seqs.push(s),
+                None => break,
+            }
+        }
+        if seqs.len() == args.len() {
+            viable.push((f, seqs));
+        }
+    }
+    if viable.is_empty() {
+        cx.error(span, "OVL-35", format!("no function '{}' fits the arguments", name));
+        return None;
+    }
+    let wins = |a: &[Ics], b: &[Ics]| !a.iter().zip(b).any(|(x, y)| better(y, x)) && a.iter().zip(b).any(|(x, y)| better(x, y));
+    let mut best = 0;
+    for j in 1..viable.len() {
+        if wins(&viable[j].1, &viable[best].1) {
+            best = j;
+        }
+    }
+    if (0..viable.len()).any(|j| j != best && !wins(&viable[best].1, &viable[j].1)) {
+        cx.error(span, "OVL-36", format!("the call of '{}' is ambiguous", name));
+        return None;
+    }
+    Some(viable[best].0)
 }
 
 /// A call of the value `f`: a function, a pointer to function, or a class

@@ -2273,3 +2273,15 @@ fn braced_lists_assigned_to_class_objects() {
     // The implicit assignment takes a class prvalue on the left.
     assert_eq!(rule("struct P { int a, b; }; P make(); void f() { make() = {1, 2}; make() = P{3, 4}; }"), None);
 }
+
+#[test]
+fn braced_arguments_among_overloads() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("constexpr int n(const int (&)[2]) { return 2; } constexpr int n(const int (&)[3]) { return 3; } static_assert(n({1, 2, 3}) == 3);"), None);
+    assert_eq!(rule("struct Q { constexpr operator long() const { return 2; } }; constexpr int f(const int (&)[2]) { return 1; } constexpr int f(const long (&)[2]) { return 2; } static_assert(f({Q{}, 0}) == 2);"), None);
+    assert_eq!(rule("struct L { L(int); }; struct I {}; int show(L); long show(...); void u(I i) { show({i}); }"), Some("OVL-35"));
+}
