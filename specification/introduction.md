@@ -37,11 +37,29 @@ replace it.
 People and AI agents both work on Tidal. Each agent has one of three
 roles, defined by what can be read.
 
-| Role | What the agent may read | What the agent may write |
-|---|---|---|
-| **Source reader** | The ISO standard, WG21 papers, cppreference, compiler sources under restrictive licenses, and posts that quote any of these | Nothing in the repository. A source reader gives only summaries in its own words. |
-| **Clean-room writer** | Source readers' summaries after the similarity check, the behavior and diagnostics of the baseline compilers, sanitized compiler sources under permissive licenses, and every file of the repository | The Tidal specification, the tests, the tools, and the documentation |
-| **Clean-room reader** | Only Tidal's own files: the Tidal specification, the tests, and their results | Only its own exercise directories, and the Tidal front ends |
+**Source reader**
+
+- May read the ISO standard, WG21 papers, cppreference, compiler
+  sources under restrictive licenses, and posts that quote any of
+  these.
+- Writes nothing in the repository. A source reader gives only
+  summaries in its own words.
+
+**Clean-room writer**
+
+- May read source readers' summaries after the similarity check.
+- May read the behavior and diagnostics of the baseline compilers.
+- May read sanitized compiler sources under permissive licenses.
+- May read every file of the repository.
+- Writes the Tidal specification, the tests, the tools, and the
+  documentation.
+
+**Clean-room reader**
+
+- May read only Tidal's own files: the Tidal specification, the tests,
+  and their results.
+- Writes only in its own exercise directories, and the Tidal front
+  ends.
 
 An agent that reads protected material becomes a source reader for the
 rest of its session. It cannot work in the clean room again in that
