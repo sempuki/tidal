@@ -98,6 +98,8 @@ pub fn unary_expr(cx: &mut Check, n: &Node) -> Expr {
             let rule = match &e.k {
                 EK::Assign(..) | EK::Compound(..) => "ASN-10",
                 EK::Cond(..) => "COND-9",
+                // SB-16: a structured binding to a bit-field.
+                _ if cx.bit_binding_uses.contains(&e.span) => "SB-16",
                 _ => "BF-4",
             };
             cx.error(span, rule, "the address of a bit-field");

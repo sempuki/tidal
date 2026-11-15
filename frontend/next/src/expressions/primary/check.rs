@@ -334,6 +334,11 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
                 Some(Err(())) => return bad(span),
                 None => {}
             }
+            if let Some(mut at) = cx.bit_bindings.get(&pick).cloned() {
+                at.span = span;
+                cx.bit_binding_uses.push(span);
+                return at;
+            }
             let (ty, cat) = match &v.ty.t {
                 Type::Ref(inner, _) => ((**inner).clone(), Cat::L),
                 _ => (v.ty.clone(), Cat::L),

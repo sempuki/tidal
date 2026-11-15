@@ -190,10 +190,6 @@ fn class_bindings(cx: &mut Check, e: Expr, k: crate::sem::types::ClassId, ids: &
             cx.error(e.span, "SB-13", format!("the member '{}' that the structured binding names is not accessible", name));
             return failed(local, span);
         }
-        if cx.u.field(f).is_some_and(|x| x.width.is_some()) {
-            cx.unsupported(e.span, "a structured binding of a bit-field (build step 4)");
-            return failed(local, span);
-        }
     }
     // SB-2: one name for each data member.
     if members.len() != ids.len() {
@@ -230,6 +226,10 @@ fn class_bindings(cx: &mut Check, e: Expr, k: crate::sem::types::ClassId, ids: &
         let i = Init::Ref(at.clone());
         let id = names::declare_in(cx, scope, name, EntKind::Var(Var { used: false, ..var(QType::lref(at.ty.clone()), storage, Some(i.clone())) }), *sp, Linkage::None);
         cx.bindings.insert(id);
+        // SB-10: a binding to a bit-field names the bit-field.
+        if cx.u.field(f).is_some_and(|x| x.width.is_some()) {
+            cx.bit_bindings.insert(id, at);
+        }
         decls.push((id, i));
     }
     if !local {

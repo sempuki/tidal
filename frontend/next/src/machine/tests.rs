@@ -2013,3 +2013,15 @@ fn ended_subobjects_in_constant_evaluation() {
 fn structured_bindings_in_init_statements() {
     assert_eq!(run("struct P { int a, b; }; int main() { int r = 0; if (auto [a, b] = P{1, 2}; a < b) r += b; for (auto [i, n] = P{0, 3}; i < n; ++i) r += 1; switch (auto [a, b] = P{4, 5}; a) { case 4: r += b; } return r; }"), RunOutcome::Result(10));
 }
+
+#[test]
+fn structured_bindings_of_bit_fields() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A write through the binding keeps the width of the bit-field.
+    assert_eq!(run("struct F { unsigned bits : 3; int o; }; int main() { F f{1, 2}; auto& [b, o] = f; b = 9; return f.bits * 10 + b; }"), RunOutcome::Result(11));
+    assert_eq!(rule("struct F { int bits : 3; int o; }; void g(F& f) { auto& [b, o] = f; int* p = &b; }"), Some("SB-16"));
+}

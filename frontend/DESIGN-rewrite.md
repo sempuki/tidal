@@ -727,7 +727,8 @@ class can be defined after with a qualified name, in the scope of the
 qualifier. In constant evaluation, a pseudo-destructor call on a union
 member leaves the union with no active member, and on another
 subobject leaves it without a value and closed to writes. An
-init-statement can be a structured binding declaration. The
+init-statement can be a structured binding declaration, and a binding
+to a bit-field names the bit-field. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

@@ -217,6 +217,11 @@ pub struct Check<'a> {
     pub assigned: HashMap<EntityId, u32>,
     /// The names of structured bindings (SB-4).
     pub bindings: std::collections::HashSet<EntityId>,
+    /// The structured bindings to bit-fields, with the member of the
+    /// hidden variable that each names (SB-10), and the places where an
+    /// expression names one (SB-16).
+    pub bit_bindings: HashMap<EntityId, Expr>,
+    pub bit_binding_uses: Vec<Span>,
     /// The lambda expressions whose bodies enclose the point of the
     /// check, innermost last.
     pub lambdas: Vec<LambdaCtx>,
@@ -227,7 +232,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), bit_binding_uses: Vec::new(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------
