@@ -10,11 +10,6 @@ specification with the text of the ISO standard, and a similar passage
 fails the change. The same tool checks each summary that a source
 reader writes, before a clean-room writer reads it.
 
-This chapter is the statement of provenance of the Tidal
-specification. It says who writes the text, what each writer may read,
-and how the text improves without the text of the ISO standard. It
-states no language rules. Chapters 1 to 8 state the rules.
-
 ## Names used in this chapter
 
 This chapter names two specifications and two kinds of program. Each
