@@ -999,3 +999,152 @@ pub fn explicit_condition(cx: &mut Check, n: &Node) -> bool {
         }
     }
 }
+
+/// ICS-17: the sequence of the braced list `b` for the parameter `p`,
+/// found by a trial initialization whose diagnostics are dropped. A list
+/// of one element of the parameter's class, or of a derived class, has
+/// that element's sequence. A class takes a list by a user-defined
+/// conversion, which `no_user` rules out (the first parameter of a copy
+/// or move constructor for a list of one element). None when the list
+/// does not convert; an unsupported construct stays reported.
+fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Option<crate::overloading::conversion_sequences::check::Ics> {
+    use crate::overloading::conversion_sequences::check::{sequence, Ics, Rank};
+    let its = crate::declarations::initialization::list::check::items(b);
+    let target = p.nonref().clone();
+    let marks = cx.u.diags.len();
+    let one = (its.len() == 1).then(|| first_node(its[0])).flatten().filter(|c| c.prod != "braced_init" && c.prod != "designator").map(|c| expr(cx, c));
+    if let (Some(e), Some(tc)) = (&one, target.class()) {
+        if e.ty.nonref().class().is_some_and(|d| crate::classes::derived::check::derives(cx, d, tc)) {
+            let r = sequence(cx, e, p);
+            cx.u.diags.truncate(marks);
+            return r;
+        }
+    }
+    if target.is_class() && no_user {
+        cx.u.diags.truncate(marks);
+        return None;
+    }
+    let r = crate::declarations::initialization::list::check::scalar_list(cx, b, &target.unqual(), "INIT-7");
+    let new = &cx.u.diags[marks..];
+    if new.iter().any(|d| d.sev == crate::diag::Severity::Unsupported) {
+        return None;
+    }
+    let ok = r.is_some() && !new.iter().any(|d| d.sev == crate::diag::Severity::Error);
+    cx.u.diags.truncate(marks);
+    if !ok {
+        return None;
+    }
+    let plain = Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None };
+    if target.is_class() {
+        return Some(Ics { rank: Rank::User, ..plain });
+    }
+    match &one {
+        Some(e) => {
+            let s = sequence(cx, e, &target);
+            cx.u.diags.truncate(marks);
+            s.or(Some(plain))
+        }
+        None => Some(plain),
+    }
+}
+
+/// CTOR-25, ICS-17: the initialization of an object of class type `ty`
+/// by a constructor whose arguments `nodes` hold braced lists. Each list
+/// has the sequence of `list_sequence` for its parameter, and the best
+/// constructor initializes each parameter from its list.
+pub fn construct_braced(cx: &mut Check, ty: &QType, nodes: &[&Node], list: bool, copy: bool, span: Span) -> Option<Init> {
+    use crate::overloading::conversion_sequences::check::{better, sequence, Ics};
+    let c = ty.class()?;
+    // ILC-7: a class that is not an aggregate takes no designator.
+    if nodes.iter().any(|n| n.prod == "designator") {
+        cx.error(span, "ILC-7", format!("a designated initializer for '{}', which is not an aggregate", cx.u.classes[c].name));
+        return None;
+    }
+    let mut args: Vec<Result<Expr, &Node>> = Vec::new();
+    for n in nodes {
+        if n.prod == "braced_init" {
+            args.push(Err(*n));
+        } else {
+            let e = expr(cx, n);
+            if e.ty.is_error() {
+                return None;
+            }
+            args.push(Ok(e));
+        }
+    }
+    let mut cands = ctors(cx, c);
+    cands.extend(inherited(cx, c, args.len()));
+    let name = cx.u.classes[c].name.to_string();
+    let mut viable: Vec<(EntityId, Vec<Ics>)> = Vec::new();
+    for f in cands {
+        let Some(g) = cx.u.func(f).cloned() else { continue };
+        let n = g.ty.params.len();
+        if args.len() > n || (args.len()..n).any(|k| g.defaults.get(k).is_none_or(|d| d.is_none())) {
+            continue;
+        }
+        let copy_move = args.len() == 1 && crate::classes::copy_move::check::copy_or_move(cx, c, f).is_some();
+        let mut seqs = Vec::new();
+        for (k, a) in args.iter().enumerate() {
+            let s = match a {
+                Ok(e) => sequence(cx, e, &g.ty.params[k]),
+                Err(b) => list_sequence(cx, b, &g.ty.params[k], copy_move && k == 0),
+            };
+            match s {
+                Some(s) => seqs.push(s),
+                None => break,
+            }
+        }
+        if seqs.len() == args.len() {
+            viable.push((f, seqs));
+        }
+    }
+    if viable.is_empty() {
+        cx.error(span, "CTOR-25", format!("no constructor of '{}' takes these arguments", name));
+        return None;
+    }
+    let wins = |a: &[Ics], b: &[Ics]| !a.iter().zip(b).any(|(x, y)| better(y, x)) && a.iter().zip(b).any(|(x, y)| better(x, y));
+    let mut best = 0;
+    for j in 1..viable.len() {
+        if wins(&viable[j].1, &viable[best].1) {
+            best = j;
+        }
+    }
+    if (0..viable.len()).any(|j| j != best && !wins(&viable[best].1, &viable[j].1)) {
+        cx.error(span, "OVL-36", format!("the initialization of '{}' is ambiguous between its constructors", name));
+        return None;
+    }
+    let f = viable[best].0;
+    let g = cx.u.func(f)?.clone();
+    if g.deleted {
+        cx.error(span, "DEL-1", format!("the constructor of '{}' is deleted", name));
+        return None;
+    }
+    if copy && list && g.explicit {
+        cx.error_cause(span, "CTOR-9", Some("ILC-8"), format!("copy-list-initialization of '{}' chooses an explicit constructor", name));
+        return None;
+    }
+    if !crate::classes::derived::check::accessible_through(cx, f, g.class.unwrap_or(c)) {
+        cx.error(span, "ACC-2", format!("the constructor of '{}' is not public", name));
+        return None;
+    }
+    let mut out = Vec::new();
+    for (a, p) in args.into_iter().zip(g.ty.params.iter()) {
+        let e = match a {
+            Ok(e) => e,
+            Err(b) => crate::declarations::initialization::list::check::scalar_list(cx, b, &p.nonref().unqual().with_cv(p.nonref().c, p.nonref().v), "INIT-7")?,
+        };
+        out.push(crate::declarations::initialization::forms::check::init_parameter(cx, e, p)?);
+    }
+    for k in out.len()..g.ty.params.len() {
+        if let Some(Some(d)) = g.defaults.get(k) {
+            out.push(crate::sem::tree::Arg { e: d.clone(), by_ref: g.ty.params[k].is_ref() });
+        }
+    }
+    crate::declarations::functions::definitions::check::note_use(cx, f, span);
+    if g.class.is_some_and(|b| b != c) {
+        cx.unsupported(span, "an inherited constructor chosen for a braced argument");
+        return None;
+    }
+    Some(Init::Ctor(f, out))
+}
+

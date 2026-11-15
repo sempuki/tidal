@@ -172,13 +172,13 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
     if ty.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
         if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
             let items: Vec<&Node> = b.children("init_clause").collect();
+            let firsts: Vec<&Node> = items.iter().filter_map(|it| first_node(it)).collect();
+            if firsts.iter().any(|c| c.prod == "braced_init" || c.prod == "designator") {
+                return crate::classes::constructors::check::construct_braced(cx, ty, &firsts, true, words.first() == Some(&"="), init.span);
+            }
             let mut args = Vec::new();
             for it in items {
                 let c = first_node(it)?;
-                if c.prod == "braced_init" || c.prod == "designator" {
-                    cx.unsupported(c.span, "a braced list as a constructor argument (build step 4)");
-                    return None;
-                }
                 let e = expr(cx, c);
                 if e.ty.is_error() {
                     return None;
@@ -189,13 +189,13 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
         }
         if words.first() == Some(&"(") {
             let list: Vec<&Node> = ns.first().map(|l| l.children("argument").collect()).unwrap_or_default();
+            let firsts: Vec<&Node> = list.iter().filter_map(|a| first_node(a)).collect();
+            if firsts.iter().any(|c| c.prod == "braced_init") {
+                return crate::classes::constructors::check::construct_braced(cx, ty, &firsts, false, false, init.span);
+            }
             let mut args = Vec::new();
             for a in list {
                 let c = first_node(a)?;
-                if c.prod == "braced_init" {
-                    cx.unsupported(c.span, "a braced list as a constructor argument (build step 4)");
-                    return None;
-                }
                 let e = expr(cx, c);
                 if e.ty.is_error() {
                     return None;

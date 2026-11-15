@@ -2133,3 +2133,16 @@ fn class_from_another_class() {
     assert_eq!(rule("struct T { int v = 0; constexpr T(int x) : v(x) {} }; struct S { constexpr explicit operator T() const { return T(4); } }; constexpr int p() { S s; T t(s); return t.v; } static_assert(p() == 4);"), None);
     assert_eq!(rule("struct B { B() = default; B(const B&) = default; }; struct D : B {}; struct S { explicit operator D() const { return D{}; } }; B b(S{});"), Some("OVL-35"));
 }
+
+#[test]
+fn braced_constructor_arguments() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct P { int x, y; P(int a, int b) : x(a), y(b) {} }; struct S { int v; S(P p, int k) : v(p.x + p.y + k) {} }; int main() { S s{{1, 2}, 3}; S t({4, 5}, 6); return s.v + t.v; }"), RunOutcome::Result(21));
+    assert_eq!(rule("struct S { S(int); }; S f({1}); S g{{1}};"), None);
+    assert_eq!(rule("struct S { S(int); }; S s{{1, 2}};"), Some("CTOR-25"));
+    assert_eq!(rule("struct S { int x; S(int v) : x(v) {} }; S s{.x = 1};"), Some("ILC-7"));
+}
