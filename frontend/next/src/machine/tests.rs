@@ -2340,3 +2340,8 @@ fn references_from_braces_and_explicit_conversions() {
     assert_eq!(run("int v = 5; struct S { explicit operator int&() const { return v; } }; S s; const int& r(s); int main() { return &r == &v ? 3 : 0; }"), RunOutcome::Result(3));
     assert_eq!(rule("int v = 5; struct S { explicit operator int&() const { return v; } }; S s; const int& r = s;"), Some("OVL-35"));
 }
+
+#[test]
+fn functions_that_hide_a_class() {
+    assert_eq!(run("struct stat { int size = 8; }; int stat(int x) { return x; } int main() { struct stat s; return s.size + stat(3); }"), RunOutcome::Result(11));
+}

@@ -340,9 +340,25 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
     // so the form is a call, which the parser read as a cast.
     if let Some(c) = to.class() {
         let name = cx.u.classes[c].name.clone();
-        if cx.source(ct) == *name && crate::foundations::names::check::lookup(cx, &name).iter().any(|&e| !matches!(cx.u.entities[e].kind, crate::sem::EntKind::Class(_))) {
-            let t = cx.unsupported(span, "a name that a function or variable hides a class of (build step 4)");
-            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        let found = crate::foundations::names::check::lookup(cx, &name);
+        if cx.source(ct) == *name && found.iter().any(|&e| !matches!(cx.u.entities[e].kind, crate::sem::EntKind::Class(_))) {
+            let funcs: Vec<crate::sem::EntityId> = found.iter().copied().filter(|&e| cx.u.func(e).is_some()).collect();
+            if funcs.is_empty() || args.iter().any(|a| first_node(a).is_some_and(|c| c.prod == "braced_init")) {
+                let t = cx.unsupported(span, "a name that a variable hides a class of (build step 4)");
+                return Expr::new(EK::Int(0), t, Cat::PR, span);
+            }
+            let mut es = Vec::new();
+            for a in &args {
+                let e = expr(cx, a);
+                if e.ty.is_error() {
+                    return bad(span);
+                }
+                es.push(e);
+            }
+            let Some(f) = crate::overloading::overload_resolution::check::resolve(cx, &funcs, &es, span, &name) else { return bad(span) };
+            crate::declarations::functions::definitions::check::note_use(cx, f, span);
+            let callee = Expr::new(EK::Func(f), QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone())), Cat::L, span);
+            return crate::expressions::postfix::check::finish_call(cx, callee, Some(f), es, span, None);
         }
     }
     if to.is_class() && (!crate::classes::r#virtual::check::not_abstract(cx, &to, span) || !crate::classes::constructors::check::dtor_usable(cx, &to, span)) {
