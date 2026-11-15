@@ -12,9 +12,6 @@ reader writes, before a clean-room writer reads it.
 
 ## Definitions
 
-This chapter names two specifications and two kinds of program. Each
-term below means one thing only.
-
 | Term | Meaning |
 |---|---|
 | **ISO standard** | ISO/IEC 14882:2024, the international standard that defines C++23, with its drafts. Tidal does not copy it, and the agents that write Tidal do not read it. |
