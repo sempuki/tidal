@@ -119,7 +119,7 @@ impl Target {
             Type::Array(e, Some(n)) => self.size_of(u, e)?.checked_mul(*n)?,
             Type::Enum(e) => self.int_size(u.enums.get(*e)?.underlying?),
             Type::Class(c) => self.layout(u, *c)?.0,
-            Type::Void | Type::Array(_, None) | Type::Func(_) | Type::Error => return None,
+            Type::Void | Type::Array(_, None) | Type::Func(_) | Type::Error | Type::Dep(_) => return None,
         })
     }
     /// The layout of a complete class (CLS rules, TYP-2): its size, its

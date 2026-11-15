@@ -332,6 +332,12 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
         return r;
     }
     // A name that finds functions: overload resolution chooses.
+    // TARG-1: a call of a function template with explicit arguments.
+    if let Some(tid) = callee_name(callee).and_then(|id| id.find("template_id").filter(|_| id.find("nested_name").is_none())) {
+        if let Some(r) = template_id_call(cx, tid, &args, span) {
+            return r;
+        }
+    }
     if let Some(name) = callee_name(callee) {
         if let Some((mut found, rule, text, nspan)) = primary::check::find(cx, name) {
             // NAM-27, NAM-29: an unqualified name also finds the functions
@@ -340,7 +346,7 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
             // scope.
             if rule == "NAM-8" {
                 let plain = found.iter().all(|&e| {
-                    matches!(cx.u.entities[e].kind, EntKind::Func(_)) && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Namespace
+                    matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_)) && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Namespace
                 });
                 if plain {
                     let tys: Vec<QType> = args.iter().map(|a| a.ty.clone()).collect();
@@ -356,6 +362,28 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
                     cx.not_found(nspan, rule, &text);
                 }
                 return bad(span);
+            }
+            // DED-P3: a function template adds the specialization that its
+            // deduced arguments give.
+            // DEP-9: in a specialization, argument-dependent lookup at the
+            // point of instantiation can find declarations after the
+            // template, which the first piece of build step 5 does not
+            // weigh.
+            if cx.lookup_limit.is_some() && rule == "NAM-8" {
+                let tys: Vec<QType> = args.iter().map(|a| a.ty.clone()).collect();
+                if crate::foundations::names::check::late_argument_dependent(cx, &text, &tys) {
+                    let t = cx.unsupported(span, format!("a call of '{}' in a specialization, which argument-dependent lookup after the template can change", text));
+                    return Expr::new(EK::Int(0), t, Cat::PR, span);
+                }
+            }
+            if found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) && found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_))) {
+                let plain: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+                let specs = crate::templates::declarations::check::call_candidates(cx, &found, &[], &args);
+                let Some(f) = choose_with_templates(cx, &plain, &specs, &args, span, &text) else { return bad(span) };
+                crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
+                let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
+                let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
+                return finish_call(cx, callee, Some(f), args, span, None);
             }
             let funcs: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
             if !funcs.is_empty() && funcs.len() == found.len() {
@@ -433,6 +461,64 @@ fn address_call(cx: &mut Check, callee: &Node, args: &[Expr], span: Span) -> Opt
     crate::declarations::functions::definitions::check::note_use(cx, f, nspan);
     let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
     let callee = Expr::new(EK::Func(f), fty, Cat::L, nspan);
+    Some(finish_call(cx, callee, Some(f), args.to_vec(), span, None))
+}
+
+/// OVL-29: the best of the functions `plain` and the specializations
+/// `specs` of function templates. A function that is not a
+/// specialization wins a tie, which the front end takes as a function
+/// that takes every argument by an exact match.
+fn choose_with_templates(cx: &mut Check, plain: &[EntityId], specs: &[EntityId], args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
+    use crate::overloading::conversion_sequences::check::{sequence, Rank};
+    let exact = plain.iter().copied().filter(|&f| cx.u.func(f).is_some_and(|x| x.ty.params.len() == args.len() && x.ty.params.iter().zip(args).all(|(p, a)| sequence(cx, a, p).is_some_and(|s| s.rank == Rank::Exact)))).collect::<Vec<_>>();
+    if exact.len() == 1 {
+        return Some(exact[0]);
+    }
+    // A call that no template's arguments deduce for: the first piece of
+    // build step 5 deduces only some forms of parameters.
+    if specs.is_empty() && plain.is_empty() {
+        let t = cx.unsupported(span, format!("a call of the function template '{}' whose arguments the first piece of build step 5 does not deduce", name));
+        let _ = t;
+        return None;
+    }
+    let mut all: Vec<EntityId> = plain.to_vec();
+    for &f in specs {
+        if !all.contains(&f) {
+            all.push(f);
+        }
+    }
+    if all.is_empty() {
+        cx.error(span, "OVL-35", format!("no function '{}' fits the arguments", name));
+        return None;
+    }
+    ovl::resolve(cx, &all, args, span, name)
+}
+
+/// TARG-1: `f<A...>(args)`, a call of the function templates named `f`
+/// with explicit type arguments. None for a callee that names no
+/// function template, or arguments that are not types.
+fn template_id_call(cx: &mut Check, tid: &Node, args: &[Expr], span: Span) -> Option<Expr> {
+    let name = cx.source(tid.child("template_name")?);
+    let found: Vec<EntityId> = crate::foundations::names::check::lookup(cx, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))).collect();
+    if found.is_empty() {
+        return None;
+    }
+    let mut explicit = Vec::new();
+    if let Some(ta) = tid.child("template_args") {
+        for a in ta.children("template_arg") {
+            let t = a.child("type_id")?;
+            let ty = crate::declarations::declarators::check::type_id(cx, t);
+            if ty.is_error() {
+                return Some(bad(span));
+            }
+            explicit.push(ty);
+        }
+    }
+    let specs = crate::templates::declarations::check::call_candidates(cx, &found, &explicit, args);
+    let f = choose_with_templates(cx, &[], &specs, args, span, &name)?;
+    crate::declarations::functions::definitions::check::note_use(cx, f, tid.span);
+    let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
+    let callee = Expr::new(EK::Func(f), fty, Cat::L, tid.span);
     Some(finish_call(cx, callee, Some(f), args.to_vec(), span, None))
 }
 

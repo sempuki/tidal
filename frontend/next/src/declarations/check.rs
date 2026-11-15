@@ -56,6 +56,7 @@ pub fn translation_unit(cx: &mut Check, trees: &[Node]) {
         crate::expressions::new_delete::check::library_aligned(cx);
     }
     functions::definitions::check::end_of_unit(cx);
+    crate::templates::declarations::check::end_of_unit(cx);
 }
 
 /// `declaration`: the kinds of declarations at namespace scope.
@@ -71,6 +72,7 @@ pub fn declaration(cx: &mut Check, n: &Node) {
             "linkage_spec" => linkage_specifications::check::linkage_spec(cx, c),
             "attribute_spec" => {}
             "empty_decl" | "null_stmt" => {}
+            "template_decl" if crate::templates::declarations::check::template_decl(cx, c) => {}
             _ => {
                 cx.unsupported(c.span, format!("a declaration of the form {}", c.prod));
             }

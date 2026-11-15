@@ -137,6 +137,27 @@ pub enum EntKind {
     /// An entity of a kind that build step 3 does not model (a class, a
     /// template); a name that finds it gives `unsupported`.
     Unsupported(&'static str),
+    /// A function template, by its index in `Unit::templates`
+    /// (`templates/declarations`).
+    Template(usize),
+}
+
+/// A function template whose parameters are types (build step 5, first
+/// piece): its parameters, its definition's syntax, the scope that
+/// declares it, its function type with the parameters as dependent
+/// types, and its specializations by their arguments
+/// (`frontend/TEMPLATE-MODEL.md`, section 3).
+#[derive(Clone, Debug)]
+pub struct FnTemplate {
+    pub name: Rc<str>,
+    pub params: Vec<Rc<str>>,
+    pub node: crate::syntax::Node,
+    pub scope: ScopeId,
+    pub fty: Rc<FnType>,
+    pub specs: Vec<(Vec<QType>, EntityId)>,
+    pub span: Span,
+    /// The first entity declared after the template (DEP-10).
+    pub limit: EntityId,
 }
 
 #[derive(Clone, Debug)]
@@ -161,6 +182,9 @@ pub enum ScopeKind {
     Function,
     Prototype,
     Enum,
+    /// The parameters of a template, around its declaration
+    /// (`templates/declarations`).
+    Template,
 }
 
 #[derive(Clone, Debug)]
@@ -286,6 +310,8 @@ pub struct EnumInfo {
 #[derive(Debug)]
 pub struct Unit {
     pub entities: Vec<Entity>,
+    /// The function templates (`EntKind::Template`).
+    pub templates: Vec<FnTemplate>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -378,6 +404,7 @@ impl Default for Unit {
             abstract_classes: Default::default(),
             friends: Default::default(),
             friend_classes: Default::default(),
+            templates: Vec::new(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }
@@ -586,7 +613,7 @@ impl Unit {
             match self.scopes[s].kind {
                 ScopeKind::Block | ScopeKind::Function | ScopeKind::Prototype => return true,
                 ScopeKind::Namespace | ScopeKind::Class => return false,
-                ScopeKind::Enum => {}
+                ScopeKind::Enum | ScopeKind::Template => {}
             }
             match self.scopes[s].parent {
                 Some(p) => s = p,

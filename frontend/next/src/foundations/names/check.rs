@@ -325,6 +325,12 @@ pub fn declare_in(cx: &mut Check, scope: ScopeId, name: &str, kind: EntKind, spa
             if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && matches!(kind, EntKind::Func(_)) {
                 continue;
             }
+            // A function or a template beside a function template of the
+            // name waits for a later piece of build step 5.
+            if matches!(cx.u.entities[e].kind, EntKind::Template(_)) || matches!(kind, EntKind::Template(_)) {
+                cx.unsupported(span, format!("a declaration of '{}' beside a function template of the name", name));
+                break;
+            }
             // TYN-2: a typedef name and another kind of entity.
             let typedef = matches!(cx.u.entities[e].kind, EntKind::Typedef(_)) != matches!(kind, EntKind::Typedef(_));
             redeclared(cx, scope, name, span, typedef);
@@ -354,7 +360,12 @@ pub fn declare_unsupported(cx: &mut Check, name: &str, span: Span) {
 /// find: a friend function first declared in a class is not one of them
 /// (ACC-7).
 fn visible(cx: &Check, scope: ScopeId, name: &str) -> Vec<EntityId> {
-    let all = cx.u.scopes[scope].names.get(name).cloned().unwrap_or_default();
+    let mut all = cx.u.scopes[scope].names.get(name).cloned().unwrap_or_default();
+    // DEP-10: in a specialization, lookup at namespace scope sees only
+    // the declarations before the template's definition.
+    if let Some(limit) = cx.lookup_limit.filter(|_| cx.u.scopes[scope].kind == ScopeKind::Namespace) {
+        all.retain(|&e| e < limit);
+    }
     if cx.u.hidden.is_empty() {
         return all;
     }
@@ -424,6 +435,11 @@ fn associated(cx: &Check, t: &crate::sem::types::QType, out: &mut Vec<ScopeId>) 
 /// those of its inline namespaces. Names that are not functions are
 /// skipped.
 pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QType]) -> Vec<EntityId> {
+    argument_dependent_with(cx, name, args, cx.lookup_limit)
+}
+
+/// `argument_dependent`, leaving out the functions from `limit` on.
+fn argument_dependent_with(cx: &Check, name: &str, args: &[crate::sem::types::QType], limit: Option<EntityId>) -> Vec<EntityId> {
     let mut spaces = Vec::new();
     for a in args {
         associated(cx, a, &mut spaces);
@@ -474,12 +490,23 @@ pub fn argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QTy
     let mut out: Vec<EntityId> = Vec::new();
     for ns in spaces {
         for &e in cx.u.scopes[ns].names.get(name).map(|v| v.as_slice()).unwrap_or(&[]) {
-            if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && !out.contains(&e) && (!cx.u.hidden.contains(&e) || befriends(e)) {
+            // In a specialization the first piece of build step 5 does not
+            // tell an independent call, which binds at the definition
+            // (DEP-5), so the declarations after the template stay out.
+            let late = limit.is_some_and(|l| e >= l);
+            if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && !late && !out.contains(&e) && (!cx.u.hidden.contains(&e) || befriends(e)) {
                 out.push(e);
             }
         }
     }
     out
+}
+
+/// DEP-9: argument-dependent lookup finds a function declared after the
+/// template whose specialization is being checked.
+pub fn late_argument_dependent(cx: &Check, name: &str, args: &[crate::sem::types::QType]) -> bool {
+    let Some(limit) = cx.lookup_limit else { return false };
+    argument_dependent_with(cx, name, args, None).into_iter().any(|e| e >= limit)
 }
 
 /// LSUP-1, LSUP-2: whether the unit has declared `std::<name>`, a type

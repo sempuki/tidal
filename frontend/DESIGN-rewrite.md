@@ -483,6 +483,23 @@ exploration of choice points, extended floating-point literals, named
 character escapes, and an array with more elements than the machine
 holds.
 
+Step 5 is begun (item RW3). A function template at namespace scope
+whose parameters are types, with no default, pack, or constraint, has
+a function type with each parameter as a dependent type (`DepType`,
+model section 1). A call deduces the arguments from the arguments of
+the call, after any explicit ones, and the specialization is the
+definition checked again with each parameter bound to its argument,
+recorded before its body so that a recursive call finds it. Lookup in a
+specialization sees only the declarations at namespace scope before
+the template. Because the definition checks of model section 5 and the
+points of instantiation of model section 3 are not there yet, a
+template that nothing specializes, an error in a specialization, a
+call whose argument-dependent lookup would see later declarations, a
+definition with a dependent form (`typename`, `template`, a name
+qualified by a parameter) or an incomplete class, and a name that a
+function template shares with another declaration leave the unit
+unsupported.
+
 Step 4 part a is in place in part (item RW3). A class whose members are
 non-static data members and member functions has its layout, aggregate
 initialization with brace elision and designators, member access,

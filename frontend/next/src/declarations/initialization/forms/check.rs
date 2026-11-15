@@ -852,6 +852,10 @@ fn redeclaration(cx: &mut Check, scope: usize, name: &str, ty: &QType, s: &Specs
             }
             EntKind::Enum(_) | EntKind::Class(_) => continue,
             EntKind::Unsupported(_) => continue,
+            EntKind::Template(_) => {
+                cx.unsupported(span, format!("a variable '{}' beside a function template of the name", name));
+                return None;
+            }
             k => {
                 // TYN-2: a typedef name is not declared again as another
                 // kind of entity.

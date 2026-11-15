@@ -2434,3 +2434,20 @@ fn later_types_in_defaults_and_ambiguous_injected_names() {
     assert_eq!(rule("struct G { int bytes(int n = sizeof(Cell)) { return n; } struct Cell { char d[5]; }; }; static_assert(sizeof(G::Cell) == 5);"), None);
     assert_eq!(rule("namespace a { struct base {}; } namespace b { struct base {}; } struct j : a::base, b::base { void f() { base* p = nullptr; (void)p; } };"), Some("DER-4"));
 }
+
+#[test]
+fn function_templates_with_type_parameters() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // Deduction by value, by reference, through a pointer, and with an
+    // explicit argument; a recursive specialization finds itself.
+    assert_eq!(run("template <class T> T twice(T v) { return v + v; } template <class T> void put(T& r, const T& v) { r = v; } template <class T> T get(T* p) { return *p; } template <class T> T down(T n) { return n == 0 ? 0 : 1 + down(n - 1); } int main() { int x = 0; put(x, 4); long l = 2; return twice(3) + twice<long>(1) + x + get(&l) + int(down(3L)); }"), RunOutcome::Result(17));
+    assert_eq!(rule("template <class T> constexpr T sq(T v) { return v * v; } static_assert(sq(3) == 9 && sq(2.0) == 4.0);"), None);
+    // Two deductions that differ give no candidate.
+    assert_eq!(rule("template <class T> T pick(T a, T b) { return a; } int f() { return pick(1, 2L); }"), Some("unsupported"));
+    // A template that nothing specializes is not checked yet.
+    assert_eq!(rule("template <class T> T id(T v) { return v; }"), Some("unsupported"));
+}

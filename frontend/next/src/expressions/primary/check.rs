@@ -407,6 +407,10 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, format!("the name '{}' of a type or namespace as an expression", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
+        EntKind::Template(_) => {
+            let t = cx.unsupported(span, format!("the function template '{}' named outside a call", name));
+            Expr::new(EK::Int(0), t, Cat::PR, span)
+        }
     }
 }
 

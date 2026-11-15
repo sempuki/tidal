@@ -65,6 +65,18 @@ pub enum Type {
     /// The type of a construct after an error was reported, or of a
     /// construct the front end does not model. No check fires on it.
     Error,
+    /// A type that depends on a template parameter (DEP-1,
+    /// `frontend/TEMPLATE-MODEL.md` section 1).
+    Dep(Rc<DepType>),
+}
+
+/// The dependent forms of a type (`frontend/TEMPLATE-MODEL.md`, section
+/// 1). Build step 5 starts with the template parameter.
+#[derive(Clone, Debug, PartialEq)]
+pub enum DepType {
+    /// The type parameter `index` of the template at `depth`, with its
+    /// name for diagnostics.
+    Param { depth: u32, index: u32, name: Rc<str> },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -363,6 +375,9 @@ fn show(q: &QType, inner: &str) -> String {
         Type::Enum(e) => format!("{}enum#{}{}", cv(q), e, inner),
         Type::Class(c) => format!("{}class#{}{}", cv(q), c, inner),
         Type::Error => "<error>".into(),
+        Type::Dep(d) => match &**d {
+            DepType::Param { name, .. } => format!("{}{}{}", cv(q), name, inner),
+        },
         Type::Ptr(p) => {
             let c = cv(q).trim_end();
             let s = if c.is_empty() { format!("*{}", inner) } else { format!("* {}{}", c, inner) };
