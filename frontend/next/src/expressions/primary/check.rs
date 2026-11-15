@@ -248,6 +248,12 @@ pub fn find(cx: &mut Check, n: &Node) -> Option<(Vec<EntityId>, &'static str, St
 
 /// `id_expression` as an operand.
 pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
+    // TARG-1: a specialization of a variable template.
+    if let Some(tid) = n.child("unqualified_id").and_then(|u| u.child("template_id")) {
+        if let Some(e) = crate::templates::declarations::check::var_template_use(cx, tid) {
+            return e;
+        }
+    }
     let Some((found, rule, name, span)) = find(cx, n) else {
         let t = cx.unsupported(n.span, "an operator function, a destructor, or a template-id as a name");
         return Expr::new(EK::Int(0), t, Cat::PR, n.span);
@@ -409,6 +415,10 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
         }
         EntKind::Template(_) => {
             let t = cx.unsupported(span, format!("the function template '{}' named outside a call", name));
+            Expr::new(EK::Int(0), t, Cat::PR, span)
+        }
+        EntKind::VarTemplate(_) => {
+            let t = cx.unsupported(span, format!("the variable template '{}' named without arguments", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
     }

@@ -46,6 +46,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
         return false;
     }
     let Some(params) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    if let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) {
+        return var_template_decl(cx, sd, params);
+    }
     let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) else { return false };
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
     let saved = cx.scope;
@@ -183,4 +186,219 @@ pub fn end_of_unit(cx: &mut Check) {
     for (name, span) in unused {
         cx.unsupported(span, format!("the function template '{}', which nothing specializes (its definition is not checked yet)", name));
     }
+}
+
+/// The declarator, the initializer, and the template-id of the name of a
+/// variable template's declaration with one declarator, if it has that
+/// form.
+fn var_parts(sd: &Node) -> Option<(&Node, &Node, &Node, Option<&Node>)> {
+    let ds = sd.child("decl_specifiers")?;
+    let mut decls = sd.children("init_declarator");
+    let idecl = decls.next()?;
+    if decls.next().is_some() {
+        return None;
+    }
+    let dn = idecl.child("declarator")?;
+    let init = idecl.child("init")?;
+    let tid = dn.find("declarator_id").and_then(|d| d.find("template_id"));
+    Some((ds, dn, init, tid))
+}
+
+/// TPL rules: a variable template at namespace scope whose parameters are
+/// types, with one declarator and an initializer, or a partial
+/// specialization of one (TSP-9). False for another form.
+fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<(Rc<str>, Span)>) -> bool {
+    let Some((_, dn, init, tid)) = var_parts(sd) else { return false };
+    if dn.find("ptr_operator").is_some() || dependent_forms(cx, init, &params) {
+        return false;
+    }
+    let saved = cx.scope;
+    match tid {
+        None => {
+            let Some(name) = dn.find("declarator_id").and_then(|d| d.find("unqualified_id")).map(|u| cx.source(u)) else { return false };
+            if !names::declared_here(cx, saved, &name).is_empty() {
+                return false;
+            }
+            let id = cx.u.var_templates.len();
+            let limit = cx.u.entities.len() + 1;
+            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), span: dn.span, limit });
+            names::declare_in(cx, saved, &name, EntKind::VarTemplate(id), dn.span, Linkage::External);
+            true
+        }
+        Some(tid) => {
+            // TSP-9: a partial specialization of a primary of the scope.
+            let Some(name) = tid.child("template_name").map(|t| cx.source(t)) else { return false };
+            let Some(v) = names::declared_here(cx, saved, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+                EntKind::VarTemplate(v) => Some(v),
+                _ => None,
+            }) else {
+                return false;
+            };
+            let ts = cx.enter(ScopeKind::Template);
+            for (k, (p, span)) in params.iter().enumerate() {
+                let t = QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: p.clone() })));
+                names::declare_in(cx, ts, p, EntKind::Typedef(t), *span, Linkage::None);
+            }
+            let marks = cx.u.diags.len();
+            let pattern = template_type_args(cx, tid);
+            cx.leave(saved);
+            let Some(pattern) = pattern.filter(|_| cx.u.diags.len() == marks) else {
+                cx.u.diags.truncate(marks);
+                return false;
+            };
+            if pattern.len() != cx.u.var_templates[v].params.len() {
+                return false;
+            }
+            cx.u.var_templates[v].partials.push((params.into_iter().map(|p| p.0).collect(), pattern, sd.clone()));
+            true
+        }
+    }
+}
+
+/// The type arguments of a template-id, or None when one is not a type.
+fn template_type_args(cx: &mut Check, tid: &Node) -> Option<Vec<QType>> {
+    let mut out = Vec::new();
+    if let Some(ta) = tid.child("template_args") {
+        for a in ta.children("template_arg") {
+            let t = a.child("type_id")?;
+            out.push(crate::declarations::declarators::check::type_id(cx, t));
+        }
+    }
+    Some(out)
+}
+
+/// Match a partial specialization's pattern type `p` against an argument
+/// `a` exactly, binding its parameters (TSP-14).
+fn match_exact(p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
+    if !crate::templates::deduction::check::has_dep(p) {
+        return p == a;
+    }
+    match (&p.t, &a.t) {
+        (Type::Dep(d), _) => {
+            let DepType::Param { index, .. } = &**d;
+            if (p.c && !a.c) || (p.v && !a.v) {
+                return false;
+            }
+            let t = a.with_cv(a.c && !p.c, a.v && !p.v);
+            match &mut bound[*index as usize] {
+                Some(x) => *x == t,
+                slot => {
+                    *slot = Some(t);
+                    true
+                }
+            }
+        }
+        _ if p.c != a.c || p.v != a.v => false,
+        (Type::Ptr(x), Type::Ptr(y)) => match_exact(x, y, bound),
+        (Type::Ref(x, r), Type::Ref(y, s)) => r == s && match_exact(x, y, bound),
+        (Type::Array(x, n), Type::Array(y, m)) => n == m && match_exact(x, y, bound),
+        _ => false,
+    }
+}
+
+/// TARG-1, TSP-13 to TSP-15: `v<A...>`, a specialization of a variable
+/// template: the one partial specialization whose pattern the arguments
+/// match, or the primary. None when the name is no variable template.
+pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::Expr> {
+    use crate::sem::tree::{Cat, EK, Expr};
+    let span = tid.span;
+    let name = cx.source(tid.child("template_name")?);
+    let v = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::VarTemplate(v) => Some(v),
+        _ => None,
+    })?;
+    let unsupported = |cx: &mut Check, why: &str| {
+        let t = cx.unsupported(span, why.to_string());
+        Some(Expr::new(EK::Int(0), t, Cat::PR, span))
+    };
+    let Some(args) = template_type_args(cx, tid) else { return unsupported(cx, "a variable template with an argument that is not a type") };
+    if args.iter().any(|a| a.is_error()) {
+        return Some(crate::expressions::check::bad(span));
+    }
+    let vt = cx.u.var_templates[v].clone();
+    if args.len() != vt.params.len() || args.iter().any(crate::templates::deduction::check::has_dep) {
+        return unsupported(cx, "a variable template with another number of arguments or a dependent argument");
+    }
+    let mut matches = Vec::new();
+    for (k, (ps, pattern, _)) in vt.partials.iter().enumerate() {
+        let mut bound: Vec<Option<QType>> = vec![None; ps.len()];
+        if pattern.iter().zip(&args).all(|(p, a)| match_exact(p, a, &mut bound)) {
+            if let Some(b) = bound.into_iter().collect::<Option<Vec<QType>>>() {
+                matches.push((k, b));
+            }
+        }
+    }
+    if matches.len() > 1 {
+        return unsupported(cx, "a variable template whose arguments match several partial specializations (partial ordering)");
+    }
+    let (source, bound) = match matches.pop() {
+        Some((k, b)) => (Some(k), b),
+        None => (None, args.clone()),
+    };
+    let var = match vt.specs.iter().find(|(s, a, _)| *s == source && *a == bound) {
+        Some(&(_, _, id)) => id,
+        None => {
+            let (params, node) = match source {
+                Some(k) => (vt.partials[k].0.clone(), vt.partials[k].2.clone()),
+                None => (vt.params.clone(), vt.node.clone()),
+            };
+            match instantiate_var(cx, v, &params, &bound, &node) {
+                Some(id) => {
+                    cx.u.var_templates[v].specs.push((source, bound, id));
+                    id
+                }
+                None => return unsupported(cx, "a specialization of a variable template that the first pieces of build step 5 do not make"),
+            }
+        }
+    };
+    crate::declarations::initialization::forms::check::note_use(cx, var, span);
+    let ty = cx.u.var(var)?.ty.clone();
+    Some(Expr::new(EK::Var(var), ty, Cat::L, span))
+}
+
+/// The variable of a specialization: the declaration `node` checked with
+/// each of `params` bound to its argument in `args`. An error in it
+/// leaves the unit unsupported, as for a function template.
+fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[QType], node: &Node) -> Option<EntityId> {
+    let vt = cx.u.var_templates[v].clone();
+    let (ds, _, init, _) = var_parts(node)?;
+    let saved_scope = cx.scope;
+    let saved_func = cx.func.take();
+    let saved_member = cx.member_of.take();
+    let saved_lambdas = std::mem::take(&mut cx.lambdas);
+    let saved_unevaluated = std::mem::replace(&mut cx.unevaluated, 0);
+    let saved_limit = cx.lookup_limit.replace(vt.limit);
+    cx.instantiating += 1;
+    let marks = cx.u.diags.len();
+    cx.scope = vt.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    for (k, name) in params.iter().enumerate() {
+        names::declare_in(cx, ts, name, EntKind::Typedef(args[k].clone()), vt.span, Linkage::None);
+    }
+    let r = (|| {
+        let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+        if specs.unsupported || specs.placeholder.is_some() {
+            return None;
+        }
+        let ty = specs.ty.clone()?;
+        let ty = if specs.constexpr { ty.with_cv(true, ty.v) } else { ty };
+        let i = crate::declarations::initialization::forms::check::initializer(cx, &ty.unqual(), init, &vt.name)?;
+        let var = crate::sem::Var { ty, storage: crate::sem::Storage::Static, constexpr: specs.constexpr, constinit: false, inline: true, is_extern: false, is_static: false, param: false, defined: true, init: Some(i), const_init: specs.constexpr, used: false, maybe_unused: false, align: None };
+        let id = cx.u.add(crate::sem::Entity { name: vt.name.clone(), kind: EntKind::Var(var), span: vt.span, scope: ts, linkage: Linkage::External, deprecated: None });
+        cx.u.statics.push(id);
+        Some(id)
+    })();
+    cx.scope = saved_scope;
+    cx.func = saved_func;
+    cx.member_of = saved_member;
+    cx.lambdas = saved_lambdas;
+    cx.unevaluated = saved_unevaluated;
+    cx.lookup_limit = saved_limit;
+    cx.instantiating -= 1;
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported) {
+        let tail = cx.u.diags.split_off(marks);
+        cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
+        return None;
+    }
+    r
 }

@@ -140,6 +140,29 @@ pub enum EntKind {
     /// A function template, by its index in `Unit::templates`
     /// (`templates/declarations`).
     Template(usize),
+    /// A variable template, by its index in `Unit::var_templates`.
+    VarTemplate(usize),
+}
+
+/// A variable template whose parameters are types, with its partial
+/// specializations and its specializations by their arguments (build
+/// step 5, second piece).
+#[derive(Clone, Debug)]
+pub struct VarTemplate {
+    pub name: Rc<str>,
+    pub params: Vec<Rc<str>>,
+    pub node: crate::syntax::Node,
+    pub scope: ScopeId,
+    /// Each partial specialization: its parameters, its argument
+    /// pattern with its parameters as dependent types, and its
+    /// declaration (TSP-9).
+    pub partials: Vec<(Vec<Rc<str>>, Vec<QType>, crate::syntax::Node)>,
+    /// The specializations: the source (None for the primary, or the
+    /// index of a partial), the arguments of that source, and the
+    /// variable.
+    pub specs: Vec<(Option<usize>, Vec<QType>, EntityId)>,
+    pub span: Span,
+    pub limit: EntityId,
 }
 
 /// A function template whose parameters are types (build step 5, first
@@ -312,6 +335,8 @@ pub struct Unit {
     pub entities: Vec<Entity>,
     /// The function templates (`EntKind::Template`).
     pub templates: Vec<FnTemplate>,
+    /// The variable templates (`EntKind::VarTemplate`).
+    pub var_templates: Vec<VarTemplate>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -405,6 +430,7 @@ impl Default for Unit {
             friends: Default::default(),
             friend_classes: Default::default(),
             templates: Vec::new(),
+            var_templates: Vec::new(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }
