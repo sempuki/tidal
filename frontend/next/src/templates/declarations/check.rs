@@ -21,18 +21,28 @@ type Param = (Rc<str>, Span, Option<QType>);
 
 /// The parameters of a template head whose parameters are type
 /// parameters and constant parameters of integral or enumeration type,
-/// without a default, a pack, or a constraint; None for another head.
-fn type_params(cx: &mut Check, head: &Node) -> Option<Vec<Param>> {
+/// without a pack or a constraint, with the default of each (TPL-13);
+/// None for another head.
+fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Option<Node>>)> {
     if head.child("requires_clause").is_some() {
         return None;
     }
     let mut out = Vec::new();
+    let mut defaults = Vec::new();
     for tp in head.child("template_params")?.children("template_param") {
         // TARG-13: a constant parameter of integral or enumeration type.
         if let Some(p) = tp.child("constant_param").and_then(|c| c.child("parameter")) {
-            if cx.words(p).iter().any(|w| matches!(*w, "=" | "...")) || p.find("ptr_part").is_some() {
+            if cx.words(p).contains(&"...") || p.find("ptr_part").is_some() {
                 return None;
             }
+            // The default is the expression after `=`.
+            let default = match cx.words(p).contains(&"=") {
+                true => Some(p.kids.iter().rev().find_map(|k| match k {
+                    Kid::Node(c) => Some(c.clone()),
+                    _ => None,
+                })?),
+                false => None,
+            };
             let ds = p.child("decl_specifiers")?;
             let marks = cx.u.diags.len();
             let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
@@ -43,20 +53,85 @@ fn type_params(cx: &mut Check, head: &Node) -> Option<Vec<Param>> {
             };
             let id = p.find("declarator_id")?;
             out.push((cx.source(id).as_str().into(), id.span, Some(ty.unqual())));
+            defaults.push(default);
             continue;
         }
         let t = tp.child("type_param")?;
-        if t.child("type_key").is_none() || t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && matches!(cx.text(k), "=" | "...")) {
+        if t.child("type_key").is_none() || t.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") {
             return None;
         }
-        let k = t.kids.iter().rev().find(|k| matches!(k, Kid::Tok(_)))?;
+        let k = t.kids.iter().rev().find(|k| matches!(k, Kid::Tok(_)) && cx.text(k) != "=")?;
         let name: Rc<str> = cx.text(k).into();
         if name.as_ref() == "class" || name.as_ref() == "typename" {
             return None;
         }
         out.push((name, cx.token(k).map(|t| t.span).unwrap_or(t.span), None));
+        defaults.push(t.child("type_id").cloned());
     }
-    Some(out)
+    Some((out, defaults))
+}
+
+/// TPL-14: unless the template is a function template, each parameter
+/// after one with a default has a default.
+fn defaults_last(cx: &mut Check, defaults: &[Option<Node>], span: Span) -> bool {
+    if let Some(k) = defaults.iter().position(|d| d.is_some()) {
+        if defaults[k..].iter().any(|d| d.is_none()) {
+            cx.error(span, "TPL-14", "a template parameter without a default after one with a default");
+            return false;
+        }
+    }
+    true
+}
+
+/// TPL-15, TPL-16: the defaults of a later declaration add to those of an
+/// earlier one, and the two do not both give one parameter a default.
+fn merge_defaults(cx: &mut Check, earlier: &[Option<Node>], later: &[Option<Node>], span: Span) -> Option<Vec<Option<Node>>> {
+    if earlier.iter().zip(later).any(|(a, b)| a.is_some() && b.is_some()) {
+        cx.error(span, "TPL-16", "a default template argument given again in a later declaration");
+        return None;
+    }
+    Some(earlier.iter().zip(later).map(|(a, b)| a.clone().or_else(|| b.clone())).collect())
+}
+
+/// The arguments of a template-id, with the defaults of the template for
+/// the parameters after them (TPL-13). Each default sees the parameters
+/// before it bound to their arguments.
+pub fn args_with_defaults(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId) -> Option<Vec<TArg>> {
+    let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
+    if n >= kinds.len() {
+        return template_args(cx, tid, kinds);
+    }
+    let mut args = template_args(cx, tid, &kinds[..n])?;
+    fill_defaults(cx, kinds, defaults, names_, scope, limit, &mut args, tid.span).then_some(args)
+}
+
+/// Fill `args` up to the parameters' number from their defaults.
+fn fill_defaults(cx: &mut Check, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId, args: &mut Vec<TArg>, span: Span) -> bool {
+    while args.len() < kinds.len() {
+        let k = args.len();
+        let Some(Some(d)) = defaults.get(k).cloned() else { return false };
+        let saved_scope = cx.scope;
+        let saved_limit = cx.lookup_limit.replace(limit);
+        cx.scope = scope;
+        let ts = cx.enter(ScopeKind::Template);
+        bind_params(cx, ts, &names_[..k], args, span);
+        let a = match &kinds[k] {
+            None => Some(TArg::Type(crate::declarations::declarators::check::type_id(cx, &d))),
+            Some(ty) => {
+                let e = crate::expressions::check::expr(cx, &d);
+                let e = crate::foundations::values::check::rvalue(cx, e);
+                let v = (e.ty.is_integral() || e.ty.is_enum()).then(|| crate::foundations::constant_evaluation::check::try_value(cx, &e).and_then(|v| v.int())).flatten();
+                v.and_then(|v| constant_of(cx, &e, v, ty, d.span))
+            }
+        };
+        cx.scope = saved_scope;
+        cx.lookup_limit = saved_limit;
+        match a {
+            Some(a) => args.push(a),
+            None => return false,
+        }
+    }
+    true
 }
 
 /// Declare the parameters in the scope `ts` at a definition: a type
@@ -110,24 +185,28 @@ pub fn template_args(cx: &mut Check, tid: &Node, kinds: &[Option<QType>]) -> Opt
             None => out.push(TArg::Type(crate::declarations::declarators::check::type_id(cx, a.child("type_id")?))),
             Some(ty) => {
                 let (e, v) = constant_arg(cx, a)?;
-                // TARG-13, CE-19: the argument converts to the parameter's
-                // type as a converted constant expression: an enumeration
-                // only from itself, and no narrowing.
-                let scoped = matches!(ty.t, Type::Enum(en) if cx.u.enums[en].scoped);
-                let other_enum = (ty.is_enum() || matches!(e.ty.t, Type::Enum(en) if cx.u.enums[en].scoped)) && e.ty.unqual().t != ty.t;
-                if (scoped || other_enum) && e.ty.unqual().t != ty.t || crate::foundations::conversions::check::is_narrowing(cx, &e, ty) {
-                    cx.error_cause(a.span, "TARG-13", Some("CE-19"), format!("the template argument of type {} does not convert to {} as a constant", e.ty.show(), ty.show()));
-                    return None;
-                }
-                let v = match ty.int_kind() {
-                    Some(k) => cx.u.target.wrap(k, v),
-                    None => v,
-                };
-                out.push(TArg::Value(ty.clone(), v));
+                out.push(constant_of(cx, &e, v, ty, a.span)?);
             }
         }
     }
     Some(out)
+}
+
+/// TARG-13, CE-19: the constant `e` of value `v` as an argument for a
+/// constant parameter of type `ty`. It converts as a converted constant
+/// expression: an enumeration only from itself, and no narrowing.
+fn constant_of(cx: &mut Check, e: &crate::sem::tree::Expr, v: i128, ty: &QType, span: Span) -> Option<TArg> {
+    let scoped = matches!(ty.t, Type::Enum(en) if cx.u.enums[en].scoped);
+    let other_enum = (ty.is_enum() || matches!(e.ty.t, Type::Enum(en) if cx.u.enums[en].scoped)) && e.ty.unqual().t != ty.t;
+    if (scoped || other_enum) && e.ty.unqual().t != ty.t || crate::foundations::conversions::check::is_narrowing(cx, e, ty) {
+        cx.error_cause(span, "TARG-13", Some("CE-19"), format!("the template argument of type {} does not convert to {} as a constant", e.ty.show(), ty.show()));
+        return None;
+    }
+    let v = match ty.int_kind() {
+        Some(k) => cx.u.target.wrap(k, v),
+        None => v,
+    };
+    Some(TArg::Value(ty.clone(), v))
 }
 
 /// The value of a template argument for a constant parameter: an
@@ -160,32 +239,36 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     if c_linkage(cx, n) {
         return true;
     }
-    let Some(params) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    let Some((params, defaults)) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
     if let Some(done) = outside_member(cx, n, &params) {
+        // TPL-17: a member defined after the class body gives no default.
+        if done && defaults.iter().any(|d| d.is_some()) {
+            cx.error(n.span, "TPL-17", "a default template argument on a member defined outside its class template");
+        }
         return done;
     }
     if let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) {
         if sd.child("init_declarator").is_none() {
-            return class_template_decl(cx, sd, params);
+            return class_template_decl(cx, sd, params, defaults);
         }
         // `template <class T> R f(P);` declares a function template.
         let mut ids = sd.children("init_declarator");
         let one = ids.next().filter(|i| i.child("init").is_none() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_some()));
         if let (Some(one), None) = (one, ids.next()) {
             let (Some(ds), Some(dn)) = (sd.child("decl_specifiers"), one.child("declarator")) else { return false };
-            return function_template(cx, sd, ds, dn, params);
+            return function_template(cx, sd, ds, dn, params, defaults);
         }
-        return var_template_decl(cx, sd, params);
+        return var_template_decl(cx, sd, params, defaults);
     }
     let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) else { return false };
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
-    function_template(cx, fd, ds, dn, params)
+    function_template(cx, fd, ds, dn, params, defaults)
 }
 
 /// TPL rules: a function template's declaration `fd`, a definition or
 /// not, with its decl-specifiers `ds` and its declarator `dn`. A
 /// definition after a declaration completes the template.
-fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Vec<Param>) -> bool {
+fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>) -> bool {
     if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
         return true;
     }
@@ -233,6 +316,10 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
             cx.error(p.span, "DEFARG-13", "a default argument in a later declaration of a function template");
             return true;
         }
+        let earlier = tpl.defaults.clone();
+        let Some(merged) = merge_defaults(cx, &earlier, &defaults, span) else { return true };
+        cx.u.templates[t].defaults = merged;
+        let tpl = &cx.u.templates[t];
         if fd.prod != "function_definition" {
             return true;
         }
@@ -258,7 +345,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -823,7 +910,20 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
             }
             None => Vec::new(),
         };
-        let Some(bound) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else { continue };
+        let Some(partial) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else { continue };
+        // TPL-13: a parameter that deduction leaves takes its default.
+        let tpl = cx.u.templates[t].clone();
+        let mut bound: Vec<TArg> = Vec::new();
+        for (k, a) in partial.iter().enumerate() {
+            match a {
+                Some(a) => bound.push(a.clone()),
+                None if fill_defaults(cx, &tpl.kinds[..=k], &tpl.defaults, &tpl.params, tpl.scope, tpl.limit, &mut bound, tpl.span) => {}
+                None => break,
+            }
+        }
+        if bound.len() < partial.len() {
+            continue;
+        }
         if let Some(f) = specialize(cx, t, &bound) {
             out.push(f);
         }
@@ -905,10 +1005,17 @@ fn var_parts(sd: &Node) -> Option<(&Node, &Node, &Node, Option<&Node>)> {
 /// TPL rules: a variable template at namespace scope whose parameters are
 /// types, with one declarator and an initializer, or a partial
 /// specialization of one (TSP-9). False for another form.
-fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
+fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>) -> bool {
     let Some((_, dn, init, tid)) = var_parts(sd) else { return false };
     if dn.find("ptr_operator").is_some() || dependent_forms(cx, init, &params) {
         return false;
+    }
+    if tid.is_some() && defaults.iter().any(|d| d.is_some()) {
+        cx.error(dn.span, "TSP-11", "a default template argument on a partial specialization");
+        return true;
+    }
+    if !defaults_last(cx, &defaults, dn.span) {
+        return true;
     }
     let saved = cx.scope;
     match tid {
@@ -919,7 +1026,7 @@ fn var_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
             }
             let id = cx.u.var_templates.len();
             let limit = cx.u.entities.len() + 1;
-            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), explicit: Vec::new(), span: dn.span, limit });
+            cx.u.var_templates.push(crate::sem::VarTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: sd.clone(), scope: saved, partials: Vec::new(), specs: Vec::new(), explicit: Vec::new(), span: dn.span, limit });
             names::declare_in(cx, saved, &name, EntKind::VarTemplate(id), dn.span, Linkage::External);
             true
         }
@@ -988,7 +1095,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
     };
     let vt = cx.u.var_templates[v].clone();
     let marks = cx.u.diags.len();
-    let Some(args) = template_args(cx, tid, &vt.kinds) else {
+    let Some(args) = args_with_defaults(cx, tid, &vt.kinds, &vt.defaults, &vt.params, vt.scope, vt.limit) else {
         if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
             return Some(crate::expressions::check::bad(span));
         }
@@ -1101,7 +1208,7 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], 
 /// TPL rules: a class template definition at namespace scope whose
 /// parameters are types. False for another form, such as a declaration
 /// that is not a definition.
-fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
+fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>) -> bool {
     let Some(ds) = sd.child("decl_specifiers") else { return false };
     let specs: Vec<&Node> = ds.children("decl_specifier").collect();
     let [one] = specs[..] else { return false };
@@ -1117,14 +1224,26 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
             EntKind::ClassTemplate(v) => Some(v),
             _ => None,
         }) {
-            return cx.u.class_templates[v].kinds == params.iter().map(|p| p.2.clone()).collect::<Vec<_>>();
+            if cx.u.class_templates[v].kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() {
+                return false;
+            }
+            let earlier = cx.u.class_templates[v].defaults.clone();
+            if let Some(m) = merge_defaults(cx, &earlier, &defaults, et.span) {
+                if defaults_last(cx, &m, et.span) {
+                    cx.u.class_templates[v].defaults = m;
+                }
+            }
+            return true;
+        }
+        if !defaults_last(cx, &defaults, et.span) {
+            return true;
         }
         if !found.is_empty() {
             return false;
         }
         let id = cx.u.class_templates.len();
         let limit = cx.u.entities.len() + 1;
-        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, span: et.span, limit });
+        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, span: et.span, limit });
         names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), et.span, Linkage::External);
         return true;
     }
@@ -1138,6 +1257,11 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
         return false;
     }
     if let Some(tid) = head.child("template_id") {
+        // TSP-11: a partial specialization's parameters have no default.
+        if defaults.iter().any(|d| d.is_some()) {
+            cx.error(head.span, "TSP-11", "a default template argument on a partial specialization");
+            return true;
+        }
         return class_partial(cx, cd, tid, params);
     }
     let Some(name) = head.child("class_name").map(|c| cx.source(c)) else { return false };
@@ -1157,8 +1281,14 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
         if ct.defined || ct.kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() || !ct.specs.is_empty() {
             return false;
         }
+        let earlier = ct.defaults.clone();
+        let Some(merged) = merge_defaults(cx, &earlier, &defaults, head.span) else { return true };
+        if !defaults_last(cx, &merged, head.span) {
+            return true;
+        }
         let limit = cx.u.entities.len() + 1;
         let ct = &mut cx.u.class_templates[v];
+        ct.defaults = merged;
         ct.params = params.into_iter().map(|p| p.0).collect();
         ct.node = cd.clone();
         ct.span = head.span;
@@ -1176,9 +1306,12 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
     if matches!(&*name, "initializer_list" | "allocator") && cx.u.scopes[saved].name.as_ref() == "std" {
         return false;
     }
+    if !defaults_last(cx, &defaults, head.span) {
+        return true;
+    }
     let id = cx.u.class_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, span: head.span, limit });
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
     true
 }
@@ -1283,7 +1416,7 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     })?;
     let ct = cx.u.class_templates[v].clone();
     let marks = cx.u.diags.len();
-    let Some(args) = template_args(cx, tid, &ct.kinds) else {
+    let Some(args) = args_with_defaults(cx, tid, &ct.kinds, &ct.defaults, &ct.params, ct.scope, ct.limit) else {
         if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
             return Some(QType::error());
         }

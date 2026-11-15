@@ -177,9 +177,10 @@ fn match_type(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QT
 }
 
 /// DED-P3: the arguments of the function template `t` for a call with
-/// `args`, after the explicit arguments `explicit`. None when a
-/// parameter does not deduce or two deductions differ.
-pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Option<Vec<TArg>> {
+/// `args`, after the explicit arguments `explicit`, with None for a
+/// parameter that deduction leaves to its default. None when two
+/// deductions differ or an argument does not match.
+pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Option<Vec<Option<TArg>>> {
     let tpl = &cx.u.templates[t];
     let n = tpl.params.len();
     if explicit.len() > n {
@@ -228,10 +229,10 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
     }
     // A constant parameter takes its explicit argument; the first piece
     // of build step 5 deduces none.
-    (0..n).map(|k| match &tpl.kinds[k] {
+    Some((0..n).map(|k| match &tpl.kinds[k] {
         None => bound[k].clone().map(TArg::Type),
         Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
-    }).collect()
+    }).collect())
 }
 
 /// `p` with the template parameters that `bound` already holds replaced.

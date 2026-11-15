@@ -485,7 +485,7 @@ holds.
 
 Step 5 is begun (item RW3). A function template at namespace scope
 whose parameters are types or constants of integral or enumeration
-type, with no default, pack, or constraint, has a function type with
+type, with no pack or constraint, has a function type with
 each type parameter as a dependent type (`DepType`, model section 1).
 A template argument is a type or a constant (`TArg`); a constant
 argument converts to its parameter's type without narrowing, and in a
@@ -510,7 +510,12 @@ member type. A template in a C linkage specification, and a declaration
 in a template of a name that one of its parameters has, are errors, as
 are a function template named `main` and an expansion in a function
 template's body whose pattern holds no pack. Argument-dependent lookup
-finds function templates. A function template can be declared before
+finds function templates. A parameter can have a default, which sees
+the parameters before it; a template-id with fewer arguments, and a
+call whose deduction leaves a parameter, take the defaults. The defaults
+of the declarations of one template add up; one parameter gets one
+default, and outside a function template each parameter after a default
+has one. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a

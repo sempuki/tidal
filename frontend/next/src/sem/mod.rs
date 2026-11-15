@@ -152,6 +152,8 @@ pub enum EntKind {
 pub struct ClassTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The default argument of each parameter, if any (TPL-13).
+    pub defaults: Vec<Option<crate::syntax::Node>>,
     pub kinds: Vec<Option<QType>>,
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
@@ -180,6 +182,8 @@ pub struct ClassTemplate {
 pub struct VarTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The default argument of each parameter, if any (TPL-13).
+    pub defaults: Vec<Option<crate::syntax::Node>>,
     pub kinds: Vec<Option<QType>>,
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
@@ -206,6 +210,8 @@ pub struct VarTemplate {
 pub struct FnTemplate {
     pub name: Rc<str>,
     pub params: Vec<Rc<str>>,
+    /// The default argument of each parameter, if any (TPL-13).
+    pub defaults: Vec<Option<crate::syntax::Node>>,
     /// For each parameter, None for a type parameter, or the type of a
     /// constant parameter.
     pub kinds: Vec<Option<QType>>,

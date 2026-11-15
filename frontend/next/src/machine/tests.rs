@@ -2662,3 +2662,17 @@ fn template_id_bases() {
     assert_eq!(run("template <class D> struct Base { int three() { return 3; } }; struct R : Base<R> {}; int main() { R r; return r.three(); }"), RunOutcome::Result(3));
     assert_eq!(rule("template <class T> struct Base {}; struct Both : Base<int>, Base<char> {}; template <class T> void up(Base<T>&); Both b; void use() { up(b); }"), Some("unsupported"));
 }
+
+#[test]
+fn default_template_arguments() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
+    assert_eq!(rule(&format!("{} template <class T = int, class U = T*> struct Pair {{ using second = U; }}; static_assert(same<Pair<>::second, int*> && same<Pair<char>::second, char*>); template <int N, int M = N * 2> constexpr int sum = N + M; static_assert(sum<3> == 9); template <class T = int, class U> constexpr int first(U) {{ return sizeof(T); }} static_assert(first(1.0) == 4);", same)), None);
+    assert_eq!(rule("template <class T = int, class U> struct Pair {};"), Some("TPL-14"));
+    assert_eq!(rule("template <class T = int> struct Box; template <class T = int> struct Box {};"), Some("TPL-16"));
+    assert_eq!(rule("template <class T, class U = int> struct Pair; template <class T = char, class U> struct Pair {}; Pair<> p;"), None);
+}
