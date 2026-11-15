@@ -28,13 +28,15 @@ replace it.
 
 :::{list-table}
 :header-rows: 1
-:widths: 16 24 34 26
+:widths: 20 22 32 26
 
 * - Agent
   - Forbidden
   - Reads
   - Writes
 * - **Source reader**
+
+    Reads protected sources and reports what Tidal misses, in its own words
   - - Writing or changing any file of the repository
     - Quoting a source or proposing wording
   - - The ISO standard
@@ -44,6 +46,8 @@ replace it.
     - Posts that quote any of these
   - Summaries in its own words, which describe behavior, gaps, and doubts
 * - **Clean-room writer**
+
+    Writes the specification, the tests, and the tools
   - Reading protected material
   - - Source readers' summaries that passed the non-similarity check
     - The behavior and diagnostics of the baseline compilers
@@ -54,6 +58,8 @@ replace it.
     - The tools
     - The documentation
 * - **Clean-room reader**
+
+    Uses the specification to write programs and front ends, and reports what it finds
   - Reading anything other than Tidal's own files
   - - The Tidal specification
     - The tests and their results
