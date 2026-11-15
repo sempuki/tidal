@@ -4,8 +4,8 @@ Tidal is made with deep respect for copyright, and for the years of
 careful work that the many contributors to the ISO C++ standard have
 given it.
 
-Tidal holds no text of the ISO standard, and rejects text that is
-similar to it. On every change, a tool compares the pages of the Tidal
+**Tidal holds no text of the ISO standard, and rejects text that is
+similar to it.** On every change, a tool compares the pages of the Tidal
 specification with the text of the ISO standard, and a similar passage
 fails the change. The same tool checks each summary that a source
 reader writes, before a clean-room writer reads it.
@@ -78,7 +78,7 @@ back to the source reader to be reworded.
 <figure class="tidal-diagram">
 <svg font-family="sans-serif" viewBox="0 0 840 480" role="img" aria-labelledby="wf-title wf-desc">
   <title id="wf-title">The Tidal workflow</title>
-  <desc id="wf-desc">The clean room is on the left. 1: clean-room writers probe the baseline compilers for their behavior and diagnostics. 2: the writers write the rules, tests, and questions of the Tidal specification. 3: the tests run on the compilers, and the results become each page's Evidence. 4: clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers. 5: outside the clean room, source readers read the ISO standard and other protected sources, and report gaps as summaries. A summary reaches the writers only after it passes the non-similarity check, and the writers then probe the compilers again.</desc>
+  <desc id="wf-desc">The clean room is on the left. The numbers are the steps of the pipeline listed below the diagram. 1: a clean-room writer picks the topic. 2: the writer probes the baseline compilers for their behavior and diagnostics. 3: the writer reads the source readers' summaries that passed the non-similarity check. Outside the clean room, source readers read the ISO standard and other protected sources. 4: the writer classifies the behavior. 5 and 6: the writer writes the rules, tests, and questions. 7: the non-similarity check compares the page with the reference corpus. 8: the tests run on the compilers, and the results become each page's Evidence. Clean-room readers, including the Tidal front ends, read only Tidal's files and send findings back to the writers.</desc>
   <defs>
     <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" class="wf-head" fill="currentColor"/>
@@ -113,51 +113,58 @@ back to the source reader to be reworded.
   <text x="730" y="84" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">WG21 papers, other</text>
   <text x="730" y="102" class="wf-label" fill="currentColor" font-size="13" text-anchor="middle">protected sources</text>
 
-  <!-- 1. probe -->
+  <!-- steps 1 and 4: the writers pick the topic and classify -->
+  <rect x="198.0" y="189" width="36" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="216" y="202" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">1, 4</text>
+
+  <!-- step 2: probe -->
   <line x1="340" y1="90" x2="340" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <circle cx="358" cy="131" r="9" class="wf-badge" fill="currentColor"/>
-  <text x="358" y="135" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">1</text>
+  <rect x="349.0" y="122" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="358" y="135" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">2</text>
   <text x="372" y="135" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">behavior and</text>
   <text x="372" y="151" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">diagnostics</text>
 
-  <!-- 2. draft -->
+  <!-- steps 5 and 6: draft and questions -->
   <line x1="340" y1="250" x2="340" y2="338" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <circle cx="358" cy="286" r="9" class="wf-badge" fill="currentColor"/>
-  <text x="358" y="290" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">2</text>
-  <text x="372" y="290" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">rules, tests,</text>
-  <text x="372" y="306" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">questions</text>
+  <rect x="347.0" y="277" width="36" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="365" y="290" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">5, 6</text>
+  <text x="386" y="290" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">rules, tests,</text>
+  <text x="386" y="306" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">questions</text>
 
-  <!-- 3. evidence -->
+  <!-- step 7: the check of the page -->
+  <path d="M440,392 L535,392 L535,252" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <rect x="544.0" y="313" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="553" y="326" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">7</text>
+  <text x="567" y="326" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">pages</text>
+
+  <!-- step 8: evidence -->
   <path d="M340,410 L340,440 L14,440 L14,60 L238,60" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <circle cx="30" cy="454" r="9" class="wf-badge" fill="currentColor"/>
-  <text x="30" y="458" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">3</text>
+  <rect x="21.0" y="445" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="30" y="458" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">8</text>
   <text x="46" y="458" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">tests run on the compilers; results go to each page's Evidence</text>
 
-  <!-- 4. findings -->
+  <!-- findings -->
   <line x1="240" y1="375" x2="202" y2="375" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
   <path d="M115,340 L115,220 L238,220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <circle cx="133" cy="266" r="9" class="wf-badge" fill="currentColor"/>
-  <text x="133" y="270" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">4</text>
-  <text x="147" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">findings: gaps,</text>
-  <text x="147" y="286" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">doubts, failures</text>
+  <text x="125" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">findings: gaps,</text>
+  <text x="125" y="286" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">doubts, failures</text>
 
-  <!-- 5. gap reports from outside -->
+  <!-- step 3: summaries from outside -->
   <line x1="730" y1="116" x2="730" y2="188" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
   <text x="738" y="157" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">read</text>
   <line x1="640" y1="220" x2="602" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
-  <circle cx="538" cy="176" r="9" class="wf-badge" fill="currentColor"/>
-  <text x="538" y="180" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">5</text>
   <text x="552" y="180" class="wf-edge" fill="currentColor" font-size="12" text-anchor="start">summaries</text>
   <line x1="470" y1="220" x2="442" y2="220" class="wf-arrow" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#wf-arrow)"/>
+  <rect x="447.0" y="189" width="18" height="18" rx="9" class="wf-badge" fill="currentColor"/>
+  <text x="456" y="202" class="wf-badge-text" fill="white" font-size="11" font-weight="bold" text-anchor="middle">3</text>
   <text x="456" y="270" class="wf-edge" fill="currentColor" font-size="12" text-anchor="middle">passed</text>
 </svg>
-<figcaption>The numbers give the order of the work. Steps 1 to 4 run
-inside the clean room. In step 5, a source reader reports a gap from
-outside it, and the report reaches the writers only through the
-non-similarity check. The writers then probe the compilers again, at
-step 1. Everything inside the clean room comes from the baseline
-compilers, from summaries that passed the check, and from Tidal's own
-files.</figcaption>
+<figcaption>The numbers are the steps of the pipeline in the list
+below. One badge can mark more than one step. The findings of
+clean-room readers are not a step of the pipeline. They come back to the
+writers at any time. Everything inside the clean room comes from the
+baseline compilers, from summaries that passed the non-similarity check,
+and from Tidal's own files.</figcaption>
 </figure>
 ```
 
