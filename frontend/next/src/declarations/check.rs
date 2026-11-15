@@ -216,6 +216,23 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
     s
 }
 
+/// ACC-11: the class that the qualifier of a declarator in `n` names, as
+/// in `int C::f()` or `int C::v`, outside a function body.
+pub fn declarator_class(cx: &mut Check, n: &Node) -> Option<crate::sem::types::ClassId> {
+    if cx.in_function() {
+        return None;
+    }
+    let id = n.find("declarator_id")?;
+    let nn = id.find("nested_name")?;
+    let mut toks = Vec::new();
+    nn.tokens(&mut toks);
+    let name = toks.iter().rev().map(|&t| cx.toks[t].text.clone()).find(|w| w != "::")?;
+    crate::foundations::names::check::lookup_where(cx, &name, |k| matches!(k, crate::sem::EntKind::Class(_))).first().and_then(|&e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Class(c) => Some(c),
+        _ => None,
+    })
+}
+
 /// The attributes and alignment specifiers before a declaration.
 pub fn leading_attrs(cx: &mut Check, n: &Node) -> (attributes::check::Attrs, Vec<Node>) {
     let mut a = attributes::check::Attrs::default();
@@ -246,7 +263,10 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     if n.child("init_declarator").is_none() && crate::classes::unions::check::own_union(ds).is_some_and(|u| u.child("class_name").is_none() && u.child("template_id").is_none()) {
         return anonymous_union(cx, n, ds, attrs);
     }
+    let class = declarator_class(cx, n);
+    let saved = std::mem::replace(&mut cx.access_class, class);
     let specs = decl_specifiers(cx, ds, attrs);
+    cx.access_class = saved;
     let local = cx.in_function();
     let mut vars: Vec<(EntityId, Init)> = Vec::new();
     let decls: Vec<&Node> = n.children("init_declarator").collect();

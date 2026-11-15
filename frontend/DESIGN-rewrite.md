@@ -786,7 +786,8 @@ ends a base subobject. With enumeration operands only, a non-member
 operator function needs a parameter of an operand's enumeration, and a
 unary one that takes the operand exactly beats the built-in operator. A
 member function called by name in a lambda body takes the captured
-object. The
+object. Outside a function body, a member type's access is checked as
+in the class whose body or member's declaration names it. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

@@ -66,6 +66,29 @@ pub fn keywords(cx: &mut Check, kw: &[&str], span: Span) -> QType {
     }))
 }
 
+/// ACC-2, ACC-5: the member `e` is accessible from the class `x`: a
+/// public member, a member of `x` or of a class that encloses `x`, a
+/// protected member of a base of `x`, or a member of a class that
+/// befriends `x`.
+fn accessible_from_class(cx: &Check, e: crate::sem::EntityId, x: crate::sem::types::ClassId) -> bool {
+    let access = cx.u.access.get(&e).copied().unwrap_or(crate::sem::Access::Public);
+    if access == crate::sem::Access::Public {
+        return true;
+    }
+    let Some(owner) = cx.u.class_of_scope(cx.u.entities[e].scope) else { return true };
+    let mut s = Some(cx.u.classes[x].scope);
+    while let Some(sc) = s {
+        if sc == cx.u.classes[owner].scope {
+            return true;
+        }
+        s = cx.u.scopes[sc].parent;
+    }
+    if access == crate::sem::Access::Protected && crate::classes::derived::check::derives(cx, x, owner) {
+        return true;
+    }
+    cx.u.friend_classes.get(&owner).is_some_and(|fs| fs.contains(&x))
+}
+
 /// The type of a name used as a type specifier.
 pub fn named_type(cx: &mut Check, n: &Node) -> QType {
     let mut qual = names::check::Qual::None;
@@ -99,13 +122,19 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
     for e in found {
         crate::declarations::attributes::check::use_entity(cx, e, span);
         // ACC-2: a member type is named where its access allows. Outside a
-        // function body, the declaration can be a member's own (ACC-11),
-        // which the front end does not tell apart yet.
-        if cx.u.access.contains_key(&e) && matches!(cx.u.entities[e].kind, EntKind::Typedef(_) | EntKind::Enum(_) | EntKind::Class(_)) && !crate::classes::members::check::accessible(cx, e) {
-            if cx.in_function() {
+        // function body, a class body and the declaration of a member of a
+        // class check access as in that class (ACC-11).
+        // ACC-9: a using-declaration in the qualifier's class gives the
+        // name the access of the using-declaration.
+        let through_using = match qual {
+            names::check::Qual::Scope(s) => cx.u.class_of_scope(s).and_then(|k| cx.u.using_access.get(&(k, e)).copied()) == Some(crate::sem::Access::Public),
+            _ => false,
+        };
+        if !through_using && cx.u.access.contains_key(&e) && matches!(cx.u.entities[e].kind, EntKind::Typedef(_) | EntKind::Enum(_) | EntKind::Class(_)) && !crate::classes::members::check::accessible(cx, e) {
+            let from = if cx.in_function() { None } else { cx.access_class.or(cx.member_of) };
+            if !from.is_some_and(|x| accessible_from_class(cx, e, x)) {
                 return cx.error(span, "ACC-2", format!("the member type '{}' is not accessible here", name));
             }
-            return cx.unsupported(span, format!("the member type '{}' outside its access, outside a function body", name));
         }
         match &cx.u.entities[e].kind {
             EntKind::Typedef(t) => return t.clone(),

@@ -429,8 +429,14 @@ pub fn function_definition(cx: &mut Check, n: &Node) {
         return;
     }
     let (attrs, _) = crate::declarations::check::leading_attrs(cx, n);
+    let class = crate::declarations::check::declarator_class(cx, n);
     let specs = match n.child("decl_specifiers") {
-        Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, attrs),
+        Some(ds) => {
+            let saved = std::mem::replace(&mut cx.access_class, class);
+            let s = crate::declarations::check::decl_specifiers(cx, ds, attrs);
+            cx.access_class = saved;
+            s
+        }
         // A conversion function (CVF-1).
         None if n.child("declarator").is_some_and(|d| d.find("conversion_function_id").is_some()) => crate::declarations::check::Specs { attrs, ..Default::default() },
         None => {

@@ -2411,3 +2411,15 @@ fn operator_functions_for_enumeration_operands() {
 fn member_calls_in_lambda_bodies() {
     assert_eq!(run("struct S { int v = 3; int get() { return v; } int f() { return [&] { return get() + [this] { return get(); }(); }(); } }; int main() { S s; return s.f(); }"), RunOutcome::Result(6));
 }
+
+#[test]
+fn member_type_access_outside_function_bodies() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("class O { struct H { int v; }; static H make(); }; O::H O::make() { return H{1}; }"), None);
+    assert_eq!(rule("class O { struct H { int v; }; public: static H make(); }; O::H h;"), Some("ACC-2"));
+    assert_eq!(rule("class B { protected: using K = long; }; class D : public B { public: using B::K; }; D::K k = 1;"), None);
+}
