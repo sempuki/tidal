@@ -4,6 +4,12 @@ Tidal is made with deep respect for copyright, and for the years of
 careful work that the many contributors to the ISO C++ standard have
 given it.
 
+Tidal holds no text of the ISO standard, and rejects text that is
+similar to it. On every change, a tool compares the pages of the Tidal
+specification with the text of the ISO standard, and a similar passage
+fails the change. The same tool checks each summary that a source
+reader writes, before a clean-room writer reads it.
+
 This chapter is the statement of provenance of the Tidal
 specification. It says who writes the text, what each writer may read,
 and how the text improves without the text of the ISO standard. It
