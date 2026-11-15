@@ -274,6 +274,24 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
         }
         return;
     }
+    // A literal operator (OPR-8), named by its suffix.
+    if let Some(lo) = n.child("literal_operator_id") {
+        if n.child("nested_name").is_some() {
+            d.unsupported = true;
+            cx.unsupported(n.span, "a literal operator with a qualified name");
+            return;
+        }
+        let suffix = match lo.kids.as_slice() {
+            [_, s] => match cx.token(s).and_then(|t| t.lit.as_ref()) {
+                Some(crate::lex::Lit::UserDefined { suffix, .. }) => suffix.clone(),
+                _ => String::new(),
+            },
+            [_, _, id] => cx.text(id).to_string(),
+            _ => String::new(),
+        };
+        d.name = Some((Rc::from(format!("{}{}", crate::classes::operators::check::LITERAL, suffix).as_str()), lo.span));
+        return;
+    }
     // A conversion function (CVF-1), named by its target type.
     if let Some(cf) = n.child("conversion_function_id") {
         if let Some(nn) = n.child("nested_name") {

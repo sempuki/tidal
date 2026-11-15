@@ -2,8 +2,8 @@
 //! operator functions that are members or non-members and not templates
 //! (OPR-1, OPR-2), and the selection of an operator function for an
 //! expression with an operand of class or enumeration type (OPR-6,
-//! OPR-15). Literal operators, `operator->`, the allocation functions,
-//! and the rewritten candidates of `<=>` are unsupported.
+//! OPR-15), and literal operators that are not templates (OPR-8 to
+//! OPR-10, OPR-16). `operator->` and `operator co_await` are unsupported.
 
 use crate::expressions::check::bad;
 use crate::overloading::conversion_sequences::check::{better, sequence, Ics};
@@ -689,4 +689,177 @@ pub fn has_arrow(cx: &Check, t: &QType) -> bool {
 /// The operator functions named by an entity, for diagnostics.
 pub fn is_operator_entity(cx: &Check, e: EntityId) -> bool {
     matches!(cx.u.entities[e].kind, EntKind::Func(_)) && is_operator(&cx.u.entities[e].name)
+}
+
+/// The prefix of the name of a literal operator, before its suffix.
+pub const LITERAL: &str = "operator\"\"";
+
+/// OPR-9, OPR-10: the limits on the declaration of a literal operator
+/// with the suffix `suffix`. `member` is a declaration in a class that is
+/// not a friend. True when the declaration is valid.
+pub fn literal_declaration(cx: &mut Check, suffix: &str, ty: &QType, defaults: bool, member: bool, span: Span) -> bool {
+    if !suffix.starts_with('_') {
+        cx.warning(span, "OPR-9", format!("the literal suffix '{}' does not start with '_' and is reserved", suffix));
+    }
+    let bad = |cx: &mut Check, why: &str| {
+        cx.error(span, "OPR-10", why.to_string());
+        false
+    };
+    if member {
+        return bad(cx, "a literal operator must not be a member of a class");
+    }
+    if cx.lang_c {
+        return bad(cx, "a literal operator must have C++ language linkage");
+    }
+    let Some(f) = ty.func() else { return true };
+    if f.variadic || literal_form(cx, &f.params).is_none() {
+        return bad(cx, "the parameters of a literal operator are not one of its forms");
+    }
+    if defaults {
+        return bad(cx, "a literal operator has a default argument");
+    }
+    true
+}
+
+/// The forms of a literal operator's parameter list (OPR-8).
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Form {
+    Integer,
+    Floating,
+    Raw,
+    Char(crate::sem::types::IntK),
+    Str(crate::sem::types::IntK),
+}
+
+fn is_char(k: crate::sem::types::IntK) -> bool {
+    use crate::sem::types::IntK::*;
+    matches!(k, Char | WChar | Char8 | Char16 | Char32)
+}
+
+/// The form that a parameter list has, if any.
+fn literal_form(cx: &Check, params: &[QType]) -> Option<Form> {
+    use crate::sem::types::{FloatK, IntK};
+    let const_char = |t: &QType| match &t.unqual().t {
+        Type::Ptr(p) => match p.t {
+            Type::Int(k) if p.c && !p.v && is_char(k) => Some(k),
+            _ => None,
+        },
+        _ => None,
+    };
+    match params {
+        [p] => match p.unqual().t {
+            Type::Int(IntK::ULongLong) => Some(Form::Integer),
+            Type::Float(FloatK::LongDouble) => Some(Form::Floating),
+            Type::Int(k) if is_char(k) => Some(Form::Char(k)),
+            _ => (const_char(p) == Some(IntK::Char)).then_some(Form::Raw),
+        },
+        [p, n] if n.unqual().t == Type::Int(cx.u.target.size_t()) => const_char(p).map(Form::Str),
+        _ => None,
+    }
+}
+
+/// A literal with a user-defined suffix (OPR-8, OPR-16): the call of the
+/// literal operator for the suffix whose form fits the literal. `toks`
+/// are the literal's tokens, more than one for adjacent string literals.
+pub fn user_literal(cx: &mut Check, toks: &[&crate::lex::Token], span: Span) -> Expr {
+    use crate::lex::Lit;
+    use crate::sem::types::{FloatK, IntK};
+    let mut suffix: Option<&str> = None;
+    for t in toks {
+        if let Some(Lit::UserDefined { suffix: s, .. }) = &t.lit {
+            if suffix.is_some_and(|x| x != s) {
+                cx.error(t.span, "OPR-10", "adjacent string literals have different suffixes");
+                return bad(span);
+            }
+            suffix = Some(s);
+        }
+    }
+    let Some(suffix) = suffix else { return bad(span) };
+    let name = format!("{}{}", LITERAL, suffix);
+    let found: Vec<EntityId> = crate::foundations::names::check::lookup(cx, &name).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
+    if found.is_empty() {
+        // PRIM-26: a number runs over a sign after an exponent letter, so
+        // the sign and what follows join the suffix.
+        let over = suffix.contains('+') || suffix.contains('-');
+        cx.error_cause(span, "PRIM-16", over.then_some("PRIM-26"), format!("no literal operator has the suffix '{}'", suffix));
+        return bad(span);
+    }
+    let forms: Vec<(EntityId, Form)> = found.iter().filter_map(|&f| Some((f, literal_form(cx, &cx.u.func(f)?.ty.params)?))).collect();
+    let pick = |want: &[Form]| want.iter().find_map(|w| forms.iter().find(|(_, g)| g == w).copied());
+    let Some(Lit::UserDefined { base, raw, .. }) = &toks.iter().find_map(|t| matches!(t.lit, Some(Lit::UserDefined { .. })).then_some(&t.lit)).cloned().flatten() else { return bad(span) };
+    // The raw form takes the characters of the literal without its
+    // suffix, as a string.
+    let raw_str = |text: &str| {
+        let mut units: Vec<u32> = text.bytes().map(u32::from).collect();
+        units.push(0);
+        let el = QType { t: Type::Int(IntK::Char), c: true, v: false };
+        let n = units.len() as u64;
+        Expr::new(EK::Str(std::rc::Rc::new(units)), QType::new(Type::Array(std::rc::Rc::new(el), Some(n))), Cat::L, span)
+    };
+    let (chosen, args) = match &**base {
+        Lit::Int { value, .. } => match pick(&[Form::Integer, Form::Raw]) {
+            Some((f, Form::Integer)) => {
+                if *value > u64::MAX as u128 {
+                    cx.error(span, "PRIM-2", "integer literal too large for unsigned long long");
+                    return bad(span);
+                }
+                (f, vec![Expr::int(*value as i128, QType::new(Type::Int(IntK::ULongLong)), span)])
+            }
+            Some((f, _)) => (f, vec![raw_str(raw)]),
+            None => return no_form(cx, suffix, span),
+        },
+        Lit::Float { .. } => match pick(&[Form::Floating, Form::Raw]) {
+            Some((f, Form::Floating)) => {
+                let Some(x) = crate::foundations::types::run::F80::parse(raw) else {
+                    let t = cx.unsupported(span, "a long double literal of this spelling");
+                    return Expr::new(EK::Int(0), t, Cat::PR, span);
+                };
+                if !x.is_finite() {
+                    cx.warning(span, "PRIM-13", "floating literal out of range");
+                }
+                (f, vec![Expr::new(EK::LongDouble(x), QType::new(Type::Float(FloatK::LongDouble)), Cat::PR, span)])
+            }
+            Some((f, _)) => (f, vec![raw_str(raw)]),
+            None => return no_form(cx, suffix, span),
+        },
+        Lit::Char { prefix, value, multi } => {
+            let k = crate::expressions::primary::check::char_kind(*prefix, *multi);
+            match pick(&[Form::Char(k)]) {
+                Some((f, _)) => (f, vec![Expr::int(*value, QType::new(Type::Int(k)), span)]),
+                None => return no_form(cx, suffix, span),
+            }
+        }
+        Lit::Str { .. } => {
+            let plain: Vec<crate::lex::Token> = toks
+                .iter()
+                .map(|t| match &t.lit {
+                    Some(Lit::UserDefined { base, .. }) => crate::lex::Token { lit: Some((**base).clone()), ..(*t).clone() },
+                    _ => (*t).clone(),
+                })
+                .collect();
+            let refs: Vec<&crate::lex::Token> = plain.iter().collect();
+            let s = crate::expressions::primary::check::string(cx, &refs, span);
+            let (k, n) = match &s.ty.t {
+                Type::Array(el, Some(n)) => match el.t {
+                    Type::Int(k) => (k, *n),
+                    _ => return bad(span),
+                },
+                _ => return bad(span),
+            };
+            match pick(&[Form::Str(k)]) {
+                Some((f, _)) => (f, vec![s, Expr::int(n as i128 - 1, QType::new(Type::Int(cx.u.target.size_t())), span)]),
+                None => return no_form(cx, suffix, span),
+            }
+        }
+        _ => return bad(span),
+    };
+    let callee = crate::expressions::primary::check::entity_expr(cx, &[chosen], &name, span);
+    crate::expressions::postfix::check::finish_call(cx, callee, Some(chosen), args, span, None)
+}
+
+/// OPR-16: literal operators exist for the suffix, and none has the form
+/// that the literal needs.
+fn no_form(cx: &mut Check, suffix: &str, span: Span) -> Expr {
+    cx.error(span, "OPR-16", format!("no literal operator for the suffix '{}' takes a literal of this kind", suffix));
+    bad(span)
 }

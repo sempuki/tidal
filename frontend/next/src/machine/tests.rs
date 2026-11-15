@@ -658,7 +658,7 @@ fn literal_suffixes_without_operators() {
     assert_eq!(rule("auto x = 1lul;"), Some("PRIM-16"));
     assert_eq!(rule("int x = 1u7;"), Some("PRIM-16"));
     assert_eq!(rule("auto s = \"a\"_q;"), Some("PRIM-16"));
-    assert_eq!(rule("int operator\"\"_k(unsigned long long); int x = 1_k;"), Some("unsupported"));
+    assert_eq!(rule("int operator\"\"_k(unsigned long long); int x = 1_k;"), None);
 }
 
 #[test]
@@ -1670,4 +1670,20 @@ fn function_try_blocks() {
     // exception and rethrows it at its end.
     assert_eq!(run("struct M { M(int v) { if (v == 0) throw 7; } }; struct S { M m; S(int v) try : m(v) {} catch (int) {} }; int main() { try { S s(0); } catch (int e) { return e; } return 0; }"), RunOutcome::Result(7));
     assert_eq!(rule("struct S { S() try {} catch (...) { return; } };"), Some("TRY-17"));
+}
+
+#[test]
+fn literal_operators() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // OPR-8: the numeric form wins over the raw form, which takes the
+    // characters of the literal.
+    assert_eq!(run("int operator\"\"_w(unsigned long long v) { return int(v); } int operator\"\"_w(const char* s) { return s[0]; } int operator\"\"_r(const char* s) { int n = 0; while (s[n]) ++n; return n; } int main() { return 12_w + 1.25_r; }"), RunOutcome::Result(16));
+    // A string literal passes its characters and their count.
+    assert_eq!(run("using Size = decltype(sizeof 0); Size operator\"\"_n(const char*, Size n) { return n; } int main() { return int(\"ab\" \"cde\"_n); }"), RunOutcome::Result(5));
+    assert_eq!(rule("unsigned long long operator\"\"_u(unsigned long long n) { return n; } auto x = 1.5_u;"), Some("OPR-16"));
+    assert_eq!(rule("int operator\"\"_b(int);"), Some("OPR-10"));
 }

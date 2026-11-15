@@ -94,7 +94,7 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
 }
 
 /// UNEV-3: whether the step that gives the value of a discarded-value
-/// expression has an effect: it calls a function, writes an object,
+/// expression has an effect: it calls a function or a constructor, writes an object,
 /// reads a volatile object, or allocates storage. A cast to `void`
 /// counts, so that it prevents the warning.
 pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
@@ -102,6 +102,8 @@ pub fn has_effect(e: &crate::sem::tree::Expr) -> bool {
     match &e.k {
         EK::Call(..) | EK::Assign(..) | EK::Compound(..) | EK::IncDec(..) | EK::Assume(_) | EK::New(_) | EK::Delete(..) | EK::Throw(_) => true,
         EK::Conv(Conv::ToVoid, _) => true,
+        // A temporary that a constructor makes.
+        EK::List(i) => i.constructs(),
         EK::Conv(_, x) => has_effect(x),
         EK::Comma(_, b) => has_effect(b),
         EK::Cond(_, a, b) => has_effect(a) || has_effect(b),

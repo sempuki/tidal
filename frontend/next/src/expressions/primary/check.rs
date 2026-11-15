@@ -82,6 +82,9 @@ pub fn literal(cx: &mut Check, n: &Node) -> Expr {
         "nullptr" if t.kind == TK::Ident => return Expr::int(0, QType::new(Type::NullPtr), span),
         _ => {}
     }
+    if toks.iter().any(|t| matches!(t.lit, Some(Lit::UserDefined { .. }))) {
+        return crate::classes::operators::check::user_literal(cx, &toks, span);
+    }
     match &t.lit {
         Some(Lit::Int { value, decimal, unsigned, size }) => int_literal(cx, *value, *decimal, *unsigned, *size, span),
         Some(Lit::Float { value, suffix }) => {
@@ -119,43 +122,35 @@ pub fn literal(cx: &mut Check, n: &Node) -> Expr {
             Expr::new(EK::Float(v), QType::new(Type::Float(k)), Cat::PR, span)
         }
         Some(Lit::Char { prefix, value, multi }) => {
-            let k = if *multi {
+            if *multi {
                 cx.warning(span, "PRIM-13", "multi-character literal");
-                IntK::Int
-            } else {
-                match prefix {
-                    Prefix::None => IntK::Char,
-                    Prefix::U8 => IntK::Char8,
-                    Prefix::U16 => IntK::Char16,
-                    Prefix::U32 => IntK::Char32,
-                    Prefix::Wide => IntK::WChar,
-                }
-            };
+            }
+            let k = char_kind(*prefix, *multi);
             Expr::int(*value, QType::new(Type::Int(k)), span)
         }
         Some(Lit::Str { .. }) => string(cx, &toks, span),
-        Some(Lit::UserDefined { suffix, .. }) => {
-            // PRIM-16: a suffix that no literal operator of the unit has.
-            // A unit that declares a literal operator waits for build
-            // step 4.
-            let declared = cx.toks.windows(2).any(|w| w[0].text == "operator" && matches!(w[1].lit, Some(Lit::Str { .. } | Lit::UserDefined { .. })));
-            if !declared {
-                // PRIM-26: a number runs over a sign after an exponent
-                // letter, so the sign and what follows join the suffix.
-                let over = suffix.contains('+') || suffix.contains('-');
-                cx.error_cause(span, "PRIM-16", over.then_some("PRIM-26"), format!("no literal operator has the suffix '{}'", suffix));
-                return bad(span);
-            }
-            let t = cx.unsupported(span, "a user-defined literal (classes and operators come with build step 4)");
-            Expr::new(EK::Int(0), t, Cat::PR, span)
-        }
-        None => bad(span),
+        Some(Lit::UserDefined { .. }) | None => bad(span),
+    }
+}
+
+/// The type of a character literal with the prefix (PRIM-5, PRIM-6):
+/// `int` for a multi-character literal.
+pub fn char_kind(prefix: Prefix, multi: bool) -> IntK {
+    if multi {
+        return IntK::Int;
+    }
+    match prefix {
+        Prefix::None => IntK::Char,
+        Prefix::U8 => IntK::Char8,
+        Prefix::U16 => IntK::Char16,
+        Prefix::U32 => IntK::Char32,
+        Prefix::Wide => IntK::WChar,
     }
 }
 
 /// Adjacent string literals form one array of `const` characters with a
 /// terminating zero (PRIM-6, PRIM-19).
-fn string(cx: &mut Check, toks: &[&crate::lex::Token], span: Span) -> Expr {
+pub fn string(cx: &mut Check, toks: &[&crate::lex::Token], span: Span) -> Expr {
     let mut prefix = Prefix::None;
     let mut units = Vec::new();
     for t in toks {

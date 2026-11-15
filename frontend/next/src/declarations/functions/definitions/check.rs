@@ -111,6 +111,13 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
         }
 
     }
+    if let Some(suffix) = name.strip_prefix(crate::classes::operators::check::LITERAL) {
+        let defaults = d.params.iter().any(|p| p.default.is_some());
+        let member = cx.member_of.is_some() && cx.friend_scope.is_none();
+        if !crate::classes::operators::check::literal_declaration(cx, suffix, &d.ty, defaults, member, span) {
+            return None;
+        }
+    }
     let assign_default = defaulted && &*name == "operator=";
     // CPY-17: a defaulted assignment operator takes a reference and
     // returns a reference to its class.

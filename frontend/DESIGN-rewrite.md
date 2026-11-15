@@ -643,12 +643,15 @@ or `<=>` on class operands also tries the candidates rewritten from
 A defaulted comparison gets a body that compares the bases and members
 in order, and a defaulted `<=>` with the return type `auto` takes the
 weakest ordering of its parts. A comparison whose body cannot be made
-is deleted, and a defaulted `<=>` declares a defaulted `==`. The
+is deleted, and a defaulted `<=>` declares a defaulted `==`. A
+literal with a user-defined suffix calls the literal operator for the
+suffix whose form fits the literal: the numeric form before the raw
+form for a number, and the form with a pointer and a length for joined
+string literals. A literal operator template waits for templates. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
-another entity. An explicit destructor call on a subobject or with a qualified name, a
-literal operator, an
+another entity. An explicit destructor call on a subobject or with a qualified name, an
 `operator->`,
 a failed `dynamic_cast` to a reference outside constant evaluation, a
 destructor with an exception specification, a
