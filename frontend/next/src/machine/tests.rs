@@ -2571,3 +2571,14 @@ fn explicit_specializations() {
     assert_eq!(rule("template <class T> struct Box { T v; }; Box<int> early; template <> struct Box<int> { long v; };"), Some("TSP-6"));
     assert_eq!(rule("template <class T> int n = 0; template <> static int n<char> = 1; int r = n<int>;"), Some("TSP-24"));
 }
+
+#[test]
+fn explicit_function_specializations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class T> constexpr int code(T) { return 1; } template <> constexpr int code<int>(int) { return 2; } template <> constexpr int code(char) { return 3; } static_assert(code(1.0) == 1 && code(1) == 2 && code('a') == 3);"), None);
+    assert_eq!(rule("template <class T> int code(T) { return 1; } int a = code(1); template <> int code(int) { return 2; }"), Some("TSP-6"));
+}

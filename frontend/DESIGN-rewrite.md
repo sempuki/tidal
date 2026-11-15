@@ -500,7 +500,9 @@ recorded before its body so that the body names it. A union template
 works the same way, a template-id can follow a qualifier, and the
 namespaces of a specialization's arguments are associated for
 argument-dependent lookup. An explicit specialization of a class
-template or a variable template is the specialization of its arguments;
+template, a variable template, or a function template is the
+specialization of its arguments, and the function's type gives the
+arguments that its template-id leaves out;
 it is an error after a use that made that specialization from the
 template, with a `union` key against a class template, and with a
 storage class other than `thread_local`. Standard sequences of one rank compare by the

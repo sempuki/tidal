@@ -202,6 +202,8 @@ pub struct FnTemplate {
     pub scope: ScopeId,
     pub fty: Rc<FnType>,
     pub specs: Vec<(Vec<types::TArg>, EntityId)>,
+    /// The functions of `specs` that explicit specializations define.
+    pub explicit: Vec<EntityId>,
     pub span: Span,
     /// The first entity declared after the template (DEP-10).
     pub limit: EntityId,

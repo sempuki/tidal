@@ -340,6 +340,11 @@ fn declarator_id(cx: &mut Check, n: &Node, d: &mut Declared) {
     match id.kids.first() {
         Some(Kid::Node(u)) if u.prod == "unqualified_id" => match u.kids.as_slice() {
             [k @ Kid::Tok(_)] => d.name = Some((Rc::from(cx.text(k)), cx.token(k).map(|t| t.span).unwrap_or(n.span))),
+            // An explicit specialization names the template (TSP-2).
+            [Kid::Node(t)] if t.prod == "template_id" && cx.explicit_head => match t.child("template_name") {
+                Some(tn) => d.name = Some((Rc::from(cx.source(tn).as_str()), tn.span)),
+                None => d.unsupported = true,
+            },
             _ => {
                 d.unsupported = true;
                 cx.unsupported(u.span, "a declarator-id that is not an identifier");

@@ -191,7 +191,7 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), specs: Vec::new(), explicit: Vec::new(), span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -203,6 +203,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
 pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
     if cx.func.is_some() || cx.member_of.is_some() {
         return false;
+    }
+    if let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) {
+        return explicit_function(cx, fd);
     }
     let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) else { return false };
     let saved = cx.scope;
@@ -294,6 +297,93 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
     }
     let Some(id) = instantiate_var(cx, v, &[], &[], sd) else { return false };
     cx.u.var_templates[v].explicit.push((args, id));
+    true
+}
+
+/// TSP-2: `template <> R f<A...>(P...) { ... }`, an explicit
+/// specialization of a function template of the scope. The arguments
+/// that the template-id leaves out come from the function's type
+/// (DED-32). False for another form, such as a declaration that is not
+/// a definition.
+fn explicit_function(cx: &mut Check, fd: &Node) -> bool {
+    let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
+    let Some(did) = dn.find("declarator_id") else { return false };
+    let tid = did.find("template_id");
+    let name = match tid {
+        Some(tid) => tid.child("template_name").map(|t| cx.source(t)),
+        None => did.find("unqualified_id").map(|u| cx.source(u)),
+    };
+    let Some(name) = name else { return false };
+    let saved = cx.scope;
+    let Some(t) = names::declared_here(cx, saved, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::Template(t) => Some(t),
+        _ => None,
+    }) else {
+        return false;
+    };
+    // TSP-24: of the storage classes, only `thread_local`.
+    if let Some(d) = ds.children("decl_specifier").find(|d| matches!(cx.source(d).as_str(), "static" | "extern")) {
+        cx.error(d.span, "TSP-24", format!("the storage class '{}' on an explicit specialization", cx.source(d)));
+        return true;
+    }
+    let tpl = cx.u.templates[t].clone();
+    let marks = cx.u.diags.len();
+    let explicit = match tid {
+        Some(tid) => {
+            let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
+            match template_args(cx, tid, &tpl.kinds[..n.min(tpl.kinds.len())]) {
+                Some(a) if n <= tpl.kinds.len() && cx.u.diags.len() == marks => a,
+                _ => {
+                    cx.u.diags.truncate(marks);
+                    return false;
+                }
+            }
+        }
+        None => Vec::new(),
+    };
+    cx.enter(ScopeKind::Template);
+    cx.explicit_head = true;
+    let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
+    let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    cx.explicit_head = false;
+    let fty = d.ty.func().cloned();
+    let done = |cx: &mut Check| {
+        cx.leave(saved);
+        cx.u.diags.truncate(marks);
+        false
+    };
+    let Some(fty) = fty.filter(|_| !specs.unsupported && !d.unsupported && d.qual == names::Qual::None && cx.u.diags.len() == marks) else { return done(cx) };
+    // DED-32: the function type gives the arguments that the template-id
+    // leaves out.
+    let mut bound: Vec<Option<QType>> = (0..tpl.params.len()).map(|k| match explicit.get(k) {
+        Some(TArg::Type(t)) => Some(t.clone()),
+        _ => None,
+    }).collect();
+    let same_shape = fty.params.len() == tpl.fty.params.len() && fty.variadic == tpl.fty.variadic;
+    if !same_shape || !tpl.fty.params.iter().zip(&fty.params).all(|(p, a)| match_exact(p, a, &mut bound)) || !match_exact(&tpl.fty.ret, &fty.ret, &mut bound) {
+        return done(cx);
+    }
+    let args: Option<Vec<TArg>> = (0..tpl.params.len()).map(|k| match &tpl.kinds[k] {
+        None => bound[k].clone().map(TArg::Type),
+        Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
+    }).collect();
+    let Some(args) = args else { return done(cx) };
+    if let Some(&(_, f)) = tpl.specs.iter().find(|(a, _)| *a == args) {
+        cx.leave(saved);
+        if tpl.explicit.contains(&f) {
+            return false;
+        }
+        cx.error(d.name.as_ref().map(|n| n.1).unwrap_or(dn.span), "TSP-6", format!("an explicit specialization of '{}' after a use that made the specialization from the template", name));
+        return true;
+    }
+    let body = fd.child("function_body");
+    let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, body) else { return done(cx) };
+    cx.u.templates[t].specs.push((args, f));
+    cx.u.templates[t].explicit.push(f);
+    if let Some(cs) = body.and_then(|b| b.child("compound_stmt")) {
+        crate::declarations::functions::definitions::check::define(cx, f, &d, cs);
+    }
+    cx.leave(saved);
     true
 }
 
@@ -431,7 +521,7 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
 /// specialized: their definitions are not checked yet, so the unit is
 /// unsupported.
 pub fn end_of_unit(cx: &mut Check) {
-    let mut unused: Vec<(Rc<str>, Span)> = cx.u.templates.iter().filter(|t| t.specs.is_empty()).map(|t| (t.name.clone(), t.span)).collect();
+    let mut unused: Vec<(Rc<str>, Span)> = cx.u.templates.iter().filter(|t| t.specs.iter().all(|(_, f)| t.explicit.contains(f))).map(|t| (t.name.clone(), t.span)).collect();
     // An explicit specialization does not check the primary's definition.
     unused.extend(cx.u.class_templates.iter().filter(|t| t.specs.iter().all(|(_, c)| t.explicit.contains(c))).map(|t| (t.name.clone(), t.span)));
     for (name, span) in unused {
