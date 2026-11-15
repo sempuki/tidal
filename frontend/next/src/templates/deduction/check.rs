@@ -31,6 +31,13 @@ pub fn substitute(t: &QType, args: &[QType]) -> QType {
                 return a.with_cv(a.c || t.c, a.v || t.v);
             }
             DepType::Opaque { .. } => return t.clone(),
+            DepType::Spec { template, args: xs, name } => {
+                let xs = xs.iter().map(|x| match x {
+                    TArg::Type(y) => TArg::Type(substitute(y, args)),
+                    v => v.clone(),
+                }).collect();
+                Type::Dep(Rc::new(DepType::Spec { template: *template, args: xs, name: name.clone() }))
+            }
         },
         Type::Ptr(x) => Type::Ptr(Rc::new(substitute(x, args))),
         Type::Ref(x, rv) => {
@@ -54,19 +61,93 @@ pub fn substitute(t: &QType, args: &[QType]) -> QType {
     QType { t: q, c: t.c, v: t.v }
 }
 
+/// `a` without the cv-qualifiers `c` and `v` (`with_cv` only adds them).
+fn without_cv(a: &QType, c: bool, v: bool) -> QType {
+    match &a.t {
+        Type::Array(..) | Type::Func(_) | Type::Ref(..) => a.clone(),
+        _ => QType { t: a.t.clone(), c: a.c && !c, v: a.v && !v },
+    }
+}
+
+/// The arguments of the class `c` as a specialization of the class
+/// template `v`, if it is one.
+fn spec_args(u: &crate::sem::Unit, v: usize, c: crate::sem::types::ClassId) -> Option<&Vec<TArg>> {
+    u.class_templates.get(v)?.specs.iter().find(|(_, k)| *k == c).map(|(a, _)| a)
+}
+
+/// Match the arguments `ps` of a dependent specialization against the
+/// arguments `xs` of a class, exactly.
+fn match_args(u: &crate::sem::Unit, ps: &[TArg], xs: &[TArg], bound: &mut [Option<QType>]) -> bool {
+    ps.len() == xs.len() && ps.iter().zip(xs).all(|(p, x)| match (p, x) {
+        (TArg::Type(p), TArg::Type(x)) => match_exact(u, p, x, bound),
+        (p, x) => p == x,
+    })
+}
+
+/// Match a pattern type `p` against a type `a` exactly, binding the
+/// parameters in `bound` (TSP-14, DED rules for template arguments).
+pub fn match_exact(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
+    if !has_dep(p) {
+        return p == a;
+    }
+    match (&p.t, &a.t) {
+        (Type::Dep(d), _) => match &**d {
+            DepType::Param { index, .. } => {
+                if (p.c && !a.c) || (p.v && !a.v) {
+                    return false;
+                }
+                let t = without_cv(a, p.c, p.v);
+                match &mut bound[*index as usize] {
+                    Some(x) => *x == t,
+                    slot => {
+                        *slot = Some(t);
+                        true
+                    }
+                }
+            }
+            DepType::Spec { template, args, .. } => {
+                let Type::Class(c) = a.t else { return false };
+                p.c == a.c && p.v == a.v && spec_args(u, *template, c).is_some_and(|xs| match_args(u, args, xs, bound))
+            }
+            DepType::Opaque { .. } => false,
+        },
+        _ if p.c != a.c || p.v != a.v => false,
+        (Type::Ptr(x), Type::Ptr(y)) => match_exact(u, x, y, bound),
+        (Type::Ref(x, r), Type::Ref(y, s)) => r == s && match_exact(u, x, y, bound),
+        (Type::Array(x, n), Type::Array(y, m)) => n == m && match_exact(u, x, y, bound),
+        _ => false,
+    }
+}
+
 /// Match the parameter type `p` against the argument type `a`, binding
 /// the template parameters in `bound`. False when they do not match.
-fn match_type(p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
+fn match_type(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
     if !has_dep(p) {
         return true;
     }
     match (&p.t, &a.t) {
+        // DED rules: a specialization deduces from the class of the
+        // argument, or from one of its bases.
+        (Type::Dep(d), Type::Class(c)) if matches!(&**d, DepType::Spec { .. }) => {
+            let DepType::Spec { template, args, .. } = &**d else { return false };
+            let mut classes = vec![*c];
+            classes.extend(u.bases(*c).into_iter().map(|(_, b)| b));
+            for k in classes {
+                let Some(xs) = spec_args(u, *template, k) else { continue };
+                let mut trial = bound.to_vec();
+                if match_args(u, args, xs, &mut trial) {
+                    bound.clone_from_slice(&trial);
+                    return true;
+                }
+            }
+            false
+        }
         (Type::Dep(d), _) => {
             // A type after a dependent qualifier deduces nothing.
-            let DepType::Param { index, .. } = &**d else { return true };
+            let DepType::Param { index, .. } = &**d else { return matches!(&**d, DepType::Opaque { .. }) };
             // The parameter's own cv-qualifiers are not part of the
             // argument, which can have fewer; the argument keeps the rest.
-            let t = a.with_cv(a.c && !p.c, a.v && !p.v);
+            let t = without_cv(a, p.c, p.v);
             match &mut bound[*index as usize] {
                 Some(x) => *x == t,
                 slot => {
@@ -75,8 +156,8 @@ fn match_type(p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
                 }
             }
         }
-        (Type::Ptr(x), Type::Ptr(y)) => match_type(x, y, bound),
-        (Type::Array(x, n), Type::Array(y, m)) => n == m && match_type(x, y, bound),
+        (Type::Ptr(x), Type::Ptr(y)) => match_type(u, x, y, bound),
+        (Type::Array(x, n), Type::Array(y, m)) => n == m && match_type(u, x, y, bound),
         _ => false,
     }
 }
@@ -112,9 +193,9 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
                 // A forwarding reference: an lvalue deduces `A&`.
                 let forwarding = *rv && !inner.c && !inner.v && matches!(inner.t, Type::Dep(_));
                 if forwarding && a.cat == Cat::L {
-                    match_type(inner, &QType::lref(a.ty.nonref().clone()), &mut bound)
+                    match_type(&cx.u, inner, &QType::lref(a.ty.nonref().clone()), &mut bound)
                 } else {
-                    match_type(inner, &a.ty.nonref(), &mut bound)
+                    match_type(&cx.u, inner, &a.ty.nonref(), &mut bound)
                 }
             }
             _ => {
@@ -124,7 +205,7 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
                     Type::Func(_) => QType::ptr_to(at.clone()),
                     _ => at.unqual(),
                 };
-                match_type(&p.unqual(), &decayed, &mut bound)
+                match_type(&cx.u, &p.unqual(), &decayed, &mut bound)
             }
         };
         if !ok {

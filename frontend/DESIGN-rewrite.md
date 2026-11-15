@@ -510,7 +510,14 @@ member type. A template in a C linkage specification, and a declaration
 in a template of a name that one of its parameters has, are errors, as
 are a function template named `main` and an expansion in a function
 template's body whose pattern holds no pack. Argument-dependent lookup
-finds function templates. A
+finds function templates. A function template can be declared before
+its definition; a later declaration adds no default argument, and the
+definition gives the specializations made before it their bodies. In a
+definition, a specialization of a class template whose arguments hold a
+parameter is a dependent type, and deduction finds its arguments from
+the argument's class or one of its bases; `decltype` of an operand that
+names a parameter is a dependent type that deduction does not look
+into. A
 union template
 works the same way, a template-id can follow a qualifier and can be one, and the
 namespaces of a specialization's arguments are associated for

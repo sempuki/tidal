@@ -2636,3 +2636,16 @@ fn function_template_trials_and_adl() {
     assert_eq!(rule("namespace n { template <class T> int probe(T) { return 1; } struct S {}; } int r = probe(n::S{});"), None);
     assert_eq!(rule("template <class X, class Y> constexpr bool same = false; template <class X> constexpr bool same<X, X> = true; struct A { operator const int*(); }; struct B { operator void*(); }; A a; B b; extern bool c; static_assert(same<decltype(c ? a : b), const void*>);"), None);
 }
+
+#[test]
+fn function_template_declarations_and_dependent_specializations() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
+    assert_eq!(rule(&format!("{} template <class T> struct Tag {{}}; template <class T> Tag<T> cref(const T&); template <class T> Tag<T> peel(Tag<T>); const int c = 1; static_assert(same<decltype(cref(c)), Tag<int>>); static_assert(same<decltype(peel(Tag<long>{{}})), Tag<long>>); template <class T> auto add(T a, T b) -> decltype(a + b); static_assert(same<decltype(add('a', 'b')), int>);", same)), None);
+    assert_eq!(rule("template <class T> void place(T, int); template <class T> void place(T, int = 1);"), Some("DEFARG-13"));
+    assert_eq!(run("template <class T> T twice(T); int main() { return twice(4); } template <class T> T twice(T v) { return v + v; }"), RunOutcome::Result(8));
+}

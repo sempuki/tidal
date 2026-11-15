@@ -168,10 +168,24 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
         if sd.child("init_declarator").is_none() {
             return class_template_decl(cx, sd, params);
         }
+        // `template <class T> R f(P);` declares a function template.
+        let mut ids = sd.children("init_declarator");
+        let one = ids.next().filter(|i| i.child("init").is_none() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_some()));
+        if let (Some(one), None) = (one, ids.next()) {
+            let (Some(ds), Some(dn)) = (sd.child("decl_specifiers"), one.child("declarator")) else { return false };
+            return function_template(cx, sd, ds, dn, params);
+        }
         return var_template_decl(cx, sd, params);
     }
     let Some(fd) = n.child("declaration").and_then(|d| d.child("function_definition")) else { return false };
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
+    function_template(cx, fd, ds, dn, params)
+}
+
+/// TPL rules: a function template's declaration `fd`, a definition or
+/// not, with its decl-specifiers `ds` and its declarator `dn`. A
+/// definition after a declaration completes the template.
+fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Vec<Param>) -> bool {
     if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
         return true;
     }
@@ -200,7 +214,46 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     // a definition with a dependent construct that the first piece does
     // not model, or a name another function or template shares, stays
     // unsupported.
-    if !names::declared_here(cx, saved, &name).is_empty() || dependent_forms(cx, fd, &params) {
+    if dependent_forms(cx, fd, &params) {
+        return false;
+    }
+    let found = names::declared_here(cx, saved, &name);
+    if let [e] = found[..] {
+        // A second declaration of the template, which a definition
+        // completes; a template of the name with another type is an
+        // overload that waits for a later piece.
+        let EntKind::Template(t) = cx.u.entities[e].kind else { return false };
+        let tpl = &cx.u.templates[t];
+        let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
+        if *tpl.fty != fty || tpl.kinds != kinds {
+            return false;
+        }
+        // DEFARG-13: a later declaration adds no default argument.
+        if let Some(p) = dn.find("parameters").and_then(|ps| ps.children("parameter").find(|p| cx.has_word(p, "="))) {
+            cx.error(p.span, "DEFARG-13", "a default argument in a later declaration of a function template");
+            return true;
+        }
+        if fd.prod != "function_definition" {
+            return true;
+        }
+        if tpl.node.prod == "function_definition" {
+            return false;
+        }
+        let limit = cx.u.entities.len() + 1;
+        let tpl = &mut cx.u.templates[t];
+        tpl.params = params.into_iter().map(|p| p.0).collect();
+        tpl.node = fd.clone();
+        tpl.span = span;
+        tpl.limit = limit;
+        // The specializations that uses made before the definition get
+        // their bodies now.
+        let made: Vec<(Vec<TArg>, EntityId)> = tpl.specs.iter().filter(|(_, f)| !tpl.explicit.contains(f)).cloned().collect();
+        for (args, f) in made {
+            define_later(cx, t, &args, f);
+        }
+        return true;
+    }
+    if !found.is_empty() {
         return false;
     }
     let id = cx.u.templates.len();
@@ -430,7 +483,7 @@ fn explicit_function(cx: &mut Check, fd: &Node) -> bool {
         _ => None,
     }).collect();
     let same_shape = fty.params.len() == tpl.fty.params.len() && fty.variadic == tpl.fty.variadic;
-    if !same_shape || !tpl.fty.params.iter().zip(&fty.params).all(|(p, a)| match_exact(p, a, &mut bound)) || !match_exact(&tpl.fty.ret, &fty.ret, &mut bound) {
+    if !same_shape || !tpl.fty.params.iter().zip(&fty.params).all(|(p, a)| match_exact(&cx.u, p, a, &mut bound)) || !match_exact(&cx.u, &tpl.fty.ret, &fty.ret, &mut bound) {
         return done(cx);
     }
     let args: Option<Vec<TArg>> = (0..tpl.params.len()).map(|k| match &tpl.kinds[k] {
@@ -590,8 +643,8 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
             }
         }
     }
+    let _ = dependent_decltype;
     incomplete
-        || dependent_decltype
         || words.iter().any(|w| matches!(*w, "template" | "requires" | "concept"))
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
@@ -640,7 +693,8 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     let fd = &tpl.node;
     let r = (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
-        let dn = fd.child("declarator")?;
+        // A template declared and not defined has a declaration.
+        let dn = fd.child("declarator").or_else(|| fd.child("init_declarator").and_then(|i| i.child("declarator")))?;
         let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
         if specs.unsupported || d.unsupported || !d.ty.is_func() {
             return None;
@@ -689,6 +743,47 @@ fn depth_failed(cx: &mut Check, span: Span) -> bool {
         cx.error(span, "TR-13", format!("the instantiations nest deeper than the limit of {}", limit));
     }
     true
+}
+
+/// The body of the specialization `f` of the function template `t`,
+/// which a use declared before the template's definition.
+fn define_later(cx: &mut Check, t: usize, args: &[TArg], f: EntityId) {
+    let tpl = cx.u.templates[t].clone();
+    let saved_scope = cx.scope;
+    let saved_func = cx.func.take();
+    let saved_limit = cx.lookup_limit.replace(tpl.limit);
+    let saved_member = cx.member_of.take();
+    let saved_lambdas = std::mem::take(&mut cx.lambdas);
+    let saved_unevaluated = std::mem::replace(&mut cx.unevaluated, 0);
+    let saved_default = std::mem::replace(&mut cx.default_arg, false);
+    let saved_access = cx.access_class.take();
+    cx.instantiating += 1;
+    let marks = cx.u.diags.len();
+    cx.scope = tpl.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    bind_params(cx, ts, &tpl.params, args, tpl.span);
+    let fd = &tpl.node;
+    (|| {
+        let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
+        let d = crate::declarations::declarators::check::declarator(cx, &specs, fd.child("declarator")?);
+        let cs = fd.child("function_body").and_then(|b| b.child("compound_stmt"))?;
+        crate::declarations::functions::definitions::check::define(cx, f, &d, cs);
+        Some(())
+    })();
+    cx.scope = saved_scope;
+    cx.func = saved_func;
+    cx.lookup_limit = saved_limit;
+    cx.member_of = saved_member;
+    cx.lambdas = saved_lambdas;
+    cx.unevaluated = saved_unevaluated;
+    cx.default_arg = saved_default;
+    cx.access_class = saved_access;
+    cx.instantiating -= 1;
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        let tail = cx.u.diags.split_off(marks);
+        cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
+        cx.unsupported(tpl.span, format!("an error in a specialization of the function template '{}' (the first piece of build step 5 does not tell it from a gap of its model)", tpl.name));
+    }
 }
 
 /// The function templates that a call by name finds, after their
@@ -854,33 +949,8 @@ fn template_type_args(cx: &mut Check, tid: &Node) -> Option<Vec<QType>> {
     Some(out)
 }
 
-/// Match a partial specialization's pattern type `p` against an argument
-/// `a` exactly, binding its parameters (TSP-14).
-fn match_exact(p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
-    if !crate::templates::deduction::check::has_dep(p) {
-        return p == a;
-    }
-    match (&p.t, &a.t) {
-        (Type::Dep(d), _) => {
-            let DepType::Param { index, .. } = &**d else { return false };
-            if (p.c && !a.c) || (p.v && !a.v) {
-                return false;
-            }
-            let t = a.with_cv(a.c && !p.c, a.v && !p.v);
-            match &mut bound[*index as usize] {
-                Some(x) => *x == t,
-                slot => {
-                    *slot = Some(t);
-                    true
-                }
-            }
-        }
-        _ if p.c != a.c || p.v != a.v => false,
-        (Type::Ptr(x), Type::Ptr(y)) => match_exact(x, y, bound),
-        (Type::Ref(x, r), Type::Ref(y, s)) => r == s && match_exact(x, y, bound),
-        (Type::Array(x, n), Type::Array(y, m)) => n == m && match_exact(x, y, bound),
-        _ => false,
-    }
+fn match_exact(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
+    crate::templates::deduction::check::match_exact(u, p, a, bound)
 }
 
 /// TARG-1, TSP-13 to TSP-15: `v<A...>`, a specialization of a variable
@@ -926,7 +996,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
     let mut matches = Vec::new();
     for (k, (ps, pattern, _)) in vt.partials.iter().enumerate() {
         let mut bound: Vec<Option<QType>> = vec![None; ps.len()];
-        if types.len() == args.len() && pattern.iter().zip(&types).all(|(p, a)| match_exact(p, a, &mut bound)) {
+        if types.len() == args.len() && pattern.iter().zip(&types).all(|(p, a)| match_exact(&cx.u, p, a, &mut bound)) {
             if let Some(b) = bound.into_iter().map(|b| b.map(TArg::Type)).collect::<Option<Vec<TArg>>>() {
                 matches.push((k, b));
             }
@@ -1159,7 +1229,11 @@ fn class_partial(cx: &mut Check, cd: &Node, tid: &Node, params: Vec<Param>) -> b
 /// The type `t` names the parameter `index`.
 fn mentions(t: &QType, index: u32) -> bool {
     match &t.t {
-        Type::Dep(d) => matches!(&**d, DepType::Param { index: i, .. } if *i == index),
+        Type::Dep(d) => match &**d {
+            DepType::Param { index: i, .. } => *i == index,
+            DepType::Spec { args, .. } => args.iter().any(|a| matches!(a, TArg::Type(t) if mentions(t, index))),
+            DepType::Opaque { .. } => false,
+        },
         Type::Ptr(x) | Type::Ref(x, _) | Type::Array(x, _) | Type::MemPtr(_, x) => mentions(x, index),
         Type::Func(f) => mentions(&f.ret, index) || f.params.iter().any(|p| mentions(p, index)),
         _ => false,
@@ -1200,8 +1274,11 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     if args.iter().any(|a| matches!(a, TArg::Type(t) if t.is_error())) {
         return Some(QType::error());
     }
+    // In a template's definition, a specialization with a parameter in
+    // its arguments is a dependent type.
     if args.iter().any(|a| matches!(a, TArg::Type(t) if crate::templates::deduction::check::has_dep(t))) {
-        return Some(cx.unsupported(span, "a class template with a dependent argument"));
+        let name: Rc<str> = cx.source(tid).into();
+        return Some(QType::new(Type::Dep(Rc::new(DepType::Spec { template: v, args, name }))));
     }
     if let Some(&(_, c)) = ct.specs.iter().find(|(a, _)| *a == args) {
         return Some(QType::new(Type::Class(c)));
@@ -1211,7 +1288,7 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
     let mut matches = Vec::new();
     for (k, (ps, pattern, _)) in ct.partials.iter().enumerate() {
         let mut bound: Vec<Option<QType>> = vec![None; ps.len()];
-        if pattern.len() == args.len() && pattern.iter().zip(&args).all(|(p, a)| matches!(a, TArg::Type(a) if match_exact(p, a, &mut bound))) {
+        if pattern.len() == args.len() && pattern.iter().zip(&args).all(|(p, a)| matches!(a, TArg::Type(a) if match_exact(&cx.u, p, a, &mut bound))) {
             if let Some(b) = bound.into_iter().map(|b| b.map(TArg::Type)).collect::<Option<Vec<TArg>>>() {
                 matches.push((k, b));
             }

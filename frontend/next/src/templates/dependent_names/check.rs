@@ -1,5 +1,5 @@
 //! `templates/dependent-names`, the Check segment: the type that a
-//! `typename` specifier names (build step 5).
+//! `typename` specifier or a dependent `decltype` names (build step 5).
 
 use crate::foundations::names::check as names;
 use crate::sem::check::Check;
@@ -24,16 +24,17 @@ pub fn typename_specifier(cx: &mut Check, n: &Node) -> QType {
     crate::foundations::types::check::named_type(cx, n)
 }
 
-/// A qualifier that names a template parameter of the definition being
-/// checked: a type parameter, which is a dependent type there, or a
-/// constant parameter, which has no value there.
-fn dependent(cx: &Check, nn: &Node) -> bool {
+/// A part of a definition that names a template parameter of the
+/// definition being checked: a type parameter, which is a dependent type
+/// there, a constant parameter, which has no value there, or a variable
+/// of a dependent type.
+pub fn dependent(cx: &Check, nn: &Node) -> bool {
     let mut toks = Vec::new();
     nn.tokens(&mut toks);
     toks.iter().any(|&t| {
         names::lookup(cx, &cx.toks[t].text).into_iter().any(|e| match &cx.u.entities[e].kind {
             EntKind::Typedef(t) => crate::templates::deduction::check::has_dep(t),
-            EntKind::Var(v) => v.param && v.init.is_none() && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Template,
+            EntKind::Var(v) => crate::templates::deduction::check::has_dep(&v.ty) || (v.param && v.init.is_none() && cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Template),
             _ => false,
         })
     })

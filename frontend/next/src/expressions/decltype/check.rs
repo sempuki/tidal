@@ -51,6 +51,13 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
         let Some(x) = first_node(c) else { return QType::error() };
         c = x;
     }
+    // DEP rules: in a template's definition, `decltype` of an operand that
+    // names a parameter is a dependent type that deduction does not look
+    // into. A specialization checks the operand.
+    if crate::templates::dependent_names::check::dependent(cx, c) {
+        let name: std::rc::Rc<str> = cx.source(n).into();
+        return QType::new(crate::sem::types::Type::Dep(std::rc::Rc::new(crate::sem::types::DepType::Opaque { name })));
+    }
     cx.unevaluated += 1;
     // The call that is the operand, or the right operand of a comma that
     // is.
