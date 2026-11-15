@@ -2423,3 +2423,14 @@ fn member_type_access_outside_function_bodies() {
     assert_eq!(rule("class O { struct H { int v; }; public: static H make(); }; O::H h;"), Some("ACC-2"));
     assert_eq!(rule("class B { protected: using K = long; }; class D : public B { public: using B::K; }; D::K k = 1;"), None);
 }
+
+#[test]
+fn later_types_in_defaults_and_ambiguous_injected_names() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("struct G { int bytes(int n = sizeof(Cell)) { return n; } struct Cell { char d[5]; }; }; static_assert(sizeof(G::Cell) == 5);"), None);
+    assert_eq!(rule("namespace a { struct base {}; } namespace b { struct base {}; } struct j : a::base, b::base { void f() { base* p = nullptr; (void)p; } };"), Some("DER-4"));
+}

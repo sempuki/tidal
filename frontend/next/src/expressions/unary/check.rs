@@ -257,6 +257,27 @@ fn size_or_align(cx: &mut Check, n: &Node, align: bool) -> Expr {
         return Expr::new(EK::Int(0), t, Cat::PR, span);
     } else {
         let Some(c) = nodes(n).last().copied() else { return bad(span) };
+        // DEFARG-10: `sizeof(T)` with a type that the class declares later
+        // parses as an expression; the name names the type.
+        if let ("primary", [_, crate::syntax::Kid::Node(inner), _]) = (c.prod, c.kids.as_slice()) {
+            if let Some(id) = inner.child("id_expression").filter(|_| inner.prod == "primary") {
+                let name = cx.source(id);
+                let found = crate::foundations::names::check::lookup(cx, &name);
+                let types = !found.is_empty() && found.iter().all(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Class(_) | crate::sem::EntKind::Typedef(_) | crate::sem::EntKind::Enum(_)));
+                let ty = found.first().filter(|_| types).and_then(|&e| match &cx.u.entities[e].kind {
+                    crate::sem::EntKind::Class(k) => Some(QType::new(Type::Class(*k))),
+                    crate::sem::EntKind::Typedef(t) => Some(t.clone()),
+                    crate::sem::EntKind::Enum(en) => Some(QType::new(Type::Enum(*en))),
+                    _ => None,
+                });
+                if let (Some(ty), false) = (ty, align) {
+                    let v = cx.u.target.size_of(&cx.u, &ty);
+                    if let Some(v) = v.filter(|_| !cx.u.is_incomplete(&ty)) {
+                        return Expr::int(v as i128, st, span);
+                    }
+                }
+            }
+        }
         if align {
             cx.error(span, "UN-17", "the operand of alignof must be a type");
             return bad(span);

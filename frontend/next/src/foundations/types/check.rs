@@ -144,6 +144,13 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
             _ => {}
         }
     }
+    // DER-4, NAM-36: the injected names of two bases make the name
+    // ambiguous in the class.
+    let class = cx.member_of.or_else(|| cx.func.as_ref().and_then(|f| f.id).and_then(|id| cx.u.func(id)).and_then(|f| f.class));
+    if matches!(qual, names::check::Qual::None) && class.is_some_and(|c| crate::classes::derived::check::member_lookup(cx, c, name).is_err()) {
+        cx.error_cause(span, "DER-4", Some("NAM-36"), format!("the name '{}' is in more than one base", name));
+        return QType::error();
+    }
     cx.unsupported(span, format!("the type name '{}'", name))
 }
 
