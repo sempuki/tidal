@@ -140,20 +140,34 @@ fn match_type(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QT
                 bound.clone_from_slice(&t);
                 return true;
             }
-            let mut found: Vec<Vec<Option<QType>>> = Vec::new();
-            for (_, b) in u.bases(*c) {
-                if let Some(t) = try_class(b) {
-                    if !found.contains(&t) {
-                        found.push(t);
+            let mut found: Vec<(crate::sem::types::ClassId, Vec<Option<QType>>)> = Vec::new();
+            // The bases, direct or not.
+            let mut all: Vec<crate::sem::types::ClassId> = Vec::new();
+            let mut work = vec![*c];
+            while let Some(k) = work.pop() {
+                for (_, b) in u.bases(k) {
+                    if !all.contains(&b) {
+                        all.push(b);
+                        work.push(b);
                     }
                 }
             }
-            match &found[..] {
-                [t] => {
+            for b in all {
+                if let Some(t) = try_class(b) {
+                    if !found.iter().any(|(_, x)| *x == t) {
+                        found.push((b, t));
+                    }
+                }
+            }
+            // DED-15: of several, the one derived from all the others.
+            let derives = |a: crate::sem::types::ClassId, b: crate::sem::types::ClassId| !u.base_paths(a, b).is_empty();
+            let nearest = found.iter().find(|(k, _)| found.iter().all(|(o, _)| o == k || derives(*k, *o)));
+            match nearest {
+                Some((_, t)) => {
                     bound.clone_from_slice(t);
                     true
                 }
-                _ => false,
+                None => false,
             }
         }
         (Type::Dep(d), _) => {

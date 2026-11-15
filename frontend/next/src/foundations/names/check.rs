@@ -181,6 +181,11 @@ pub fn lookup_where(cx: &Check, name: &str, keep: impl Fn(&EntKind) -> bool) -> 
 /// NAM-26: names that using-directives make visible for different
 /// entities, not all functions, are ambiguous.
 pub fn check_ambiguous(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -> bool {
+    // An overload set with a function template: its use outside a call
+    // waits for a later piece (the expression reports it).
+    if found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_))) {
+        return false;
+    }
     if found.len() > 1 && !found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))) {
         // A scope can hold an enumeration and another entity of one name
         // (NAM-39); the other entity wins (NAM-40).
@@ -352,8 +357,10 @@ pub fn declare_in(cx: &mut Check, scope: ScopeId, name: &str, kind: EntKind, spa
             if matches!(cx.u.entities[e].kind, EntKind::Func(_)) && matches!(kind, EntKind::Func(_)) {
                 continue;
             }
-            // A function or a template beside a function template of the
-            // name waits for a later piece of build step 5.
+            // Function templates and functions of one name overload.
+            if matches!(cx.u.entities[e].kind, EntKind::Template(_) | EntKind::Func(_)) && matches!(kind, EntKind::Template(_) | EntKind::Func(_)) {
+                continue;
+            }
             if matches!(cx.u.entities[e].kind, EntKind::Template(_)) || matches!(kind, EntKind::Template(_)) {
                 cx.unsupported(span, format!("a declaration of '{}' beside a function template of the name", name));
                 break;

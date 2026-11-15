@@ -339,6 +339,12 @@ fn local_class_use(cx: &mut Check, v: EntityId, span: Span) -> Option<Expr> {
 
 /// The expression that names one of the entities a lookup found.
 pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -> Expr {
+    // An overload set with a function template outside a call waits for
+    // a later piece.
+    if found.len() > 1 && found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) {
+        let t = cx.unsupported(span, format!("the overload set '{}', which holds a function template, outside a call", name));
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    }
     let funcs: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
     let pick = found.iter().copied().find(|&e| !matches!(cx.u.entities[e].kind, EntKind::Enum(_) | EntKind::Class(_))).unwrap_or(found[0]);
     crate::declarations::attributes::check::use_entity(cx, pick, span);

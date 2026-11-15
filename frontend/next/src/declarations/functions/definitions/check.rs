@@ -224,12 +224,8 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 break;
             }
             EntKind::Unsupported(_) | EntKind::Enum(_) | EntKind::Class(_) => {}
-            // A function beside a function template of its name waits for
-            // a later piece of build step 5.
-            EntKind::Template(_) => {
-                cx.unsupported(span, format!("a function '{}' beside a function template of the name", name));
-                return None;
-            }
+            // A function overloads a function template of its name.
+            EntKind::Template(_) => {}
             _ => {
                 if !local {
                     cx.error(span, "NAM-3", format!("'{}' is already declared as a different kind of entity", name));

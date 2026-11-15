@@ -70,6 +70,17 @@ pub enum Type {
     Dep(Rc<DepType>),
 }
 
+impl PartialEq for DepType {
+    fn eq(&self, other: &DepType) -> bool {
+        match (self, other) {
+            (DepType::Param { depth: a, index: i, .. }, DepType::Param { depth: b, index: j, .. }) => a == b && i == j,
+            (DepType::Opaque { name: a }, DepType::Opaque { name: b }) => a == b,
+            (DepType::Spec { template: a, args: x, .. }, DepType::Spec { template: b, args: y, .. }) => a == b && x == y,
+            _ => false,
+        }
+    }
+}
+
 /// A template argument: a type, or the value of a constant parameter
 /// with the parameter's type (TARG-1, TARG-13).
 #[derive(Clone, Debug, PartialEq)]
@@ -79,8 +90,9 @@ pub enum TArg {
 }
 
 /// The dependent forms of a type (`frontend/TEMPLATE-MODEL.md`, section
-/// 1). Build step 5 starts with the template parameter.
-#[derive(Clone, Debug, PartialEq)]
+/// 1). Build step 5 starts with the template parameter. Two forms are
+/// equal without regard to the names that diagnostics show.
+#[derive(Clone, Debug)]
 pub enum DepType {
     /// The type parameter `index` of the template at `depth`, with its
     /// name for diagnostics.

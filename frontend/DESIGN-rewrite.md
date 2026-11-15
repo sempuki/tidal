@@ -532,12 +532,20 @@ is an error. A function template's requires clauses and type
 constraints remove a specialization whose arguments do not satisfy
 them from the candidates, and an explicit specialization must satisfy
 them. A requires expression outside a constraint, and constraints on a
-class, variable, or member template, wait for a later piece. A function template can be declared before
+class, variable, or member template, wait for a later piece. Functions and function templates of one name overload. With equal
+conversion sequences, a function beats a template's specialization, and
+a specialization of a more specialized template beats another (partial
+ordering: one template's parameters as unique types deduce the other's,
+after the types lose references and top-level cv-qualifiers); pairs of
+references, non-deduced positions, constraints, operator templates of
+one name, default arguments in such a call, and overload sets outside a
+call wait for a later piece. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a
 parameter is a dependent type, and deduction finds its arguments from
-the argument's class or else the one base that matches; `decltype` of an operand that
+the argument's class or else the base that matches and is derived
+from every other base that matches; `decltype` of an operand that
 names a parameter is a dependent type that deduction does not look
 into. A
 union template
@@ -582,9 +590,9 @@ declarations, a definition with a dependent form (`.template`, a
 member named with template arguments after `.` or `->`, a type named
 after a parameter without `typename`, `using enum` of a parameter's
 member, a base whose template arguments hold a parameter) or an
-incomplete class, and a name that a
-function template shares with another declaration leave the unit
-unsupported.
+incomplete class, and a function
+template that shares its name with an entity other than a function
+leave the unit unsupported.
 
 Step 4 part a is in place in part (item RW3). A class whose members are
 non-static data members and member functions has its layout, aggregate

@@ -2729,3 +2729,16 @@ fn names_qualified_by_parameters() {
     assert_eq!(run("struct S { static constexpr int size = 3; using type = long; }; template <class T> int count() { typename T::type v = T::size; return int(v); } int main() { return count<S>(); }"), RunOutcome::Result(3));
     assert_eq!(rule("struct Mixed { struct name {}; int name; }; int f() { typename Mixed::name n; return 0; }"), Some("DEP-22"));
 }
+
+#[test]
+fn overloaded_function_templates() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("template <class T> constexpr int f(T) { return 1; } template <class T> constexpr int f(T*) { return 2; } constexpr int f(int) { return 3; } int i; static_assert(f(1.0) == 1 && f(&i) == 2 && f(1) == 3);"), None);
+    assert_eq!(rule("template <class T> constexpr int g(T, int) { return 1; } template <class T> constexpr int g(int, T) { return 2; } int x = g(1, 2);"), Some("OVL-36"));
+    let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
+    assert_eq!(rule(&format!("{} template <class T> struct Tag {{}}; template <class T> struct Base {{}}; template <> struct Base<int> : virtual Base<char> {{}}; struct Side : virtual Base<char> {{}}; struct Join : Base<int>, Side {{}}; template <class T> Tag<T> up(Base<T>&); Join j; static_assert(same<decltype(up(j)), Tag<int>>);", same)), None);
+}

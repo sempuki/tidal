@@ -321,6 +321,11 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
         cx.error(span, "TPL-29", "the function 'main' declared as a template");
         return true;
     }
+    // An operator function template beside another of its name waits for
+    // a later piece.
+    if (name.starts_with("operator") || dn.find("operator_function_id").is_some() || dn.find("literal_operator_id").is_some()) && !names::declared_here(cx, saved, &name).is_empty() {
+        return false;
+    }
     // The definition checks of model section 5 wait for a later piece, so
     // a definition with a dependent construct that the first piece does
     // not model, or a name another function or template shares, stays
@@ -329,14 +334,23 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
         return false;
     }
     let found = names::declared_here(cx, saved, &name);
-    if let [e] = found[..] {
+    // Functions and function templates of the name overload; another
+    // entity of the name waits for a later piece.
+    if found.iter().any(|&e| !matches!(cx.u.entities[e].kind, EntKind::Template(_) | EntKind::Func(_))) {
+        return false;
+    }
+    let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
+    let same = found.iter().find_map(|&e| match cx.u.entities[e].kind {
+        EntKind::Template(t) if *cx.u.templates[t].fty == fty && cx.u.templates[t].kinds == kinds => Some(e),
+        _ => None,
+    });
+    if let Some(e) = same {
         // A second declaration of the template, which a definition
-        // completes; a template of the name with another type is an
-        // overload that waits for a later piece.
+        // completes. Constraints whose equivalence decides between a
+        // redeclaration and an overload wait for a later piece.
         let EntKind::Template(t) = cx.u.entities[e].kind else { return false };
         let tpl = &cx.u.templates[t];
-        let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
-        if *tpl.fty != fty || tpl.kinds != kinds || !constraints.is_empty() || !tpl.constraints.is_empty() {
+        if !constraints.is_empty() || !tpl.constraints.is_empty() {
             return false;
         }
         // DEFARG-13: a later declaration adds no default argument.
@@ -367,9 +381,6 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
             define_later(cx, t, &args, f);
         }
         return true;
-    }
-    if !found.is_empty() {
-        return false;
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
@@ -943,6 +954,100 @@ fn define_later(cx: &mut Check, t: usize, args: &[TArg], f: EntityId) {
     }
 }
 
+/// A parameter of `t` that is a specialization of a class template, or a
+/// reference or pointer to one, whose argument has that class as a base
+/// more than once.
+fn ambiguous_base(cx: &Check, t: usize, bound: &[TArg], args: &[crate::sem::tree::Expr]) -> bool {
+    let tpl = &cx.u.templates[t];
+    let types: Vec<QType> = bound.iter().filter_map(|a| match a {
+        TArg::Type(t) => Some(t.clone()),
+        TArg::Value(..) => None,
+    }).collect();
+    tpl.fty.params.iter().zip(args).any(|(p, a)| {
+        let inner = match &p.t {
+            Type::Ref(x, _) | Type::Ptr(x) => (**x).clone(),
+            _ => p.clone(),
+        };
+        let Type::Dep(d) = &inner.t else { return false };
+        let DepType::Spec { template, args: xs, .. } = &**d else { return false };
+        if types.len() != bound.len() {
+            return false;
+        }
+        let want: Vec<TArg> = xs.iter().map(|x| match x {
+            TArg::Type(y) => TArg::Type(crate::templates::deduction::check::substitute(y, &types)),
+            v => v.clone(),
+        }).collect();
+        let Some(&(_, k)) = cx.u.class_templates[*template].specs.iter().find(|(a, _)| *a == want) else { return false };
+        let at = a.ty.nonref();
+        let c = match (&p.t, at.pointee()) {
+            (Type::Ptr(_), Some(q)) => q.class(),
+            _ => at.class(),
+        };
+        c.is_some_and(|c| c != k && crate::classes::derived::check::paths(cx, c, k).len() > 1)
+    })
+}
+
+/// The function template that the function `f` specializes, if any.
+pub fn template_of(cx: &Check, f: EntityId) -> Option<usize> {
+    cx.u.templates.iter().position(|t| t.specs.iter().any(|&(_, g)| g == f))
+}
+
+/// ORD-1 to ORD-3: the function template `t1` is at least as specialized
+/// as `t2`: with `t1`'s parameters as unique types, `t2`'s parameters
+/// deduce from `t1`'s function parameter types, after each type loses
+/// its reference and its top-level cv-qualifiers (ORD-2). None when the
+/// pair needs a step that the first pieces of build step 5 do not take
+/// (both types references, ORD-10, ORD-11; a non-deduced position).
+fn at_least_as_specialized(cx: &Check, t1: usize, t2: usize) -> Option<bool> {
+    let (a, b) = (&cx.u.templates[t1], &cx.u.templates[t2]);
+    if a.fty.params.len() != b.fty.params.len() || a.fty.variadic != b.fty.variadic {
+        return Some(false);
+    }
+    let strip = |t: &QType| t.nonref().unqual();
+    let opaque = |t: &QType| -> bool {
+        match &t.t {
+            Type::Dep(d) => matches!(&**d, DepType::Opaque { .. }),
+            Type::Ptr(x) | Type::Ref(x, _) | Type::Array(x, _) => {
+                let mut q = (**x).clone();
+                q.c = false;
+                matches!(&q.t, Type::Dep(d) if matches!(&**d, DepType::Opaque { .. }))
+            }
+            _ => false,
+        }
+    };
+    let mut bound: Vec<Option<QType>> = vec![None; b.params.len()];
+    for (p1, p2) in a.fty.params.iter().zip(&b.fty.params) {
+        if (p1.is_ref() && p2.is_ref()) || opaque(p1) || opaque(p2) {
+            return None;
+        }
+        if !crate::templates::deduction::check::match_exact(&cx.u, &strip(p2), &strip(p1), &mut bound) {
+            return Some(false);
+        }
+    }
+    Some(true)
+}
+
+/// OVL-29, ORD rules: with equal conversion sequences, the function `f`
+/// beats `g` when `f` is no template specialization and `g` is one, or
+/// when both are and `f`'s template is more specialized. None when the
+/// order needs a step that the first pieces of build step 5 do not take.
+pub fn beats_by_template(cx: &Check, f: EntityId, g: EntityId) -> Option<bool> {
+    match (template_of(cx, f), template_of(cx, g)) {
+        (None, Some(_)) => Some(true),
+        (Some(t1), Some(t2)) if t1 != t2 => {
+            let ab = at_least_as_specialized(cx, t1, t2)?;
+            let ba = at_least_as_specialized(cx, t2, t1)?;
+            // ORD-13: the more constrained template, which the first
+            // pieces of build step 5 do not order.
+            if ab && ba && (!cx.u.templates[t1].constraints.is_empty() || !cx.u.templates[t2].constraints.is_empty()) {
+                return None;
+            }
+            Some(ab && !ba)
+        }
+        _ => Some(false),
+    }
+}
+
 /// The function templates that a call by name finds, after their
 /// specializations for the call's arguments are made: each template
 /// whose arguments deduce (DED-P3), with the explicit arguments first.
@@ -963,7 +1068,16 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
             }
             None => Vec::new(),
         };
-        let Some(partial) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else { continue };
+        let Some(partial) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else {
+            // A call that leaves parameters to their default arguments
+            // waits for a later piece (ORD-5).
+            let tpl = &cx.u.templates[t];
+            if args.len() < tpl.fty.params.len() && tpl.node.find("parameters").is_some_and(|ps| ps.children("parameter").any(|p| cx.has_word(p, "="))) {
+                let name = tpl.name.clone();
+                cx.unsupported(tpl.span, format!("a call of the function template '{}' that uses a default argument", name));
+            }
+            continue;
+        };
         // TPL-13: a parameter that deduction leaves takes its default.
         let tpl = cx.u.templates[t].clone();
         let mut bound: Vec<TArg> = Vec::new();
@@ -975,6 +1089,12 @@ pub fn call_candidates(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, a
             }
         }
         if bound.len() < partial.len() {
+            continue;
+        }
+        // DED-15: an argument whose class has the deduced base more than
+        // once waits for a later piece (OVL-37).
+        if ambiguous_base(cx, t, &bound, args) {
+            cx.unsupported(tpl.span, format!("a call of the function template '{}' whose argument has the deduced base more than once", tpl.name));
             continue;
         }
         // CNS-11: a specialization whose arguments do not satisfy the

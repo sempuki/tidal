@@ -224,7 +224,7 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                 some = true;
             }
         }
-        some || inherited_tie(a.0, b.0)
+        some || inherited_tie(a.0, b.0) || crate::templates::declarations::check::beats_by_template(cx, a.0, b.0) == Some(true)
     };
     let mut best = 0;
     for i in 1..viable.len() {
@@ -234,6 +234,13 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
     }
     for i in 0..viable.len() {
         if i != best && !wins(&viable[best], &viable[i]) {
+            // Two specializations that partial ordering does not order by
+            // the steps that the first pieces of build step 5 take.
+            let (f, g) = (viable[best].0, viable[i].0);
+            if crate::templates::declarations::check::beats_by_template(cx, f, g).is_none() || crate::templates::declarations::check::beats_by_template(cx, g, f).is_none() {
+                cx.unsupported(span, format!("a call of '{}' that needs a step of partial ordering that the front end does not take", name));
+                return None;
+            }
             cx.error(span, "OVL-36", format!("the call of '{}' is ambiguous", name));
             return None;
         }
