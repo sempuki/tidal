@@ -512,6 +512,10 @@ fn names_class_member(cx: &Check, n: &Node) -> bool {
         None => n.find("declarator_id").and_then(|d| d.child("nested_name")),
     };
     let Some(nn) = nn else { return false };
+    // A specialization of a class template (TARG-1).
+    if let Some(tn) = nn.child("template_id").and_then(|t| t.child("template_name")) {
+        return crate::foundations::names::check::lookup(cx, &cx.source(tn)).iter().any(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::ClassTemplate(_) | crate::sem::EntKind::Class(_)));
+    }
     let mut toks = Vec::new();
     nn.tokens(&mut toks);
     let Some(name) = toks.iter().rev().map(|&t| cx.toks[t].text.as_str()).find(|w| *w != "::") else { return false };

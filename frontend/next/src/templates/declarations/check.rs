@@ -158,6 +158,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
         return false;
     }
     let Some(params) = n.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    if let Some(done) = outside_member(cx, n, &params) {
+        return done;
+    }
     if let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) {
         if sd.child("init_declarator").is_none() {
             return class_template_decl(cx, sd, params);
@@ -385,6 +388,100 @@ fn explicit_function(cx: &mut Check, fd: &Node) -> bool {
     }
     cx.leave(saved);
     true
+}
+
+/// TPL rules: `template <class T> R C<T>::f(P...) { ... }` or
+/// `template <class T> T C<T>::s = e;`, a member of a class template
+/// defined outside the class. Each specialization of the class, made
+/// before or after, gets the member with the parameters bound. None when
+/// the declaration has another form.
+fn outside_member(cx: &mut Check, n: &Node, params: &[Param]) -> Option<bool> {
+    let decl = n.child("declaration")?;
+    let (node, dn) = match decl.child("function_definition") {
+        Some(fd) => (fd, fd.child("declarator")?),
+        None => {
+            let bd = decl.child("block_decl")?;
+            let sd = bd.child("simple_decl")?;
+            let mut decls = sd.children("init_declarator");
+            let one = decls.next()?;
+            if decls.next().is_some() {
+                return None;
+            }
+            (bd, one.child("declarator")?)
+        }
+    };
+    let nn = dn.find("declarator_id")?.find("qualified_name")?.child("nested_name")?;
+    let [Kid::Node(tid), _] = nn.kids.as_slice() else { return None };
+    if tid.prod != "template_id" {
+        return None;
+    }
+    let name = cx.source(tid.child("template_name")?);
+    let v = names::declared_here(cx, cx.scope, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::ClassTemplate(v) => Some(v),
+        _ => None,
+    })?;
+    // The arguments are the parameters in order; another list names a
+    // partial specialization's member.
+    let args: Vec<String> = tid.child("template_args").map(|ta| ta.children("template_arg").map(|a| cx.source(a)).collect()).unwrap_or_default();
+    let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
+    if args.len() != params.len() || args.iter().zip(params).any(|(a, p)| a.as_str() != p.0.as_ref()) || kinds != cx.u.class_templates[v].kinds {
+        return Some(false);
+    }
+    if cx.func.is_some() || cx.member_of.is_some() || dependent_forms(cx, node, params) {
+        return Some(false);
+    }
+    let names_: Vec<Rc<str>> = params.iter().map(|p| p.0.clone()).collect();
+    let limit = cx.u.entities.len();
+    cx.u.class_templates[v].outside.push((names_, node.clone(), limit));
+    let k = cx.u.class_templates[v].outside.len() - 1;
+    let ct = cx.u.class_templates[v].clone();
+    for (args, c) in &ct.specs {
+        if !ct.explicit.contains(c) {
+            define_outside(cx, v, k, args);
+        }
+    }
+    Some(true)
+}
+
+/// The member that outside definition `k` of class template `v` gives
+/// the specialization of `args`. An error in it leaves the unit
+/// unsupported, as for a function template.
+fn define_outside(cx: &mut Check, v: usize, k: usize, args: &[TArg]) {
+    let ct = cx.u.class_templates[v].clone();
+    let (names_, node, limit) = ct.outside[k].clone();
+    let saved_scope = cx.scope;
+    let saved_func = cx.func.take();
+    let saved_member = cx.member_of.take();
+    let saved_lambdas = std::mem::take(&mut cx.lambdas);
+    let saved_unevaluated = std::mem::replace(&mut cx.unevaluated, 0);
+    let saved_default = std::mem::replace(&mut cx.default_arg, false);
+    let saved_access = cx.access_class.take();
+    let saved_limit = cx.lookup_limit.replace(limit);
+    cx.instantiating += 1;
+    let marks = cx.u.diags.len();
+    cx.scope = ct.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    bind_params(cx, ts, &names_, args, ct.span);
+    match node.prod {
+        "function_definition" => crate::declarations::functions::definitions::check::function_definition(cx, &node),
+        _ => {
+            crate::declarations::check::block_decl(cx, &node, false);
+        }
+    }
+    cx.scope = saved_scope;
+    cx.func = saved_func;
+    cx.member_of = saved_member;
+    cx.lambdas = saved_lambdas;
+    cx.unevaluated = saved_unevaluated;
+    cx.default_arg = saved_default;
+    cx.access_class = saved_access;
+    cx.lookup_limit = saved_limit;
+    cx.instantiating -= 1;
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        let tail = cx.u.diags.split_off(marks);
+        cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
+        cx.unsupported(node.span, format!("an error in a member of a specialization of the class template '{}' (the first pieces of build step 5 do not tell it from a gap of their model)", ct.name));
+    }
 }
 
 /// The definition uses a form that needs the dependent names of model
@@ -829,7 +926,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>) -> bool {
     }
     let id = cx.u.class_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), span: head.span, limit });
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
     true
 }
@@ -929,6 +1026,9 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg]) -> Option<crate::s
         let tail = cx.u.diags.split_off(marks);
         cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
         return None;
+    }
+    for k in 0..cx.u.class_templates[v].outside.len() {
+        define_outside(cx, v, k, args);
     }
     Some(predicted)
 }

@@ -158,6 +158,10 @@ pub struct ClassTemplate {
     pub specs: Vec<(Vec<types::TArg>, types::ClassId)>,
     /// The classes of `specs` that explicit specializations define.
     pub explicit: Vec<types::ClassId>,
+    /// The members defined outside the class: the parameter names of
+    /// each definition, its declaration, and the first entity declared
+    /// after it.
+    pub outside: Vec<(Vec<Rc<str>>, crate::syntax::Node, EntityId)>,
     pub span: Span,
     pub limit: EntityId,
 }

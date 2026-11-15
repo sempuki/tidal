@@ -2595,3 +2595,8 @@ fn template_id_qualifiers_and_depth() {
     assert_eq!(rule(&format!("{} static_assert(Count<50>::value == 50);", count), None), None);
     assert_eq!(rule(&format!("{} static_assert(Count<50>::value == 50);", count), Some(40)), Some("TR-13"));
 }
+
+#[test]
+fn class_template_members_outside() {
+    assert_eq!(run("template <class T> struct Counter { T get() const; static T start; T value = start; }; template <class T> T Counter<T>::get() const { return value; } template <class T> T Counter<T>::start = 7; int main() { return Counter<int>().get() + Counter<long>().get(); }"), RunOutcome::Result(14));
+}

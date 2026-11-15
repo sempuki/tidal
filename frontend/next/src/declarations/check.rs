@@ -227,6 +227,10 @@ pub fn declarator_class(cx: &mut Check, n: &Node) -> Option<crate::sem::types::C
     }
     let id = n.find("declarator_id")?;
     let nn = id.find("nested_name")?;
+    // A specialization of a class template (TARG-1).
+    if let Some(tid) = nn.child("template_id") {
+        return crate::templates::declarations::check::class_template_use(cx, tid).and_then(|t| t.class());
+    }
     let mut toks = Vec::new();
     nn.tokens(&mut toks);
     let name = toks.iter().rev().map(|&t| cx.toks[t].text.clone()).find(|w| w != "::")?;

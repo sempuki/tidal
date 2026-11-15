@@ -496,7 +496,10 @@ the one partial specialization whose pattern its arguments match, or
 the primary, and makes a constexpr variable from it. A class template
 of that kind has a specialization for each list of type arguments, the
 class that its definition makes with the parameters bound, which is
-recorded before its body so that the body names it. A union template
+recorded before its body so that the body names it. A member that a
+definition outside the class gives, with the parameters as the
+qualifier's arguments, is checked again for each specialization, made
+before or after the definition. A union template
 works the same way, a template-id can follow a qualifier and can be one, and the
 namespaces of a specialization's arguments are associated for
 argument-dependent lookup. An explicit specialization of a class
