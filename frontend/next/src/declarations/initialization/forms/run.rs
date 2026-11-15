@@ -70,18 +70,25 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
     virtual_base_constant(m, ty)?;
     match init {
         Init::Ctor(f, args) => {
-            let mut vals = vec![Ret::Place(p.clone())];
-            for a in args {
-                if a.by_ref {
-                    vals.push(Ret::Place(place(m, &a.e)?));
-                } else {
-                    vals.push(Ret::Val(eval_any(m, &a.e)?));
+            // A constructor's arguments are expressions, whose
+            // temporaries the declared variable does not keep.
+            let ext = m.extending.take();
+            let r = (|| -> R<()> {
+                let mut vals = vec![Ret::Place(p.clone())];
+                for a in args {
+                    if a.by_ref {
+                        vals.push(Ret::Place(place(m, &a.e)?));
+                    } else {
+                        vals.push(Ret::Val(eval_any(m, &a.e)?));
+                    }
                 }
-            }
-            m.constructing.push(p.obj);
-            let r = crate::machine::eval::call(m, *f, vals);
-            m.constructing.pop();
-            r.map(|_| ())
+                m.constructing.push(p.obj);
+                let r = crate::machine::eval::call(m, *f, vals);
+                m.constructing.pop();
+                r.map(|_| ())
+            })();
+            m.extending = ext;
+            r
         }
         Init::Expr(e) if matches!(&e.k, crate::sem::tree::EK::List(i) if constructs(i) || has_vbases(m, ty)) => {
             let crate::sem::tree::EK::List(i) = &e.k else { unreachable!() };
@@ -112,6 +119,7 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                 _ => Vec::new(),
             };
             let mut built = Vec::new();
+            let mut extended = Vec::new();
             let r = (|| -> R<()> {
                 // DER-7: a complete object initializes its virtual bases
                 // first.
@@ -125,9 +133,17 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                     // VC-9: the initialization of each element of an array
                     // is a full expression, whose temporaries end with it.
                     let from = m.temps.len();
+                    let kept = m.extending.as_ref().map_or(0, |v| v.len());
                     match items.get(k) {
                         Some(i) => construct(m, &q, t, i)?,
                         None => set(m, &q, m.zero(t))?,
+                    }
+                    // UNW-2: a temporary that a reference member keeps
+                    // ends in reverse order with the members built.
+                    let now: Vec<usize> = m.extending.as_ref().map_or(Vec::new(), |v| v[kept..].to_vec());
+                    for o in now {
+                        built.push((Ptr::whole(o), m.objs[o].ty.clone()));
+                        extended.push(o);
                     }
                     built.push((q, t.clone()));
                     if ty.is_array() {
@@ -136,6 +152,12 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                 }
                 Ok(())
             })();
+            if matches!(r, Err(crate::machine::Stop::Throw(_))) {
+                m.temps.retain(|o| !extended.contains(o));
+                if let Some(v) = m.extending.as_mut() {
+                    v.retain(|o| !extended.contains(o));
+                }
+            }
             undo(m, r, built)
         }
         _ => {
@@ -257,7 +279,10 @@ fn value_in(m: &mut Machine, ty: &QType, init: &Init, complete: bool) -> R<Val> 
             // The object that the value initializes owns it, so the
             // object the constructor ran on ends without destruction.
             let p = crate::machine::eval::temp(m, ty, m.uninit(ty))?;
-            construct(m, &p, ty, init)?;
+            let ext = m.extending.take();
+            let r = construct(m, &p, ty, init);
+            m.extending = ext;
+            r?;
             m.temps.retain(|&o| o != p.obj);
             m.objs[p.obj].alive = false;
             Ok(m.objs[p.obj].val.clone())
@@ -269,7 +294,10 @@ fn value_in(m: &mut Machine, ty: &QType, init: &Init, complete: bool) -> R<Val> 
                 return v;
             }
             m.elide = true;
-            let v = eval_any(m, e)?;
+            let ext = m.extending.take();
+            let v = eval_any(m, e);
+            m.extending = ext;
+            let v = v?;
             m.elide = false;
             match (&ty.t, v) {
                 (Type::Float(k), v @ (Val::Float(_) | Val::Ext(_))) => Ok(crate::foundations::conversions::run::to_float(v, *k)),
@@ -277,7 +305,17 @@ fn value_in(m: &mut Machine, ty: &QType, init: &Init, complete: bool) -> R<Val> 
             }
         }
         Init::Ref(e) => {
-            let p = place(m, e)?;
+            let ext = m.extending.take();
+            let p = place(m, e);
+            m.extending = ext;
+            let p = p?;
+            // REF-4: a reference member of the declared aggregate keeps
+            // the temporary that it binds.
+            if crate::declarations::initialization::references::run::extends(e) && m.temps.contains(&p.obj) {
+                if let Some(v) = m.extending.as_mut() {
+                    v.push(p.obj);
+                }
+            }
             Ok(Val::Ptr(p))
         }
         Init::List(items) if crate::classes::unions::run::union_of(m.u, ty).is_some() => {

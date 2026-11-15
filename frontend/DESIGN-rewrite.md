@@ -706,7 +706,10 @@ class has conversion functions weighs the built-in candidate that the
 conversion functions reach against the best operator function, by the
 user-defined sequences of each, and an explicit conversion function
 counts for `!`, `&&`, and `||`. A const object is not const while its
-constructor runs. The
+constructor runs. A temporary that a reference member of a braced
+aggregate binds lives as long as the declared variable and ends after
+it, and one that the object of a `new` expression binds ends with the
+full expression, with a warning. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

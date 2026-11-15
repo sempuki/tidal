@@ -209,7 +209,21 @@ fn single(cx: &mut Check, ty: QType, init: Option<&Node>, span: Span) -> Expr {
             None => return bad(span),
         },
     };
+    // REF-15: a reference member of the new object outlives the
+    // temporary that it binds (REF-5).
+    if dangles(&i) {
+        cx.warning(span, "REF-15", "a reference member of the object that new makes binds a temporary, which ends with the full expression");
+    }
     result(New { ty, bound: None, init: i, rest: Init::Default, alloc: None }, span)
+}
+
+/// A reference member of a braced aggregate initializer binds a temporary.
+fn dangles(i: &Init) -> bool {
+    match i {
+        Init::Ref(b) => crate::classes::members::check::binds_temporary(b),
+        Init::List(xs) => xs.iter().any(dangles),
+        _ => false,
+    }
 }
 
 /// `new auto(e)` and `new auto{e}`: the type comes from the one

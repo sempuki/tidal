@@ -1854,3 +1854,20 @@ fn builtin_operators_against_operator_functions() {
     // A const object is not const while its constructor runs.
     assert_eq!(run("struct S { int x; S() { x = 3; } }; int main() { const S s; return s.x; }"), RunOutcome::Result(3));
 }
+
+#[test]
+fn reference_members_keep_temporaries() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // The temporary lives as long as the aggregate variable and ends
+    // after it.
+    assert_eq!(run("int t = 0; struct N { int v; ~N() { t = t * 10 + v; } }; struct H { const N& n; ~H() { t = t * 10 + 9; } }; void f() { H h{N{5}}; t = h.n.v; } int main() { f(); return t; }"), RunOutcome::Result(595));
+    // A temporary in an expression of the initializer ends with it.
+    assert_eq!(run("int t = 0; struct N { int v; ~N() { ++t; } }; struct H { const N& n; }; int main() { int x = H{N{5}}.n.v; return t * 10 + x; }"), RunOutcome::Result(15));
+    // A block-scope constexpr aggregate binds an automatic temporary.
+    assert_eq!(rule("struct H { const int& n; }; void f() { constexpr H h{4}; }"), Some("CX-2"));
+    assert_eq!(rule("struct H { const int& n; }; constexpr H h{4}; static_assert(h.n == 4);"), None);
+}

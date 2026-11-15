@@ -407,6 +407,7 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     let t = m.temps.len();
     let o = m.frames.last().unwrap().vars[&id];
     m.undeclared.remove(&o);
+    let saved = m.extending.replace(Vec::new());
     let r = if crate::declarations::initialization::forms::run::constructs(init) {
         m.objs[o].val = m.uninit(&ty);
         m.objs[o].alive = true;
@@ -417,6 +418,12 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
             m.objs[o].alive = true;
         })
     };
+    let kept = std::mem::replace(&mut m.extending, saved).unwrap_or_default();
+    // REF-4: the temporaries that the reference members keep end with
+    // the variable, after it.
+    if r.is_ok() {
+        keep(m, &kept, Some(o));
+    }
     // UNW-2: a variable whose initialization throws was never made, so
     // the end of its block does not destroy it.
     if let Err(crate::machine::Stop::Throw(_)) = r {
@@ -426,6 +433,21 @@ fn declare_automatic(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     m.objs[o].konst = ty.is_const();
     end_temps(m, t)?;
     Ok(())
+}
+
+/// REF-4: the temporaries `kept` leave the full expression for the
+/// innermost block, which ends them after the variable's object `o`.
+fn keep(m: &mut Machine, kept: &[usize], o: Option<usize>) {
+    if kept.is_empty() {
+        return;
+    }
+    m.temps.retain(|t| !kept.contains(t));
+    if let Some(b) = m.frames.last_mut().and_then(|f| f.blocks.last_mut()) {
+        let at = o.and_then(|o| b.iter().position(|&x| x == o)).unwrap_or(b.len());
+        for (k, &t) in kept.iter().enumerate() {
+            b.insert(at + k, t);
+        }
+    }
 }
 
 /// A variable whose object the block did not make in advance: a
@@ -448,15 +470,17 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     }
     m.check_size(&ty)?;
     let t = m.temps.len();
+    let saved = m.extending.replace(Vec::new());
     let o = if crate::declarations::initialization::forms::run::constructs(init) {
         let o = m.new_obj(&ty, m.uninit(&ty), &m.u.entities[id].name.clone());
         crate::foundations::storage::run::var_aligned(m, id, o);
-        crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init)?;
-        o
+        crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init).map(|_| o)
     } else {
-        let val = init_value(m, &ty, init)?;
-        m.new_obj(&ty, val, &m.u.entities[id].name.clone())
+        init_value(m, &ty, init).map(|val| m.new_obj(&ty, val, &m.u.entities[id].name.clone()))
     };
+    let kept = std::mem::replace(&mut m.extending, saved).unwrap_or_default();
+    let o = o?;
+    keep(m, &kept, None);
     end_temps(m, t)?;
     m.objs[o].konst = ty.is_const();
     if let Some(f) = m.frames.last_mut() {

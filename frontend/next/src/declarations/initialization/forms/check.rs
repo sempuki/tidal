@@ -739,15 +739,25 @@ fn check_constant_initializer(cx: &mut Check, init: &Init, ty: &QType, span: Spa
         }
         return;
     }
-    fn exprs_of<'i>(i: &'i Init, out: &mut Vec<&'i Expr>) {
+    fn exprs_of<'i>(i: &'i Init, out: &mut Vec<&'i Expr>, refs: &mut Vec<&'i Expr>) {
         match i {
             Init::Expr(e) => out.push(e),
-            Init::List(xs) => xs.iter().for_each(|x| exprs_of(x, out)),
+            Init::Ref(e) => refs.push(e),
+            Init::List(xs) => xs.iter().for_each(|x| exprs_of(x, out, refs)),
             _ => {}
         }
     }
     let mut exprs = Vec::new();
-    exprs_of(init, &mut exprs);
+    let mut refs = Vec::new();
+    exprs_of(init, &mut exprs, &mut refs);
+    // A reference member binds as a constexpr reference does, and the
+    // temporary that it keeps has the storage of the variable (REF-4).
+    for e in refs {
+        if let Err(why) = ce::evaluate_ref(cx, e, static_storage) {
+            ce::report(cx, span, held(rule, &why), why);
+            return;
+        }
+    }
     for e in exprs {
         if let Err(why) = ce::evaluate(cx, e) {
             let rule = if e.ty.is_ptr() { held(rule, &why) } else { rule };

@@ -255,6 +255,10 @@ pub struct Machine<'a> {
     /// Every temporary of the initializer that a reference binds lives as
     /// long as the reference (the range of a range-based for, RFOR-4).
     pub keep_temps: bool,
+    /// The temporaries that the reference members of the aggregate being
+    /// declared bind, which live as long as the variable (REF-4). None
+    /// outside such a declaration and inside each expression of it.
+    pub extending: Option<Vec<usize>>,
     /// The static objects in the order their initialization completed,
     /// which their destruction reverses after main (OBJ-12).
     pub static_order: Vec<usize>,
@@ -308,6 +312,7 @@ impl<'a> Machine<'a> {
             aligned_alloc: Default::default(),
             elide: false,
             keep_temps: false,
+            extending: None,
             static_order: Vec::new(),
             undeclared: Default::default(),
         }

@@ -9,7 +9,7 @@ use crate::sem::tree::{Cat, Conv, Expr, EK};
 /// of a comma, a cast with no user-defined conversion, or a subscript of
 /// an array temporary. A returned reference or a reference that a
 /// parameter holds reaches no such temporary (REF-5).
-fn extends(e: &Expr) -> bool {
+pub fn extends(e: &Expr) -> bool {
     match &e.k {
         EK::Conv(Conv::Materialize, _) => true,
         // The machine holds a function that a reference names in an
