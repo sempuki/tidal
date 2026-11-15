@@ -65,8 +65,8 @@ fn constant_evaluation_reports_its_limits() {
 #[test]
 fn an_error_after_an_unmodelled_construct_gives_no_verdict() {
     let outcome = |src: &str| crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0;
-    assert!(matches!(outcome("template <class T> struct S { T a; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
-    assert!(matches!(outcome("static_assert(1 == 2);\ntemplate <class T> struct S { T a; };"), Outcome::Reject(_)));
+    assert!(matches!(outcome("template <class T> struct S { int a = T::v; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
+    assert!(matches!(outcome("static_assert(1 == 2);\ntemplate <class T> struct S { int a = T::v; };"), Outcome::Reject(_)));
     assert!(matches!(outcome("int int::* pm;"), Outcome::Reject(_)));
 }
 
@@ -2485,7 +2485,11 @@ fn class_templates_with_type_parameters() {
     };
     assert_eq!(run("template <class T> struct Box { T v; T get() const { return v; } Box<T> self() const { return *this; } }; template <class A, class B> struct Pair { A a; B b; }; int main() { Box<int> b{3}; Pair<Box<int>, long> p{b, 4}; return b.self().get() + p.a.v + int(p.b); }"), RunOutcome::Result(10));
     assert_eq!(rule("template <class T> struct Box { T v; }; static_assert(sizeof(Box<char>) == 1 && sizeof(Box<long>) == 8);"), None);
-    assert_eq!(rule("template <class T> struct Box { T v; };"), Some("unsupported"));
+    // A class template that nothing specializes is checked with `int`
+    // for its parameters; a definition that this trial does not check
+    // leaves the unit unsupported.
+    assert_eq!(rule("template <class T> struct Box { T v; };"), None);
+    assert_eq!(rule("template <class T> struct Box { static_assert(sizeof(T) == 1); };"), Some("unsupported"));
 }
 
 #[test]
@@ -2599,4 +2603,20 @@ fn template_id_qualifiers_and_depth() {
 #[test]
 fn class_template_members_outside() {
     assert_eq!(run("template <class T> struct Counter { T get() const; static T start; T value = start; }; template <class T> T Counter<T>::get() const { return value; } template <class T> T Counter<T>::start = 7; int main() { return Counter<int>().get() + Counter<long>().get(); }"), RunOutcome::Result(14));
+}
+
+#[test]
+fn class_partial_specializations_and_typename() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let traits = "template <class T> struct rr { using type = T; }; template <class T> struct rr<T&> { using type = T; }; template <class A, class B> struct same { static constexpr bool value = false; }; template <class A> struct same<A, A> { static constexpr bool value = true; }; template <class T> constexpr typename rr<T>::type&& mv(T&& v) noexcept { return static_cast<typename rr<T>::type&&>(v); }";
+    assert_eq!(rule(&format!("{} template <class T> struct size; template <class T> struct size<T*> {{ static constexpr int value = 8; }}; static_assert(same<rr<int&>::type, int>::value && !same<int, long>::value && size<int*>::value == 8); int i; static_assert(same<decltype(mv(i)), int&&>::value);", traits)), None);
+    assert_eq!(rule("template <class T, class U> struct Pair {}; template <class T, class U> struct Pair<U, T> {};"), Some("TSP-11"));
+    assert_eq!(rule("template <class T> struct Box { int T; };"), Some("TPL-18"));
+    assert_eq!(rule("extern \"C\" { template <class T> struct Box {}; }"), Some("TPL-3"));
+    // A constructor's parameter owns its argument's object.
+    assert_eq!(run("int frees = 0, x; struct B { int* p; explicit B(int* q) : p(q) {} B(B&& o) noexcept : p(o.p) { o.p = nullptr; } ~B() { if (p) ++frees; } }; struct S { B b; S(B v) : b(static_cast<B&&>(v)) {} }; int main() { { B c(&x); S s(static_cast<B&&>(c)); } return frees; }"), RunOutcome::Result(1));
 }

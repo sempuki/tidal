@@ -22,7 +22,13 @@ pub fn new(m: &mut Machine, n: &New) -> R<Val> {
             return limit("NEW-37", "a new expression whose allocation function the program gives");
         }
         for arg in &a.args {
-            place.push(if arg.by_ref { Ret::Place(crate::machine::eval::place(m, &arg.e)?) } else { Ret::Val(crate::machine::eval::eval_any(m, &arg.e)?) });
+            place.push(if arg.by_ref {
+                Ret::Place(crate::machine::eval::place(m, &arg.e)?)
+            } else {
+                // A parameter owns its argument's object.
+                m.elide = true;
+                Ret::Val(crate::machine::eval::eval_any(m, &arg.e)?)
+            });
         }
     }
     let count = match &n.bound {

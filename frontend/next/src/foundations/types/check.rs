@@ -197,6 +197,7 @@ pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<Q
                 defines = true;
             }
             "decltype_spec" | "decltype_expr" => ty = Some(crate::expressions::decltype::check::decltype_spec(cx, x)),
+            "typename_specifier" => ty = Some(crate::templates::dependent_names::check::typename_specifier(cx, x)),
             "elaborated_type" => {
                 ty = Some(crate::declarations::enumerations::check::elaborated_type(cx, x));
                 // `struct S;` declares the class.

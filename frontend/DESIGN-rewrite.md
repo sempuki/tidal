@@ -499,7 +499,16 @@ class that its definition makes with the parameters bound, which is
 recorded before its body so that the body names it. A member that a
 definition outside the class gives, with the parameters as the
 qualifier's arguments, is checked again for each specialization, made
-before or after the definition. A union template
+before or after the definition. A class template can be declared before
+its definition, and has partial specializations whose parameters are
+types: a use takes the one whose pattern its arguments match, or the
+primary. A partial specialization whose pattern is the parameters alone,
+or that leaves out a parameter, is an error. A `typename` specifier
+after a qualifier that names a parameter is a dependent type that
+deduction does not look into, and in a specialization it names the
+member type. A template in a C linkage specification, and a declaration
+in a template of a name that one of its parameters has, are errors. A
+union template
 works the same way, a template-id can follow a qualifier and can be one, and the
 namespaces of a specialization's arguments are associated for
 argument-dependent lookup. An explicit specialization of a class
@@ -533,9 +542,11 @@ recorded before its body so that a recursive call finds it. Lookup in a
 specialization sees only the declarations at namespace scope before
 the template. Because the definition checks of model section 5 and the
 points of instantiation of model section 3 are not there yet, a
-template that nothing specializes, an error in a specialization, a
-call whose argument-dependent lookup would see later declarations, a
-definition with a dependent form (`typename`, `template`, a name
+function template that nothing specializes, a class template that
+nothing specializes and that a trial specialization with `int` for each
+parameter does not check without a diagnostic, an error in a
+specialization, a call whose argument-dependent lookup would see later
+declarations, a definition with a dependent form (`template`, a name
 qualified by a parameter) or an incomplete class, and a name that a
 function template shares with another declaration leave the unit
 unsupported.

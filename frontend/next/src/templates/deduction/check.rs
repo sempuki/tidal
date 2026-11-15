@@ -30,6 +30,7 @@ pub fn substitute(t: &QType, args: &[QType]) -> QType {
                 let a = args.get(*index as usize).cloned().unwrap_or_else(QType::error);
                 return a.with_cv(a.c || t.c, a.v || t.v);
             }
+            DepType::Opaque { .. } => return t.clone(),
         },
         Type::Ptr(x) => Type::Ptr(Rc::new(substitute(x, args))),
         Type::Ref(x, rv) => {
@@ -61,7 +62,8 @@ fn match_type(p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
     }
     match (&p.t, &a.t) {
         (Type::Dep(d), _) => {
-            let DepType::Param { index, .. } = &**d;
+            // A type after a dependent qualifier deduces nothing.
+            let DepType::Param { index, .. } = &**d else { return true };
             // The parameter's own cv-qualifiers are not part of the
             // argument, which can have fewer; the argument keeps the rest.
             let t = a.with_cv(a.c && !p.c, a.v && !p.v);
@@ -141,7 +143,7 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
 fn substitute_known(p: &QType, bound: &[Option<QType>], known: &[QType]) -> QType {
     match &p.t {
         Type::Dep(d) => {
-            let DepType::Param { index, .. } = &**d;
+            let DepType::Param { index, .. } = &**d else { return p.clone() };
             if bound[*index as usize].is_some() {
                 substitute(p, known)
             } else {

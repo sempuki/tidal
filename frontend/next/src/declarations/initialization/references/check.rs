@@ -120,6 +120,10 @@ pub fn bind(cx: &mut Check, e: Expr, rt: &QType, rule: &'static str) -> Option<E
         cx.error(span, "REF-10", "an rvalue reference bound to an lvalue");
         return None;
     }
+    // An array prvalue of a compatible type is the temporary itself.
+    if compatible && e.cat == Cat::PR && matches!(e.ty.t, Type::Array(..)) {
+        return Some(e.conv(Conv::Materialize, inner, Cat::L));
+    }
     if inner.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
         let v = crate::declarations::initialization::forms::check::copy_init(cx, e, &inner.unqual(), rule)?;
         return Some(v.conv(Conv::Materialize, inner, Cat::L));

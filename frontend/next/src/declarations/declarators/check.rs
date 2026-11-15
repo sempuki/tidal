@@ -556,7 +556,10 @@ fn function_suffix(cx: &mut Check, ret: QType, n: &Node, d: &mut Declared, top: 
     if not_member && n.child("ref_qualifier").is_some() {
         cx.error(n.span, "DCL-21", "a function that is not a member has a ref-qualifier");
     }
+    // The parameters' declarators start afresh (DCL-4).
+    let saved = std::mem::replace(&mut cx.declarator_made_part, false);
     let (params, variadic) = parameters(cx, n.child("parameters"));
+    cx.declarator_made_part = saved;
     // CLS-14: an explicit object parameter is the first parameter of a
     // member function without cv-qualifiers or a ref-qualifier, and has
     // no default argument.

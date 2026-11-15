@@ -85,6 +85,9 @@ pub enum DepType {
     /// The type parameter `index` of the template at `depth`, with its
     /// name for diagnostics.
     Param { depth: u32, index: u32, name: Rc<str> },
+    /// A type that a `typename` specifier names after a dependent
+    /// qualifier, which deduction does not look into (DEP-19).
+    Opaque { name: Rc<str> },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -384,7 +387,7 @@ fn show(q: &QType, inner: &str) -> String {
         Type::Class(c) => format!("{}class#{}{}", cv(q), c, inner),
         Type::Error => "<error>".into(),
         Type::Dep(d) => match &**d {
-            DepType::Param { name, .. } => format!("{}{}{}", cv(q), name, inner),
+            DepType::Param { name, .. } | DepType::Opaque { name } => format!("{}{}{}", cv(q), name, inner),
         },
         Type::Ptr(p) => {
             let c = cv(q).trim_end();

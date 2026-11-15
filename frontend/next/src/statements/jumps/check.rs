@@ -142,7 +142,12 @@ fn pessimizing_move(cx: &mut Check, v: &crate::sem::tree::Expr, ctx: &FnCtx, spa
     let EK::Call(f, args, _) = &v.k else { return };
     let EK::Func(id) = f.k else { return };
     let ent = &cx.u.entities[id];
-    let in_std = cx.u.scopes[ent.scope].name.as_ref() == "std" && cx.u.scopes[ent.scope].parent == Some(cx.u.root);
+    // A specialization of a function template is in the template's scope.
+    let mut s = ent.scope;
+    while cx.u.scopes[s].kind == crate::sem::ScopeKind::Template {
+        s = cx.u.scopes[s].parent.unwrap_or(cx.u.root);
+    }
+    let in_std = cx.u.scopes[s].name.as_ref() == "std" && cx.u.scopes[s].parent == Some(cx.u.root);
     if &*ent.name != "move" || !in_std || args.len() != 1 {
         return;
     }

@@ -156,12 +156,19 @@ pub struct ClassTemplate {
     pub node: crate::syntax::Node,
     pub scope: ScopeId,
     pub specs: Vec<(Vec<types::TArg>, types::ClassId)>,
-    /// The classes of `specs` that explicit specializations define.
+    /// The classes of `specs` that explicit or partial specializations
+    /// define.
     pub explicit: Vec<types::ClassId>,
     /// The members defined outside the class: the parameter names of
     /// each definition, its declaration, and the first entity declared
     /// after it.
     pub outside: Vec<(Vec<Rc<str>>, crate::syntax::Node, EntityId)>,
+    /// Each partial specialization: its parameters, its argument pattern
+    /// with its parameters as dependent types, and its definition
+    /// (TSP-9).
+    pub partials: Vec<(Vec<Rc<str>>, Vec<QType>, crate::syntax::Node)>,
+    /// False for a template declared and not yet defined.
+    pub defined: bool,
     pub span: Span,
     pub limit: EntityId,
 }

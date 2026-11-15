@@ -81,6 +81,8 @@ pub fn construct(m: &mut Machine, p: &Ptr, ty: &QType, init: &Init) -> R<()> {
                     if a.by_ref {
                         vals.push(Ret::Place(place(m, &a.e)?));
                     } else {
+                        // A parameter owns its argument's object.
+                        m.elide = true;
                         vals.push(Ret::Val(eval_any(m, &a.e)?));
                     }
                 }
