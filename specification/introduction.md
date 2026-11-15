@@ -29,7 +29,7 @@ replace it.
 ## The roles of the agents
 
 People and AI agents both work on Tidal. Each agent has one of three
-roles, set by what the agent has read.
+roles, defined by what can be read.
 
 | Role | What the agent may read | What the agent may write |
 |---|---|---|
