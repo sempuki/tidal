@@ -393,10 +393,14 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
         }
         return;
     }
-    let Some(cs) = body.child("compound_stmt") else {
-        cx.unsupported(body.span, "a function try block (build step 4)");
+    // TRY-10: a function try block on a constructor or destructor.
+    if let Some(ftb) = body.child("function_try_block") {
+        let Some(cs) = ftb.child("compound_stmt") else { return };
+        let hs: Vec<&Node> = ftb.children("handler").collect();
+        crate::declarations::functions::definitions::check::define_full(cx, f, &d, cs, ftb.child("ctor_init"), &hs);
         return;
-    };
+    }
+    let Some(cs) = body.child("compound_stmt") else { return };
     crate::declarations::functions::definitions::check::define_with(cx, f, &d, cs, body.child("ctor_init"));
 }
 

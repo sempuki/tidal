@@ -14,6 +14,50 @@ pub fn try_block(cx: &mut Check, n: &Node) -> Stmt {
     let start = cx.u.entities.len();
     let body = region(cx, start, |cx| crate::statements::blocks::check::compound_stmt(cx, block, None));
     let hs: Vec<&Node> = n.children("handler").collect();
+    match handlers(cx, &hs) {
+        Some(handlers) => Stmt::new(SK::Try { body: Box::new(body), handlers }, span),
+        None => Stmt::new(SK::Null, span),
+    }
+}
+
+/// The handlers of the function try block of `f` (TRY-9, TRY-10): in a
+/// constructor's, no return statement (TRY-17); in a constructor's or a
+/// destructor's, a use of a member warns (TRY-13).
+pub fn function_handlers(cx: &mut Check, f: crate::sem::EntityId, hs: &[&Node]) -> Vec<Handler> {
+    let special = cx.u.func(f).map(|x| x.special).unwrap_or(crate::sem::Special::None);
+    if let Some(fc) = cx.func.as_mut() {
+        fc.ctor_handler = special == crate::sem::Special::Ctor;
+    }
+    let out = handlers(cx, hs).unwrap_or_default();
+    if let Some(fc) = cx.func.as_mut() {
+        fc.ctor_handler = false;
+    }
+    if special != crate::sem::Special::None {
+        for h in &out {
+            if uses_this(&h.body) {
+                cx.warning(h.body.span, "TRY-13", "a handler of the function try block of a constructor or destructor uses a member of its object");
+            }
+        }
+    }
+    out
+}
+
+/// A statement that names `this`, as a use of a member does.
+fn uses_this(s: &Stmt) -> bool {
+    let e = |x: &Expr| x.any(&|y| matches!(y.k, EK::This));
+    match &s.k {
+        SK::Block(xs) => xs.iter().any(uses_this),
+        SK::Expr(x) | SK::Return(Some(x)) | SK::ReturnRef(x) => e(x),
+        SK::Decl(vs) => vs.iter().any(|(_, i)| i.any(&|y| matches!(y.k, EK::This))),
+        SK::If { then, els, .. } => uses_this(then) || els.as_ref().is_some_and(|x| uses_this(x)),
+        _ => false,
+    }
+}
+
+/// The handlers of a try block, in order (TRY-3, TRY-4, TRY-5, TRY-14).
+/// None after an error in a parameter.
+fn handlers(cx: &mut Check, hs: &[&Node]) -> Option<Vec<Handler>> {
+    let span = hs.first().map(|h| h.span).unwrap_or_default();
     let mut handlers = Vec::new();
     for (k, h) in hs.iter().enumerate() {
         let Some(ed) = h.child("exception_decl") else { continue };
@@ -28,7 +72,7 @@ pub fn try_block(cx: &mut Check, n: &Node) -> Stmt {
         let param = if all { Ok(None) } else { parameter(cx, ed) };
         let Ok(param) = param else {
             cx.scope = saved;
-            return Stmt::new(SK::Null, span);
+            return None;
         };
         let Some(hb) = h.child("compound_stmt") else {
             cx.scope = saved;
@@ -53,7 +97,8 @@ pub fn try_block(cx: &mut Check, n: &Node) -> Stmt {
             cx.warning(h.body.span, "TRY-4", "the handler is shadowed by an earlier handler of the try block");
         }
     }
-    Stmt::new(SK::Try { body: Box::new(body), handlers }, span)
+    let _ = span;
+    Some(handlers)
 }
 
 /// Check a try block's body or a handler: no jump enters it (TRY-7), and

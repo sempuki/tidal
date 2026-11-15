@@ -438,11 +438,14 @@ pub fn function_definition(cx: &mut Check, n: &Node) {
     if cx.words(body).contains(&"delete") || cx.words(body).contains(&"default") {
         return;
     }
-    let Some(cs) = body.child("compound_stmt") else {
-        mark_unsupported(cx, id, "a function try block (build step 4)");
-        cx.unsupported(body.span, "a function try block (build step 4)");
+    // TRY-9: a function try block wraps the body in a try block.
+    if let Some(ftb) = body.child("function_try_block") {
+        let Some(cs) = ftb.child("compound_stmt") else { return };
+        let hs: Vec<&Node> = ftb.children("handler").collect();
+        define_full(cx, id, &d, cs, ftb.child("ctor_init"), &hs);
         return;
-    };
+    }
+    let Some(cs) = body.child("compound_stmt") else { return };
     define(cx, id, &d, cs);
 }
 
@@ -461,6 +464,11 @@ pub fn define(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node) {
 /// `define`, with the member initializer list of a constructor, which
 /// sees the parameters (CTOR-5).
 pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_init: Option<&Node>) {
+    define_full(cx, id, d, cs, ctor_init, &[])
+}
+
+/// `define_with`, with the handlers of a function try block (TRY-9).
+pub fn define_full(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_init: Option<&Node>, handlers: &[&Node]) {
     let saved_scope = cx.scope;
     // A friend defined in its class looks names up in the class (ACC-7).
     let decl_scope = if cx.friend_scope.is_some() { cx.scope } else { cx.u.entities[id].scope };
@@ -549,7 +557,12 @@ pub fn define_with(cx: &mut Check, id: EntityId, d: &Declared, cs: &Node, ctor_i
             cx.u.mem_inits.insert(id, mi);
         }
     }
-    let body = crate::statements::check::function_body(cx, cs);
+    let mut body = crate::statements::check::function_body(cx, cs);
+    if !handlers.is_empty() {
+        let span = body.span;
+        let hs = crate::exceptions::handlers::check::function_handlers(cx, id, handlers);
+        body = crate::sem::tree::Stmt::new(SK::Try { body: Box::new(body), handlers: hs }, span);
+    }
     let ctx = cx.func.take().unwrap_or_default();
     cx.func = saved;
     cx.scope = saved_scope;

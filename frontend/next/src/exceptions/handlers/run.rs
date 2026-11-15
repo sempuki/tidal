@@ -19,20 +19,33 @@ pub fn try_block(m: &mut Machine, body: &Stmt, handlers: &[Handler], seek: Optio
     // UNW-1: the temporaries of the full expressions that the exception
     // left end first.
     crate::exceptions::throw::run::unwind(m, Ok(()), |m| crate::machine::exec::end_temps(m, t))?;
+    catch(m, handlers, o)
+}
+
+/// The first of `handlers` that matches the exception object `o` runs
+/// (TRY-1); with none, the exception goes on.
+pub fn catch(m: &mut Machine, handlers: &[Handler], o: usize) -> R<crate::machine::Flow> {
+    catch_keeping(m, handlers, o, false)
+}
+
+/// `catch`; `keep` keeps the exception object after a handler that
+/// completes, for the rethrow at the end of a constructor's or
+/// destructor's handler (TRY-10).
+pub fn catch_keeping(m: &mut Machine, handlers: &[Handler], o: usize, keep: bool) -> R<crate::machine::Flow> {
     for h in handlers {
         let place = match &h.ty {
             None => Some(Ptr::whole(o)),
             Some(ty) => matches(m, ty, o)?,
         };
         let Some(place) = place else { continue };
-        return handle(m, h, o, place);
+        return handle(m, h, o, place, keep);
     }
     Err(Stop::Throw(o))
 }
 
 /// Run the handler `h` for the exception object `o`, whose parameter
 /// binds to `place`.
-fn handle(m: &mut Machine, h: &Handler, o: usize, place: Ptr) -> R<crate::machine::Flow> {
+fn handle(m: &mut Machine, h: &Handler, o: usize, place: Ptr, keep: bool) -> R<crate::machine::Flow> {
     m.handled.push(o);
     m.caught = Some(place);
     crate::machine::exec::open_block(m);
@@ -58,7 +71,9 @@ fn handle(m: &mut Machine, h: &Handler, o: usize, place: Ptr) -> R<crate::machin
             Err(Stop::Throw(x))
         }
         r => {
-            end_exception(m, o)?;
+            if !keep {
+                end_exception(m, o)?;
+            }
             r
         }
     }

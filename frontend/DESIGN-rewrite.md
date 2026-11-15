@@ -630,7 +630,11 @@ the object. A rethrow passes on the handled exception. An exception
 that leaves a non-throwing function, a destructor, or `main`, or a
 destructor that throws during unwinding, ends the program with the
 status of `SIGABRT`. The checks warn about a shadowed handler and about
-a `throw` that nothing in a non-throwing function catches. The
+a `throw` that nothing in a non-throwing function catches. A function
+try block wraps the body, and its handlers see the parameters. On a
+constructor or a destructor it also guards the member initializers: the
+parts built end before the handler, a call of a member's function there
+stops at undefined behavior, and the end of the handler rethrows. The
 classes of namespace `std` are ordinary classes. A built-in `<=>` gives
 a copy of the static data member of `std::strong_ordering` or
 `std::partial_ordering` that its result names. A relational operator
@@ -647,7 +651,7 @@ another entity. An explicit destructor call on a subobject or with a qualified n
 literal operator, an
 `operator->`,
 a failed `dynamic_cast` to a reference outside constant evaluation, a
-function try block, a destructor with an exception specification, a
+destructor with an exception specification, a
 deallocation function of the dynamic class in a `delete` through a base,
 an object in allocated storage that would hold an object created there
 before, a nested named union, a union member whose class has special

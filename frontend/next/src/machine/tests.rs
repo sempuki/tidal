@@ -1655,3 +1655,19 @@ fn three_way_and_defaulted_comparisons() {
     assert_eq!(rule("struct S { int x; bool operator==(S) const = default; };"), Some("DCMP-3"));
     assert_eq!(rule("auto r = 1 <=> 2;"), Some("CMP-25"));
 }
+
+#[test]
+fn function_try_blocks() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // TRY-9: the handlers see the parameters, and a return gives the
+    // result.
+    assert_eq!(run("int f(int x) try { throw 1; } catch (int) { return x + 1; } int main() { return f(4); }"), RunOutcome::Result(5));
+    // TRY-10: a constructor's handler sees a member initializer's
+    // exception and rethrows it at its end.
+    assert_eq!(run("struct M { M(int v) { if (v == 0) throw 7; } }; struct S { M m; S(int v) try : m(v) {} catch (int) {} }; int main() { try { S s(0); } catch (int e) { return e; } return 0; }"), RunOutcome::Result(7));
+    assert_eq!(rule("struct S { S() try {} catch (...) { return; } };"), Some("TRY-17"));
+}

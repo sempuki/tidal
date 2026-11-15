@@ -550,6 +550,9 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
         }
         match args.remove(0) {
             Ret::Place(p) | Ret::Val(Val::Ptr(p)) => {
+                if m.gone.iter().any(|(o, q)| *o == p.obj && p.path.len() > q.len() && p.path.starts_with(q)) {
+                    return crate::machine::ub("TRY-11", "a call of a member function of a member that ended before the handler of a function try block");
+                }
                 // STG-19: the name of an object whose storage an object of
                 // another type took refers to the ended object.
                 if crate::expressions::new_delete::run::replaced(m, p.obj) {
@@ -613,16 +616,50 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     // `built`: the member initializers completed, so a throw from the
     // body destroys the members (UNW-2).
     let mut built = false;
-    let r = match m.u.mem_inits.get(&id) {
+    // TRY-10: the function try block of a constructor or a destructor
+    // also guards the member initializers.
+    let (inner, fn_handlers) = match (&body.k, special) {
+        (crate::sem::tree::SK::Try { body: b, handlers }, crate::sem::Special::Ctor | crate::sem::Special::Dtor) => ((**b).clone(), Some(handlers.clone())),
+        _ => ((*body).clone(), None),
+    };
+    let mut r = match m.u.mem_inits.get(&id) {
         Some(mi) => crate::declarations::initialization::forms::run::mem_inits(m, id, mi).and_then(|_| {
             built = true;
-            super::exec::exec(m, &body)
+            super::exec::exec(m, &inner)
         }),
         None => {
             built = true;
-            super::exec::exec(m, &body)
+            super::exec::exec(m, &inner)
         }
     };
+    if let (Some(hs), Err(Stop::Throw(o))) = (&fn_handlers, &r) {
+        let o = *o;
+        // The parts that the constructor built end before the handler
+        // runs, and the end of the handler rethrows.
+        if built && special == crate::sem::Special::Ctor {
+            if let (Some(this), Some(c)) = (m.frames.last().and_then(|f| f.this.clone()), m.u.func(id).and_then(|f| f.class)) {
+                r = crate::exceptions::throw::run::unwind(m, r, |m| crate::classes::constructors::run::destroy_parts(m, &this, c));
+            }
+            built = false;
+        }
+        if matches!(r, Err(Stop::Throw(_))) {
+            // TRY-11: the handler finds the members and bases gone.
+            let this = m.frames.last().and_then(|f| f.this.clone());
+            if let Some(p) = &this {
+                m.gone.push((p.obj, p.path.clone()));
+            }
+            let caught = crate::exceptions::handlers::run::catch_keeping(m, hs, o, true);
+            if this.is_some() {
+                m.gone.pop();
+            }
+            r = match caught {
+                // A return in a destructor's handler ends the destructor.
+                Ok(super::Flow::Return) if special == crate::sem::Special::Dtor => Ok(super::Flow::Return),
+                Ok(_) => Err(Stop::Throw(o)),
+                e => e,
+            };
+        }
+    }
     m.depth -= 1;
     if structor {
         m.structors.pop();

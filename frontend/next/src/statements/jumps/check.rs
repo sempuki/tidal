@@ -66,6 +66,12 @@ fn return_stmt(cx: &mut Check, n: &Node) -> Stmt {
             None => Stmt::new(SK::Null, span),
         };
     }
+    // TRY-17: no return in a handler of a constructor's function try
+    // block.
+    if ctx.ctor_handler {
+        cx.error(span, "TRY-17", "a return statement in a handler of a constructor's function try block");
+        return Stmt::new(SK::Null, span);
+    }
     let value = e.map(|c| expr(cx, c));
     if let Some(v) = &value {
         pessimizing_move(cx, v, &ctx, span);

@@ -238,6 +238,9 @@ pub struct Machine<'a> {
     /// the parameter of the handler being entered binds to (TRY-2).
     pub handled: Vec<usize>,
     pub caught: Option<Ptr>,
+    /// The objects whose members and bases ended before the handler of
+    /// a constructor's or destructor's function try block (TRY-11).
+    pub gone: Vec<(usize, Vec<i64>)>,
     /// The objects that an explicit destructor call destroyed (DTOR-7).
     pub destroyed: std::collections::HashSet<usize>,
     /// The objects in whose storage a `new` expression created an object
@@ -298,6 +301,7 @@ impl<'a> Machine<'a> {
             structors: Vec::new(),
             handled: Vec::new(),
             caught: None,
+            gone: Vec::new(),
             early: Vec::new(),
             destroyed: Default::default(),
             hosting: Default::default(),

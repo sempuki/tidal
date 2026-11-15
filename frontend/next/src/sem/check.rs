@@ -113,6 +113,9 @@ pub struct FnCtx {
     /// The ids in `constexpr_ifs` that mark a try block or a handler,
     /// which no jump enters (TRY-7).
     pub try_regions: Vec<StmtId>,
+    /// In a handler of a constructor's function try block, which has no
+    /// return statement (TRY-17).
+    pub ctor_handler: bool,
 }
 
 /// A lambda expression whose body is being checked: its closure type,
