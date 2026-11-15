@@ -460,8 +460,19 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
 /// class declared. True when `n` is one, handled.
 pub fn out_of_class(cx: &mut Check, n: &Node) -> bool {
     let Some(dn) = n.child("declarator") else { return false };
-    let Some(q) = dn.find("qualified_name") else { return false };
-    let (Some(nn), Some(u)) = (q.child("nested_name"), q.child("unqualified_id")) else { return false };
+    // `C::~C()`: the declarator holds the qualifier, `~`, and the class
+    // name.
+    let (q, nn, u) = match dn.find("qualified_name") {
+        Some(q) => {
+            let (Some(nn), Some(u)) = (q.child("nested_name"), q.child("unqualified_id")) else { return false };
+            (q, nn, u)
+        }
+        None => {
+            let Some(id) = dn.find("declarator_id").filter(|id| cx.has_word(id, "~")) else { return false };
+            let (Some(nn), Some(u)) = (id.child("nested_name"), id.child("class_name")) else { return false };
+            (id, nn, u)
+        }
+    };
     let mut toks = Vec::new();
     nn.tokens(&mut toks);
     let Some(cname) = toks.iter().rev().map(|&t| cx.toks[t].text.clone()).find(|w| w != "::") else { return false };

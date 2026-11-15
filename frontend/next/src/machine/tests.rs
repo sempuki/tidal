@@ -2285,3 +2285,8 @@ fn braced_arguments_among_overloads() {
     assert_eq!(rule("struct Q { constexpr operator long() const { return 2; } }; constexpr int f(const int (&)[2]) { return 1; } constexpr int f(const long (&)[2]) { return 2; } static_assert(f({Q{}, 0}) == 2);"), None);
     assert_eq!(rule("struct L { L(int); }; struct I {}; int show(L); long show(...); void u(I i) { show({i}); }"), Some("OVL-35"));
 }
+
+#[test]
+fn destructors_defined_outside_the_class() {
+    assert_eq!(run("int n = 0; struct A { virtual ~A() = 0; }; A::~A() { ++n; } struct B : A {}; struct S { ~S(); }; S::~S() { n += 10; } int main() { { B b; S s; } return n; }"), RunOutcome::Result(11));
+}

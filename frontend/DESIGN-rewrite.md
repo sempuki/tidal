@@ -767,7 +767,8 @@ error. A braced list on the right of an assignment to a class object is
 a prvalue of the parameter of its assignment operator, and the implicit
 assignment takes a class rvalue on the left. A braced argument among
 overloads has the sequence of a trial initialization, the worst of its
-elements for an array, and none for an ellipsis. The
+elements for an array, and none for an ellipsis. A destructor can be
+defined outside its class. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
