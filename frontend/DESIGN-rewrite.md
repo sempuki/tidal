@@ -759,7 +759,8 @@ the unit's such variables, which starts all of them. A reference to a
 class or a function binds the result of a conversion function. A
 second definition of a class is an error, and so is a class operand of
 a switch, an array bound, or an integral constant with several
-conversion functions to integral types. The
+conversion functions to integral types. `decltype(e)` names a type in
+a functional cast. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with

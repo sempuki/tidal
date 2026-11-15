@@ -2233,3 +2233,8 @@ fn redefinitions_and_ambiguous_integral_conversions() {
     assert_eq!(rule(&format!("{} int* f(S s) {{ return new int[s]; }}", two)), Some("CVF-8"));
     assert_eq!(run("struct S { operator int() const { return 2; } }; int main() { S s; int* p = new int[s]; p[1] = 4; int r = p[1]; delete[] p; switch (s) { case 2: return r; } return 0; }"), RunOutcome::Result(4));
 }
+
+#[test]
+fn decltype_in_a_functional_cast() {
+    assert_eq!(run("int main() { auto n = decltype(sizeof 0)(-1) / 2; long k = decltype(3L)(7); return n > 1000 ? int(k) : 0; }"), RunOutcome::Result(7));
+}

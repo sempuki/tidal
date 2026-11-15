@@ -73,6 +73,9 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
     for k in &n.kids {
         match k {
             Kid::Node(c) if c.prod == "nested_name" => qual = names::check::nested_name(cx, c),
+            // DCLT rules: `decltype(e)` names the type of `e`, as in a
+            // functional cast.
+            Kid::Node(c) if matches!(c.prod, "decltype_expr" | "decltype_spec") && n.kids.len() == 1 => return crate::expressions::decltype::check::decltype_spec(cx, c),
             Kid::Node(c) => return cx.unsupported(c.span, format!("a type named by {}", c.prod)),
             _ => name = Some((cx.text(k), cx.token(k).map(|t| t.span).unwrap_or(n.span))),
         }
