@@ -479,7 +479,7 @@ fn enclosing_use(cx: &mut Check, v: EntityId, span: Span) -> Option<Expr> {
 /// A variable that a read of its value can use without a capture
 /// (LAM-9, ODR-3): a variable usable in constant expressions.
 /// A variable with a `mutable` member at any depth is not one.
-fn is_constant(cx: &Check, v: EntityId) -> bool {
+pub fn is_constant(cx: &Check, v: EntityId) -> bool {
     cx.u.var(v).is_some_and(|x| !x.param && x.const_init && (x.ty.is_ref() || x.constexpr || (x.ty.c && !x.ty.v && (x.ty.is_integral() || x.ty.is_enum()))) && !has_mutable(cx, &x.ty))
 }
 
@@ -526,14 +526,23 @@ pub fn capture_check(cx: &mut Check, v: EntityId, span: Span) -> Option<Result<E
 /// function needs no capture (LAM-9); the machine reads it from its
 /// initializer.
 pub fn read(cx: &mut Check, e: &Expr) {
-    if cx.lambdas.last().is_none_or(|l| l.constants.is_empty()) {
+    let lambda = cx.lambdas.last().is_some_and(|l| !l.constants.is_empty());
+    let local = cx.local_classes.last().is_some_and(|l| !l.1.is_empty());
+    if !lambda && !local {
         return;
     }
     match &e.k {
         EK::Var(v) => {
-            let l = cx.lambdas.last_mut().unwrap();
-            if let Some(pos) = l.constants.iter().position(|&(x, s)| x == *v && s == e.span) {
-                l.constants.remove(pos);
+            if let Some(l) = cx.lambdas.last_mut() {
+                if let Some(pos) = l.constants.iter().position(|&(x, s)| x == *v && s == e.span) {
+                    l.constants.remove(pos);
+                }
+            }
+            // CLS-12: so for a local class.
+            if let Some(l) = cx.local_classes.last_mut() {
+                if let Some(pos) = l.1.iter().position(|&(x, s)| x == *v && s == e.span) {
+                    l.1.remove(pos);
+                }
             }
         }
         EK::Member(x, _) | EK::Conv(crate::sem::tree::Conv::NoOp | crate::sem::tree::Conv::ArrayDecay, x) | EK::Comma(_, x) => read(cx, x),

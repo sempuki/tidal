@@ -246,6 +246,13 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
                 }
                 cx.nested_bodies.push(crate::sem::check::NestedBody::End(id, head.span));
             } else {
+                // CLS-12: the member functions of a local class are
+                // functions of their own, outside the enclosing one.
+                let enclosing = cx.func.take();
+                let local = enclosing.is_some();
+                if local {
+                    cx.local_classes.push((cx.u.classes[id].scope, Vec::new()));
+                }
                 for b in bodies {
                     if b.prod == "friend_decl" {
                         crate::classes::access::check::definition(cx, b);
@@ -257,6 +264,13 @@ pub fn class_def(cx: &mut Check, n: &Node) -> QType {
                     crate::classes::constructors::check::define(cx, f, b);
                 }
                 run_nested_bodies(cx);
+                if local {
+                    let (_, pending) = cx.local_classes.pop().unwrap_or_default();
+                    if let Some(&(v, s)) = pending.first() {
+                        cx.error(s, "CLS-12", format!("a member function of a local class uses the constant '{}' of the enclosing function as an object", cx.u.entities[v].name));
+                    }
+                }
+                cx.func = enclosing;
             }
             if outer.is_none() {
                 crate::classes::constructors::check::end_of_class(cx, id, head.span);
@@ -773,12 +787,9 @@ fn using_member(cx: &mut Check, id: ClassId, n: &Node, access: Access) -> bool {
 /// type. True when it is modeled; otherwise an unsupported diagnostic is
 /// out.
 fn modeled_function(cx: &mut Check, id: ClassId, dn: &Node, d: &crate::declarations::declarators::check::Declared) -> bool {
-    let parent = cx.u.scopes[cx.u.classes[id].scope].parent.unwrap_or(0);
-    // A member function of a local class waits for a later part (the
-    // locals of the enclosing function).
-    let local = cx.u.is_local(parent);
+    let _ = id;
     let qualified = d.ty.func().is_some_and(|f| f.qualified);
-    if local || qualified {
+    if qualified {
         cx.unsupported(dn.span, "a member function of a local class or of a qualified function type (build step 4)");
         return false;
     }

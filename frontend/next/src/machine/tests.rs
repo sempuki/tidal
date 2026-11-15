@@ -1762,3 +1762,17 @@ fn range_for_over_classes() {
     assert_eq!(run("namespace n { struct B { int d[2] = {3, 4}; }; int* begin(B& b) { return b.d; } int* end(B& b) { return b.d + 2; } } int main() { n::B b; int s = 0; for (int& x : b) s += x; return s; }"), RunOutcome::Result(7));
     assert_eq!(rule("struct R { int d[2]; int* begin() { return d; } }; int* end(R& r) { return r.d + 2; } void f(R r) { for (int v : r) (void)v; }"), Some("RFOR-7"));
 }
+
+#[test]
+fn local_class_members() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // CLS-12: a member function of a local class reads a constant of
+    // the enclosing function as a value, and a static local.
+    assert_eq!(run("int main() { const int k = 4; static int s = 2; struct P { int f() { return k + s; } }; return P{}.f(); }"), RunOutcome::Result(6));
+    assert_eq!(rule("int f() { int local = 1; struct S { int get() { return local; } }; return S{}.get(); }"), Some("CLS-12"));
+    assert_eq!(rule("void f() { const int k = 1; struct S { const int* p() { return &k; } }; }"), Some("CLS-12"));
+}

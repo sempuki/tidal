@@ -677,7 +677,9 @@ a class range becomes the plain `for` that hidden variables for the
 range, the iterator, and the end make, with member `begin` and `end`
 when the class has both names and the functions of argument-dependent
 lookup otherwise. A call of a data member of class type goes through
-its call operator. The
+its call operator. The member functions of a local class are checked
+outside the enclosing function. They can read a constant of that
+function as a value and name its variables in unevaluated operands. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
@@ -689,7 +691,7 @@ deallocation function of the dynamic class in a `delete` through a base,
 an object in allocated storage that would hold an object created there
 before, a nested named union, a read through the common
 initial sequence of two union members, the bytes of a class with a
-bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a call without an object
+bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a qualified function type, a call without an object
 among ref-qualified member functions or among static and non-static
 ones with default arguments or from a member function of another class,
 a non-static member function chosen without an object, a user-defined conversion by a constructor in overload

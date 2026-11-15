@@ -288,6 +288,36 @@ pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
     entity_expr(cx, &found, &name, span)
 }
 
+/// CLS-12: a member function of a local class names an automatic
+/// variable of the enclosing function. It can read a constant as a
+/// value, or name any variable in an unevaluated operand; any other use
+/// is an error, which gives the bad expression.
+fn local_class_use(cx: &mut Check, v: EntityId, span: Span) -> Option<Expr> {
+    let &(class_scope, _) = cx.local_classes.last()?;
+    let var = cx.u.var(v)?;
+    if var.storage != crate::sem::Storage::Automatic {
+        return None;
+    }
+    let mut s = Some(cx.u.entities[v].scope);
+    while let Some(x) = s {
+        if x == class_scope {
+            return None;
+        }
+        s = cx.u.scopes[x].parent;
+    }
+    if cx.unevaluated > 0 {
+        return None;
+    }
+    if crate::expressions::lambdas::check::is_constant(cx, v) && !var.ty.is_ref() {
+        if let Some(l) = cx.local_classes.last_mut() {
+            l.1.push((v, span));
+        }
+        return None;
+    }
+    cx.error(span, "CLS-12", format!("a member function of a local class uses the automatic variable '{}' of the enclosing function", cx.u.entities[v].name));
+    Some(bad(span))
+}
+
 /// The expression that names one of the entities a lookup found.
 pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -> Expr {
     let funcs: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
@@ -296,6 +326,9 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
     match cx.u.entities[pick].kind.clone() {
         EntKind::Var(v) => {
             crate::declarations::initialization::forms::check::note_use(cx, pick, span);
+            if let Some(e) = local_class_use(cx, pick, span) {
+                return e;
+            }
             match crate::expressions::lambdas::check::capture_check(cx, pick, span) {
                 Some(Ok(e)) => return e,
                 Some(Err(())) => return bad(span),
