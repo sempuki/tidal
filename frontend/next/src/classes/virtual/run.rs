@@ -21,6 +21,11 @@ pub fn dispatch(m: &Machine, f: EntityId, obj: Ret) -> R<(EntityId, Ret)> {
     if p.view.is_some() {
         return unsup("a virtual call on an object seen through a pointer of another type");
     }
+    // STG-19: the name of an object whose storage an object of another
+    // type took refers to the ended object.
+    if crate::expressions::new_delete::run::replaced(m, p.obj) {
+        return ub("STG-19", format!("a call through {}, whose storage holds an object of another type", m.objs[p.obj].name));
+    }
     // The class at each prefix of the path, and where the most derived
     // object begins: after the last step that is not into a base.
     let mut ty = m.objs[p.obj].ty.clone();

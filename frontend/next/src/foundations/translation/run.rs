@@ -142,6 +142,7 @@ pub fn run_program(u: &Unit) -> RunOutcome {
                 m.check_size(&v.ty)?;
                 let z = m.zero(&v.ty);
                 let o = m.new_obj(&v.ty, z, &u.entities[id].name.clone());
+                crate::foundations::storage::run::var_aligned(&mut m, id, o);
                 m.objs[o].is_static = true;
                 m.objs[o].konst = false;
                 m.globals.insert(id, o);

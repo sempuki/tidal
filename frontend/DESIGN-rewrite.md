@@ -603,16 +603,32 @@ base subobject holds none. A step to a virtual base finds it in the
 complete object. The constructor of the complete object initializes the
 virtual bases first, and its destructor destroys them last. A copy of
 an object with a virtual base goes part by part, and a virtual call
-finds the final overrider among all the paths to the shared base. The
+finds the final overrider among all the paths to the shared base.
+Every unit has the global allocation and deallocation functions, and
+their aligned forms once it declares `std::align_val_t`. A program can
+define them, declare a class's own, and add placement forms. A `new`
+expression finds its allocation function in the class or else among the
+global ones, with the alignment for an over-aligned type and the
+placement arguments, and checks the deallocation function that a throw
+would call. A `delete` expression finds its usual deallocation
+function in the same way. At run time, a call of a global allocation
+function by name gives storage, in which an access through a pointer
+creates an object of an implicit-lifetime type. A `new` expression with
+an allocation function of the program creates its object in the storage
+that the function returns. An object of the same type at that place is
+replaced in its place, and any other object there ends. A byte array
+keeps its life and reads the bytes of the objects in it. Pointers into
+one storage compare by their addresses. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
 another entity. An explicit destructor call on a subobject or with a qualified name, a
 literal operator, an
 `operator->`, a comparison that `<=>` rewrites,
-a failed `dynamic_cast` to a reference outside constant evaluation, an allocation or deallocation function that the
-program declares or calls by name, a `new` expression with placement
-arguments, a nested named union, a union member whose class has special
+a failed `dynamic_cast` to a reference outside constant evaluation, a
+deallocation function of the dynamic class in a `delete` through a base,
+an object in allocated storage that would hold an object created there
+before, a nested named union, a union member whose class has special
 member functions that are not trivial, a read through the common
 initial sequence of two union members, the bytes of a class with a
 bit-field, an attribute on a class, `[[no_unique_address]]`, a using-declaration in a class of an operator or a template, a `constexpr` object without an initializer of a union or of a class with a volatile member, a structured binding of a bit-field, an attribute or `alignas` on a member function or a static data member, a member function of a local class, a member function with a noexcept operand, a call without an object

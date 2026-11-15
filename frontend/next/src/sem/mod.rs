@@ -301,6 +301,10 @@ pub struct Unit {
     pub using_access: HashMap<(types::ClassId, EntityId), Access>,
     /// The direct bases whose constructors a class inherits (DER-8).
     pub inherits: HashMap<types::ClassId, Vec<types::ClassId>>,
+    /// The global allocation and deallocation functions that every unit
+    /// has without a declaration (NEW-19). The implementation gives the
+    /// body of each that the program does not define.
+    pub library: std::collections::HashSet<EntityId>,
     /// The member initializers of each constructor with a body.
     pub mem_inits: HashMap<EntityId, MemInits>,
     /// The constructors defaulted on their first declaration, which act
@@ -351,6 +355,7 @@ impl Default for Unit {
             access: HashMap::new(),
             using_access: HashMap::new(),
             inherits: HashMap::new(),
+            library: Default::default(),
             mem_inits: HashMap::new(),
             defaulted: Default::default(),
             closures: HashMap::new(),

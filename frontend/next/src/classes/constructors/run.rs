@@ -74,6 +74,15 @@ pub fn destroy(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
 pub fn end_objects(m: &mut Machine, objs: Vec<usize>) -> R<()> {
     for o in objs.into_iter().rev() {
         let ty = m.objs[o].ty.clone();
+        // STG-21: an object of another type took the storage of an object
+        // whose destructor the end of its block runs.
+        if crate::expressions::new_delete::run::replaced(m, o) && needs(m, &ty) {
+            return ub("STG-21", format!("the end of the block destroys {}, whose storage holds an object of another type", m.objs[o].name));
+        }
+        // A trivial destructor of the ended object does not run.
+        if crate::expressions::new_delete::run::replaced(m, o) {
+            continue;
+        }
         // DTOR-7: also a trivial destructor runs a second time.
         if m.destroyed.contains(&o) && ty.base_elem().is_class() && !needs(m, &ty) {
             return ub("DTOR-7", format!("{} is destroyed a second time", m.objs[o].name));

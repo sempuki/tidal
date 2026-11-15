@@ -22,8 +22,9 @@ pub fn unary(m: &mut Machine, op: UOp, v: Val, ty: &QType) -> R<Val> {
 }
 
 /// UN-7: `*p` where `p` points to no object.
-pub fn indirection(m: &mut Machine, v: Val, _ty: &QType) -> R<Ptr> {
+pub fn indirection(m: &mut Machine, v: Val, ty: &QType) -> R<Ptr> {
     match v {
+        Val::Ptr(p) if p.view.is_some() => Ok(crate::foundations::storage::run::hosted(m, &p, ty)?.unwrap_or(p)),
         Val::Ptr(p) => {
             if p.array {
                 let n = m.array_len(&p).unwrap_or(1);

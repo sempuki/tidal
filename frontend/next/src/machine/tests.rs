@@ -1590,3 +1590,24 @@ fn byte_offsets_through_virtual_bases() {
     // the complete object.
     assert_eq!(run("struct V { int v = 7; }; struct A : virtual V { int a = 2; }; int main() { A x; char* p = reinterpret_cast<char*>(&x); V* q = &x; int off = reinterpret_cast<char*>(q) - p; int* r = reinterpret_cast<int*>(p + off); return off + *r; }"), RunOutcome::Result(19));
 }
+
+#[test]
+fn allocation_functions_and_placement() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    const PLACE: &str = "inline void* operator new(decltype(sizeof 0), void* at) noexcept { return at; } ";
+    // STG-5: placement new creates the object in a byte array, at its
+    // address.
+    assert_eq!(run(&format!("{PLACE}struct P {{ int x, y; P(int a, int b) : x(a), y(b) {{}} }}; int main() {{ alignas(P) unsigned char b[sizeof(P)]; P* p = new (b) P(3, 4); bool same = static_cast<void*>(p) == b; return same ? p->x + p->y : 0; }}")), RunOutcome::Result(7));
+    // NEW-13: a class's own functions; NEW-19: the global ones by name.
+    assert_eq!(run("int n = 0; struct S { int v = 5; static void* operator new(decltype(sizeof 0) k) { ++n; return ::operator new(k); } static void operator delete(void* p) { n += 10; ::operator delete(p); } }; int main() { S* s = new S; int v = s->v; delete s; return n * 10 + v; }"), RunOutcome::Result(115));
+    // STG-8: storage from operator new holds objects of implicit-lifetime
+    // types, and its elements step as an array.
+    assert_eq!(run("int main() { int* p = static_cast<int*>(::operator new(4 * sizeof(int))); p[2] = 5; int v = p[2]; ::operator delete(p); return v; }"), RunOutcome::Result(5));
+    assert_eq!(run("int main() { void* p = ::operator new[](8); ::operator delete(p); return 0; }"), RunOutcome::Undefined("NEW-40", "a deallocation by the form that does not match the allocation".into(), 1));
+    assert_eq!(rule("struct S { private: static void* operator new(decltype(sizeof 0)); }; S* f() { return new S; }"), Some("NEW-25"));
+    assert_eq!(rule("struct T {}; T* f() { return new (1) T; }"), Some("NEW-20"));
+}

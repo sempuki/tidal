@@ -148,6 +148,12 @@ pub struct Obj {
     /// Created by a `new` expression: whether it is an array, and whether
     /// a `delete` has freed it (`expressions::new_delete::run`).
     pub heap: Option<(bool, bool)>,
+    /// The object whose storage this object takes, and the byte offset
+    /// in it (STG-5, STG-6).
+    pub host: Option<(usize, i64)>,
+    /// Storage that a call of a global allocation function by name gave
+    /// (NEW-19), whose objects the program creates in it (STG-8).
+    pub raw: bool,
 }
 
 /// How a statement ended.
@@ -225,6 +231,11 @@ pub struct Machine<'a> {
     pub structors: Vec<(usize, Vec<i64>)>,
     /// The objects that an explicit destructor call destroyed (DTOR-7).
     pub destroyed: std::collections::HashSet<usize>,
+    /// The objects in whose storage a `new` expression created an object
+    /// (`foundations::storage::run`).
+    pub hosting: std::collections::HashSet<usize>,
+    /// The storage that an aligned allocation function gave (NEW-26).
+    pub aligned_alloc: std::collections::HashSet<usize>,
     /// The prvalue being evaluated initializes an object, which owns it;
     /// otherwise a prvalue of a class that needs a destructor is a
     /// temporary of its full expression (OBJ-9).
@@ -278,6 +289,8 @@ impl<'a> Machine<'a> {
             structors: Vec::new(),
             early: Vec::new(),
             destroyed: Default::default(),
+            hosting: Default::default(),
+            aligned_alloc: Default::default(),
             elide: false,
             keep_temps: false,
             static_order: Vec::new(),
@@ -298,7 +311,7 @@ impl<'a> Machine<'a> {
     }
 
     pub fn new_obj(&mut self, ty: &QType, val: Val, name: &str) -> usize {
-        self.objs.push(Obj { val, ty: ty.clone(), alive: true, konst: ty.is_const(), own: true, is_static: false, string: false, usable: true, name: name.into(), heap: None });
+        self.objs.push(Obj { val, ty: ty.clone(), alive: true, konst: ty.is_const(), own: true, is_static: false, string: false, usable: true, name: name.into(), heap: None, host: None, raw: false });
         self.objs.len() - 1
     }
     /// The machine holds one value per element; a larger object is

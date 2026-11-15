@@ -16,9 +16,34 @@ use crate::syntax::{Kid, Node};
 /// `new_expr`.
 pub fn new_expr(cx: &mut Check, n: &Node) -> Expr {
     let span = n.span;
-    if n.child("placement").is_some() {
-        return unsupported(cx, span, "a new expression with placement arguments");
+    let global = cx.words(n).first() == Some(&"::");
+    // NEW-12: the placement arguments come first.
+    let mut place = Vec::new();
+    if let Some(pl) = n.child("placement") {
+        let items: Vec<&Node> = pl.find("expression_list").map(|l| l.children("argument").collect()).unwrap_or_default();
+        for a in items {
+            if first_node(a).is_some_and(|c| c.prod == "braced_init") {
+                return unsupported(cx, span, "a braced list as a placement argument");
+            }
+            let e = expr(cx, a);
+            if e.ty.is_error() {
+                return bad(span);
+            }
+            place.push(e);
+        }
     }
+    let mut out = new_inner(cx, n, span);
+    let EK::New(nw) = &out.k else { return out };
+    let (ty, array) = (nw.ty.clone(), nw.bound.is_some());
+    let Some(a) = allocation(cx, &ty, array, global, place, span) else { return bad(span) };
+    if let EK::New(nw) = &mut out.k {
+        nw.alloc = Some(a);
+    }
+    out
+}
+
+/// The type and the initializer of a `new` expression.
+fn new_inner(cx: &mut Check, n: &Node, span: Span) -> Expr {
     let init = n.child("new_init");
     // The type: a `new_type`, or a `type_id` in parentheses.
     let (mut ty, bounds) = if let Some(t) = n.child("new_type") {
@@ -184,7 +209,7 @@ fn single(cx: &mut Check, ty: QType, init: Option<&Node>, span: Span) -> Expr {
             None => return bad(span),
         },
     };
-    result(New { ty, bound: None, init: i, rest: Init::Default }, span)
+    result(New { ty, bound: None, init: i, rest: Init::Default, alloc: None }, span)
 }
 
 /// `new auto(e)` and `new auto{e}`: the type comes from the one
@@ -214,7 +239,7 @@ fn new_auto(cx: &mut Check, n: &Node, init: Option<&Node>, cv: (bool, bool)) -> 
         return bad(span);
     }
     let Some(x) = crate::declarations::initialization::forms::check::copy_init(cx, e, &ty, "NEW-1") else { return bad(span) };
-    result(New { ty, bound: None, init: Init::Expr(x), rest: Init::Default }, span)
+    result(New { ty, bound: None, init: Init::Expr(x), rest: Init::Default, alloc: None }, span)
 }
 
 /// `new T[n]`, with the initializers of the first elements (NEW-2,
@@ -318,7 +343,7 @@ fn array(cx: &mut Check, el: QType, first: Option<&Node>, fixed: Option<u64>, in
         return bad(span);
     }
     let bound = bound.unwrap_or_else(|| Expr::int(known.unwrap_or(0) as i128, size_t, span));
-    result(New { ty: el, bound: Some(bound), init: Init::List(items), rest }, span)
+    result(New { ty: el, bound: Some(bound), init: Init::List(items), rest, alloc: None }, span)
 }
 
 /// The default-initialization of the elements without an initializer.
@@ -387,5 +412,290 @@ pub fn delete_expr(cx: &mut Check, n: &Node) -> Expr {
             }
         }
     }
-    Expr::new(EK::Delete(Box::new(e), array, virtual_dtor), QType::void(), Cat::PR, span)
+    let global = cx.words(n).first() == Some(&"::");
+    let Some(dealloc) = deallocation(cx, &pointee, array, global, span) else { return bad(span) };
+    Expr::new(EK::Delete(Box::new(e), array, virtual_dtor, dealloc), QType::void(), Cat::PR, span)
+}
+
+/// The name of an allocation or a deallocation function.
+pub fn is_allocation(name: &str) -> bool {
+    matches!(name, "operatornew" | "operatornew[]" | "operatordelete" | "operatordelete[]")
+}
+
+/// NEW-19: the global allocation and deallocation functions that every
+/// unit has: `operator new` and `operator new[]` with a size, and
+/// `operator delete` and `operator delete[]` with a pointer and with a
+/// pointer and a size. A unit of a program that already has them adds
+/// none.
+pub fn library_forms(cx: &mut Check) {
+    let root = cx.u.root;
+    if cx.u.library.iter().any(|&f| cx.u.entities[f].scope == root) {
+        return;
+    }
+    let size_t = QType::new(Type::Int(cx.u.target.size_t()));
+    let void_ptr = QType::ptr_to(QType::void());
+    declare_library(cx, vec![
+        ("operatornew", void_ptr.clone(), vec![size_t.clone()], false),
+        ("operatornew[]", void_ptr.clone(), vec![size_t.clone()], false),
+        ("operatordelete", QType::void(), vec![void_ptr.clone()], true),
+        ("operatordelete[]", QType::void(), vec![void_ptr.clone()], true),
+        ("operatordelete", QType::void(), vec![void_ptr.clone(), size_t.clone()], true),
+        ("operatordelete[]", QType::void(), vec![void_ptr.clone(), size_t.clone()], true),
+    ]);
+}
+
+/// NEW-26: the aligned forms of the functions of NEW-19, once the unit
+/// declares `std::align_val_t`.
+pub fn library_aligned(cx: &mut Check) {
+    let Some(al) = align_val_t(cx) else { return };
+    let root = cx.u.root;
+    let have = cx.u.library.iter().any(|&f| cx.u.entities[f].scope == root && cx.u.func(f).is_some_and(|x| x.ty.params.last() == Some(&al)));
+    if have {
+        return;
+    }
+    let size_t = QType::new(Type::Int(cx.u.target.size_t()));
+    let void_ptr = QType::ptr_to(QType::void());
+    declare_library(cx, vec![
+        ("operatornew", void_ptr.clone(), vec![size_t.clone(), al.clone()], false),
+        ("operatornew[]", void_ptr.clone(), vec![size_t.clone(), al.clone()], false),
+        ("operatordelete", QType::void(), vec![void_ptr.clone(), al.clone()], true),
+        ("operatordelete[]", QType::void(), vec![void_ptr.clone(), al.clone()], true),
+        ("operatordelete", QType::void(), vec![void_ptr.clone(), size_t.clone(), al.clone()], true),
+        ("operatordelete[]", QType::void(), vec![void_ptr.clone(), size_t.clone(), al.clone()], true),
+    ]);
+}
+
+#[allow(clippy::type_complexity)]
+fn declare_library(cx: &mut Check, forms: Vec<(&str, QType, Vec<QType>, bool)>) {
+    let root = cx.u.root;
+    for (name, ret, params, noexcept) in forms {
+        let n = params.len();
+        let ty = crate::sem::types::FnType { ret, params, variadic: false, noexcept, qualified: false, obj_cv: (false, false), ref_q: None };
+        let f = crate::sem::Func {
+            ty: std::rc::Rc::new(ty),
+            params: Vec::new(),
+            defaults: vec![None; n],
+            body: None,
+            constexpr: false,
+            consteval: false,
+            inline: false,
+            is_static: false,
+            deleted: false,
+            noreturn: false,
+            nodiscard: false,
+            c_linkage: false,
+            pending_return: false,
+            placeholder: false,
+            used: false,
+            defined: false,
+            unsupported: None,
+            class: None,
+            special: crate::sem::Special::None,
+            explicit: false,
+            member_static: false,
+            obj_cv: (false, false),
+            ref_q: None,
+        };
+        let id = crate::foundations::names::check::declare_in(cx, root, name, crate::sem::EntKind::Func(f), Span::default(), crate::sem::Linkage::External);
+        cx.u.library.insert(id);
+    }
+}
+
+/// The default new alignment: a type with more alignment passes it to
+/// the allocation function (NEW-28).
+const NEW_ALIGNMENT: u64 = 16;
+
+/// The type `std::align_val_t`, if the unit declares it (LSUP-5).
+fn align_val_t(cx: &Check) -> Option<QType> {
+    let std = crate::foundations::names::check::declared_here(cx, cx.u.root, "std").into_iter().find_map(|e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Namespace(sc) => Some(sc),
+        _ => None,
+    })?;
+    crate::foundations::names::check::declared_here(cx, std, "align_val_t").into_iter().find_map(|e| match cx.u.entities[e].kind {
+        crate::sem::EntKind::Enum(en) => Some(QType::new(Type::Enum(en))),
+        _ => None,
+    })
+}
+
+/// The type needs the alignment argument (NEW-28), and its type when the
+/// unit declares it.
+fn over_aligned(cx: &Check, ty: &QType) -> Option<QType> {
+    let a = cx.u.target.align_of(&cx.u, ty.base_elem())?;
+    if a > NEW_ALIGNMENT { align_val_t(cx) } else { None }
+}
+
+/// The functions named `name` that a `new` or `delete` for objects of
+/// type `ty` finds (NEW-13, NEW-21): those of the class and its bases,
+/// unless the expression starts with `::` or the class has none, and
+/// else the global ones. True with a class's functions.
+fn search(cx: &mut Check, ty: &QType, name: &str, global: bool, span: Span) -> Option<(Vec<crate::sem::EntityId>, bool)> {
+    let funcs = |cx: &Check, es: Vec<crate::sem::EntityId>| es.into_iter().filter(|&e| cx.u.func(e).is_some()).collect::<Vec<_>>();
+    if let Some(c) = ty.base_elem().class().filter(|_| !global) {
+        match crate::classes::derived::check::member_lookup(cx, c, name) {
+            Ok(Some(f)) => return Some((funcs(cx, f.ents), true)),
+            Ok(None) => {}
+            Err(()) => {
+                cx.error(span, "DER-4", format!("'{}' is ambiguous in '{}'", name, cx.u.classes[c].name));
+                return None;
+            }
+        }
+    }
+    let root = cx.u.root;
+    let found = crate::foundations::names::check::lookup_in(cx, root, name);
+    Some((funcs(cx, found), false))
+}
+
+/// NEW-25: the chosen function is accessible and not deleted.
+fn usable(cx: &mut Check, f: crate::sem::EntityId, what: &str, span: Span) -> bool {
+    let name = cx.u.entities[f].name.clone();
+    if cx.u.func(f).is_some_and(|x| x.deleted) {
+        cx.error(span, "NEW-25", format!("the {} '{}' is deleted", what, name));
+        return false;
+    }
+    if !crate::classes::members::check::accessible(cx, f) {
+        cx.error(span, "NEW-25", format!("the {} '{}' is not accessible", what, name));
+        return false;
+    }
+    true
+}
+
+/// The allocation function of a `new` expression for `ty`, an array of it
+/// when `array` (NEW-10, NEW-13, NEW-20, NEW-28, NEW-29, NEW-30), and the
+/// check of the deallocation function that a throw would call (NEW-21 to
+/// NEW-25). None after an error.
+fn allocation(cx: &mut Check, ty: &QType, array: bool, global: bool, place: Vec<Expr>, span: Span) -> Option<crate::sem::tree::Alloc> {
+    let name = if array { "operatornew[]" } else { "operatornew" };
+    let (cands, _) = search(cx, ty, name, global, span)?;
+    if cands.is_empty() {
+        cx.error(span, "NEW-20", format!("no '{}' for the new expression", name));
+        return None;
+    }
+    let size_t = QType::new(Type::Int(cx.u.target.size_t()));
+    let size = Expr::new(EK::Int(1), size_t, Cat::PR, span);
+    let attempt = |cx: &mut Check, align: Option<&QType>, quiet: bool| {
+        let mut args = vec![size.clone()];
+        if let Some(a) = align {
+            args.push(Expr::new(EK::Int(NEW_ALIGNMENT as i128), a.clone(), Cat::PR, span));
+        }
+        args.extend(place.iter().cloned());
+        // NEW-20: the number of arguments fits the function's parameters.
+        let fits: Vec<crate::sem::EntityId> = cands.iter().copied().filter(|&f| {
+            let Some(x) = cx.u.func(f) else { return false };
+            let n = x.ty.params.len();
+            (args.len() <= n || x.ty.variadic) && (args.len()..n).all(|k| x.defaults.get(k).is_some_and(|d| d.is_some()))
+        }).collect();
+        if fits.is_empty() {
+            return None;
+        }
+        let marks = cx.u.diags.len();
+        let f = crate::overloading::overload_resolution::check::resolve(cx, &fits, &args, span, name);
+        if f.is_none() && quiet {
+            cx.u.diags.truncate(marks);
+        }
+        f.map(|f| (f, args))
+    };
+    // NEW-29: without a function that takes the alignment, the search
+    // runs again without it.
+    let aligned = over_aligned(cx, ty);
+    let (f, args, align) = match aligned.as_ref().and_then(|a| attempt(cx, Some(a), true)) {
+        Some((f, args)) => (f, args, true),
+        None => {
+            let marks = cx.u.diags.len();
+            match attempt(cx, None, false) {
+                Some((f, args)) => (f, args, false),
+                None if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Unsupported) => return None,
+                None => {
+                    cx.u.diags.truncate(marks);
+                    cx.error(span, "NEW-20", format!("no '{}' accepts the arguments of the new expression", name));
+                    return None;
+                }
+            }
+        }
+    };
+    if !usable(cx, f, "allocation function", span) {
+        return None;
+    }
+    crate::declarations::functions::definitions::check::note_use(cx, f, span);
+    let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
+    let callee = Expr::new(EK::Func(f), fty, Cat::L, span);
+    let call = crate::expressions::postfix::check::finish_call(cx, callee, Some(f), args, span, None);
+    let EK::Call(_, conv, _) = call.k else { return None };
+    let skip = 1 + usize::from(align);
+    // NEW-21 to NEW-25: the deallocation function that a throw in the
+    // initialization would call must be usable.
+    let dname = if array { "operatordelete[]" } else { "operatordelete" };
+    let (dcands, _) = search(cx, ty, dname, global, span)?;
+    let params = cx.u.func(f).unwrap().ty.params.clone();
+    let matched: Vec<crate::sem::EntityId> = if place.is_empty() {
+        usual(cx, &dcands, align, true).map(|d| d.f).into_iter().collect()
+    } else {
+        dcands.iter().copied().filter(|&d| cx.u.func(d).is_some_and(|x| !x.ty.variadic && x.ty.params.len() == params.len() && x.ty.params[1..] == params[1..])).collect()
+    };
+    if let [d] = matched[..] {
+        // With placement arguments, the match must not be a usual form.
+        if !place.is_empty() && is_usual(cx, d) {
+            cx.error(span, "NEW-25", "the deallocation function that matches the placement form is a usual deallocation function");
+            return None;
+        }
+        if !usable(cx, d, "deallocation function", span) {
+            return None;
+        }
+        crate::declarations::functions::definitions::check::note_use(cx, d, span);
+    }
+    Some(crate::sem::tree::Alloc { f, align, args: conv[skip..].to_vec() })
+}
+
+/// A usual deallocation function: a `void*` parameter, then optionally
+/// the size and the alignment (NEW-22).
+fn is_usual(cx: &Check, d: crate::sem::EntityId) -> bool {
+    let Some(x) = cx.u.func(d) else { return false };
+    let p = &x.ty.params;
+    let size_t = Type::Int(cx.u.target.size_t());
+    let align = align_val_t(cx).map(|t| t.t);
+    !p.is_empty() && p[0].pointee().is_some_and(|t| t.is_void()) && match p.len() {
+        1 => true,
+        2 => p[1].t == size_t || Some(&p[1].t) == align.as_ref(),
+        3 => p[1].t == size_t && Some(&p[2].t) == align.as_ref(),
+        _ => false,
+    }
+}
+
+/// The usual deallocation function among `cands` (NEW-22): of a class,
+/// the form without the size when the class declares both; of the
+/// global ones, the form with the size for a single object when the
+/// program defines it.
+fn usual(cx: &Check, cands: &[crate::sem::EntityId], align: bool, complete: bool) -> Option<crate::sem::tree::Dealloc> {
+    let size_t = Type::Int(cx.u.target.size_t());
+    let forms: Vec<(crate::sem::EntityId, bool)> = cands.iter().copied().filter(|&d| is_usual(cx, d)).filter_map(|d| {
+        let p = &cx.u.func(d)?.ty.params;
+        let has_align = p.len() == 3 || (p.len() == 2 && p[1].t != size_t);
+        (has_align == align).then_some((d, p.len() >= 2 && p[1].t == size_t))
+    }).collect();
+    let class = forms.iter().any(|&(d, _)| cx.u.func(d).is_some_and(|x| x.class.is_some()));
+    let defined = |d: crate::sem::EntityId| !cx.u.library.contains(&d) || cx.u.func(d).is_some_and(|x| x.defined);
+    let pick = if class {
+        forms.iter().find(|x| !x.1).or(forms.first())
+    } else {
+        forms.iter().find(|&&(d, s)| s && complete && defined(d)).or(forms.iter().find(|&&(d, s)| !s && defined(d))).or(forms.iter().find(|x| !x.1))
+    };
+    pick.map(|&(f, sized)| crate::sem::tree::Dealloc { f, sized, align })
+}
+
+/// The deallocation function of `delete` for objects of type `ty`
+/// (NEW-21, NEW-22, NEW-25). None after an error.
+fn deallocation(cx: &mut Check, ty: &QType, array: bool, global: bool, span: Span) -> Option<Option<crate::sem::tree::Dealloc>> {
+    let name = if array { "operatordelete[]" } else { "operatordelete" };
+    let (cands, _) = search(cx, ty, name, global, span)?;
+    let complete = !cx.u.is_incomplete(ty);
+    let aligned = complete && over_aligned(cx, ty).is_some();
+    // NEW-29: without an aligned form, the plain forms.
+    let Some(d) = usual(cx, &cands, aligned, complete && !array).or_else(|| if aligned { usual(cx, &cands, false, complete && !array) } else { None }) else {
+        cx.error(span, "NEW-22", format!("no usual '{}' for the delete expression", name));
+        return None;
+    };
+    if !usable(cx, d.f, "deallocation function", span) {
+        return None;
+    }
+    crate::declarations::functions::definitions::check::note_use(cx, d.f, span);
+    Some(Some(d))
 }

@@ -15,6 +15,11 @@ pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
         return crate::foundations::storage::run::read(m, p, ty);
     }
     crate::declarations::volatile::run::check_access(m, p, ty)?;
+    if crate::foundations::storage::run::is_byte(m, ty) {
+        if let Some(r) = crate::foundations::storage::run::hosted_byte(m, p) {
+            return r;
+        }
+    }
     m.record(p, false);
     if m.constant {
         constant_evaluation::run::check_read(m, p, ty)?;

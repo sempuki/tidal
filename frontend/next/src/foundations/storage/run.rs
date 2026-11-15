@@ -127,7 +127,10 @@ pub fn convert(m: &Machine, p: Ptr, to: &QType) -> Ptr {
 pub fn moved(m: &Machine, p: &Ptr, d: i64) -> R<Ptr> {
     let v = p.view.clone().unwrap();
     let off = v.off + d * v.size;
-    let ok = if v.bytes { off >= 0 && off <= size(m, &m.objs[p.obj].ty) } else { off >= v.origin && off <= v.origin + v.size };
+    // STG-28: a pointer into storage that an allocation function gave
+    // steps over the elements of an array there.
+    let spans = v.bytes || m.objs[p.obj].raw;
+    let ok = if spans { off >= 0 && off <= size(m, &m.objs[p.obj].ty) } else { off >= v.origin && off <= v.origin + v.size };
     if !ok {
         return if v.bytes {
             ub("ADD-10", "the byte pointer leaves its object")
@@ -152,6 +155,9 @@ pub fn offsets(m: &Machine, a: &Ptr, b: &Ptr) -> Option<(i64, i64)> {
 pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
     let v = p.view.clone().unwrap();
     if is_byte(m, ty) {
+        if let Some(r) = hosted_byte(m, p) {
+            return r;
+        }
         let bytes = encode(m, &m.objs[p.obj].ty.clone(), &m.objs[p.obj].val.clone())?;
         let Some(b) = bytes.get(v.off as usize) else { return crate::foundations::objects::run::outside(m, p) };
         let Some(b) = *b else {
@@ -161,6 +167,9 @@ pub fn read(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Val> {
             Type::Int(k) => m.target.wrap(k, b as i128),
             _ => b as i128,
         }));
+    }
+    if let Some(q) = hosted(m, p, ty)? {
+        return crate::foundations::values::run::read(m, &q, ty);
     }
     match reach(m, p.obj, v.off, ty) {
         Some(q) => crate::foundations::values::run::read(m, &q, ty),
@@ -181,10 +190,135 @@ pub fn write(m: &mut Machine, p: &Ptr, ty: &QType, val: Val) -> R<()> {
         m.objs[p.obj].val = new;
         return Ok(());
     }
+    if let Some(q) = hosted(m, p, ty)? {
+        return crate::machine::eval::write(m, &q, ty, val);
+    }
     match reach(m, p.obj, v.off, ty) {
         Some(q) => crate::machine::eval::write(m, &q, ty, val),
         None => no_object(ty),
     }
+}
+
+/// The object that a view into storage that an allocation function gave
+/// reaches (STG-8, STG-28): an object that the program created there,
+/// or else a new object of an implicit-lifetime type `ty` with no value.
+/// None for other storage, whose objects only the result of placement
+/// `new` reaches (STG-29).
+pub fn hosted(m: &mut Machine, p: &Ptr, ty: &QType) -> R<Option<Ptr>> {
+    let Some(v) = p.view.clone() else { return Ok(None) };
+    if !m.objs[p.obj].raw || is_byte(m, ty) {
+        return Ok(None);
+    }
+    for k in 0..m.objs.len() {
+        let Some((h, at)) = m.objs[k].host else { continue };
+        if h != p.obj || !m.objs[k].alive {
+            continue;
+        }
+        let n = size(m, &m.objs[k].ty.clone());
+        if v.off >= at && v.off < at + n.max(1) {
+            if let Some(q) = reach(m, k, v.off - at, ty) {
+                return Ok(Some(q));
+            }
+        }
+    }
+    if !implicit_lifetime(m, ty) {
+        return Ok(None);
+    }
+    // STG-8: storage that is not aligned for the type holds no object of
+    // it.
+    let align = m.target.align_of(m.u, ty).unwrap_or(1).max(1);
+    if (base(m, p.obj) as i64 + v.off) as u64 % align != 0 {
+        return no_object(ty);
+    }
+    // STG-18: an object that the storage already holds and that the new
+    // one would overlap leaves no set of objects for both uses, unless
+    // the new one holds it as a part.
+    let n = size(m, ty);
+    for k in 0..m.objs.len() {
+        let Some((h, at)) = m.objs[k].host else { continue };
+        if h != p.obj || !m.objs[k].alive || at >= v.off + n || v.off >= at + size(m, &m.objs[k].ty.clone()) {
+            continue;
+        }
+        let part = at >= v.off && reach_type(m, ty, at - v.off, &m.objs[k].ty.clone());
+        return if part { unsup("an object in allocated storage that holds an object created there before") } else { ub("STG-18", format!("an access as {} to storage that an object of type {} holds", ty.show(), m.objs[k].ty.show())) };
+    }
+    let o = m.new_obj(ty, m.uninit(ty), "an object that the storage holds");
+    m.objs[o].host = Some((p.obj, v.off));
+    m.objs[o].konst = false;
+    Ok(Some(Ptr::whole(o)))
+}
+
+/// An object of type `t` has a part of type `want` at byte `off`.
+fn reach_type(m: &Machine, t: &QType, off: i64, want: &QType) -> bool {
+    if off == 0 && t.unqual() == want.unqual() {
+        return true;
+    }
+    match &t.t {
+        Type::Class(c) => {
+            let offs = m.target.layout(m.u, *c).map(|l| l.2).unwrap_or_default();
+            m.u.field_types(*c).iter().enumerate().any(|(k, ft)| {
+                let fo = offs.get(k).copied().unwrap_or(0) as i64;
+                off >= fo && off < fo + size(m, ft) && reach_type(m, ft, off - fo, want)
+            })
+        }
+        Type::Array(e, Some(n)) => {
+            let es = size(m, e).max(1);
+            off / es < *n as i64 && reach_type(m, e, off % es, want)
+        }
+        _ => false,
+    }
+}
+
+/// STG-7: a scalar type, an array, or a class whose destructor and
+/// default constructor are not provided by the program.
+fn implicit_lifetime(m: &Machine, ty: &QType) -> bool {
+    match &ty.t {
+        Type::Array(..) => true,
+        Type::Class(c) => {
+            let names = &m.u.scopes[m.u.classes[*c].scope].names;
+            let provided = |n: &str| names.get(n).is_some_and(|fs| fs.iter().any(|f| !m.u.defaulted.contains(f)));
+            let aggregate = !names.contains_key(crate::classes::constructors::check::CTOR) && !m.u.dynamic(*c) && m.u.classes[*c].fields.iter().all(|&f| m.u.field(f).is_some_and(|x| x.access == crate::sem::Access::Public));
+            !provided(crate::classes::constructors::check::DTOR) && (aggregate || crate::classes::unions::run::trivial_default(m.u, ty))
+        }
+        _ => ty.is_scalar(),
+    }
+}
+
+/// The object that holds the storage of `obj`, through each object in
+/// whose storage it lies.
+pub fn root(m: &Machine, mut obj: usize) -> usize {
+    while let Some((h, _)) = m.objs[obj].host {
+        obj = h;
+    }
+    obj
+}
+
+/// A byte of a byte array that an object in it covers: that object's
+/// byte (STG-4, STG-26).
+pub fn hosted_byte(m: &mut Machine, p: &Ptr) -> Option<R<Val>> {
+    if !m.hosting.contains(&p.obj) {
+        return None;
+    }
+    let off = offset(m, p);
+    for k in (0..m.objs.len()).rev() {
+        let Some((h, at)) = m.objs[k].host else { continue };
+        if h != p.obj || !m.objs[k].alive {
+            continue;
+        }
+        let ty = m.objs[k].ty.clone();
+        let n = size(m, &ty);
+        if off >= at && off < at + n {
+            let bytes = match encode(m, &ty, &m.objs[k].val.clone()) {
+                Ok(b) => b,
+                Err(e) => return Some(Err(e)),
+            };
+            return Some(match bytes.get((off - at) as usize).copied().flatten() {
+                Some(b) => Ok(Val::Int(b as i128)),
+                None => crate::declarations::initialization::forms::run::read_no_value("the byte"),
+            });
+        }
+    }
+    None
 }
 
 /// STG-23: no object of a type that STG-14 lists for the glvalue's type
@@ -203,12 +337,34 @@ pub fn base(m: &mut Machine, obj: usize) -> u64 {
     if let Some(&a) = m.addrs.get(&obj) {
         return a;
     }
+    // An object in the storage of another has an address inside it.
+    if let Some((h, off)) = m.objs[obj].host {
+        let a = (base(m, h) as i64 + off) as u64;
+        m.addrs.insert(obj, a);
+        return a;
+    }
     let align = m.target.align_of(m.u, &m.objs[obj].ty).unwrap_or(1).max(16);
     let a = m.next_addr.div_ceil(align) * align;
     let n = size(m, &m.objs[obj].ty).max(1) as u64;
     m.next_addr = a + (n + 1).div_ceil(16) * 16;
     m.addrs.insert(obj, a);
     a
+}
+
+/// Give the object `obj` its address at a multiple of `align` (NEW-26).
+pub fn align_base(m: &mut Machine, obj: usize, align: u64) {
+    let a = m.next_addr.div_ceil(align.max(16)) * align.max(16);
+    let n = size(m, &m.objs[obj].ty).max(1) as u64;
+    m.next_addr = a + (n + 1).div_ceil(16) * 16;
+    m.addrs.insert(obj, a);
+}
+
+/// The object `o` of the variable `id` gets its address at the
+/// alignment that `alignas` asks for (ALN-4).
+pub fn var_aligned(m: &mut Machine, id: crate::sem::EntityId, o: usize) {
+    if let Some(a) = m.u.var(id).and_then(|v| v.align).filter(|&a| a > 16) {
+        align_base(m, o, a);
+    }
 }
 
 /// The address of a function: its own region, 16 bytes apart.

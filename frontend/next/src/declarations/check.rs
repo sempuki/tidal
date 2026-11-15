@@ -48,8 +48,10 @@ pub struct Specs {
 
 /// Check a translation unit's declarations in order.
 pub fn translation_unit(cx: &mut Check, trees: &[Node]) {
+    crate::expressions::new_delete::check::library_forms(cx);
     for t in trees {
         declaration(cx, t);
+        crate::expressions::new_delete::check::library_aligned(cx);
     }
     functions::definitions::check::end_of_unit(cx);
 }

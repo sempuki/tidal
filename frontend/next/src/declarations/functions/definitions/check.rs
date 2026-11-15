@@ -74,7 +74,12 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             return None;
         }
     }
-    let Some(fty) = d.ty.func().cloned() else { return None };
+    let Some(mut fty) = d.ty.func().cloned() else { return None };
+    // EXS-4: a deallocation function does not throw.
+    let dealloc = matches!(&*name, "operatordelete" | "operatordelete[]");
+    if dealloc {
+        fty.noexcept = true;
+    }
     let deduce = d.placeholder.is_some();
     // A deduced return type is the error type until a return gives it.
     let known = if deduce { fty.params.iter().all(|p| !p.is_error()) } else { fty.is_error_free() };
@@ -273,7 +278,9 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
                 class: cx.member_of,
                 special: crate::sem::Special::None,
                 explicit: s.explicit,
-                member_static: cx.member_of.is_some() && s.is_static,
+                // NEW-13: a class's allocation and deallocation functions
+                // are static members.
+                member_static: cx.member_of.is_some() && (s.is_static || crate::expressions::new_delete::check::is_allocation(&name)),
                 obj_cv: d.obj_cv,
                 ref_q: d.ref_kind,
             };

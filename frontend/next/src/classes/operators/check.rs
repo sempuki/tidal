@@ -69,11 +69,6 @@ pub fn name_of(op: &str) -> Option<&'static str> {
 pub fn function_name(cx: &Check, n: &Node) -> Option<&'static str> {
     let o = n.child("overloadable_operator")?;
     let spelling: String = o.kids.iter().map(|k| cx.text(k)).collect();
-    // The allocation and deallocation functions come with new and
-    // delete (build step 4).
-    if spelling.starts_with("new") || spelling.starts_with("delete") {
-        return None;
-    }
     name_of(&spelling)
 }
 
@@ -97,9 +92,10 @@ pub fn is_operator(name: &str) -> bool {
 /// unsupported form gives false after its diagnostic too.
 pub fn declaration(cx: &mut Check, name: &str, ty: &QType, defaults: bool, class: Option<crate::sem::types::ClassId>, is_static: bool, span: Span) -> bool {
     let op = &name["operator".len()..];
+    // The allocation and deallocation functions have the rules of
+    // `expressions/new-delete`.
     if matches!(op, "new" | "delete" | "new[]" | "delete[]") {
-        cx.unsupported(span, "an allocation or deallocation function (build step 4)");
-        return false;
+        return true;
     }
     if matches!(op, "co_await" | "->") {
         cx.unsupported(span, format!("the operator function '{}'", name));

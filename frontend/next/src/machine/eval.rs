@@ -171,7 +171,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
             crate::classes::constructors::run::destroy_explicitly(m, &p)
         }
         EK::New(n) => crate::expressions::new_delete::run::new(m, n),
-        EK::Delete(x, array, virtual_dtor) => crate::expressions::new_delete::run::delete(m, x, *array, *virtual_dtor),
+        EK::Delete(x, array, virtual_dtor, dealloc) => crate::expressions::new_delete::run::delete(m, x, *array, *virtual_dtor, dealloc.as_ref()),
     }
 }
 
@@ -226,6 +226,11 @@ pub fn place(m: &mut Machine, e: &Expr) -> R<Ptr> {
         // PFX-10: the member of the object, by its position.
         EK::Member(x, i) => {
             let mut p = place(m, x)?;
+            if p.view.is_some() {
+                if let Some(q) = crate::foundations::storage::run::hosted(m, &p, &x.ty)? {
+                    p = q;
+                }
+            }
             if p.view.is_some() {
                 // STG-23: no object of the class is at the address.
                 return crate::machine::ub("STG-23", format!("an access through a member of {}, where no object of that class is", x.ty.show()));
@@ -517,6 +522,9 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
     }
     postfix::run::check_callable(m, id)?;
     let Some(body) = m.body(id) else {
+        if m.u.library.contains(&id) {
+            return crate::expressions::new_delete::run::library(m, id, args);
+        }
         return postfix::run::no_definition(m, id);
     };
     if m.depth >= m.depth_limit {
@@ -537,8 +545,14 @@ pub fn call(m: &mut Machine, id: crate::sem::EntityId, args: Vec<Ret>) -> R<Ret>
             return unsup("a member function called without its object");
         }
         match args.remove(0) {
-            Ret::Place(p) => frame.this = Some(p),
-            Ret::Val(Val::Ptr(p)) => frame.this = Some(p),
+            Ret::Place(p) | Ret::Val(Val::Ptr(p)) => {
+                // STG-19: the name of an object whose storage an object of
+                // another type took refers to the ended object.
+                if crate::expressions::new_delete::run::replaced(m, p.obj) {
+                    return crate::machine::ub("STG-19", format!("a call of a member function of {}, whose storage holds an object of another type", m.objs[p.obj].name));
+                }
+                frame.this = Some(p)
+            }
             _ => return unsup("the object of a member function call"),
         }
     }

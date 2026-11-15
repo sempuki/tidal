@@ -307,6 +307,7 @@ fn block(m: &mut Machine, items: &[Stmt], seek: Option<&Seek>) -> R<Flow> {
                         m.check_size(&v.ty)?;
                         let val = m.uninit(&v.ty);
                         let o = m.new_obj(&v.ty, val, &m.u.entities[*id].name.clone());
+                        crate::foundations::storage::run::var_aligned(m, *id, o);
                         m.objs[o].konst = false;
                         m.undeclared.insert(o);
                         if let Some(f) = m.frames.last_mut() {
@@ -433,6 +434,7 @@ fn declare_new(m: &mut Machine, id: EntityId, init: &Init) -> R<()> {
     let t = m.temps.len();
     let o = if crate::declarations::initialization::forms::run::constructs(init) {
         let o = m.new_obj(&ty, m.uninit(&ty), &m.u.entities[id].name.clone());
+        crate::foundations::storage::run::var_aligned(m, id, o);
         crate::declarations::initialization::forms::run::construct(m, &Ptr::whole(o), &ty, init)?;
         o
     } else {
@@ -476,6 +478,7 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
         // A static variable with no initializer is zero-initialized.
         let z = m.zero(&v.ty);
         let o = m.new_obj(&v.ty, z, &name);
+        crate::foundations::storage::run::var_aligned(m, id, o);
         m.objs[o].is_static = true;
         m.objs[o].own = false;
         m.globals.insert(id, o);
@@ -496,6 +499,7 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
         }
         if crate::declarations::initialization::forms::run::constructs(&init) {
             let o = m.new_obj(&v.ty, m.zero(&v.ty), &name);
+            crate::foundations::storage::run::var_aligned(m, id, o);
             m.objs[o].is_static = true;
             m.objs[o].own = false;
             m.globals.insert(id, o);
@@ -507,6 +511,7 @@ pub fn static_var(m: &mut Machine, id: EntityId) -> R<Ptr> {
         let val = init_value(m, &v.ty, &init)?;
         let val = m.fill_zero(&v.ty, val);
         let o = m.new_obj(&v.ty, val, &name);
+        crate::foundations::storage::run::var_aligned(m, id, o);
         m.objs[o].is_static = true;
         m.objs[o].own = false;
         m.globals.insert(id, o);

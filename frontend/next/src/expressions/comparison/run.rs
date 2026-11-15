@@ -91,6 +91,11 @@ pub fn compare(m: &mut Machine, op: BOp, a: Val, b: Val, _ty: &QType) -> R<Val> 
             Some(o) => Ok(Val::Int(order(o, op))),
             None => Ok(Val::Int((op == BOp::Ne) as i128)),
         },
+        // Objects in one storage order by their addresses (STG-5).
+        (Val::Ptr(x), Val::Ptr(y)) if !m.constant && x.obj != y.obj && crate::foundations::storage::run::root(m, x.obj) == crate::foundations::storage::run::root(m, y.obj) => {
+            let (ax, ay) = (crate::foundations::storage::run::address(m, &a), crate::foundations::storage::run::address(m, &b));
+            Ok(Val::Int(order(ax.cmp(&ay), op)))
+        }
         (Val::Ptr(x), Val::Ptr(y)) if x.view.is_some() || y.view.is_some() => {
             match crate::foundations::storage::run::offsets(m, x, y) {
                 Some((a, b)) => Ok(Val::Int(order(a.cmp(&b), op))),

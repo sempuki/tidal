@@ -210,7 +210,7 @@ pub enum EK {
     New(Box<New>),
     /// A `delete` expression: the pointer, whether it is `delete[]`, and
     /// whether the class it points to has a virtual destructor.
-    Delete(Box<Expr>, bool, bool),
+    Delete(Box<Expr>, bool, bool, Option<Dealloc>),
     /// A pointer to member that `&C::m` forms (`expressions/member-pointers`):
     /// the class that declares the member, and the member.
     MemberPtr(ClassId, MemberRef),
@@ -249,6 +249,28 @@ pub struct New {
     /// How each element of an array after the listed ones is
     /// initialized.
     pub rest: Init,
+    /// The allocation function and its arguments after the size
+    /// (`expressions/new-delete`).
+    pub alloc: Option<Alloc>,
+}
+
+/// The allocation function of a `new` expression: the function, whether
+/// it takes the alignment after the size (NEW-28), and the placement
+/// arguments as its parameters receive them (NEW-10).
+#[derive(Clone, Debug)]
+pub struct Alloc {
+    pub f: crate::sem::EntityId,
+    pub align: bool,
+    pub args: Vec<Arg>,
+}
+
+/// The deallocation function of a `delete` expression (NEW-22): the
+/// function, and whether it takes the size and the alignment.
+#[derive(Clone, Debug)]
+pub struct Dealloc {
+    pub f: crate::sem::EntityId,
+    pub sized: bool,
+    pub align: bool,
 }
 
 /// An argument as the parameter receives it: a value for a parameter

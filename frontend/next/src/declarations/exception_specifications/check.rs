@@ -81,8 +81,9 @@ pub fn can_throw(cx: &Check, e: &Expr) -> bool {
     }
     e.any(&|x| match &x.k {
         EK::List(i) => ctor_throws(cx, i),
-        // The allocation can fail (NEW-38).
-        EK::New(_) => true,
+        // The allocation can fail (NEW-38), unless its function is
+        // non-throwing (NEW-31); the initialization can throw.
+        EK::New(n) => !n.alloc.as_ref().is_some_and(|a| cx.u.func(a.f).is_some_and(|x| x.ty.noexcept)) || ctor_throws(cx, &n.init) || ctor_throws(cx, &n.rest),
         // A failed cast to a reference throws (VIRT-10).
         EK::DynCast(_, _, true) => true,
         EK::Call(f, _, _) => {
