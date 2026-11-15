@@ -259,6 +259,9 @@ pub struct Machine<'a> {
     /// declared bind, which live as long as the variable (REF-4). None
     /// outside such a declaration and inside each expression of it.
     pub extending: Option<Vec<usize>>,
+    /// The subobjects whose life a pseudo-destructor call ended in
+    /// constant evaluation, as object and path (OBJ-2).
+    pub ended: Vec<(usize, Vec<i64>)>,
     /// The static objects in the order their initialization completed,
     /// which their destruction reverses after main (OBJ-12).
     pub static_order: Vec<usize>,
@@ -313,6 +316,7 @@ impl<'a> Machine<'a> {
             elide: false,
             keep_temps: false,
             extending: None,
+            ended: Vec::new(),
             static_order: Vec::new(),
             undeclared: Default::default(),
         }

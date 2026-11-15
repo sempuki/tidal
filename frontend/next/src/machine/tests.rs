@@ -1993,3 +1993,18 @@ fn classes_with_qualified_names() {
     assert_eq!(rule("struct P { union F; }; union P::F final { short h; }; static_assert(sizeof(P::F) == sizeof(short));"), None);
     assert_eq!(rule("struct O { struct I; }; struct O::M { int v; };"), Some("TYN-7"));
 }
+
+#[test]
+fn ended_subobjects_in_constant_evaluation() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // A union member ended and written again is a new active member.
+    assert_eq!(rule("using I = int; union C { int n; float f; }; constexpr int g() { C c{1}; c.n.~I(); c.n = 3; return c.n; } static_assert(g() == 3);"), None);
+    // An element ended and written is outside its life.
+    assert_eq!(rule("using I = int; struct R { int v[2]; }; constexpr int g() { R r{{1, 2}}; r.v[1].~I(); r.v[1] = 3; return r.v[0]; } static_assert(g() == 1);"), Some("SA-7"));
+    // An ended element leaves the constant without a value.
+    assert_eq!(rule("using I = int; struct R { int v[2]; constexpr R() : v{1, 2} { v[1].~I(); } }; constexpr R r;"), Some("CX-1"));
+}

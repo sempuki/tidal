@@ -23,6 +23,9 @@ pub fn check_write(m: &mut Machine, p: &Ptr, ty: &QType) -> R<()> {
     }
     let (konst, string) = (o.konst, o.string);
     if m.constant {
+        if m.ended.iter().any(|(o, path)| *o == p.obj && p.path.starts_with(path)) {
+            return ub("OBJ-2", "a write to a subobject after a pseudo-destructor call ended its life");
+        }
         constant_evaluation::run::check_write(m, p)?;
     }
     let _ = ty;
@@ -59,15 +62,29 @@ fn through_mutable(m: &Machine, p: &Ptr) -> bool {
     false
 }
 
-/// DTOR-6: a pseudo-destructor call ends the life of a whole object.
-/// The machine keeps one lifetime for each complete object, so the end
-/// of a subobject is not modeled in constant evaluation, and at run
-/// time it changes nothing the machine checks.
+/// DTOR-6: a pseudo-destructor call ends the life of an object. At run
+/// time the machine keeps one lifetime for each complete object, so the
+/// end of a subobject changes nothing the machine checks. In constant
+/// evaluation, the end of a union member leaves the union with no active
+/// member (UNI-14), and another subobject has no value and takes no
+/// write after its end (OBJ-2).
 pub fn end_life(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
     if !p.path.is_empty() {
-        if m.constant {
-            return crate::machine::unsup("the end of the life of a subobject");
+        if !m.constant {
+            return Ok(crate::machine::Val::Void);
         }
+        constant_evaluation::run::check_write(m, p)?;
+        let member = crate::classes::unions::run::union_steps(m, p).into_iter().find(|(q, _, _)| q.path.len() + 1 == p.path.len());
+        if let Some((q, _, _)) = member {
+            crate::classes::unions::run::end_members(m, &q);
+            return Ok(crate::machine::Val::Void);
+        }
+        let Some(ty) = m.type_at(p) else { return crate::machine::unsup("the end of the life of a subobject of this kind") };
+        let v = m.uninit(&ty);
+        if let Some(s) = m.slot(p) {
+            *s = v;
+        }
+        m.ended.push((p.obj, p.path.clone()));
         return Ok(crate::machine::Val::Void);
     }
     if m.objs.get(p.obj).is_some_and(|o| !o.alive) {

@@ -15,7 +15,7 @@ pub fn union_of(u: &Unit, ty: &QType) -> Option<ClassId> {
 
 /// The union steps of a place: for each step into a member of a union,
 /// the place of the union, its class, and the member's position.
-fn union_steps(m: &Machine, p: &Ptr) -> Vec<(Ptr, ClassId, usize)> {
+pub fn union_steps(m: &Machine, p: &Ptr) -> Vec<(Ptr, ClassId, usize)> {
     let mut out = Vec::new();
     let Some(mut ty) = m.objs.get(p.obj).map(|o| o.ty.clone()) else { return out };
     for (k, &i) in p.path.iter().enumerate() {
@@ -128,6 +128,8 @@ pub fn activate(m: &mut Machine, p: &Ptr) -> R<()> {
 pub fn begin_member(m: &mut Machine, q: &Ptr, c: ClassId, i: usize) -> R<()> {
     let tys = m.u.field_types(c);
     let fresh = m.uninit(&tys[i]);
+    // A member that becomes active is a new object (OBJ-2).
+    m.ended.retain(|(o, path)| !(*o == q.obj && path.starts_with(&q.path)));
     match m.slot(q) {
         Some(Val::Agg(xs)) => {
             for x in xs.iter_mut() {

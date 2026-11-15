@@ -724,7 +724,9 @@ static data member can be `thread_local`. An attribute after the class
 key applies to the class, and a discarded call that returns a
 `nodiscard` class by value warns. A class declared in a namespace or a
 class can be defined after with a qualified name, in the scope of the
-qualifier. The
+qualifier. In constant evaluation, a pseudo-destructor call on a union
+member leaves the union with no active member, and on another
+subobject leaves it without a value and closed to writes. The
 checks that such classes need come with them: incomplete classes,
 deleted default constructors and copy assignments, volatile copies,
 constant initializers of class type, and names that a class shares with
