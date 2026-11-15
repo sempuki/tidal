@@ -624,8 +624,11 @@ points of instantiation of model section 3 are not there yet, a
 template that nothing specializes and that a trial specialization with
 `int` for each type parameter and 1 for each constant parameter does
 not check without a diagnostic, an error in a
-specialization, a call whose argument-dependent lookup would see later
-declarations, a definition with a dependent form (`.template`, a
+specialization other than one in the declarations of a class
+specialization whose argument classes are complete (which counts once
+the unit has an object, a member, a base, or a definition's parameter
+or result of the class), a call whose argument-dependent lookup would
+see later declarations, a definition with a dependent form (`.template`, a
 member named with template arguments after `.` or `->`, a type named
 after a parameter without `typename`, `using enum` of a parameter's
 member, a base whose template arguments hold a parameter) or an

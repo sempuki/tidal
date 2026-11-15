@@ -195,8 +195,18 @@ pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<Q
             }
             "placeholder" => ph = Some(crate::declarations::auto::check::placeholder(cx, x)),
             "enum_def" => {
+                let marks = cx.u.diags.len();
                 ty = Some(crate::declarations::enumerations::check::enum_def(cx, x));
                 defines = true;
+                // INST-5: a scoped enumeration of a class instantiation
+                // gets its enumerators when a use needs them, so an error
+                // in them leaves the unit unsupported.
+                let scoped = cx.words(x.child("enum_head").unwrap_or(x)).iter().take(3).any(|w| matches!(*w, "class" | "struct"));
+                if cx.instantiating > 0 && cx.member_of.is_some() && scoped && cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+                    let tail = cx.u.diags.split_off(marks);
+                    cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
+                    cx.unsupported(x.span, "an error in the enumerators of a scoped enumeration of a class instantiation");
+                }
             }
             "decltype_spec" | "decltype_expr" => ty = Some(crate::expressions::decltype::check::decltype_spec(cx, x)),
             "typename_specifier" => ty = Some(crate::templates::dependent_names::check::typename_specifier(cx, x)),

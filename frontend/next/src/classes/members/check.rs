@@ -222,6 +222,11 @@ fn class_def_in(cx: &mut Check, n: &Node, head: &Node) -> QType {
     }
     // DEFARG-3: the default arguments of member functions see the
     // complete class.
+    // INST-7, INST-9, INST-10: in an instantiation, what follows is
+    // instantiated only when a use needs it.
+    if cx.instantiating > 0 && cx.lazy_mark.is_none() {
+        cx.lazy_mark = Some(cx.u.diags.len());
+    }
     if ok {
         for (f, params) in pending {
             // Each in the scope of its own class.

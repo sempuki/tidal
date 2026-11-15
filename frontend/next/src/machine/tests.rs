@@ -2844,3 +2844,18 @@ fn deduced_returns_and_template_names() {
     let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
     assert_eq!(rule(&format!("{} struct One {{}}; struct Two {{}}; template <unsigned char C> One code(); template <int C> Two code(); static_assert(same<decltype(code<300>()), Two>);", same)), None);
 }
+
+#[test]
+fn class_instantiation_errors_when_complete() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let broken = "template <class T> struct Box { static_assert(sizeof(T) == 0); int v; };";
+    // INST-2: an object needs the class complete; a pointer does not.
+    assert_eq!(rule(&format!("{} Box<int> b;", broken)), Some("SA-1"));
+    assert_eq!(rule(&format!("{} Box<int>* p = nullptr;", broken)), Some("unsupported"));
+    // INST-5: a scoped enumeration's enumerators wait for a use.
+    assert_eq!(rule("template <class T> struct Box { enum class Kind { first = T::nothing }; }; Box<int> b;"), Some("unsupported"));
+}

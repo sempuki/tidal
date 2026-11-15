@@ -1594,6 +1594,18 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
 /// specialized: their definitions are not checked yet, so the unit is
 /// unsupported.
 pub fn end_of_unit(cx: &mut Check) {
+    // INST-2, INST-6: the errors of a class instantiation count when the
+    // unit needs the class complete: an object, a member, a base, or a
+    // parameter or result of a definition, of the class. Otherwise the
+    // front end does not tell whether a use needs it.
+    for (c, errs) in std::mem::take(&mut cx.inst_errors) {
+        if needs_complete(cx, c) {
+            cx.u.diags.extend(errs);
+        } else if let Some(d) = errs.first() {
+            let span = d.span;
+            cx.unsupported(span, "an error in a class that an instantiation made, whose completeness the front end does not tell a use needs");
+        }
+    }
     // INST-20: an explicit instantiation definition of a function needs
     // the template's definition in the unit.
     for (kind, t, _, def, span) in cx.explicit_insts.clone() {
@@ -1653,16 +1665,34 @@ fn trial(cx: &mut Check, t: Option<usize>, v: Option<usize>) -> bool {
     }
     let marks = cx.u.diags.len();
     let statics = cx.u.statics.len();
+    let saved_trialing = std::mem::replace(&mut cx.trialing, true);
     let ok = match (t, v) {
         (Some(t), _) => !cx.u.templates[t].specs.iter().any(|(a, _)| *a == args) && specialize(cx, t, &args).is_some(),
         (_, Some(v)) => !cx.u.class_templates[v].specs.iter().any(|(a, _)| *a == args) && instantiate_class(cx, v, &args, None).is_some(),
         _ => false,
     };
+    cx.trialing = saved_trialing;
     let clean = ok && cx.u.diags.len() == marks;
     cx.u.diags.truncate(marks);
     cx.u.statics.truncate(statics);
     cx.depth_exceeded = false;
     clean
+}
+
+/// INST-2: the unit needs class `c` complete: a variable or a data member
+/// of the class or an array of it, a class with it as a base, or a
+/// defined function with a parameter or a result of it.
+fn needs_complete(cx: &Check, c: crate::sem::types::ClassId) -> bool {
+    let is_c = |t: &QType| t.base_elem().class() == Some(c) && !t.is_ref() && !t.is_ptr();
+    let specs: std::collections::HashSet<EntityId> = cx.u.templates.iter().flat_map(|t| t.specs.iter().map(|&(_, g)| g)).collect();
+    cx.u.entities.iter().enumerate().any(|(id, e)| match &e.kind {
+        EntKind::Var(v) => is_c(&v.ty),
+        EntKind::Field(f) => is_c(&f.ty) && (f.base || f.class != c),
+        // A specialization of a function template can be made for an
+        // unevaluated operand, which needs no complete class.
+        EntKind::Func(f) => f.body.is_some() && !specs.contains(&id) && (is_c(&f.ty.ret) || f.ty.params.iter().any(is_c)),
+        _ => false,
+    })
 }
 
 /// The declarator, the initializer, and the template-id of the name of a
@@ -2381,7 +2411,9 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg], source: Option<(us
     let predicted = cx.u.classes.len();
     cx.u.class_templates[v].specs.push((args.to_vec(), predicted));
     cx.explicit_head = source.is_some();
+    let saved_lazy = cx.lazy_mark.take();
     let t = crate::classes::members::check::class_def(cx, &node);
+    let lazy = std::mem::replace(&mut cx.lazy_mark, saved_lazy);
     cx.explicit_head = false;
     cx.scope = saved_scope;
     cx.func = saved_func;
@@ -2392,6 +2424,29 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg], source: Option<(us
     cx.access_class = saved_access;
     cx.lookup_limit = saved_limit;
     cx.instantiating -= 1;
+    // An error in the declarations that the instantiation made waits for
+    // a use that needs the class complete (INST-2, INST-6). One in the
+    // parts that a use instantiates, or a construct that the front end
+    // does not model, leaves the unit unsupported.
+    let lazy = lazy.unwrap_or(cx.u.diags.len()).max(marks);
+    let declared_only = t.class() == Some(predicted) && !cx.depth_exceeded && !cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Unsupported) && !cx.u.diags[lazy..].iter().any(|d| d.sev == crate::diag::Severity::Error);
+    // An argument class that is not complete yet makes the point of
+    // instantiation matter (INST-30), which waits for a later piece.
+    let args_complete = TArg::types(args).iter().all(|t| t.base_elem().class().is_none_or(|k| cx.u.classes[k].complete));
+    if declared_only && args_complete && !cx.trialing && cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) && cx.instantiating == 0 {
+        let tail = cx.u.diags.split_off(marks);
+        let (errs, rest): (Vec<_>, Vec<_>) = tail.into_iter().partition(|d| d.sev == crate::diag::Severity::Error);
+        cx.u.diags.extend(rest);
+        cx.inst_errors.push((predicted, errs));
+        if source.is_some() {
+            cx.u.class_templates[v].explicit.push(predicted);
+            return Some(predicted);
+        }
+        for k in 0..cx.u.class_templates[v].outside.len() {
+            define_outside(cx, v, k, args);
+        }
+        return Some(predicted);
+    }
     let bad = cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported);
     if t.class() != Some(predicted) || bad || cx.depth_exceeded {
         cx.u.class_templates[v].specs.retain(|(a, _)| a.as_slice() != args);
