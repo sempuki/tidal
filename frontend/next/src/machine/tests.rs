@@ -2676,3 +2676,16 @@ fn default_template_arguments() {
     assert_eq!(rule("template <class T = int> struct Box; template <class T = int> struct Box {};"), Some("TPL-16"));
     assert_eq!(rule("template <class T, class U = int> struct Pair; template <class T = char, class U> struct Pair {}; Pair<> p;"), None);
 }
+
+#[test]
+fn alias_templates() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let same = "template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true;";
+    assert_eq!(rule(&format!("{} template <class T> using Ptr = T*; template <class T> struct rr {{ using type = T; }}; template <class T> struct rr<T&> {{ using type = T; }}; template <class T> using rr_t = typename rr<T>::type; static_assert(same<Ptr<int>, int*> && same<rr_t<int&>, int>); template <class T> rr_t<T>&& mv(T&& v) {{ return static_cast<rr_t<T>&&>(v); }} int i; static_assert(same<decltype(mv(i)), int&&>); template <class T> using Closure = decltype([] {{}}); static_assert(same<Closure<int>, Closure<int>>);", same)), None);
+    assert_eq!(rule("enum class Color { red }; template <class T> using Paint = Color; using enum Paint<int>; static_assert(red == Color::red);"), None);
+    assert_eq!(rule("template <class T = int, class U> using First = T;"), Some("TPL-14"));
+}

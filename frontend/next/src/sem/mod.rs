@@ -144,6 +144,25 @@ pub enum EntKind {
     VarTemplate(usize),
     /// A class template, by its index in `Unit::class_templates`.
     ClassTemplate(usize),
+    /// An alias template, by its index in `Unit::alias_templates`.
+    AliasTemplate(usize),
+}
+
+/// An alias template (TPL rules): its parameters and the type-id that a
+/// specialization checks with them bound.
+#[derive(Clone, Debug)]
+pub struct AliasTemplate {
+    pub name: Rc<str>,
+    pub params: Vec<Rc<str>>,
+    pub kinds: Vec<Option<QType>>,
+    pub defaults: Vec<Option<crate::syntax::Node>>,
+    pub node: crate::syntax::Node,
+    pub scope: ScopeId,
+    pub span: Span,
+    pub limit: EntityId,
+    /// The type of each specialization by its arguments, so that two
+    /// uses of one specialization name one type (TPL-46).
+    pub specs: Vec<(Vec<types::TArg>, QType)>,
 }
 
 /// A class template whose parameters are types (build step 5, fourth
@@ -382,6 +401,7 @@ pub struct Unit {
     pub var_templates: Vec<VarTemplate>,
     /// The class templates (`EntKind::ClassTemplate`).
     pub class_templates: Vec<ClassTemplate>,
+    pub alias_templates: Vec<AliasTemplate>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -477,6 +497,7 @@ impl Default for Unit {
             templates: Vec::new(),
             var_templates: Vec::new(),
             class_templates: Vec::new(),
+            alias_templates: Vec::new(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }

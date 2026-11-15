@@ -515,7 +515,9 @@ the parameters before it; a template-id with fewer arguments, and a
 call whose deduction leaves a parameter, take the defaults. The defaults
 of the declarations of one template add up; one parameter gets one
 default, and outside a function template each parameter after a default
-has one. A function template can be declared before
+has one. An alias template's specialization is its type-id checked
+with the parameters bound, one type for each list of arguments, and a
+dependent type for dependent arguments. A function template can be declared before
 its definition; a later declaration adds no default argument, and the
 definition gives the specializations made before it their bodies. In a
 definition, a specialization of a class template whose arguments hold a

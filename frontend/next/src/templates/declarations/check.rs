@@ -247,6 +247,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
         }
         return done;
     }
+    if let Some(ad) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("alias_decl")) {
+        return alias_template_decl(cx, ad, params, defaults);
+    }
     if let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) {
         if sd.child("init_declarator").is_none() {
             return class_template_decl(cx, sd, params, defaults);
@@ -1316,6 +1319,54 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
     true
 }
 
+/// TPL rules: `template <class T> using A = type-id;`, an alias template
+/// at namespace scope.
+fn alias_template_decl(cx: &mut Check, ad: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>) -> bool {
+    let Some(node) = ad.child("type_id") else { return false };
+    let words = cx.words(ad);
+    let Some(name) = words.iter().skip_while(|w| **w != "using").nth(1).map(|w| w.to_string()) else { return false };
+    let saved = cx.scope;
+    if !names::declared_here(cx, saved, &name).is_empty() || ad.child("attribute_spec").is_some() {
+        return false;
+    }
+    if !defaults_last(cx, &defaults, ad.span) {
+        return true;
+    }
+    let id = cx.u.alias_templates.len();
+    let limit = cx.u.entities.len() + 1;
+    cx.u.alias_templates.push(crate::sem::AliasTemplate { name: name.as_str().into(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), defaults, node: node.clone(), scope: saved, span: ad.span, limit, specs: Vec::new() });
+    names::declare_in(cx, saved, &name, EntKind::AliasTemplate(id), ad.span, Linkage::None);
+    true
+}
+
+/// `A<X...>` for an alias template: its type-id with the parameters bound
+/// to the arguments. A dependent argument gives a dependent type.
+fn alias_use(cx: &mut Check, a: usize, tid: &Node) -> QType {
+    let at = cx.u.alias_templates[a].clone();
+    let marks = cx.u.diags.len();
+    let Some(args) = args_with_defaults(cx, tid, &at.kinds, &at.defaults, &at.params, at.scope, at.limit) else {
+        if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+            return QType::error();
+        }
+        return cx.unsupported(tid.span, "an alias template with arguments of another number or form");
+    };
+    if let Some((_, t)) = at.specs.iter().find(|(a, _)| *a == args) {
+        return t.clone();
+    }
+    let saved_scope = cx.scope;
+    let saved_limit = cx.lookup_limit.replace(at.limit);
+    cx.scope = at.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    bind_params(cx, ts, &at.params, &args, at.span);
+    let t = crate::declarations::declarators::check::type_id(cx, &at.node);
+    cx.scope = saved_scope;
+    cx.lookup_limit = saved_limit;
+    if !t.is_error() && !args.iter().any(|a| matches!(a, TArg::Type(x) if crate::templates::deduction::check::has_dep(x))) {
+        cx.u.alias_templates[a].specs.push((args, t.clone()));
+    }
+    t
+}
+
 /// TSP-9: `template <class T> struct C<P...> { ... };`, a partial
 /// specialization of a class template of the scope whose parameters are
 /// types.
@@ -1407,6 +1458,12 @@ pub fn class_template_use_in(cx: &mut Check, tid: &Node, scope: Option<crate::se
         Some(s) => names::lookup_in(cx, s, &name),
         None => names::lookup(cx, &name),
     };
+    if let Some(a) = found.iter().find_map(|&e| match cx.u.entities[e].kind {
+        EntKind::AliasTemplate(a) => Some(a),
+        _ => None,
+    }) {
+        return Some(alias_use(cx, a, tid));
+    }
     // Inside a specialization, the class's own name finds the class,
     // which leads to its template (DEP-15).
     let v = found.into_iter().find_map(|e| match cx.u.entities[e].kind {

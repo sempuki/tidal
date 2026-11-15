@@ -258,6 +258,18 @@ pub fn elaborated_type(cx: &mut Check, n: &Node) -> QType {
 
 /// The enumeration that the name of `n` finds.
 fn lookup_enum(cx: &mut Check, n: &Node) -> QType {
+    // A specialization of an alias template (TPL rules).
+    if let Some(tid) = n.child("template_id") {
+        let scope = match n.child("nested_name").map(|nn| names::nested_name(cx, nn)) {
+            None => None,
+            Some(names::Qual::Scope(s)) => Some(s),
+            Some(_) => return QType::error(),
+        };
+        return match crate::templates::declarations::check::class_template_use_in(cx, tid, scope) {
+            Some(t) => t,
+            None => cx.unsupported(tid.span, "'using enum' with a template-id of no template"),
+        };
+    }
     let Some((name, span)) = head_name(cx, n) else { return QType::error() };
     let found = match n.child("nested_name") {
         Some(nn) => match names::nested_name(cx, nn) {

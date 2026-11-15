@@ -417,7 +417,7 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
             let t = cx.unsupported(span, format!("the function template '{}' named outside a call", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
-        EntKind::VarTemplate(_) | EntKind::ClassTemplate(_) => {
+        EntKind::VarTemplate(_) | EntKind::ClassTemplate(_) | EntKind::AliasTemplate(_) => {
             let t = cx.unsupported(span, format!("the variable template '{}' named without arguments", name));
             Expr::new(EK::Int(0), t, Cat::PR, span)
         }
