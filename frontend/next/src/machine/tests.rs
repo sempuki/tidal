@@ -2718,3 +2718,14 @@ fn concepts_and_constraints() {
     // target by a qualification adjustment alone.
     assert_eq!(rule("struct P { explicit operator int*(); }; struct R { explicit operator int&(); }; P p; R r; void f() { static_cast<const int*>(p); static_cast<const int&>(r); }"), None);
 }
+
+#[test]
+fn names_qualified_by_parameters() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("struct S { static constexpr int size = 3; using type = long; }; template <class T> int count() { typename T::type v = T::size; return int(v); } int main() { return count<S>(); }"), RunOutcome::Result(3));
+    assert_eq!(rule("struct Mixed { struct name {}; int name; }; int f() { typename Mixed::name n; return 0; }"), Some("DEP-22"));
+}

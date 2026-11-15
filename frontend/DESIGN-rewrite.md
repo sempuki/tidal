@@ -579,9 +579,10 @@ template that nothing specializes and that a trial specialization with
 `int` for each parameter does not check without a diagnostic, an error in a
 specialization, a call whose argument-dependent lookup would see later
 declarations, a definition with a dependent form (`.template`, a
-member named with template arguments after `.` or `->`, a name
-qualified by a parameter, a base whose template arguments hold a
-parameter) or an incomplete class, and a name that a
+member named with template arguments after `.` or `->`, a type named
+after a parameter without `typename`, `using enum` of a parameter's
+member, a base whose template arguments hold a parameter) or an
+incomplete class, and a name that a
 function template shares with another declaration leave the unit
 unsupported.
 

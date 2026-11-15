@@ -21,6 +21,18 @@ pub fn typename_specifier(cx: &mut Check, n: &Node) -> QType {
     if n.kids.iter().any(|k| matches!(k, Kid::Node(c) if c.prod != "nested_name")) {
         return cx.unsupported(n.span, "a typename specifier with a template-id after the qualifier");
     }
+    // DEP-22: the name must find a type. A data member or a function of
+    // the name hides a class of it.
+    if let (Some(nn), Some(name)) = (n.child("nested_name"), cx.words(n).into_iter().rev().find(|w| !matches!(*w, ";" | "::" | "typename")).map(|w| w.to_string())) {
+        let marks = cx.u.diags.len();
+        let q = names::nested_name(cx, nn);
+        cx.u.diags.truncate(marks);
+        if let names::Qual::Scope(s) = q {
+            if names::lookup_in(cx, s, &name).iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Field(_) | EntKind::Var(_) | EntKind::Func(_))) {
+                return cx.error(n.span, "DEP-22", format!("'typename' names '{}', which is not a type", name));
+            }
+        }
+    }
     crate::foundations::types::check::named_type(cx, n)
 }
 

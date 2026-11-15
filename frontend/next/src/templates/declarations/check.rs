@@ -801,7 +801,11 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
         || words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x)))
-        || words.windows(2).any(|w| w[1] == "::" && params.iter().any(|(p, _, _)| p.as_ref() == w[0]))
+        // `using enum T::E`: a dependent enumeration (ENUM-20).
+        || words.windows(3).any(|w| w[0] == "enum" && params.iter().any(|(p, _, _)| p.as_ref() == w[1]) && w[2] == "::")
+        // `T::name x`: a type named after a parameter without `typename`
+        // (DEP-19). Another use of `T::` is checked with `T` bound.
+        || words.windows(4).enumerate().any(|(k, w)| w[1] == "::" && params.iter().any(|(p, _, _)| p.as_ref() == w[0]) && is_word(w[2]) && (is_word(w[3]) || matches!(w[3], "*" | "&" | "&&")) && (k == 0 || words[k - 1] != "typename"))
         // A type named after a template-id qualifier, which can need
         // `typename` (DEP-19).
         || words.windows(4).any(|w| w[0] == ">" && w[1] == "::" && is_word(w[2]) && is_word(w[3]))
