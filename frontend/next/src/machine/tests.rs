@@ -2875,3 +2875,15 @@ fn function_specialization_body_errors() {
     // IF-22: an error in a discarded statement of a specialization.
     assert_eq!(rule("template <class T> int f(T) { if constexpr (sizeof(T) > 100) { static_assert(false); return 0; } else { return 1; } } int x = f(1);"), Some("unsupported"));
 }
+
+#[test]
+fn abbreviated_function_templates() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let small = "template <class T> concept Small = sizeof(T) <= 4;";
+    assert_eq!(rule(&format!("{} constexpr int f(auto x, const auto& y, Small auto z) {{ return x + y + z; }} static_assert(f(1, 2L, 3) == 6);", small)), None);
+    assert_eq!(rule(&format!("{} int g(Small auto z) {{ return 1; }} int bad = g(1.0);", small)), Some("OVL-35"));
+}

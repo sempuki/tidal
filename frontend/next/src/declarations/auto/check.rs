@@ -17,7 +17,9 @@ pub struct Placeholder {
 }
 
 pub fn placeholder(cx: &mut Check, n: &Node) -> Placeholder {
-    if n.child("type_constraint").is_some() {
+    // CPT-20: the type constraint of an abbreviated function template's
+    // parameter is the invented parameter's constraint.
+    if n.child("type_constraint").is_some() && cx.abbrev_types.is_empty() {
         cx.unsupported(n.span, "a type constraint before a placeholder");
     }
     Placeholder { decltype: cx.has_word(n, "decltype"), c: false, v: false, span: n.span }

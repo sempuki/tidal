@@ -67,6 +67,7 @@ pub fn declaration(cx: &mut Check, n: &Node) {
             "block_decl" => {
                 block_decl(cx, c, false);
             }
+            "function_definition" if crate::templates::declarations::check::abbreviated(cx, c) => {}
             "function_definition" => functions::definitions::check::function_definition(cx, c),
             "namespace_def" => namespaces::check::namespace_def(cx, c),
             "linkage_spec" => linkage_specifications::check::linkage_spec(cx, c),

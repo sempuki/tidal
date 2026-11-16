@@ -481,7 +481,7 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: cx.abbrev_count, specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     true
 }
@@ -1288,6 +1288,10 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     let ts = cx.enter(ScopeKind::Template);
     bind_params(cx, ts, &tpl.params, args, tpl.span);
     let fd = &tpl.node;
+    // An abbreviated template's `auto` parameters take their arguments.
+    if tpl.abbrev > 0 {
+        cx.abbrev_types = TArg::types(&args[args.len() - tpl.abbrev..]).into();
+    }
     // The first diagnostic of the body, which a use instantiates (INST-7).
     let mut body_mark = None;
     let r = (|| {
@@ -1308,6 +1312,7 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         }
         Some(f)
     })();
+    cx.abbrev_types.clear();
     cx.scope = saved_scope;
     cx.func = saved_func;
     cx.lookup_limit = saved_limit;
@@ -1377,9 +1382,13 @@ fn define_later(cx: &mut Check, t: usize, args: &[TArg], f: EntityId) {
     let ts = cx.enter(ScopeKind::Template);
     bind_params(cx, ts, &tpl.params, args, tpl.span);
     let fd = &tpl.node;
+    if tpl.abbrev > 0 {
+        cx.abbrev_types = TArg::types(&args[args.len() - tpl.abbrev..]).into();
+    }
     (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
         let d = crate::declarations::declarators::check::declarator(cx, &specs, fd.child("declarator")?);
+        cx.abbrev_types.clear();
         let cs = fd.child("function_body").and_then(|b| b.child("compound_stmt"))?;
         crate::declarations::functions::definitions::check::define(cx, f, &d, cs);
         Some(())
@@ -1496,6 +1505,47 @@ pub fn beats_by_template(cx: &Check, f: EntityId, g: EntityId) -> Option<bool> {
         }
         _ => Some(false),
     }
+}
+
+/// TPL rules: a function definition with `auto` or `C auto` parameters
+/// at namespace scope, an abbreviated function template. Each such
+/// parameter invents a type parameter, with the type constraint as its
+/// constraint (CPT-20). False for another declaration.
+pub fn abbreviated(cx: &mut Check, fd: &Node) -> bool {
+    let Some(dn) = fd.child("declarator") else { return false };
+    let Some(ps) = dn.find("parameters") else { return false };
+    let autos: Vec<&Node> = ps.children("parameter").filter(|p| p.child("decl_specifiers").is_some_and(|ds| ds.find("placeholder").is_some())).collect();
+    if autos.is_empty() || cx.func.is_some() || cx.member_of.is_some() || cx.instantiating > 0 {
+        return false;
+    }
+    // `decltype(auto)` and `auto...` wait for a later piece.
+    let mut constraints: Constraints = Vec::new();
+    let mut params: Vec<Param> = Vec::new();
+    for (k, p) in autos.iter().enumerate() {
+        let Some(ph) = p.find("placeholder") else { return false };
+        let mut toks = Vec::new();
+        p.tokens(&mut toks);
+        if cx.words(ph).contains(&"decltype") || toks.iter().any(|&t| cx.toks[t].text == "...") {
+            return false;
+        }
+        if let Some(tc) = ph.child("type_constraint") {
+            constraints.push((Some(k), tc.clone()));
+        }
+        params.push((format!("auto#{}", k).as_str().into(), p.span, None));
+    }
+    let Some(ds) = fd.child("decl_specifiers") else { return false };
+    // The parameters' types at the definition are the invented ones.
+    cx.abbrev_types = params.iter().enumerate().map(|(k, p)| QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: p.0.clone() })))).collect();
+    cx.abbrev_count = params.len();
+    cx.head_pack = false;
+    let defaults = vec![None; params.len()];
+    let r = function_template(cx, fd, ds, dn, params, defaults, constraints);
+    cx.abbrev_types.clear();
+    cx.abbrev_count = 0;
+    if !r {
+        cx.u.diags.retain(|d| !(d.sev == crate::diag::Severity::Unsupported && d.msg.contains("abbreviated function template")));
+    }
+    r
 }
 
 /// The function templates that a call by name finds, after their
@@ -2117,7 +2167,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true

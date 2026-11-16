@@ -281,6 +281,9 @@ pub struct FnTemplate {
     pub pack_param: bool,
     /// The name of the function parameter pack.
     pub pack_name: Option<Rc<str>>,
+    /// The number of parameters at the end that `auto` parameters of an
+    /// abbreviated function template invent.
+    pub abbrev: usize,
     pub specs: Vec<(Vec<types::TArg>, EntityId)>,
     /// The functions of `specs` that explicit specializations define.
     pub explicit: Vec<EntityId>,

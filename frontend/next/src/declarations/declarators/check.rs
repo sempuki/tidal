@@ -683,8 +683,19 @@ pub fn parameters(cx: &mut Check, n: Option<&Node>) -> (Vec<Param>, bool) {
         if specs.constexpr || specs.consteval || specs.constinit {
             crate::declarations::constexpr::check::on_parameter(cx, ds.span);
         }
-        if specs.placeholder.is_some() {
-            cx.unsupported(p.span, "a placeholder in a parameter (an abbreviated function template)");
+        // An abbreviated function template's `auto` parameter takes the
+        // type of its invented parameter.
+        let mut specs = specs;
+        if let Some(ph) = specs.placeholder.clone() {
+            match cx.abbrev_types.pop_front() {
+                Some(t) if !ph.decltype => {
+                    specs.ty = Some(t.with_cv(ph.c, ph.v));
+                    specs.placeholder = None;
+                }
+                _ => {
+                    cx.unsupported(p.span, "a placeholder in a parameter (an abbreviated function template)");
+                }
+            }
         }
         let mut d = Declared {
             name: None,
