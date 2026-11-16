@@ -179,11 +179,25 @@ fn found(cx: &mut Check, name: &str, args: &[Expr], members_of: Option<&Expr>) -
             members.retain(|&e| cx.u.func(e).is_some());
         }
     }
-    let mut others: Vec<EntityId> = crate::foundations::names::check::lookup(cx, name).into_iter().filter(|&e| cx.u.func(e).is_some_and(|f| f.class.is_none())).collect();
+    let looked = crate::foundations::names::check::lookup(cx, name);
+    let mut others: Vec<EntityId> = looked.iter().copied().filter(|&e| cx.u.func(e).is_some_and(|f| f.class.is_none())).collect();
+    let mut templates: Vec<EntityId> = looked.into_iter().filter(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Template(t) if cx.u.templates[t].class.is_none())).collect();
     let tys: Vec<QType> = args.iter().map(|a| a.ty.clone()).collect();
     for e in crate::foundations::names::check::argument_dependent(cx, name, &tys) {
         if !others.contains(&e) && cx.u.func(e).is_some_and(|f| f.class.is_none()) {
             others.push(e);
+        }
+        if !templates.contains(&e) && matches!(cx.u.entities[e].kind, crate::sem::EntKind::Template(t) if cx.u.templates[t].class.is_none()) {
+            templates.push(e);
+        }
+    }
+    // An operator function template gives the specializations that the
+    // operands deduce (DED rules).
+    if !templates.is_empty() {
+        for f in crate::templates::declarations::check::call_candidates_with(cx, &templates, &[], args) {
+            if !others.contains(&f) {
+                others.push(f);
+            }
         }
     }
     (members, others)
@@ -259,7 +273,7 @@ fn choose(cx: &mut Check, cands: &[Cand], args: &[Expr], span: Span, op: &str) -
         cx.error_cause(span, "OPR-15", Some("OVL-35"), format!("no operator function '{}' fits the operands", op));
         return None;
     }
-    let wins = |a: &(Cand, Vec<Ics>), b: &(Cand, Vec<Ics>)| -> bool {
+    let wins = |cx: &Check, a: &(Cand, Vec<Ics>), b: &(Cand, Vec<Ics>)| -> bool {
         let mut some = false;
         for (x, y) in a.1.iter().zip(b.1.iter()) {
             if better(y, x) {
@@ -269,19 +283,29 @@ fn choose(cx: &mut Check, cands: &[Cand], args: &[Expr], span: Span, op: &str) -
                 some = true;
             }
         }
+        if some {
+            return true;
+        }
+        // OVL-27: a function that is not a specialization of a template
+        // wins a tie, and then the more specialized template.
+        match (crate::templates::declarations::check::beats_by_template(cx, a.0.f, b.0.f), crate::templates::declarations::check::beats_by_template(cx, b.0.f, a.0.f)) {
+            (Some(true), _) => return true,
+            (_, Some(true)) => return false,
+            _ => {}
+        }
         // A candidate that is not rewritten wins a tie, and a rewritten
         // one wins a tie with a reversed one (OVL rules).
         let rewritten = |c: &Cand| c.reversed || c.negated || c.three;
-        some || (!rewritten(&a.0) && rewritten(&b.0)) || (!a.0.reversed && b.0.reversed)
+        (!rewritten(&a.0) && rewritten(&b.0)) || (!a.0.reversed && b.0.reversed)
     };
     let mut best = 0;
     for i in 1..viable.len() {
-        if wins(&viable[i], &viable[best]) {
+        if wins(cx, &viable[i], &viable[best]) {
             best = i;
         }
     }
     for i in 0..viable.len() {
-        if i != best && !wins(&viable[best], &viable[i]) {
+        if i != best && !wins(cx, &viable[best], &viable[i]) {
             cx.error_cause(span, "OPR-15", Some("OVL-36"), format!("the operator '{}' is ambiguous for these operands", op));
             return None;
         }
@@ -484,6 +508,15 @@ fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite
         if exact == 0 {
             let t = cx.unsupported(span, "an operator function against a built-in operator for enumeration operands");
             return Some(Expr::new(EK::Int(0), t, Cat::PR, span));
+        }
+        // OVL-27: the built-in candidate is no template, so it wins a tie
+        // with specializations of operator function templates.
+        let plain_exact = cands.iter().any(|c| {
+            let ordered: Vec<Expr> = if c.reversed { args.iter().rev().cloned().collect() } else { args.clone() };
+            crate::templates::declarations::check::template_of(cx, c.f).is_none() && sequences(cx, c, &ordered).is_some_and(|s| s.iter().all(|x| x.rank == crate::overloading::conversion_sequences::check::Rank::Exact))
+        });
+        if !plain_exact && matches!(op, "==" | "!=" | "<" | ">" | "<=" | ">=") && l.ty.nonref().unqual().t == r.ty.nonref().unqual().t {
+            return None;
         }
         // OVL-10: a comparison of two operands of one enumeration has the
         // built-in candidate with that type, which ties an operator

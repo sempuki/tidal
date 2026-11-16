@@ -393,6 +393,12 @@ impl<'a> Check<'a> {
     pub fn has_word(&self, n: &Node, w: &str) -> bool {
         self.words(n).contains(&w)
     }
+    /// Whether any token of `n`, at any depth, is `w`.
+    pub fn has_token(&self, n: &Node, w: &str) -> bool {
+        let mut toks = Vec::new();
+        n.tokens(&mut toks);
+        toks.iter().any(|&t| self.toks[t].text == w)
+    }
     /// The first direct token of a node.
     pub fn first_word(&self, n: &Node) -> &'a str {
         n.kids.iter().find_map(|k| matches!(k, Kid::Tok(_)).then(|| self.text(k))).unwrap_or("")

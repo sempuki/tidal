@@ -599,8 +599,19 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     let ts = cx.enter(ScopeKind::Template);
     declare_params(cx, ts, &params);
     let marks = cx.u.diags.len();
+    // TPL-19: after a qualifier that names a class, the declarator looks
+    // up names in the class, so the parameters are bound there too for
+    // the time of the declarator.
+    let class_scope = dn.find("declarator_id").and_then(|i| i.find("qualified_name")).and_then(|q| q.child("nested_name")).and_then(|nn| match names::nested_name(cx, nn) {
+        names::Qual::Scope(s) if cx.u.scopes[s].kind == ScopeKind::Class => Some(s),
+        _ => None,
+    });
+    let shadowed = class_scope.map(|s| bind_in(cx, ts, s, &params));
     let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
     let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    if let (Some(s), Some(old)) = (class_scope, shadowed) {
+        unbind_in(cx, s, old);
+    }
     cx.leave(saved);
     let fty = d.ty.func().cloned();
     let (Some((name, span)), Some(fty)) = (d.name.clone(), fty) else {
@@ -611,6 +622,11 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     // `decltype(auto)` and a constrained placeholder wait for a later
     // piece.
     let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
+    if let (names::Qual::Scope(s), false) = (d.qual, specs.unsupported || d.unsupported || cx.u.diags.len() > marks || !placeholder_ok) {
+        if fd.prod == "function_definition" && constraints.is_empty() && defaults.iter().all(|x| x.is_none()) {
+            return outside_member_template(cx, s, &name, &fty, &params, fd);
+        }
+    }
     if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok {
         cx.u.diags.truncate(marks);
         return false;
@@ -691,6 +707,79 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
     let limit = cx.u.entities.len() + 1;
     cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: cx.abbrev_count, specs: Vec::new(), explicit: Vec::new(), class: None, constraints, span, limit });
     names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
+    true
+}
+
+/// Bind the names of `params` that the scope `ts` declares in the scope
+/// `s` too, and give back what `s` had under those names.
+fn bind_in(cx: &mut Check, ts: crate::sem::ScopeId, s: crate::sem::ScopeId, params: &[Param]) -> Vec<(Rc<str>, Option<Vec<EntityId>>)> {
+    let mut old = Vec::new();
+    for (name, _, _) in params {
+        let ids = cx.u.scopes[ts].names.get(name).cloned().unwrap_or_default();
+        old.push((name.clone(), cx.u.scopes[s].names.insert(name.clone(), ids)));
+    }
+    old
+}
+
+/// For a member template defined outside its class, the parameters that
+/// `ts` binds, bound in the class too (TPL-19), with what `bind_in` gives
+/// back.
+fn outside_class_binding(cx: &mut Check, tpl: &FnTemplate, ts: crate::sem::ScopeId) -> Option<Vec<(Rc<str>, Option<Vec<EntityId>>)>> {
+    tpl.class?;
+    tpl.node.child("declarator")?.find("declarator_id")?.find("qualified_name")?;
+    let mut old = Vec::new();
+    for name in &tpl.params {
+        let ids = cx.u.scopes[ts].names.get(name).cloned().unwrap_or_default();
+        old.push((name.clone(), cx.u.scopes[tpl.scope].names.insert(name.clone(), ids)));
+    }
+    Some(old)
+}
+
+/// Undo `bind_in`.
+fn unbind_in(cx: &mut Check, s: crate::sem::ScopeId, old: Vec<(Rc<str>, Option<Vec<EntityId>>)>) {
+    for (name, ids) in old {
+        match ids {
+            Some(ids) => cx.u.scopes[s].names.insert(name, ids),
+            None => cx.u.scopes[s].names.remove(&name),
+        };
+    }
+}
+
+/// The definition `fd` outside its class of a member function template
+/// that the class `s` declares, a class that is not a template: the
+/// template with the name `name`, the same function type, and the same
+/// kinds of parameters. The specializations that uses made before get
+/// their bodies now. False for another form.
+fn outside_member_template(cx: &mut Check, s: crate::sem::ScopeId, name: &str, fty: &crate::sem::types::FnType, params: &[Param], fd: &Node) -> bool {
+    if cx.u.scopes[s].kind != ScopeKind::Class {
+        return false;
+    }
+    let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
+    let t = names::declared_here(cx, s, name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::Template(t) if *cx.u.templates[t].fty == *fty && cx.u.templates[t].kinds == kinds && cx.u.templates[t].node.prod == "member_template_decl" => Some(t),
+        _ => None,
+    });
+    let Some(t) = t else { return false };
+    if shadows_param(cx, fd, params) || expands_no_pack(cx, fd) {
+        return true;
+    }
+    // DEFARG-13: the definition adds no default argument.
+    if let Some(p) = fd.child("declarator").and_then(|d| d.find("parameters")).and_then(|ps| ps.children("parameter").find(|p| cx.has_word(p, "="))) {
+        cx.error(p.span, "DEFARG-13", "a default argument in a later declaration of a member function template");
+        return true;
+    }
+    if dependent_forms(cx, fd, params) {
+        return false;
+    }
+    let limit = cx.u.entities.len() + 1;
+    let tpl = &mut cx.u.templates[t];
+    tpl.params = params.iter().map(|p| p.0.clone()).collect();
+    tpl.node = fd.clone();
+    tpl.limit = limit;
+    let made: Vec<(Vec<TArg>, EntityId)> = tpl.specs.iter().filter(|(_, f)| !tpl.explicit.contains(f)).cloned().collect();
+    for (args, f) in made {
+        define_later(cx, t, &args, f);
+    }
     true
 }
 
@@ -1546,6 +1635,7 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     }
     // The first diagnostic of the body, which a use instantiates (INST-7).
     let mut body_mark = None;
+    let shadowed = outside_class_binding(cx, &tpl, ts);
     let r = (|| {
         if tpl.name.as_ref() == crate::classes::constructors::check::CTOR {
             return ctor_specialization(cx, t, args, fd, &mut body_mark);
@@ -1567,6 +1657,9 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         }
         Some(f)
     })();
+    if let Some(old) = shadowed {
+        unbind_in(cx, tpl.scope, old);
+    }
     cx.abbrev_types.clear();
     cx.scope = saved_scope;
     cx.func = saved_func;
@@ -1674,6 +1767,7 @@ fn define_later(cx: &mut Check, t: usize, args: &[TArg], f: EntityId) {
     if tpl.abbrev > 0 {
         cx.abbrev_types = TArg::types(&args[args.len() - tpl.abbrev..]).into();
     }
+    let shadowed = outside_class_binding(cx, &tpl, ts);
     (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
         let d = crate::declarations::declarators::check::declarator(cx, &specs, fd.child("declarator")?);
@@ -1682,6 +1776,9 @@ fn define_later(cx: &mut Check, t: usize, args: &[TArg], f: EntityId) {
         crate::declarations::functions::definitions::check::define(cx, f, &d, cs);
         Some(())
     })();
+    if let Some(old) = shadowed {
+        unbind_in(cx, tpl.scope, old);
+    }
     cx.scope = saved_scope;
     cx.func = saved_func;
     cx.lookup_limit = saved_limit;
@@ -2542,8 +2639,27 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return false;
     }
     let Some(inner) = m.child("member_decl") else { return false };
-    let Some(fd) = inner.child("function_definition") else { return false };
+    // A declaration of a member function template, which a definition
+    // outside the class completes (`outside_member_template`): its
+    // decl-specifiers and its declarator.
+    let declared;
+    let fd = match inner.child("function_definition") {
+        Some(fd) => fd,
+        None => {
+            let mds: Vec<&Node> = inner.children("member_declarator").collect();
+            let [md] = mds[..] else { return false };
+            let (Some(ds), Some(dn)) = (inner.child("decl_specifiers"), md.child("declarator")) else { return false };
+            if dn.find("function_suffix").is_none() || cx.words(md).contains(&"=") || inner.kids.iter().any(|k| matches!(k, Kid::Node(x) if !matches!(x.prod, "decl_specifiers" | "member_declarator"))) {
+                return false;
+            }
+            declared = Node { prod: "member_template_decl", ext: None, span: inner.span, kids: vec![Kid::Node(ds.clone()), Kid::Node(dn.clone())] };
+            &declared
+        }
+    };
     if let Some(dn) = fd.child("declarator").filter(|dn| crate::classes::constructors::check::special_name(cx, class, dn) == Some(false)) {
+        if fd.prod != "function_definition" {
+            return false;
+        }
         return ctor_template(cx, class, fd, dn, params, defaults, access);
     }
     // Operator and conversion function templates wait for a later piece.
@@ -2554,7 +2670,12 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
         return true;
     }
-    if dependent_forms(cx, fd, &params) || cx.words(ds).iter().any(|w| matches!(*w, "virtual" | "friend")) {
+    // VIRT-2: a member function template is not virtual.
+    if cx.has_token(ds, "virtual") {
+        cx.error(ds.span, "VIRT-2", "a member function template declared virtual");
+        return true;
+    }
+    if dependent_forms(cx, fd, &params) || cx.has_token(ds, "friend") {
         return false;
     }
     let saved = cx.scope;

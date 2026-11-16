@@ -89,7 +89,7 @@ pub fn template_takes(cx: &Check, c: ClassId, a: &Expr) -> bool {
     ctor_templates(cx, c).into_iter().any(|e| {
         let crate::sem::EntKind::Template(t) = cx.u.entities[e].kind else { return false };
         let tpl = &cx.u.templates[t];
-        tpl.fty.params.len() == 1 && !tpl.node.child("decl_specifiers").is_some_and(|ds| cx.has_word(ds, "explicit")) && crate::templates::deduction::check::deduce_call(cx, t, &[], std::slice::from_ref(a)).is_some_and(|b| b.iter().all(|x| x.is_some()))
+        tpl.fty.params.len() == 1 && !tpl.node.child("decl_specifiers").is_some_and(|ds| cx.has_token(ds, "explicit")) && crate::templates::deduction::check::deduce_call(cx, t, &[], std::slice::from_ref(a)).is_some_and(|b| b.iter().all(|x| x.is_some()))
     })
 }
 
