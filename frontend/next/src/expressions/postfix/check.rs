@@ -760,6 +760,12 @@ pub fn call_value(cx: &mut Check, f: Expr, args: Vec<Expr>, span: Span) -> Expr 
     let templates = crate::expressions::lambdas::check::call_templates(cx, &f);
     if ops.is_empty() && !templates.is_empty() {
         let specs = crate::templates::declarations::check::call_candidates_with(cx, &templates, &[], &args);
+        // CNS-11: arguments that do not satisfy the constraints leave no
+        // candidate.
+        if specs.is_empty() && cx.constraints_failed {
+            cx.error_cause(span, "OVL-35", Some("CNS-11"), "no call operator of the lambda fits the arguments: they do not satisfy its constraints");
+            return bad(span);
+        }
         if specs.is_empty() {
             let t = cx.unsupported(span, "a call of a generic lambda whose arguments the front end does not deduce");
             return Expr::new(EK::Int(0), t, Cat::PR, span);
