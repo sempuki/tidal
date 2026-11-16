@@ -472,6 +472,12 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
         };
     }
     if first.prod == "function_definition" {
+        // A constructor or destructor with a requires clause (CNS-16,
+        // CNS-19) waits for a later piece.
+        if first.child("requires_clause").is_some() && first.child("declarator").is_some_and(|dn| crate::classes::constructors::check::special_name(cx, id, dn).is_some()) {
+            cx.unsupported(m.span, "a constructor or destructor with a requires clause (build step 5)");
+            return false;
+        }
         if let Some(dn) = first.child("declarator").filter(|dn| crate::classes::constructors::check::special_name(cx, id, dn).is_some()) {
             let specs = match first.child("decl_specifiers") {
                 Some(ds) => {
@@ -525,12 +531,38 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
             if !modeled_function(cx, id, dn, &mut d) {
                 return false;
             }
-            if !valid_function(cx, id, &specs, &d) {
+            // CNS-28: a requires clause makes another overload of a
+            // function of the same type.
+            let constraint = first.child("requires_clause").cloned();
+            if let Some(rc) = &constraint {
+                // CPT-15: a virtual function has no requires clause.
+                if specs.is_virtual {
+                    cx.error(rc.span, "CPT-15", "a virtual function with a requires clause");
+                    return true;
+                }
+                // A conversion function with one waits for a later piece.
+                if d.name.as_ref().is_some_and(|(n, _)| n.starts_with("operator ")) {
+                    cx.unsupported(rc.span, "a conversion function with a requires clause (build step 5)");
+                    return false;
+                }
+            }
+            if constraint.is_none() && !valid_function(cx, id, &specs, &d) {
                 return true;
             }
-            let Some(f) = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None) else { return true };
+            let saved_constrained = std::mem::replace(&mut cx.constrained_decl, constraint.as_ref().map(|c| c.span));
+            let declared = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None);
+            cx.constrained_decl = saved_constrained;
+            let Some(f) = declared else { return true };
             cx.u.access.insert(f, *access);
             crate::classes::r#virtual::check::member_function(cx, id, f, specs.is_virtual, first, None, dn.span);
+            if let Some(rc) = constraint {
+                // CPT-15: also a function that overrides is virtual.
+                if cx.u.virt.contains_key(&f) {
+                    cx.error(rc.span, "CPT-15", "a virtual function with a requires clause");
+                    return true;
+                }
+                cx.u.member_constraints.insert(f, (rc, cx.scope));
+            }
             cx.deferred.insert(f);
             // CLS rules: a member function defined in its class is inline.
             if let Some(x) = cx.u.func_mut(f) {

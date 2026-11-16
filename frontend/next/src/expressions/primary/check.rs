@@ -339,6 +339,12 @@ fn local_class_use(cx: &mut Check, v: EntityId, span: Span) -> Option<Expr> {
 
 /// The expression that names one of the entities a lookup found.
 pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -> Expr {
+    // CNS-12: a member function with a requires clause named outside a
+    // call waits for a later piece.
+    if found.iter().any(|f| cx.u.member_constraints.contains_key(f)) {
+        let t = cx.unsupported(span, format!("the member function '{}' with a requires clause outside a call", name));
+        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    }
     // An overload set with a function template outside a call waits for
     // a later piece.
     if found.len() > 1 && found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) {

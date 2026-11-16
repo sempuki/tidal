@@ -115,6 +115,24 @@ pub fn object_sequence(cx: &Check, f: EntityId, object: &Expr) -> Option<Ics> {
 
 /// Overload resolution with the object of a member call, if any.
 pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, args: &[Expr], span: Span, name: &str) -> Option<EntityId> {
+    // CNS-11: a member function whose requires clause is not satisfied
+    // is no candidate.
+    let mut kept: Vec<EntityId> = Vec::new();
+    for &f in cands {
+        match crate::templates::concepts::check::member_satisfied(cx, f) {
+            Some(true) => kept.push(f),
+            Some(false) => {}
+            None => {
+                cx.unsupported(span, format!("a call of '{}' whose candidate's requires clause the front end does not check", name));
+                return None;
+            }
+        }
+    }
+    if kept.is_empty() && !cands.is_empty() {
+        cx.error_cause(span, "OVL-35", Some("CNS-12"), format!("no function '{}' fits: the requires clauses are not satisfied", name));
+        return None;
+    }
+    let cands = &kept[..];
     if cands.len() > 1 {
         let closure = cands.iter().filter_map(|&f| cx.u.func(f)).any(|f| {
             f.ty.params.iter().zip(args).any(|(p, a)| p.is_ptr() && a.ty.nonref().class().is_some_and(|c| cx.u.closures.contains_key(&c)))
@@ -235,8 +253,13 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
     for i in 0..viable.len() {
         if i != best && !wins(&viable[best], &viable[i]) {
             // Two specializations that partial ordering does not order by
-            // the steps that the first pieces of build step 5 take.
+            // the steps that the first pieces of build step 5 take, or two
+            // functions that only their constraints order (CNS-22).
             let (f, g) = (viable[best].0, viable[i].0);
+            if cx.u.member_constraints.contains_key(&f) || cx.u.member_constraints.contains_key(&g) {
+                cx.unsupported(span, format!("a call of '{}' that the subsumption of constraints decides", name));
+                return None;
+            }
             if crate::templates::declarations::check::beats_by_template(cx, f, g).is_none() || crate::templates::declarations::check::beats_by_template(cx, g, f).is_none() {
                 cx.unsupported(span, format!("a call of '{}' that needs a step of partial ordering that the front end does not take", name));
                 return None;

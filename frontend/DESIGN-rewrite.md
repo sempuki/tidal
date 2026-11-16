@@ -537,8 +537,15 @@ satisfaction keeps its first result, and one that needs its own result
 is an error. A function template's requires clauses and type
 constraints remove a specialization whose arguments do not satisfy
 them from the candidates, and an explicit specialization must satisfy
-them. A requires expression outside a constraint, and constraints on a
-class, variable, or member template, wait for a later piece. Functions and function templates of one name overload. With equal
+them. A member function of a class template defined in the class can have a
+trailing requires clause, checked in its specialization's scope when a
+call takes it as a candidate; overloads that differ only in their
+requires clauses are separate functions, and one that is virtual has
+none. A requires expression outside a constraint, constraints on a
+class, variable, or member template, constrained constructors,
+destructors, and conversion functions, the subsumption of constraints,
+and a constrained member function named outside a call wait for a later
+piece. Functions and function templates of one name overload. With equal
 conversion sequences, a function beats a template's specialization, and
 a specialization of a more specialized template beats another (partial
 ordering: one template's parameters as unique types deduce the other's,

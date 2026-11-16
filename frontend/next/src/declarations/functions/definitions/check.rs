@@ -160,6 +160,11 @@ pub fn declare_function(cx: &mut Check, s: &Specs, d: &Declared, body: Option<&N
             continue;
         }
         match cx.u.entities[e].kind.clone() {
+            // CNS-28: a member function with a requires clause, or one
+            // beside it, is another overload.
+            // The declaration with the same requires clause is the same
+            // function, as a body defined in its class finds it.
+            EntKind::Func(_) if (cx.constrained_decl.is_some() || cx.u.member_constraints.contains_key(&e)) && cx.u.member_constraints.get(&e).map(|c| c.0.span) != cx.constrained_decl => continue,
             EntKind::Func(f) => {
                 // Member functions that differ in the qualifiers of their
                 // object are overloads.
@@ -423,14 +428,18 @@ fn default_arguments_in(cx: &mut Check, params: &[Param]) -> Vec<Option<Expr>> {
 
 /// `function_definition`.
 pub fn function_definition(cx: &mut Check, n: &Node) {
-    // CPT-14: a trailing requires clause only on a templated function.
-    if let Some(rc) = n.child("requires_clause") {
-        if cx.instantiating == 0 && cx.member_of.is_none() {
+    // CPT-14: a trailing requires clause only on a templated function. A
+    // member function of a class specialization keeps it for its uses.
+    let constraint = n.child("requires_clause").cloned();
+    if let Some(rc) = &constraint {
+        if cx.instantiating == 0 {
             cx.error(rc.span, "CPT-14", "a trailing requires clause on a function that is not templated");
-        } else {
-            cx.unsupported(rc.span, "a trailing requires clause on a member function (build step 5)");
+            return;
         }
-        return;
+        if cx.member_of.is_none() || cx.words(n.child("function_body").unwrap_or(n)).iter().any(|w| matches!(*w, "default" | "delete")) {
+            cx.unsupported(rc.span, "a trailing requires clause on a function of this form (build step 5)");
+            return;
+        }
     }
     if cx.in_function() {
         cx.error(n.span, "FN-9", "a function definition inside a function body");
@@ -476,7 +485,13 @@ pub fn function_definition(cx: &mut Check, n: &Node) {
         return;
     }
     let body = n.child("function_body");
-    let Some(id) = declare_function(cx, &specs, &d, body) else { return };
+    let saved_constrained = std::mem::replace(&mut cx.constrained_decl, constraint.as_ref().map(|c| c.span));
+    let declared = declare_function(cx, &specs, &d, body);
+    cx.constrained_decl = saved_constrained;
+    let Some(id) = declared else { return };
+    if let Some(rc) = constraint {
+        cx.u.member_constraints.insert(id, (rc, cx.scope));
+    }
     let Some(body) = body else { return };
     if cx.words(body).contains(&"delete") || cx.words(body).contains(&"default") {
         return;

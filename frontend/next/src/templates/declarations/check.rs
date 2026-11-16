@@ -1230,9 +1230,9 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
     incomplete
         || dependent_base
         || words.iter().any(|w| *w == "concept")
-        // A requires clause on a member of a class template waits for a
-        // later piece.
-        || (matches!(fd.prod, "class_def" | "union_def") && words.contains(&"requires"))
+        // A requires clause on a member other than a member function of
+        // a class template waits for a later piece.
+        || (matches!(fd.prod, "class_def" | "union_def") && words.windows(2).any(|w| w[0] == "requires" && matches!(w[1], "requires")))
         // `x.template f<A>()`: a dependent member template (DEP rules),
         // and `x.f<A>()`, which needs `template` when `x` is dependent
         // (DEP-24).

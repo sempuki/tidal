@@ -455,6 +455,9 @@ pub struct Unit {
     pub class_templates: Vec<ClassTemplate>,
     pub alias_templates: Vec<AliasTemplate>,
     pub concepts: Vec<Concept>,
+    /// The trailing requires clause of each member function of a class
+    /// specialization, with the scope that checks it (CNS-11).
+    pub member_constraints: HashMap<EntityId, (crate::syntax::Node, ScopeId)>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -552,6 +555,7 @@ impl Default for Unit {
             class_templates: Vec::new(),
             alias_templates: Vec::new(),
             concepts: Vec::new(),
+            member_constraints: HashMap::new(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }

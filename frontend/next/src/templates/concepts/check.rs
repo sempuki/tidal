@@ -494,3 +494,20 @@ pub fn function_satisfied(cx: &mut Check, t: usize, args: &[TArg]) -> Option<boo
     cx.constraint_names = saved;
     r
 }
+
+/// CNS-11: whether a member function's trailing requires clause is
+/// satisfied, checked in the scope of its class specialization. True for
+/// a function without one.
+pub fn member_satisfied(cx: &mut Check, f: crate::sem::EntityId) -> Option<bool> {
+    let Some((node, scope)) = cx.u.member_constraints.get(&f).cloned() else { return Some(true) };
+    let saved_scope = std::mem::replace(&mut cx.scope, scope);
+    let saved_func = cx.func.take();
+    let saved_member = cx.member_of.take();
+    let saved_lambdas = std::mem::take(&mut cx.lambdas);
+    let r = constraint(cx, &node);
+    cx.scope = saved_scope;
+    cx.func = saved_func;
+    cx.member_of = saved_member;
+    cx.lambdas = saved_lambdas;
+    r
+}

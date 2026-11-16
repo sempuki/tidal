@@ -2899,3 +2899,15 @@ fn constrained_placeholder_variables() {
     assert_eq!(rule(&format!("{} const Int auto& ref = n; Int auto* ptr = &n; Int auto&& moved = n + 1; LvalueRef auto&& forwarded = n; LvalueRef decltype(auto) named = (n);", base)), None);
     assert_eq!(rule(&format!("{} Int auto a = 1.0;", base)), Some("AUTO-16"));
 }
+
+#[test]
+fn member_requires_clauses() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("template <class T> struct Box { int f() requires (sizeof(T) > 1) { return 1; } int f() requires (sizeof(T) == 1) { return 2; } }; int main() { return Box<int>{}.f() + Box<char>{}.f() * 10; }"), RunOutcome::Result(21));
+    assert_eq!(rule("template <class T> struct Box { static int get() requires (sizeof(T) > 1) { return 1; } }; int x = Box<char>::get();"), Some("OVL-35"));
+    assert_eq!(rule("template <class T> struct Box { virtual int get() requires (sizeof(T) > 1) { return 1; } }; Box<int> box;"), Some("CPT-15"));
+}
