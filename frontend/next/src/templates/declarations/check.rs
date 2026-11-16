@@ -2702,8 +2702,29 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     }
     let Some((params, defaults, constraints, pack)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
     cx.head_pack = pack;
+    // A static member variable template, a variable template of the
+    // class's scope (TPL rules).
+    if let Some(inner) = m.child("member_decl").filter(|d| d.children("member_declarator").count() == 1 && d.child("decl_specifiers").is_some_and(|ds| cx.has_token(ds, "static")) && d.find("function_suffix").is_none() && d.find("member_init").is_some()) {
+        let (Some(ds), Some(md)) = (inner.child("decl_specifiers"), inner.child("member_declarator")) else { return false };
+        let (Some(dn), Some(mi)) = (md.child("declarator"), md.child("member_init")) else { return false };
+        let init = Node { prod: "init", ext: None, span: mi.span, kids: mi.kids.clone() };
+        let idecl = Node { prod: "init_declarator", ext: None, span: md.span, kids: vec![Kid::Node(dn.clone()), Kid::Node(init)] };
+        let sd = Node { prod: "simple_decl", ext: None, span: inner.span, kids: vec![Kid::Node(ds.clone()), Kid::Node(idecl)] };
+        let before = cx.u.entities.len();
+        if !var_template_decl(cx, &sd, params, defaults) {
+            return false;
+        }
+        for e in before..cx.u.entities.len() {
+            if matches!(cx.u.entities[e].kind, EntKind::VarTemplate(_)) {
+                cx.u.access.insert(e, access);
+            }
+        }
+        return true;
+    }
+    // A member class template declared, not defined, in the class.
+    let declared_class = m.child("member_decl").filter(|d| d.child("member_declarator").is_none() && d.child("decl_specifiers").is_some_and(|ds| !cx.has_token(ds, "friend") && ds.find("elaborated_type").is_some_and(|et| et.find("template_id").is_none() && et.child("nested_name").is_none())));
     // A member class template defined in the class.
-    if let Some(inner) = m.child("member_decl").filter(|d| d.child("member_declarator").is_none() && d.child("decl_specifiers").is_some_and(|ds| ds.find("class_def").is_some() && ds.find("class_head").is_some_and(|h| h.child("template_id").is_none() && h.child("nested_name").is_none()))) {
+    if let Some(inner) = declared_class.or_else(|| m.child("member_decl").filter(|d| d.child("member_declarator").is_none() && d.child("decl_specifiers").is_some_and(|ds| ds.find("class_def").is_some() && ds.find("class_head").is_some_and(|h| h.child("template_id").is_none() && h.child("nested_name").is_none())))) {
         let before = cx.u.entities.len();
         let as_sd = Node { prod: "simple_decl", ext: None, span: inner.span, kids: inner.kids.clone() };
         if !class_template_decl(cx, &as_sd, params, defaults, constraints) {
