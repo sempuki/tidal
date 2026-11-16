@@ -2009,6 +2009,46 @@ fn match_exact(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<Q
 /// TARG-1, TSP-13 to TSP-15: `v<A...>`, a specialization of a variable
 /// template: the one partial specialization whose pattern the arguments
 /// match, or the primary. None when the name is no variable template.
+/// TARG rules: a template-id that names a function template as an
+/// operand, outside a call. With one template of the name and explicit
+/// arguments for each of its parameters, the operand is that
+/// specialization (DED-5). None for another form.
+pub fn function_template_value(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::Expr> {
+    use crate::sem::tree::{Cat, EK, Expr};
+    let span = tid.span;
+    let name = cx.source(tid.child("template_name")?);
+    let found = names::lookup(cx, &name);
+    let [e] = found[..] else { return None };
+    let EntKind::Template(t) = cx.u.entities[e].kind else { return None };
+    let tpl = cx.u.templates[t].clone();
+    if tpl.abbrev > 0 || tpl.class.is_some() {
+        return None;
+    }
+    let marks = cx.u.diags.len();
+    let args = if tpl.pack { template_args_packed(cx, tid, &tpl.kinds, true) } else { template_args(cx, tid, &tpl.kinds) };
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        return Some(crate::expressions::check::bad(span));
+    }
+    let args = args?;
+    if args.len() != tpl.kinds.len() || args.iter().any(|a| matches!(a, TArg::Type(t) if t.is_error() || crate::templates::deduction::check::has_dep(t))) {
+        return None;
+    }
+    // CNS-11: arguments that do not satisfy the constraints name no
+    // specialization.
+    match crate::templates::concepts::check::function_satisfied(cx, t, &args) {
+        Some(true) => {}
+        Some(false) => {
+            cx.error(span, "CNS-11", format!("the arguments of '{}' do not satisfy its constraints", cx.source(tid)));
+            return Some(crate::expressions::check::bad(span));
+        }
+        None => return None,
+    }
+    let f = specialize(cx, t, &args)?;
+    crate::declarations::functions::definitions::check::note_use(cx, f, span);
+    let fty = QType::new(Type::Func(cx.u.func(f)?.ty.clone()));
+    Some(Expr::new(EK::Func(f), fty, Cat::L, span))
+}
+
 pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::Expr> {
     use crate::sem::tree::{Cat, EK, Expr};
     let span = tid.span;
@@ -2329,7 +2369,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return false;
     };
     let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || specs.is_static || d.params.iter().any(|p| p.this_param) {
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || d.params.iter().any(|p| p.this_param) {
         cx.u.diags.truncate(marks);
         return false;
     }

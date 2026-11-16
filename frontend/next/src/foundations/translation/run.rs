@@ -23,7 +23,13 @@ fn qualified(u: &Unit, id: crate::sem::EntityId) -> Option<String> {
     if e.name.is_empty() {
         return None;
     }
-    let mut parts = vec![e.name.to_string()];
+    // A specialization of a function template names its arguments too
+    // (ODR-12).
+    let own = match u.templates.iter().find_map(|t| t.specs.iter().find(|(_, f)| *f == id)) {
+        Some((args, _)) => format!("{}<{}>", e.name, args.iter().map(|a| spelled_arg(u, a)).collect::<Vec<_>>().join(",")),
+        None => e.name.to_string(),
+    };
+    let mut parts = vec![own];
     let mut s = if u.scopes[e.scope].kind == crate::sem::ScopeKind::Class { e.scope } else { u.enclosing_namespace(e.scope) };
     while let Some(p) = u.scopes[s].parent {
         // The scope that binds a specialization's parameters adds no
@@ -46,27 +52,30 @@ fn qualified(u: &Unit, id: crate::sem::EntityId) -> Option<String> {
 /// specialization, so that each specialization names its own members
 /// (ODR-12).
 fn spelled_scope(u: &Unit, s: crate::sem::ScopeId) -> String {
-    use crate::sem::types::TArg;
     let name = u.scopes[s].name.to_string();
     if u.scopes[s].kind != crate::sem::ScopeKind::Class {
         return name;
     }
-    fn arg(u: &Unit, a: &TArg) -> String {
-        match a {
-            TArg::Type(t) => match t.class() {
-                Some(c) => format!("class {}", u.classes[c].name),
-                None => t.show(),
-            },
-            TArg::Value(_, v) => v.to_string(),
-            TArg::Pack(xs) => xs.iter().map(|x| arg(u, x)).collect::<Vec<_>>().join(","),
-        }
-    }
     for ct in &u.class_templates {
         if let Some((args, _)) = ct.specs.iter().find(|(_, c)| u.classes[*c].scope == s) {
-            return format!("{}<{}>", name, args.iter().map(|a| arg(u, a)).collect::<Vec<_>>().join(","));
+            return format!("{}<{}>", name, args.iter().map(|a| spelled_arg(u, a)).collect::<Vec<_>>().join(","));
         }
     }
     name
+}
+
+/// A template argument as linking spells it: a class by its name, since
+/// each unit has its own class of a shared header.
+fn spelled_arg(u: &Unit, a: &crate::sem::types::TArg) -> String {
+    use crate::sem::types::TArg;
+    match a {
+        TArg::Type(t) => match t.class() {
+            Some(c) => format!("class {}", u.classes[c].name),
+            None => t.show(),
+        },
+        TArg::Value(_, v) => v.to_string(),
+        TArg::Pack(xs) => xs.iter().map(|x| spelled_arg(u, x)).collect::<Vec<_>>().join(","),
+    }
 }
 
 /// Link the units of a program: each declaration with external linkage
@@ -117,8 +126,11 @@ pub fn link(u: &mut Unit) {
         let (Some(name), Some((func, ty))) = (if c_func(u, id) { Some(u.entities[id].name.to_string()) } else { qualified(u, id) }, sig(u, id)) else { continue };
         defs.entry((name, func, ty)).or_default().push(id);
     }
+    // ODR-12: each unit that uses a specialization of a function template
+    // defines it, and the definitions are one function, as for an inline
+    // function (INL-1).
     let inline = |u: &Unit, id: crate::sem::EntityId| match &u.entities[id].kind {
-        EntKind::Func(f) => f.inline,
+        EntKind::Func(f) => f.inline || u.templates.iter().any(|t| t.specs.iter().any(|&(_, g)| g == id)),
         EntKind::Var(v) => v.inline,
         _ => false,
     };

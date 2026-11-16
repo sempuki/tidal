@@ -258,6 +258,9 @@ pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
         if let Some(e) = crate::templates::declarations::check::var_template_use(cx, tid) {
             return e;
         }
+        if let Some(e) = crate::templates::declarations::check::function_template_value(cx, tid) {
+            return e;
+        }
     }
     let Some((found, rule, name, span)) = find(cx, n) else {
         let t = cx.unsupported(n.span, "an operator function, a destructor, or a template-id as a name");

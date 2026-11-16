@@ -169,7 +169,14 @@ pub fn sequence(cx: &Check, arg: &Expr, param: &QType) -> Option<Ics> {
             _ => None,
         }?;
         let set = crate::expressions::primary::check::overload_set(cx, inner);
-        return set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).then(|| Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
+        // A function that is noexcept converts to a pointer to a function
+        // that is not by a function pointer conversion, which the
+        // identity beats (ICS-26).
+        let fits = |noexcept: bool| set.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret && x.ty.noexcept == noexcept));
+        if fits(want.noexcept) {
+            return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
+        }
+        return (!want.noexcept && fits(true)).then(|| Ics { rank: Rank::Exact, qual: true, binds: None, ellipsis: false, user: None, extra: Default::default() });
     }
     if arg.ty.is_error() || param.is_error() {
         return Some(Ics { rank: Rank::Exact, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() });
