@@ -255,6 +255,8 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
     Some((0..n).map(|k| match &tpl.kinds[k] {
         None if tpl.pack && k == n - 1 => Some(TArg::Pack(pack.iter().cloned().map(TArg::Type).collect())),
         None => bound[k].clone().map(TArg::Type),
+        // A constant pack takes its explicit arguments, or none.
+        Some(_) if tpl.pack && k == n - 1 => Some(explicit.get(k).cloned().filter(|a| matches!(a, TArg::Pack(_))).unwrap_or(TArg::Pack(Vec::new()))),
         Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
     }).collect())
 }

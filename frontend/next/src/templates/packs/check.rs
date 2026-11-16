@@ -134,6 +134,11 @@ pub fn fold_expr(cx: &mut Check, n: &Node) -> Expr {
         return unsupported(cx, "a fold of this form");
     };
     let text = cx.toks[op_tok].text.clone();
+    // PRIM-29: the two operators of a binary fold are the same.
+    if ops.len() == 2 && cx.source(&ops[0]) != cx.source(&ops[1]) {
+        cx.error(span, "PRIM-29", format!("a fold whose two operators '{}' and '{}' differ", cx.source(&ops[0]), cx.source(&ops[1])));
+        return Expr::new(EK::Int(0), crate::sem::types::QType::error(), Cat::PR, span);
+    }
     // A pattern before `...` makes a right fold; the other operand of a
     // binary fold is its initial value.
     let first_is_operand = kids.first().is_some_and(|k| matches!(k, Kid::Node(c) if c.prod != "fold_op"));

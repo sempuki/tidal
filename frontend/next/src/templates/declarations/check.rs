@@ -36,11 +36,17 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
     for tp in head.child("template_params")?.children("template_param") {
         // TARG-13: a constant parameter of integral or enumeration type.
         if let Some(p) = tp.child("constant_param").and_then(|c| c.child("parameter")).filter(|_| !pack) {
-            // A constant parameter pack waits for a later piece.
+            // PACK rules: a constant parameter pack, which has no default.
             let mut toks = Vec::new();
             p.tokens(&mut toks);
-            if toks.iter().any(|&t| cx.toks[t].text == "...") || p.find("ptr_part").is_some() {
+            if p.find("ptr_part").is_some() {
                 return None;
+            }
+            if toks.iter().any(|&t| cx.toks[t].text == "...") {
+                if cx.words(p).contains(&"=") {
+                    return None;
+                }
+                pack = true;
             }
             // The default is the expression after `=`.
             let default = match cx.words(p).contains(&"=") {
@@ -201,7 +207,21 @@ pub fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], 
                 let id = names::declare_in(cx, ts, name, EntKind::Var(var), span, Linkage::None);
                 cx.template_constants.insert(id);
             }
-            // PACK rules: a type pack names its types.
+            // PACK rules: a type pack names its types, and a constant pack
+            // names one constant for each value.
+            TArg::Pack(xs) if xs.iter().any(|x| matches!(x, TArg::Value(..))) => {
+                let mut ids = Vec::new();
+                for x in xs {
+                    let TArg::Value(t, v) = x else { continue };
+                    let init = crate::sem::tree::Init::Expr(crate::sem::tree::Expr::int(*v, t.clone(), span));
+                    let var = crate::sem::Var { ty: t.with_cv(true, false), storage: crate::sem::Storage::Static, constexpr: true, constinit: false, inline: true, is_extern: false, is_static: false, param: false, defined: true, init: Some(init), const_init: true, used: true, maybe_unused: true, align: None };
+                    // The element has no name of its own, so the name finds the pack.
+                    let id = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(var), span, scope: ts, linkage: Linkage::None, deprecated: None });
+                    cx.template_constants.insert(id);
+                    ids.push(id);
+                }
+                names::declare_in(cx, ts, name, EntKind::Pack(ids), span, Linkage::None);
+            }
             TArg::Pack(xs) => {
                 names::declare_in(cx, ts, name, EntKind::TypePack(TArg::types(xs)), span, Linkage::None);
             }
@@ -1615,7 +1635,10 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
             (None, None) => Vec::new(),
         };
         // A constant parameter takes a value, and a type parameter a type.
-        if explicit.iter().zip(&cx.u.templates[t].kinds).any(|(a, k)| matches!(a, TArg::Value(..)) != k.is_some()) {
+        if explicit.iter().zip(&cx.u.templates[t].kinds).any(|(a, k)| match a {
+            TArg::Pack(xs) => xs.iter().any(|x| matches!(x, TArg::Value(..)) != k.is_some()),
+            _ => matches!(a, TArg::Value(..)) != k.is_some(),
+        }) {
             continue;
         }
         let Some(partial) = crate::templates::deduction::check::deduce_call(cx, t, &explicit, args) else {
