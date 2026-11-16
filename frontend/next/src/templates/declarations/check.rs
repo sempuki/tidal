@@ -1233,7 +1233,8 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
     let words: Vec<&str> = toks.iter().map(|&t| cx.toks[t].text.as_str()).collect();
     // DEP-31: a class that is incomplete at the definition and complete
     // at a specialization needs the definition checks.
-    let incomplete = words.iter().any(|w| names::lookup(cx, w).iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Class(c) if !cx.u.classes[c].complete)));
+    // A member template sees its own class complete (CLS-2).
+    let incomplete = words.iter().any(|w| names::lookup(cx, w).iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Class(c) if !cx.u.classes[c].complete && cx.member_of != Some(c))));
     // `decltype` of an operand that names no parameter is independent.
     let mut dependent_decltype = false;
     for (k, w) in words.iter().enumerate() {
@@ -1344,6 +1345,9 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     // The first diagnostic of the body, which a use instantiates (INST-7).
     let mut body_mark = None;
     let r = (|| {
+        if tpl.name.as_ref() == crate::classes::constructors::check::CTOR {
+            return ctor_specialization(cx, t, args, fd, &mut body_mark);
+        }
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
         // A template declared and not defined has a declaration.
         let dn = fd.child("declarator").or_else(|| fd.child("init_declarator").and_then(|i| i.child("declarator")))?;
@@ -1397,6 +1401,40 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         return None;
     }
     r
+}
+
+/// The specialization of the constructor template `t` for `args`: a
+/// constructor of its class, defined at once.
+fn ctor_specialization(cx: &mut Check, t: usize, args: &[TArg], fd: &Node, body_mark: &mut Option<usize>) -> Option<EntityId> {
+    let mut specs = match fd.child("decl_specifiers") {
+        Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, Default::default()),
+        None => Default::default(),
+    };
+    specs.ty = Some(QType::void());
+    let dn = fd.child("declarator")?;
+    let mut d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    if specs.unsupported || d.unsupported || !d.ty.is_func() {
+        return None;
+    }
+    d.name = d.name.clone().map(|(_, s)| (Rc::from(crate::classes::constructors::check::CTOR), s));
+    let f = crate::declarations::functions::definitions::check::declare_function(cx, &specs, &d, None)?;
+    let home = cx.u.templates[t].scope;
+    let access = cx.u.templates[t].class.and_then(|_| {
+        let ctor = crate::classes::constructors::check::CTOR;
+        names::declared_here(cx, home, ctor).into_iter().find(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(k) if k == t)).and_then(|e| cx.u.access.get(&e).copied())
+    });
+    if let Some(a) = access {
+        cx.u.access.insert(f, a);
+    }
+    if let Some(x) = cx.u.func_mut(f) {
+        x.special = crate::sem::Special::Ctor;
+        x.explicit = specs.explicit;
+        x.inline = true;
+    }
+    cx.u.templates[t].specs.push((args.to_vec(), f));
+    *body_mark = Some(cx.u.diags.len());
+    crate::classes::constructors::check::define(cx, f, fd);
+    Some(f)
 }
 
 /// TR-13: a chain of instantiations went past the limit. Inside the
@@ -2230,6 +2268,9 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     }
     let Some(inner) = m.child("member_decl") else { return false };
     let Some(fd) = inner.child("function_definition") else { return false };
+    if let Some(dn) = fd.child("declarator").filter(|dn| crate::classes::constructors::check::special_name(cx, class, dn) == Some(false)) {
+        return ctor_template(cx, class, fd, dn, params, defaults, access);
+    }
     // Operator and conversion function templates wait for a later piece.
     if fd.child("declarator").is_some_and(|d| d.find("operator_function_id").is_some() || d.find("conversion_function_id").is_some() || d.find("literal_operator_id").is_some()) {
         return false;
@@ -2254,7 +2295,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return false;
     };
     let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || specs.is_static || d.params.iter().any(|p| p.pack.is_some()) {
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || specs.is_static || d.params.iter().any(|p| p.pack.is_some() || p.this_param) {
         cx.u.diags.truncate(marks);
         return false;
     }
@@ -2266,6 +2307,42 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     let limit = cx.u.entities.len() + 1;
     cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
+    cx.u.access.insert(e, access);
+    true
+}
+
+/// TPL rules: a constructor template of the class `class`, defined in
+/// the class. Its specializations are constructors (CTOR-1).
+fn ctor_template(cx: &mut Check, class: crate::sem::types::ClassId, fd: &Node, dn: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>, access: crate::sem::Access) -> bool {
+    if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
+        return true;
+    }
+    if dependent_forms(cx, fd, &params) {
+        return false;
+    }
+    let saved = cx.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    declare_params(cx, ts, &params);
+    let marks = cx.u.diags.len();
+    let mut specs = match fd.child("decl_specifiers") {
+        Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, Default::default()),
+        None => Default::default(),
+    };
+    let bad_specs = specs.unsupported || specs.ty.is_some() || specs.is_static || specs.is_virtual || specs.typedef;
+    specs.ty = Some(QType::void());
+    let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
+    cx.leave(saved);
+    let fty = d.ty.func().cloned();
+    let Some(fty) = fty.filter(|_| !bad_specs && !d.unsupported && cx.u.diags.len() == marks && !d.params.iter().any(|p| p.pack.is_some() || p.this_param) && d.obj_cv == (false, false) && !d.ref_q && !d.params.iter().any(|p| p.default.is_some())) else {
+        cx.u.diags.truncate(marks);
+        return false;
+    };
+    let span = d.name.as_ref().map(|n| n.1).unwrap_or(dn.span);
+    let id = cx.u.templates.len();
+    let limit = cx.u.entities.len() + 1;
+    let ctor: Rc<str> = crate::classes::constructors::check::CTOR.into();
+    cx.u.templates.push(FnTemplate { name: ctor.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    let e = names::declare_in(cx, saved, &ctor, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
 }

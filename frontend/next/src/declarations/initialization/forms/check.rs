@@ -61,7 +61,7 @@ pub fn copy_init(cx: &mut Check, e: Expr, to: &QType, rule: &'static str) -> Opt
                     crate::overloading::conversion_sequences::check::sequence(cx, &e, &g.ty.params[0])
                 }).collect();
                 let user = |i: &crate::overloading::conversion_sequences::check::Ics| i.user.is_some() || i.rank == crate::overloading::conversion_sequences::check::Rank::User;
-                if !seqs.iter().any(|i| !user(i)) {
+                if !seqs.iter().any(|i| !user(i)) && !crate::classes::constructors::check::template_takes(cx, c, &e) {
                     // CVF-10: a constructor that takes the source by a
                     // user-defined conversion needs a second one.
                     let rule = if seqs.iter().any(user) { "CVF-10" } else { "OVL-35" };

@@ -16,6 +16,10 @@ use crate::source::Span;
 /// the second place.
 pub fn copy_or_move(cx: &Check, c: ClassId, f: EntityId) -> Option<bool> {
     let func = cx.u.func(f)?;
+    // CPY-1: a specialization of a constructor template is neither.
+    if func.special == crate::sem::Special::Ctor && crate::templates::declarations::check::template_of(cx, f).is_some() {
+        return None;
+    }
     // Later parameters with default arguments do not count (CPY-1).
     if func.ty.params.is_empty() || (1..func.ty.params.len()).any(|k| func.defaults.get(k).is_none_or(|d| d.is_none())) {
         return None;

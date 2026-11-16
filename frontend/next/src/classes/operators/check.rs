@@ -238,7 +238,7 @@ pub fn user_conversion(cx: &Check, a: &Expr, p: &QType) -> Option<Ics> {
     if a.ty.nonref().class() == Some(c) || crate::classes::conversion_functions::check::reaches_class(cx, a, c) {
         return None;
     }
-    let ok = crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| {
+    let ok = crate::classes::constructors::check::template_takes(cx, c, a) || crate::classes::constructors::check::ctors(cx, c).into_iter().any(|f| {
         cx.u.func(f).is_some_and(|x| !x.explicit && !x.deleted && !x.ty.params.is_empty() && (1..x.ty.params.len()).all(|k| x.defaults.get(k).is_some_and(|d| d.is_some())) && sequence(cx, a, &x.ty.params[0]).is_some_and(|i| i.user.is_none() && i.rank != crate::overloading::conversion_sequences::check::Rank::User))
     });
     ok.then(|| Ics { rank: crate::overloading::conversion_sequences::check::Rank::User, qual: false, binds: None, ellipsis: false, user: None, extra: Default::default() })

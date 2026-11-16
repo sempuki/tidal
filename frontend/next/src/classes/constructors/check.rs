@@ -68,15 +68,45 @@ pub fn dtor_constexpr(cx: &Check, c: ClassId) -> bool {
     }
 }
 
-/// The constructors of a class.
+/// The constructors of a class, other than the specializations of its
+/// constructor templates.
 pub fn ctors(cx: &Check, c: ClassId) -> Vec<EntityId> {
-    names::declared_here(cx, cx.u.classes[c].scope, CTOR)
+    let all = names::declared_here(cx, cx.u.classes[c].scope, CTOR);
+    if !all.iter().any(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Template(_))) {
+        return all;
+    }
+    all.into_iter().filter(|&e| cx.u.func(e).is_some() && crate::templates::declarations::check::template_of(cx, e).is_none()).collect()
+}
+
+/// The constructor templates of a class (TPL rules).
+pub fn ctor_templates(cx: &Check, c: ClassId) -> Vec<EntityId> {
+    names::declared_here(cx, cx.u.classes[c].scope, CTOR).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Template(_))).collect()
+}
+
+/// Whether a constructor template of `c` that is not explicit takes the
+/// one argument `a`: its one parameter deduces from `a` (DED rules).
+pub fn template_takes(cx: &Check, c: ClassId, a: &Expr) -> bool {
+    ctor_templates(cx, c).into_iter().any(|e| {
+        let crate::sem::EntKind::Template(t) = cx.u.entities[e].kind else { return false };
+        let tpl = &cx.u.templates[t];
+        tpl.fty.params.len() == 1 && !tpl.node.child("decl_specifiers").is_some_and(|ds| cx.has_word(ds, "explicit")) && crate::templates::deduction::check::deduce_call(cx, t, &[], std::slice::from_ref(a)).is_some_and(|b| b.iter().all(|x| x.is_some()))
+    })
+}
+
+/// The specializations of the constructor templates of `c` that the
+/// arguments `args` deduce (DED rules).
+fn template_ctors(cx: &mut Check, c: ClassId, args: &[Expr]) -> Vec<EntityId> {
+    let ts = ctor_templates(cx, c);
+    if ts.is_empty() {
+        return Vec::new();
+    }
+    crate::templates::declarations::check::call_candidates_with(cx, &ts, &[], args)
 }
 
 /// A class with a user-declared constructor, which is no aggregate and
 /// has no implicit default constructor (CTOR-2).
 pub fn has_ctors(cx: &Check, c: ClassId) -> bool {
-    !ctors(cx, c).is_empty() || cx.u.inherits.contains_key(&c)
+    !ctors(cx, c).is_empty() || !ctor_templates(cx, c).is_empty() || cx.u.inherits.contains_key(&c)
 }
 
 /// DER-8, OVL-17: the constructors that class `c` inherits for a call
@@ -798,11 +828,13 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     }
     // A class whose only constructors are inherited keeps its implicit
     // default constructor (DER-8).
-    if args.is_empty() && ctors(cx, c).is_empty() {
+    if args.is_empty() && ctors(cx, c).is_empty() && ctor_templates(cx, c).is_empty() {
         return default_init(cx, ty, span);
     }
     let mut cands = ctors(cx, c);
     cands.extend(inherited(cx, c, args.len()));
+    let templated = !ctor_templates(cx, c).is_empty();
+    cands.extend(template_ctors(cx, c, &args));
     // CTOR-9: copy-initialization does not use an explicit constructor;
     // copy-list-initialization considers it and fails if it is chosen
     // (ILC-8).
@@ -825,6 +857,12 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     // CPY-9, CPY-10: an object of the class itself is copied or moved,
     // and a prvalue initializes the object directly.
     if args.len() == 1 && args[0].ty.nonref().class().is_some_and(|d| crate::classes::derived::check::derives(cx, d, c)) {
+        // A constructor template can take the object too (CPY-1), which
+        // waits for a later piece.
+        if templated && args[0].cat != Cat::PR {
+            cx.unsupported(span, "a copy or move of a class with a constructor template (build step 5)");
+            return None;
+        }
         let a = crate::foundations::values::check::deref_ref(args[0].clone());
         let a = if a.ty.class() != Some(c) {
             let a = if a.cat == Cat::PR {
