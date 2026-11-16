@@ -1227,8 +1227,8 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
             depth > 0 && params.iter().any(|(p, _, _)| p.as_ref() == *w)
         })
     });
+    let _ = dependent_base;
     incomplete
-        || dependent_base
         || words.iter().any(|w| *w == "concept")
         // A requires clause on a member other than a member function of
         // a class template waits for a later piece.
@@ -1241,6 +1241,9 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
         || (!matches!(fd.prod, "class_def" | "union_def") && !cx.head_pack && words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x))))
+        // `using B<T>::name;` without `typename`, which can name a type
+        // of a dependent base (DEP-19).
+        || words.windows(3).any(|w| w[0] == "using" && is_word(w[1]) && w[1] != "typename" && w[1] != "namespace" && w[2] == "<")
         // `using enum T::E`: a dependent enumeration (ENUM-20).
         || words.windows(3).any(|w| w[0] == "enum" && params.iter().any(|(p, _, _)| p.as_ref() == w[1]) && w[2] == "::")
         // `T::name x`: a type named after a parameter without `typename`

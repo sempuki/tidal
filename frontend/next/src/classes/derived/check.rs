@@ -42,6 +42,16 @@ pub fn base_clause(cx: &mut Check, c: ClassId, key: ClassKey, n: &Node) -> bool 
             cx.error(bt.span, "DER-1", "a class is its own base");
             return true;
         }
+        // DEP-12: in a specialization, a base named with a template
+        // parameter is a dependent base.
+        if cx.instantiating > 0 {
+            let mut toks = Vec::new();
+            bt.tokens(&mut toks);
+            let dependent = toks.iter().any(|&t| crate::foundations::names::check::lookup(cx, &cx.toks[t].text).iter().any(|&e| cx.u.scopes[cx.u.entities[e].scope].kind == crate::sem::ScopeKind::Template));
+            if dependent {
+                cx.u.dependent_bases.insert((c, d));
+            }
+        }
         if !cx.u.classes[d].complete {
             cx.error(bt.span, "DER-1", format!("the base '{}' is incomplete", cx.u.classes[d].name));
             return true;

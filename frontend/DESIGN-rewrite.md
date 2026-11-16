@@ -582,7 +582,8 @@ later piece. A function definition at namespace scope with `auto` or `C auto`
 parameters is an abbreviated function template: each such parameter
 invents a type parameter, with its type constraint as a constraint. A
 variable's constrained placeholder checks the type it stands for,
-without the references and qualifiers written around it. A function template can have a deduced return type, which each
+without the references and qualifiers written around it. In a class specialization, unqualified lookup does not look into a
+base that its template arguments name a parameter in. A function template can have a deduced return type, which each
 specialization deduces from its body. An unqualified name that lookup
 does not find, followed by a template argument list and a call, names a
 template that argument-dependent lookup finds; a function's name before
@@ -645,8 +646,8 @@ construct in the unit, a discarded statement's error, a call or an
 operator whose argument-dependent lookup would see later declarations, a definition with a dependent form (`.template`, a
 member named with template arguments after `.` or `->`, a type named
 after a parameter without `typename`, `using enum` of a parameter's
-member, a base whose template arguments hold a parameter) or an
-incomplete class, and a function
+member, `using B<T>::name` without `typename`) or an incomplete
+class, and a function
 template that shares its name with an entity other than a function
 leave the unit unsupported.
 

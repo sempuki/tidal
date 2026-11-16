@@ -458,6 +458,9 @@ pub struct Unit {
     /// The trailing requires clause of each member function of a class
     /// specialization, with the scope that checks it (CNS-11).
     pub member_constraints: HashMap<EntityId, (crate::syntax::Node, ScopeId)>,
+    /// The bases of class specializations that depend on a template
+    /// parameter, by (class, base) (DEP-12).
+    pub dependent_bases: std::collections::HashSet<(types::ClassId, types::ClassId)>,
     pub scopes: Vec<Scope>,
     pub enums: Vec<EnumInfo>,
     pub classes: Vec<ClassInfo>,
@@ -556,6 +559,7 @@ impl Default for Unit {
             alias_templates: Vec::new(),
             concepts: Vec::new(),
             member_constraints: HashMap::new(),
+            dependent_bases: Default::default(),
             hidden: Default::default(),
             anon_objects: Default::default(),
         }

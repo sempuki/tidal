@@ -2911,3 +2911,16 @@ fn member_requires_clauses() {
     assert_eq!(rule("template <class T> struct Box { static int get() requires (sizeof(T) > 1) { return 1; } }; int x = Box<char>::get();"), Some("OVL-35"));
     assert_eq!(rule("template <class T> struct Box { virtual int get() requires (sizeof(T) > 1) { return 1; } }; Box<int> box;"), Some("CPT-15"));
 }
+
+#[test]
+fn dependent_bases() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DEP-12: `this->` and a qualified name reach a dependent base.
+    assert_eq!(run("template <class T> struct Base { int count = 1; int get() { return 2; } }; template <class T> struct Derived : Base<T> { int read() { return this->count + Base<T>::get(); } }; int main() { return Derived<int>{}.read(); }"), RunOutcome::Result(3));
+    // An unqualified name does not.
+    assert_eq!(rule("template <class T> struct Base { int count = 1; }; template <class T> struct Derived : Base<T> { int get() { return count; } }; int x = Derived<int>{}.get();"), Some("unsupported"));
+}

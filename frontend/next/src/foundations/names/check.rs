@@ -88,8 +88,22 @@ pub fn lookup(cx: &Check, name: &str) -> Vec<EntityId> {
         if !found.is_empty() {
             return found;
         }
-        // DER-3: the members of a class's bases.
-        let inherited = in_bases(cx, sc, name);
+        // DER-3: the members of a class's bases, other than those of a
+        // dependent base (DEP-12).
+        let mut inherited = in_bases(cx, sc, name);
+        if let Some(c) = cx.u.class_of_scope(sc).filter(|_| !cx.u.dependent_bases.is_empty()) {
+            let mut hidden: Vec<crate::sem::types::ClassId> = cx.u.bases(c).into_iter().map(|(_, b)| b).filter(|&b| cx.u.dependent_bases.contains(&(c, b))).collect();
+            let mut k = 0;
+            while k < hidden.len() {
+                for (_, b) in cx.u.bases(hidden[k]) {
+                    if !hidden.contains(&b) {
+                        hidden.push(b);
+                    }
+                }
+                k += 1;
+            }
+            inherited.retain(|&e| cx.u.class_of_scope(cx.u.entities[e].scope).is_none_or(|k| !hidden.contains(&k)));
+        }
         if !inherited.is_empty() {
             return inherited;
         }
