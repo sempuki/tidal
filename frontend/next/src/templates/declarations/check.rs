@@ -2258,9 +2258,6 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         }
         return true;
     }
-    if pack {
-        return false;
-    }
     // A default sees the class incomplete (CLS-2), and constraints on a
     // member wait for a later piece.
     if defaults.iter().any(|d| d.is_some()) || !constraints.is_empty() {
@@ -2295,7 +2292,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return false;
     };
     let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || specs.is_static || d.params.iter().any(|p| p.pack.is_some() || p.this_param) {
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || specs.is_static || d.params.iter().any(|p| p.this_param) {
         cx.u.diags.truncate(marks);
         return false;
     }
@@ -2303,9 +2300,14 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     if !names::declared_here(cx, saved, &name).is_empty() || name.starts_with('~') || name.as_ref() == cx.u.classes[class].name.as_ref() {
         return false;
     }
+    // PACK rules: a function parameter pack as the last parameter.
+    let pack_param = d.params.last().is_some_and(|p| p.pack.is_some());
+    if d.params.iter().rev().skip(1).any(|p| p.pack.is_some()) || (pack_param && (!cx.head_pack || fty.variadic)) {
+        return false;
+    }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
@@ -2333,15 +2335,20 @@ fn ctor_template(cx: &mut Check, class: crate::sem::types::ClassId, fd: &Node, d
     let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
     cx.leave(saved);
     let fty = d.ty.func().cloned();
-    let Some(fty) = fty.filter(|_| !bad_specs && !d.unsupported && cx.u.diags.len() == marks && !d.params.iter().any(|p| p.pack.is_some() || p.this_param) && d.obj_cv == (false, false) && !d.ref_q && !d.params.iter().any(|p| p.default.is_some())) else {
+    let Some(fty) = fty.filter(|_| !bad_specs && !d.unsupported && cx.u.diags.len() == marks && !d.params.iter().any(|p| p.this_param) && d.obj_cv == (false, false) && !d.ref_q && !d.params.iter().any(|p| p.default.is_some())) else {
         cx.u.diags.truncate(marks);
         return false;
     };
+    // PACK rules: a function parameter pack as the last parameter.
+    let pack_param = d.params.last().is_some_and(|p| p.pack.is_some());
+    if d.params.iter().rev().skip(1).any(|p| p.pack.is_some()) || (pack_param && (!cx.head_pack || fty.variadic)) {
+        return false;
+    }
     let span = d.name.as_ref().map(|n| n.1).unwrap_or(dn.span);
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
     let ctor: Rc<str> = crate::classes::constructors::check::CTOR.into();
-    cx.u.templates.push(FnTemplate { name: ctor.clone(), pack: false, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: ctor.clone(), pack: cx.head_pack, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
     let e = names::declare_in(cx, saved, &ctor, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true

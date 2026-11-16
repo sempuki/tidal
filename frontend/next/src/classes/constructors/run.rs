@@ -142,8 +142,15 @@ fn end_object(m: &mut Machine, o: usize) -> R<()> {
 
 /// DTOR-6: an explicit destructor call runs the destructor of the object
 /// at `p` and ends its life; DTOR-7: a second destruction is undefined,
-/// also at the end of its block.
-pub fn destroy_explicitly(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
+/// also at the end of its block. A pointer into allocated storage names
+/// the object of type `ty` that the program created there.
+pub fn destroy_explicitly(m: &mut Machine, p: &Ptr, ty: &QType) -> R<crate::machine::Val> {
+    if p.view.is_some() {
+        return match crate::foundations::storage::run::hosted(m, p, &ty.unqual())? {
+            Some(q) if q.view.is_none() => destroy_explicitly(m, &q, ty),
+            _ => crate::machine::unsup("an explicit destructor call through a pointer into storage"),
+        };
+    }
     // UNI-14: the active member of a union ends, and the union has no
     // active member.
     if p.view.is_none() && !p.path.is_empty() {
@@ -162,6 +169,23 @@ pub fn destroy_explicitly(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
             crate::classes::unions::run::end_members(m, &u);
             return Ok(crate::machine::Val::Void);
         }
+    }
+    // The machine keeps one lifetime for each complete object, so the
+    // destructor of an array element runs and the complete object lives
+    // on (DTOR-6, as for a pseudo-destructor call). A base or member
+    // subobject waits for a later piece.
+    let element = {
+        let mut q = p.clone();
+        q.path.pop();
+        q.array = false;
+        m.type_at(&q).is_some_and(|t| t.is_array())
+    };
+    if !p.path.is_empty() && element && !m.constant {
+        let Some(ty) = m.type_at(p) else { return crate::machine::unsup("an explicit destructor call on a subobject") };
+        if needs(m, &ty) {
+            destroy(m, p, &ty)?;
+        }
+        return Ok(crate::machine::Val::Void);
     }
     if !p.path.is_empty() || p.view.is_some() {
         return crate::machine::unsup("an explicit destructor call on a subobject");

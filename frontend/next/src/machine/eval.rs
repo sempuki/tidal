@@ -174,7 +174,7 @@ pub fn eval(m: &mut Machine, e: &Expr) -> R<Val> {
         }
         EK::Destroy(x) => {
             let p = place(m, x)?;
-            crate::classes::constructors::run::destroy_explicitly(m, &p)
+            crate::classes::constructors::run::destroy_explicitly(m, &p, &x.ty)
         }
         EK::New(n) => crate::expressions::new_delete::run::new(m, n),
         EK::Delete(x, array, virtual_dtor, dealloc) => crate::expressions::new_delete::run::delete(m, x, *array, *virtual_dtor, dealloc.as_ref()),

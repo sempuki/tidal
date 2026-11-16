@@ -67,8 +67,12 @@ fn through_mutable(m: &Machine, p: &Ptr) -> bool {
 /// end of a subobject changes nothing the machine checks. In constant
 /// evaluation, the end of a union member leaves the union with no active
 /// member (UNI-14), and another subobject has no value and takes no
-/// write after its end (OBJ-2).
+/// write after its end (OBJ-2). A pointer with a byte view into storage
+/// names a part of its complete object, as a subobject does.
 pub fn end_life(m: &mut Machine, p: &Ptr) -> R<crate::machine::Val> {
+    if p.view.is_some() && p.path.is_empty() && !m.constant {
+        return Ok(crate::machine::Val::Void);
+    }
     if !p.path.is_empty() {
         if !m.constant {
             return Ok(crate::machine::Val::Void);
