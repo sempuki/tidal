@@ -1164,7 +1164,17 @@ fn member_call_tail(cx: &mut Check, object: Option<Expr>, scope: crate::sem::Sco
     // DED-P3: a member function template adds the specialization that
     // its deduced arguments give.
     if here.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) {
-        cands.extend(crate::templates::declarations::check::call_candidates(cx, &here, tid, args));
+        // CLS-13: a template with an explicit object parameter deduces it
+        // from the object too.
+        let (with_object, plain): (Vec<EntityId>, Vec<EntityId>) = here.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))).partition(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(t) if crate::templates::declarations::check::explicit_object_template(cx, t)));
+        if !plain.is_empty() {
+            cands.extend(crate::templates::declarations::check::call_candidates(cx, &plain, tid, args));
+        }
+        if let (false, Some(o)) = (with_object.is_empty(), object.clone()) {
+            let mut all = vec![o];
+            all.extend(args.iter().cloned());
+            cands.extend(crate::templates::declarations::check::call_candidates(cx, &with_object, tid, &all));
+        }
     }
     if let Some(c) = cx.u.class_of_scope(scope) {
         crate::classes::derived::check::hide_brought(cx, c, &mut cands);

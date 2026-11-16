@@ -2822,7 +2822,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return false;
     };
     let placeholder_ok = d.placeholder.as_ref().is_none_or(|p| !p.decltype);
-    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || d.params.iter().any(|p| p.this_param) {
+    if specs.unsupported || d.unsupported || d.qual != names::Qual::None || cx.u.diags.len() > marks || !placeholder_ok || d.params.iter().skip(1).any(|p| p.this_param) {
         cx.u.diags.truncate(marks);
         return false;
     }
@@ -2846,6 +2846,13 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
+}
+
+/// CLS-13: whether the member function template `t` has an explicit
+/// object parameter.
+pub fn explicit_object_template(cx: &Check, t: usize) -> bool {
+    let n = &cx.u.templates[t].node;
+    n.child("declarator").and_then(|d| d.find("parameters")).and_then(|ps| ps.children("parameter").next()).is_some_and(|p| p.kids.iter().any(|k| cx.text(k) == "this"))
 }
 
 /// TPL rules: a constructor template of the class `class`, defined in
