@@ -1957,6 +1957,12 @@ pub fn beats_by_template(cx: &Check, f: EntityId, g: EntityId) -> Option<bool> {
     match (template_of(cx, f), template_of(cx, g)) {
         (None, Some(_)) => Some(true),
         (Some(t1), Some(t2)) if t1 != t2 => {
+            // ORD rules: a member template against one that is not a
+            // member needs the object parameter, which a later piece
+            // orders.
+            if cx.u.templates[t1].class.is_some() != cx.u.templates[t2].class.is_some() {
+                return None;
+            }
             let ab = at_least_as_specialized(cx, t1, t2)?;
             let ba = at_least_as_specialized(cx, t2, t1)?;
             // ORD-13: the more constrained template, which the first
@@ -2739,8 +2745,9 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         }
         return ctor_template(cx, class, fd, dn, params, defaults, access);
     }
-    // Operator and conversion function templates wait for a later piece.
-    if fd.child("declarator").is_some_and(|d| d.find("operator_function_id").is_some() || d.find("conversion_function_id").is_some() || d.find("literal_operator_id").is_some()) {
+    // Conversion function templates and literal operator templates wait
+    // for a later piece.
+    if fd.child("declarator").is_some_and(|d| d.find("conversion_function_id").is_some() || d.find("literal_operator_id").is_some()) {
         return false;
     }
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };

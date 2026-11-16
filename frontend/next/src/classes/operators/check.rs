@@ -176,7 +176,17 @@ fn found(cx: &mut Check, name: &str, args: &[Expr], members_of: Option<&Expr>) -
                 Ok(Some(x)) => x.ents,
                 _ => Vec::new(),
             };
+            // A member operator template gives the specializations that
+            // the other operands deduce (DED rules).
+            let templates: Vec<EntityId> = members.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, crate::sem::EntKind::Template(_))).collect();
             members.retain(|&e| cx.u.func(e).is_some());
+            if !templates.is_empty() && !args.is_empty() {
+                for f in crate::templates::declarations::check::call_candidates_with(cx, &templates, &[], &args[1..]) {
+                    if !members.contains(&f) {
+                        members.push(f);
+                    }
+                }
+            }
         }
     }
     let looked = crate::foundations::names::check::lookup(cx, name);
@@ -273,6 +283,8 @@ fn choose(cx: &mut Check, cands: &[Cand], args: &[Expr], span: Span, op: &str) -
         cx.error_cause(span, "OPR-15", Some("OVL-35"), format!("no operator function '{}' fits the operands", op));
         return None;
     }
+    // A step of partial ordering that the front end does not take.
+    let undecided = std::cell::Cell::new(false);
     let wins = |cx: &Check, a: &(Cand, Vec<Ics>), b: &(Cand, Vec<Ics>)| -> bool {
         let mut some = false;
         for (x, y) in a.1.iter().zip(b.1.iter()) {
@@ -291,6 +303,7 @@ fn choose(cx: &mut Check, cands: &[Cand], args: &[Expr], span: Span, op: &str) -
         match (crate::templates::declarations::check::beats_by_template(cx, a.0.f, b.0.f), crate::templates::declarations::check::beats_by_template(cx, b.0.f, a.0.f)) {
             (Some(true), _) => return true,
             (_, Some(true)) => return false,
+            (None, _) | (_, None) => undecided.set(true),
             _ => {}
         }
         // A candidate that is not rewritten wins a tie, and a rewritten
@@ -306,6 +319,10 @@ fn choose(cx: &mut Check, cands: &[Cand], args: &[Expr], span: Span, op: &str) -
     }
     for i in 0..viable.len() {
         if i != best && !wins(cx, &viable[best], &viable[i]) {
+            if undecided.get() {
+                cx.unsupported(span, format!("an operator '{}' whose candidates need a step of partial ordering that the front end does not take", op));
+                return None;
+            }
             cx.error_cause(span, "OPR-15", Some("OVL-36"), format!("the operator '{}' is ambiguous for these operands", op));
             return None;
         }
