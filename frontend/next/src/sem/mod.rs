@@ -215,6 +215,8 @@ pub struct ClassTemplate {
     pub partials: Vec<(Vec<Rc<str>>, Vec<Option<QType>>, Vec<PatArg>, crate::syntax::Node)>,
     /// False for a template declared and not yet defined.
     pub defined: bool,
+    /// The constraints of its head (CNS-13), as for a function template.
+    pub constraints: Vec<(Option<usize>, crate::syntax::Node)>,
     pub span: Span,
     pub limit: EntityId,
 }

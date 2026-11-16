@@ -440,6 +440,33 @@ fn unevaluated(cx: &mut Check, f: impl FnOnce(&mut Check)) -> Option<bool> {
 
 /// CPT-17, CPT-33: whether the type `t` satisfies the type constraint
 /// `C` or `C<A...>`: the concept with `t` first and the arguments after.
+/// CPT-18: a type constraint `tc` names a type concept and gives it as
+/// many arguments as it has parameters after the first. False after an
+/// error.
+pub fn type_constraint_form(cx: &mut Check, tc: &Node) -> bool {
+    if tc.child("nested_name").is_some() {
+        return true;
+    }
+    let Some(name) = cx.words(tc).first().map(|w| w.to_string()) else { return true };
+    let Some(c) = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::Concept(c) => Some(c),
+        _ => None,
+    }) else {
+        return true;
+    };
+    let kinds = &cx.u.concepts[c].kinds;
+    let given = tc.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
+    if kinds.first().is_some_and(|k| k.is_some()) {
+        cx.error(tc.span, "CPT-18", format!("a type constraint that names '{}', whose first parameter is not a type parameter", name));
+        return false;
+    }
+    if given + 1 != kinds.len() {
+        cx.error(tc.span, "CPT-18", format!("a type constraint that gives the concept '{}' {} arguments after the type, where it takes {}", name, given, kinds.len().saturating_sub(1)));
+        return false;
+    }
+    true
+}
+
 pub fn type_constraint(cx: &mut Check, tc: &Node, t: QType) -> Option<bool> {
     if tc.child("nested_name").is_some() {
         return None;
@@ -472,12 +499,25 @@ pub fn type_constraint(cx: &mut Check, tc: &Node, t: QType) -> Option<bool> {
 /// model that is not there.
 pub fn function_satisfied(cx: &mut Check, t: usize, args: &[TArg]) -> Option<bool> {
     let tpl = cx.u.templates[t].clone();
-    if tpl.constraints.is_empty() {
+    head_satisfied(cx, tpl.scope, tpl.limit, &tpl.params, &tpl.constraints, args, tpl.span)
+}
+
+/// CNS-13: whether the arguments `args` of the class template `v`
+/// satisfy its constraints.
+pub fn class_satisfied(cx: &mut Check, v: usize, args: &[TArg]) -> Option<bool> {
+    let ct = cx.u.class_templates[v].clone();
+    head_satisfied(cx, ct.scope, ct.limit, &ct.params, &ct.constraints, args, ct.span)
+}
+
+/// Whether `args` satisfy the constraints of a template head whose
+/// parameters `params` are declared in `scope` before `limit`.
+fn head_satisfied(cx: &mut Check, scope: crate::sem::ScopeId, limit: crate::sem::EntityId, params: &[std::rc::Rc<str>], constraints: &[(Option<usize>, Node)], args: &[TArg], span: crate::source::Span) -> Option<bool> {
+    if constraints.is_empty() {
         return Some(true);
     }
-    let saved = std::mem::replace(&mut cx.constraint_names, tpl.params.clone());
-    let r = within(cx, tpl.scope, tpl.limit, &tpl.params, args, tpl.span, |cx| {
-        for (k, node) in &tpl.constraints {
+    let saved = std::mem::replace(&mut cx.constraint_names, params.to_vec());
+    let r = within(cx, scope, limit, params, args, span, |cx| {
+        for (k, node) in constraints {
             let ok = match k {
                 None => constraint(cx, node)?,
                 Some(k) => match args.get(*k)? {

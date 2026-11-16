@@ -339,7 +339,10 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     cx.head_pack = pack;
     // Constraints wait for a later piece outside a function template.
     let fn_decl = n.child("declaration").is_some_and(|d| d.child("function_definition").is_some() || d.child("block_decl").and_then(|b| b.child("simple_decl")).is_some_and(|sd| sd.children("init_declarator").any(|i| i.child("init").is_none() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_some()))));
-    if !constraints.is_empty() && !fn_decl {
+    // CNS-13: a class template's constraints are checked at each
+    // template-id.
+    let class_decl = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")).is_some_and(|sd| sd.child("init_declarator").is_none());
+    if !constraints.is_empty() && !fn_decl && !class_decl {
         return false;
     }
     if let Some(done) = outside_member(cx, n, &params) {
@@ -354,7 +357,7 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
     }
     if let Some(sd) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("simple_decl")) {
         if sd.child("init_declarator").is_none() {
-            return class_template_decl(cx, sd, params, defaults);
+            return class_template_decl(cx, sd, params, defaults, constraints);
         }
         // `template <class T> R f(P);` declares a function template.
         let mut ids = sd.children("init_declarator");
@@ -675,6 +678,15 @@ pub fn explicit_specialization(cx: &mut Check, n: &Node) -> bool {
         if ct.specs.iter().any(|(a, _)| *a == args) {
             cx.error(head.span, "TSP-6", format!("an explicit specialization of '{}' after a use that made the specialization from the template", name));
             return true;
+        }
+        // CNS-13: the arguments satisfy the template's constraints.
+        match crate::templates::concepts::check::class_satisfied(cx, v, &args) {
+            Some(true) => {}
+            Some(false) => {
+                cx.error(head.span, "CNS-13", format!("an explicit specialization of '{}' whose arguments do not satisfy its constraints", name));
+                return true;
+            }
+            None => return false,
         }
         let predicted = cx.u.classes.len();
         cx.u.class_templates[v].specs.push((args.clone(), predicted));
@@ -1618,12 +1630,21 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
         };
         // TPL-13: a parameter that deduction leaves takes its default.
         let tpl = cx.u.templates[t].clone();
+        // DED-24: an error in a default is a substitution failure, though
+        // one in a lambda's body is not (DED-29).
         let mut bound: Vec<TArg> = Vec::new();
         for (k, a) in partial.iter().enumerate() {
+            let marks = if tpl.defaults.get(k).cloned().flatten().is_some_and(|d| d.find("lambda_expr").is_some()) { usize::MAX } else { cx.u.diags.len() };
             match a {
                 Some(a) => bound.push(a.clone()),
-                None if fill_defaults(cx, &tpl.kinds[..=k], &tpl.defaults, &tpl.params, tpl.scope, tpl.limit, &mut bound, tpl.span) => {}
-                None => break,
+                None if fill_defaults(cx, &tpl.kinds[..=k], &tpl.defaults, &tpl.params, tpl.scope, tpl.limit, &mut bound, tpl.span) && !cx.u.diags.get(marks..).is_some_and(|ds| ds.iter().any(|d| d.sev == crate::diag::Severity::Error)) => {}
+                None => {
+                    if cx.u.diags.get(marks..).is_some_and(|ds| ds.iter().any(|d| d.sev == crate::diag::Severity::Error)) {
+                        cx.u.diags.truncate(marks);
+                    }
+                    bound.clear();
+                    break;
+                }
             }
         }
         if bound.len() < partial.len() {
@@ -2003,8 +2024,16 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], 
 /// TPL rules: a class template definition at namespace scope whose
 /// parameters are types. False for another form, such as a declaration
 /// that is not a definition.
-fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>) -> bool {
+fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>, constraints: Constraints) -> bool {
     let Some(ds) = sd.child("decl_specifiers") else { return false };
+    for (k, c) in &constraints {
+        if k.is_none() && !crate::templates::concepts::check::definition_checks(cx, c, &params) {
+            return true;
+        }
+        if k.is_some() && !crate::templates::concepts::check::type_constraint_form(cx, c) {
+            return true;
+        }
+    }
     let specs: Vec<&Node> = ds.children("decl_specifier").collect();
     let [one] = specs[..] else { return false };
     let saved = cx.scope;
@@ -2019,7 +2048,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
             EntKind::ClassTemplate(v) => Some(v),
             _ => None,
         }) {
-            if cx.u.class_templates[v].kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() {
+            if cx.u.class_templates[v].kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() || !constraints.is_empty() || !cx.u.class_templates[v].constraints.is_empty() {
                 return false;
             }
             let earlier = cx.u.class_templates[v].defaults.clone();
@@ -2038,7 +2067,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         }
         let id = cx.u.class_templates.len();
         let limit = cx.u.entities.len() + 1;
-        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, span: et.span, limit });
+        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, constraints, span: et.span, limit });
         names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), et.span, Linkage::External);
         return true;
     }
@@ -2049,6 +2078,9 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         h
     };
     if let Some(tid) = head.child("template_id") {
+        if !constraints.is_empty() {
+            return false;
+        }
         // TSP-11: a partial specialization's parameters have no default.
         if defaults.iter().any(|d| d.is_some()) {
             cx.error(head.span, "TSP-11", "a default template argument on a partial specialization");
@@ -2078,7 +2110,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
             cx.error(head.span, "TPL-20", format!("a declaration of '{}' whose template head differs from an earlier one", name));
             return true;
         }
-        if ct.defined || ct.kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() || !ct.specs.is_empty() {
+        if ct.defined || ct.kinds != params.iter().map(|p| p.2.clone()).collect::<Vec<_>>() || !ct.specs.is_empty() || !constraints.is_empty() || !ct.constraints.is_empty() {
             return false;
         }
         let earlier = ct.defaults.clone();
@@ -2111,7 +2143,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
     }
     let id = cx.u.class_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, span: head.span, limit });
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, constraints, span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
     true
 }
@@ -2416,6 +2448,14 @@ pub fn class_specialization(cx: &mut Check, v: usize, args: Vec<TArg>, span: Spa
     let name = ct.name.clone();
     if let Some(&(_, c)) = ct.specs.iter().find(|(a, _)| *a == args) {
         return QType::new(Type::Class(c));
+    }
+    match crate::templates::concepts::check::class_satisfied(cx, v, &args) {
+        Some(true) => {}
+        Some(false) => {
+            cx.error(span, "CNS-13", format!("arguments of the class template '{}' that do not satisfy its constraints", name));
+            return QType::error();
+        }
+        None => return cx.unsupported(span, format!("the constraints of the class template '{}' for these arguments", name)),
     }
     // TSP-13 to TSP-15: the one partial specialization whose pattern the
     // arguments match, or the primary.
