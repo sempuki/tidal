@@ -500,6 +500,13 @@ fn choose_with_templates(cx: &mut Check, plain: &[EntityId], specs: &[EntityId],
         cx.error(span, "OVL-35", format!("no function '{}' fits the arguments: the deduced arguments do not satisfy the constraints (CNS-11)", name));
         return None;
     }
+    // DED rules: the deduction of every candidate failed for a reason that
+    // the front end models, so no function fits. After an unsupported
+    // construct, an argument can have a type that the construct left.
+    if specs.is_empty() && plain.is_empty() && !cx.deduction_unmodeled && !cx.u.diags.iter().any(|d| d.sev == crate::diag::Severity::Unsupported) {
+        cx.error_cause(span, "OVL-35", Some("DED-1"), format!("no function '{}' fits the arguments: the deduction of each function template fails", name));
+        return None;
+    }
     if specs.is_empty() && plain.is_empty() {
         let t = cx.unsupported(span, format!("a call of the function template '{}' whose arguments the first piece of build step 5 does not deduce", name));
         let _ = t;

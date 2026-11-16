@@ -64,7 +64,9 @@ pub fn substitute(t: &QType, args: &[QType]) -> QType {
 /// `a` without the cv-qualifiers `c` and `v` (`with_cv` only adds them).
 fn without_cv(a: &QType, c: bool, v: bool) -> QType {
     match &a.t {
-        Type::Array(..) | Type::Func(_) | Type::Ref(..) => a.clone(),
+        // The cv-qualifiers of an array are those of its elements.
+        Type::Array(e, n) => QType::new(Type::Array(Rc::new(without_cv(e, c, v)), *n)),
+        Type::Func(_) | Type::Ref(..) => a.clone(),
         _ => QType { t: a.t.clone(), c: a.c && !c, v: a.v && !v },
     }
 }
@@ -260,7 +262,7 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
         None => bound[k].clone().map(TArg::Type),
         // A constant pack takes its explicit arguments, or none.
         Some(_) if tpl.pack && k == n - 1 => Some(explicit.get(k).cloned().filter(|a| matches!(a, TArg::Pack(_))).unwrap_or(TArg::Pack(Vec::new()))),
-        Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..))),
+        Some(_) => explicit.get(k).cloned().filter(|a| matches!(a, TArg::Value(..) | TArg::Template(_))),
     }).collect())
 }
 

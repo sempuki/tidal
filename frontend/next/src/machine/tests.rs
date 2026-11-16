@@ -2446,8 +2446,8 @@ fn function_templates_with_type_parameters() {
     // explicit argument; a recursive specialization finds itself.
     assert_eq!(run("template <class T> T twice(T v) { return v + v; } template <class T> void put(T& r, const T& v) { r = v; } template <class T> T get(T* p) { return *p; } template <class T> T down(T n) { return n == 0 ? 0 : 1 + down(n - 1); } int main() { int x = 0; put(x, 4); long l = 2; return twice(3) + twice<long>(1) + x + get(&l) + int(down(3L)); }"), RunOutcome::Result(17));
     assert_eq!(rule("template <class T> constexpr T sq(T v) { return v * v; } static_assert(sq(3) == 9 && sq(2.0) == 4.0);"), None);
-    // Two deductions that differ give no candidate.
-    assert_eq!(rule("template <class T> T pick(T a, T b) { return a; } int f() { return pick(1, 2L); }"), Some("unsupported"));
+    // Two deductions that differ give no candidate (OVL-35).
+    assert_eq!(rule("template <class T> T pick(T a, T b) { return a; } int f() { return pick(1, 2L); }"), Some("OVL-35"));
     // A template that nothing specializes is checked with `int` for its
     // parameters; an error that depends on them is none (DEP-28).
     assert_eq!(rule("template <class T> T id(T v) { return v; }"), None);
@@ -2660,7 +2660,9 @@ fn template_id_bases() {
     assert_eq!(run("template <int K, class T> struct Slot { T held; Slot(T v) : held(v) {} }; struct Couple : Slot<0, int>, Slot<1, int> { Couple(int a, int b) : Slot<0, int>(a), Slot<1, int>(b) {} }; int main() { Couple c(5, 9); const Slot<1, int>& s = c; return s.held; }"), RunOutcome::Result(9));
     // A class can be a template argument of its own base (CRTP).
     assert_eq!(run("template <class D> struct Base { int three() { return 3; } }; struct R : Base<R> {}; int main() { R r; return r.three(); }"), RunOutcome::Result(3));
-    assert_eq!(rule("template <class T> struct Base {}; struct Both : Base<int>, Base<char> {}; template <class T> void up(Base<T>&); Both b; void use() { up(b); }"), Some("unsupported"));
+    // DED-15: two bases fit and neither derives from the other, so the
+    // deduction fails and no function fits (OVL-35).
+    assert_eq!(rule("template <class T> struct Base {}; struct Both : Base<int>, Base<char> {}; template <class T> void up(Base<T>&); Both b; void use() { up(b); }"), Some("OVL-35"));
 }
 
 #[test]

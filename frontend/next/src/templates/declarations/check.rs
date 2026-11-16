@@ -2105,8 +2105,15 @@ pub fn call_candidates_with(cx: &mut Check, found: &[EntityId], explicit: &[TArg
 fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>, given: Option<&[TArg]>, args: &[crate::sem::tree::Expr]) -> Vec<EntityId> {
     let mut out = Vec::new();
     cx.constraints_failed = false;
+    let mut unmodeled = false;
     for &e in found {
         let EntKind::Template(t) = cx.u.entities[e].kind else { continue };
+        // A deduction from an overload set or a function, or into a
+        // function or member pointer type, can fail for a reason that the
+        // front end does not model.
+        if args.iter().any(|a| crate::expressions::primary::check::unresolved_set(a) || a.ty.nonref().is_func()) || cx.u.templates[t].fty.params.iter().any(unmodeled_form) || cx.u.templates[t].pack || cx.u.templates[t].class.is_some() {
+            unmodeled = true;
+        }
         // The explicit arguments, which fill the first parameters.
         let explicit = match (tid, given) {
             (_, Some(g)) => {
@@ -2135,15 +2142,30 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
                 }
                 match a {
                     Some(a) if packed || n <= kinds.len() => a,
-                    _ => continue,
+                    Some(_) => continue,
+                    // Arguments that the front end does not read.
+                    None => {
+                        unmodeled = true;
+                        continue;
+                    }
                 }
             }
             (None, None) => Vec::new(),
         };
+        // A dependent argument makes no specialization yet.
+        if explicit.iter().any(|a| matches!(a, TArg::Type(x) if crate::templates::deduction::check::has_dep(x))) || args.iter().any(|a| crate::templates::deduction::check::has_dep(&a.ty)) {
+            unmodeled = true;
+        }
         // A constant parameter takes a value, and a type parameter a type.
+        // A template takes a template template parameter.
+        let fits = |a: &TArg, k: &Option<QType>| match a {
+            TArg::Template(_) => is_template_kind(k),
+            TArg::Value(..) => k.is_some() && !is_template_kind(k),
+            _ => k.is_none(),
+        };
         if explicit.iter().zip(&cx.u.templates[t].kinds).any(|(a, k)| match a {
-            TArg::Pack(xs) => xs.iter().any(|x| matches!(x, TArg::Value(..)) != k.is_some()),
-            _ => matches!(a, TArg::Value(..)) != k.is_some(),
+            TArg::Pack(xs) => xs.iter().any(|x| !fits(x, k)),
+            _ => !fits(a, k),
         }) {
             continue;
         }
@@ -2207,6 +2229,7 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
             out.push(f);
         }
     }
+    cx.deduction_unmodeled = unmodeled;
     out
 }
 
@@ -3007,6 +3030,17 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
+}
+
+/// A parameter type with a function type or a member pointer type in
+/// it, which deduction does not look into.
+fn unmodeled_form(t: &QType) -> bool {
+    match &t.t {
+        Type::Func(_) | Type::MemPtr(..) => true,
+        Type::Ptr(x) | Type::Ref(x, _) | Type::Array(x, _) => unmodeled_form(x),
+        Type::Dep(d) => matches!(&**d, DepType::Spec { args, .. } if args.iter().any(|a| matches!(a, TArg::Type(x) if unmodeled_form(x)) || matches!(a, TArg::Pack(_)))),
+        _ => false,
+    }
 }
 
 /// CLS-13: whether the member function template `t` has an explicit
