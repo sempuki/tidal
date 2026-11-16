@@ -77,7 +77,7 @@ impl TArg {
         for a in args {
             match a {
                 TArg::Type(t) => out.push(t.clone()),
-                TArg::Value(..) => {}
+                TArg::Value(..) | TArg::Template(_) => {}
                 TArg::Pack(xs) => out.extend(TArg::types(xs)),
             }
         }
@@ -104,6 +104,16 @@ pub enum TArg {
     Value(QType, i128),
     /// The arguments of a template parameter pack (PACK rules).
     Pack(Vec<TArg>),
+    /// A template, the argument of a template template parameter
+    /// (TARG rules).
+    Template(TplRef),
+}
+
+/// A class template or an alias template, by its index.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum TplRef {
+    Class(usize),
+    Alias(usize),
 }
 
 /// The dependent forms of a type (`frontend/TEMPLATE-MODEL.md`, section

@@ -23,6 +23,84 @@ pub type Param = (Rc<str>, Span, Option<QType>);
 /// the type constraint of each parameter that has one (its index).
 pub type Constraints = Vec<(Option<usize>, Node)>;
 
+/// A template template parameter's kind (`type_params`).
+pub fn is_template_kind(k: &Option<QType>) -> bool {
+    k.as_ref().is_some_and(|t| t.is_func())
+}
+
+/// The template that the name `name` finds, as the argument of a
+/// template template parameter. The injected class name of a
+/// specialization names its template (TARG-11). Err after an error.
+pub fn template_ref(cx: &mut Check, name: &str, span: Span) -> Option<Result<crate::sem::types::TplRef, ()>> {
+    use crate::sem::types::TplRef;
+    // TARG-27: in a class, the injected class names of two bases make the
+    // name ambiguous (DER-4).
+    let class = cx.member_of.or_else(|| cx.func.as_ref().and_then(|f| f.id).and_then(|id| cx.u.func(id)).and_then(|f| f.class));
+    if class.is_some_and(|c| crate::classes::derived::check::member_lookup(cx, c, name).is_err()) {
+        cx.error(span, "TARG-27", format!("'{}' names the injected class names of two specializations", name));
+        return Some(Err(()));
+    }
+    let found = names::lookup(cx, name);
+    if let Some(r) = found.iter().find_map(|&e| match cx.u.entities[e].kind {
+        EntKind::ClassTemplate(v) => Some(TplRef::Class(v)),
+        EntKind::AliasTemplate(a) => Some(TplRef::Alias(a)),
+        _ => None,
+    }) {
+        return Some(Ok(r));
+    }
+    // TARG-27: the injected class names of two specializations.
+    let specs: Vec<(usize, crate::sem::types::ClassId)> = found.iter().filter_map(|&e| match cx.u.entities[e].kind {
+        EntKind::Class(c) => cx.u.class_templates.iter().position(|t| t.specs.iter().any(|&(_, k)| k == c)).map(|v| (v, c)),
+        _ => None,
+    }).collect();
+    let (v, c) = *specs.first()?;
+    if specs.iter().any(|&(_, k)| k != c) {
+        cx.error(span, "TARG-27", format!("'{}' names the injected class names of two specializations", name));
+        return Some(Err(()));
+    }
+    Some(Ok(TplRef::Class(v)))
+}
+
+/// TARG-17, TARG-18: the template `r` takes each argument list that the
+/// head of a template template parameter of kind `kind` takes.
+fn template_fits(cx: &Check, kind: &QType, r: crate::sem::types::TplRef) -> bool {
+    use crate::sem::types::TplRef;
+    let Some(head) = kind.func() else { return false };
+    let (kinds, defaults, pack) = match r {
+        TplRef::Class(v) => {
+            let t = &cx.u.class_templates[v];
+            (t.kinds.clone(), t.defaults.iter().map(|d| d.is_some()).collect::<Vec<_>>(), t.pack)
+        }
+        TplRef::Alias(a) => {
+            let t = &cx.u.alias_templates[a];
+            (t.kinds.clone(), t.defaults.iter().map(|d| d.is_some()).collect::<Vec<_>>(), t.pack)
+        }
+    };
+    // A kind of the head against a kind of the template.
+    let same = |p: &QType, a: &Option<QType>| match a {
+        None => p.is_void(),
+        Some(a) if a.is_func() => p.is_func(),
+        Some(a) => !p.is_void() && !p.is_func() && (p.unqual() == a.unqual() || (p.is_integral() || p.is_enum()) && (a.is_integral() || a.is_enum())),
+    };
+    let fixed = if pack { kinds.len() - 1 } else { kinds.len() };
+    let at = |i: usize| -> Option<&Option<QType>> { if i < fixed { kinds.get(i) } else if pack { kinds.last() } else { None } };
+    let n = head.params.len();
+    let head_fixed = if head.variadic { n - 1 } else { n };
+    for i in 0..head_fixed {
+        match at(i) {
+            Some(a) if same(&head.params[i], a) => {}
+            _ => return false,
+        }
+    }
+    if head.variadic {
+        // The head's pack takes any number of arguments of its kind.
+        let p = &head.params[n - 1];
+        return pack && same(p, kinds.last().unwrap()) && (head_fixed..fixed).all(|i| same(p, &kinds[i]));
+    }
+    // The template's parameters after the head's have defaults.
+    (head_fixed..fixed).all(|i| defaults.get(i).copied().unwrap_or(false))
+}
+
 /// The parameters of a template head whose parameters are type
 /// parameters and constant parameters of integral or enumeration type,
 /// without a pack, with the default of each (TPL-13) and the head's
@@ -78,6 +156,32 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
             defaults.push(default);
             continue;
         }
+        // A template template parameter, whose kind is a function type,
+        // which no constant parameter has (`is_template_kind`): its
+        // parameters are the kinds of the parameter's own head, `void`
+        // for a type parameter, and it is variadic for a head that ends
+        // with a pack.
+        if let Some(tt) = tp.child("template_template_param").filter(|_| !pack) {
+            let saved_pack = cx.head_pack;
+            let inner = tt.child("template_head").and_then(|h| type_params(cx, h));
+            cx.head_pack = saved_pack;
+            let (inner_params, _, _, inner_pack) = inner?;
+            let head = crate::sem::types::FnType { ret: QType::void(), params: inner_params.iter().map(|p| p.2.clone().unwrap_or_else(QType::void)).collect(), variadic: inner_pack, noexcept: false, qualified: false, obj_cv: (false, false), ref_q: None };
+            let kind = QType::new(Type::Func(Rc::new(head)));
+            let words = cx.words(tt);
+            if words.contains(&"...") {
+                if words.contains(&"=") {
+                    return None;
+                }
+                pack = true;
+            }
+            let k = tt.kids.iter().rev().find(|k| matches!(k, Kid::Tok(_)) && !matches!(cx.text(k), "=" | "..." | "class" | "typename"));
+            let k = if words.contains(&"=") { tt.kids.iter().rev().filter(|k| matches!(k, Kid::Tok(_))).nth(2) } else { k };
+            let name: Rc<str> = k.filter(|k| is_word(cx.text(k))).map(|k| cx.text(k).into()).unwrap_or_else(|| "".into());
+            out.push((name, tt.span, Some(kind)));
+            defaults.push(words.contains(&"=").then(|| tt.clone()));
+            continue;
+        }
         let t = tp.child("type_param")?;
         if pack {
             return None;
@@ -94,12 +198,14 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
             (None, Some(tc)) => constraints.push((Some(out.len()), tc.clone())),
             _ => return None,
         }
-        let k = t.kids.iter().rev().find(|k| matches!(k, Kid::Tok(_)) && cx.text(k) != "=")?;
-        let name: Rc<str> = cx.text(k).into();
-        if name.as_ref() == "class" || name.as_ref() == "typename" {
-            return None;
-        }
-        out.push((name, cx.token(k).map(|t| t.span).unwrap_or(t.span), None));
+        // A parameter without a name has the empty name, which no lookup
+        // finds.
+        let k = t.kids.iter().rev().find(|k| matches!(k, Kid::Tok(_)) && cx.text(k) != "=" && cx.text(k) != "...");
+        let name: Rc<str> = match k.map(|k| cx.text(k)) {
+            Some(w) if is_word(w) && !matches!(w, "class" | "typename") => w.into(),
+            _ => "".into(),
+        };
+        out.push((name, k.and_then(|k| cx.token(k)).map(|t| t.span).unwrap_or(t.span), None));
         defaults.push(t.child("type_id").cloned());
     }
     if let Some(rc) = head.child("requires_clause") {
@@ -159,6 +265,10 @@ fn fill_defaults(cx: &mut Check, kinds: &[Option<QType>], defaults: &[Option<Nod
         bind_params(cx, ts, &names_[..k], args, span);
         let a = match &kinds[k] {
             None => Some(TArg::Type(crate::declarations::declarators::check::type_id(cx, &d))),
+            kind if is_template_kind(kind) => {
+                let w = cx.words(&d).last().map(|w| w.to_string());
+                w.and_then(|w| template_ref(cx, &w, d.span)).and_then(|r| r.ok()).map(TArg::Template)
+            }
             Some(ty) => {
                 let e = crate::expressions::check::expr(cx, &d);
                 let e = crate::foundations::values::check::rvalue(cx, e);
@@ -182,6 +292,11 @@ fn fill_defaults(cx: &mut Check, kinds: &[Option<QType>], defaults: &[Option<Nod
 fn declare_params(cx: &mut Check, ts: crate::sem::ScopeId, params: &[Param]) {
     for (k, (name, span, kind)) in params.iter().enumerate() {
         match kind {
+            // A template template parameter is modeled only in a
+            // specialization.
+            k if is_template_kind(k) => {
+                names::declare_in(cx, ts, name, EntKind::Unsupported("a template template parameter in a template's definition"), *span, Linkage::None);
+            }
             None => {
                 let t = QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: name.clone() })));
                 names::declare_in(cx, ts, name, EntKind::Typedef(t), *span, Linkage::None);
@@ -211,6 +326,18 @@ pub fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], 
             }
             // PACK rules: a type pack names its types, and a constant pack
             // names one constant for each value.
+            // A template template parameter names its template.
+            TArg::Template(r) => {
+                names::declare_in(cx, ts, name, template_entity(*r), span, Linkage::None);
+            }
+            TArg::Pack(xs) if xs.iter().any(|x| matches!(x, TArg::Template(_))) => {
+                let mut ids = Vec::new();
+                for x in xs {
+                    let TArg::Template(r) = x else { continue };
+                    ids.push(cx.u.add(crate::sem::Entity { name: "".into(), kind: template_entity(*r), span, scope: ts, linkage: Linkage::None, deprecated: None }));
+                }
+                names::declare_in(cx, ts, name, EntKind::Pack(ids), span, Linkage::None);
+            }
             TArg::Pack(xs) if xs.iter().any(|x| matches!(x, TArg::Value(..))) => {
                 let mut ids = Vec::new();
                 for x in xs {
@@ -228,6 +355,14 @@ pub fn bind_params(cx: &mut Check, ts: crate::sem::ScopeId, names_: &[Rc<str>], 
                 names::declare_in(cx, ts, name, EntKind::TypePack(TArg::types(xs)), span, Linkage::None);
             }
         }
+    }
+}
+
+/// The entity kind that a template template parameter's name has.
+fn template_entity(r: crate::sem::types::TplRef) -> EntKind {
+    match r {
+        crate::sem::types::TplRef::Class(v) => EntKind::ClassTemplate(v),
+        crate::sem::types::TplRef::Alias(a) => EntKind::AliasTemplate(a),
     }
 }
 
@@ -306,6 +441,17 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
         }
         let arg = match kind {
             None => a.child("type_id").map(|t| TArg::Type(crate::declarations::declarators::check::type_id(cx, t))),
+            Some(k) if k.is_func() => {
+                let name = cx.source(a);
+                match template_ref(cx, name.trim(), a.span) {
+                    Some(Ok(r)) if template_fits(cx, k, r) => Some(TArg::Template(r)),
+                    Some(Ok(_)) => {
+                        cx.error(a.span, "TARG-18", format!("the template '{}' does not take the argument lists of the template template parameter", name.trim()));
+                        None
+                    }
+                    _ => None,
+                }
+            }
             Some(ty) => constant_arg(cx, a).and_then(|(e, v)| constant_of(cx, &e, v, ty, a.span)),
         };
         cx.leave(saved);
@@ -1534,7 +1680,7 @@ fn ambiguous_base(cx: &Check, t: usize, bound: &[TArg], args: &[crate::sem::tree
     let tpl = &cx.u.templates[t];
     let types: Vec<QType> = bound.iter().filter_map(|a| match a {
         TArg::Type(t) => Some(t.clone()),
-        TArg::Value(..) | TArg::Pack(_) => None,
+        TArg::Value(..) | TArg::Pack(_) | TArg::Template(_) => None,
     }).collect();
     tpl.fty.params.iter().zip(args).any(|(p, a)| {
         let inner = match &p.t {
@@ -1866,8 +2012,18 @@ fn trial(cx: &mut Check, t: Option<usize>, v: Option<usize>) -> bool {
         (_, Some(v)) => cx.u.class_templates[v].kinds.clone(),
         _ => return false,
     };
+    // A template template parameter takes the first class template of the
+    // unit that fits it.
+    let mut picks = Vec::new();
+    for k in kinds.iter().filter(|k| is_template_kind(k)) {
+        let fit = (0..cx.u.class_templates.len()).map(crate::sem::types::TplRef::Class).find(|&r| cx.u.class_templates[match r { crate::sem::types::TplRef::Class(v) => v, _ => 0 }].defined && template_fits(cx, k.as_ref().unwrap(), r));
+        let Some(r) = fit else { return false };
+        picks.push(r);
+    }
+    let mut picks = picks.into_iter();
     // A constant parameter takes 1.
     let mut args: Vec<TArg> = kinds.iter().map(|k| match k {
+        k if is_template_kind(k) => TArg::Template(picks.next().unwrap()),
         None => TArg::Type(QType::new(Type::Int(crate::sem::types::IntK::Int))),
         Some(t) => TArg::Value(t.clone(), 1),
     }).collect();
@@ -2091,7 +2247,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node, scope: Option<crate::sem::Sc
     }
     let types: Vec<QType> = args.iter().filter_map(|a| match a {
         TArg::Type(t) => Some(t.clone()),
-        TArg::Value(..) | TArg::Pack(_) => None,
+        TArg::Value(..) | TArg::Pack(_) | TArg::Template(_) => None,
     }).collect();
     let mut matches = Vec::new();
     for (k, (ps, pattern, _)) in vt.partials.iter().enumerate() {

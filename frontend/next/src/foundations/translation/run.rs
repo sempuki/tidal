@@ -75,6 +75,8 @@ fn spelled_arg(u: &Unit, a: &crate::sem::types::TArg) -> String {
         },
         TArg::Value(_, v) => v.to_string(),
         TArg::Pack(xs) => xs.iter().map(|x| spelled_arg(u, x)).collect::<Vec<_>>().join(","),
+        TArg::Template(crate::sem::types::TplRef::Class(v)) => format!("template {}", u.class_templates[*v].name),
+        TArg::Template(crate::sem::types::TplRef::Alias(a)) => format!("alias {}", u.alias_templates[*a].name),
     }
 }
 

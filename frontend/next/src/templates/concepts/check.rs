@@ -526,7 +526,7 @@ fn head_satisfied(cx: &mut Check, scope: crate::sem::ScopeId, limit: crate::sem:
                 None => constraint(cx, node)?,
                 Some(k) => match args.get(*k)? {
                     TArg::Type(t) => type_constraint(cx, node, t.clone())?,
-                    TArg::Value(..) | TArg::Pack(_) => return None,
+                    TArg::Value(..) | TArg::Pack(_) | TArg::Template(_) => return None,
                 },
             };
             if !ok {
