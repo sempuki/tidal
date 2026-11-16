@@ -235,6 +235,12 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
         if plain(a.0) != plain(b.0) {
             return plain(a.0);
         }
+        // ORD rules: of two guide templates, the more specialized wins.
+        let ab = at_least_as_specialized(cx, &guides[a.0], &guides[b.0], args.len());
+        let ba = at_least_as_specialized(cx, &guides[b.0], &guides[a.0], args.len());
+        if ab != ba {
+            return ab;
+        }
         (fa == From::User && fb != From::User) || (fb != From::User && fa == From::Copy && fb != From::Copy) || (fa == From::Constructor && fb == From::ConstructorTemplate)
     };
     let mut best = 0;
@@ -254,6 +260,15 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
     }
     let args = viable[best].2.clone();
     Some(crate::templates::declarations::check::class_specialization(cx, v, args, span))
+}
+
+/// ORD-1 to ORD-3 for guides: the parameters of `g2` for the first
+/// `count` arguments deduce from those of `g1`, with each type without
+/// its reference and its top-level cv-qualifiers (ORD-2).
+fn at_least_as_specialized(cx: &Check, g1: &Guide, g2: &Guide, count: usize) -> bool {
+    let size = 256;
+    let mut bound: Vec<Option<QType>> = vec![None; size];
+    g1.params.iter().zip(&g2.params).take(count).all(|(p1, p2)| crate::templates::deduction::check::match_type(&cx.u, &p2.nonref().unqual(), &p1.nonref().unqual(), &mut bound))
 }
 
 /// `t` with each specialization whose arguments hold no parameter made
@@ -364,9 +379,16 @@ fn guides(cx: &mut Check, v: usize, list: bool, given: usize, span: Span) -> Opt
             }
             extra = ps.len();
         }
+        // A constructor's specifiers are `explicit`, `constexpr`,
+        // `consteval`, and `inline`, which give a guide nothing else.
+        let only_ctor_words = ds.is_none_or(|ds| {
+            let mut toks = Vec::new();
+            ds.tokens(&mut toks);
+            toks.iter().all(|&t| matches!(cx.toks[t].text.as_str(), "explicit" | "constexpr" | "consteval" | "inline"))
+        });
         let mut specs = match ds {
-            Some(ds) => crate::declarations::check::decl_specifiers(cx, ds, Default::default()),
-            None => Default::default(),
+            Some(ds) if !only_ctor_words => crate::declarations::check::decl_specifiers(cx, ds, Default::default()),
+            _ => Default::default(),
         };
         let explicit = ds.is_some_and(|ds| cx.has_token(ds, "explicit"));
         specs.ty = Some(QType::void());
