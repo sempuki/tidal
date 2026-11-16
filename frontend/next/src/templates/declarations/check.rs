@@ -912,7 +912,7 @@ pub fn explicit_instantiation(cx: &mut Check, n: &Node) -> bool {
         if !record_inst(cx, 'v', v, &args, !ext, n.span) {
             return true;
         }
-        let Some(e) = var_template_use(cx, tid) else { return false };
+        let Some(e) = var_template_use(cx, tid, None) else { return false };
         if e.ty.is_error() {
             return true;
         }
@@ -2013,11 +2013,14 @@ fn match_exact(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<Q
 /// operand, outside a call. With one template of the name and explicit
 /// arguments for each of its parameters, the operand is that
 /// specialization (DED-5). None for another form.
-pub fn function_template_value(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::Expr> {
+pub fn function_template_value(cx: &mut Check, tid: &Node, scope: Option<crate::sem::ScopeId>) -> Option<crate::sem::tree::Expr> {
     use crate::sem::tree::{Cat, EK, Expr};
     let span = tid.span;
     let name = cx.source(tid.child("template_name")?);
-    let found = names::lookup(cx, &name);
+    let found = match scope {
+        Some(s) => names::lookup_in(cx, s, &name),
+        None => names::lookup(cx, &name),
+    };
     let [e] = found[..] else { return None };
     let EntKind::Template(t) = cx.u.entities[e].kind else { return None };
     let tpl = cx.u.templates[t].clone();
@@ -2049,11 +2052,15 @@ pub fn function_template_value(cx: &mut Check, tid: &Node) -> Option<crate::sem:
     Some(Expr::new(EK::Func(f), fty, Cat::L, span))
 }
 
-pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::Expr> {
+pub fn var_template_use(cx: &mut Check, tid: &Node, scope: Option<crate::sem::ScopeId>) -> Option<crate::sem::tree::Expr> {
     use crate::sem::tree::{Cat, EK, Expr};
     let span = tid.span;
     let name = cx.source(tid.child("template_name")?);
-    let v = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+    let found = match scope {
+        Some(s) => names::lookup_in(cx, s, &name),
+        None => names::lookup(cx, &name),
+    };
+    let v = found.into_iter().find_map(|e| match cx.u.entities[e].kind {
         EntKind::VarTemplate(v) => Some(v),
         _ => None,
     })?;

@@ -251,15 +251,26 @@ pub fn find(cx: &mut Check, n: &Node) -> Option<(Vec<EntityId>, &'static str, St
 pub fn id_expression(cx: &mut Check, n: &Node) -> Expr {
     // TARG-1: a specialization of a variable template, or a concept-id
     // (CPT-1).
-    if let Some(tid) = n.child("unqualified_id").and_then(|u| u.child("template_id")) {
-        if let Some(e) = crate::templates::concepts::check::concept_use(cx, tid) {
-            return e;
-        }
-        if let Some(e) = crate::templates::declarations::check::var_template_use(cx, tid) {
-            return e;
-        }
-        if let Some(e) = crate::templates::declarations::check::function_template_value(cx, tid) {
-            return e;
+    // A qualifier names the scope that the template's name is looked up
+    // in.
+    let tid = n.child("unqualified_id").and_then(|u| u.child("template_id")).or_else(|| n.child("qualified_name").and_then(|q| q.child("unqualified_id")).and_then(|u| u.child("template_id")));
+    if let Some(tid) = tid {
+        let qualifier = n.child("qualified_name").and_then(|q| q.child("nested_name"));
+        let scope = match qualifier.map(|nn| names::nested_name(cx, nn)) {
+            None => Some(None),
+            Some(names::Qual::Scope(s)) if !cx.has_word(n, "template") => Some(Some(s)),
+            Some(_) => None,
+        };
+        if let Some(scope) = scope {
+            if let Some(e) = crate::templates::concepts::check::concept_use(cx, tid, scope) {
+                return e;
+            }
+            if let Some(e) = crate::templates::declarations::check::var_template_use(cx, tid, scope) {
+                return e;
+            }
+            if let Some(e) = crate::templates::declarations::check::function_template_value(cx, tid, scope) {
+                return e;
+            }
         }
     }
     let Some((found, rule, name, span)) = find(cx, n) else {

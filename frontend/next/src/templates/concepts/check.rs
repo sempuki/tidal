@@ -129,10 +129,14 @@ pub fn definition_checks(cx: &mut Check, n: &Node, params: &[crate::templates::d
 /// CPT-1: `C<A...>`, a concept-id: a prvalue of type `bool` that tells
 /// whether the arguments satisfy the concept. None when the name is no
 /// concept.
-pub fn concept_use(cx: &mut Check, tid: &Node) -> Option<Expr> {
+pub fn concept_use(cx: &mut Check, tid: &Node, scope: Option<crate::sem::ScopeId>) -> Option<Expr> {
     let span = tid.span;
     let name = cx.source(tid.child("template_name")?);
-    let c = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+    let found = match scope {
+        Some(s) => names::lookup_in(cx, s, &name),
+        None => names::lookup(cx, &name),
+    };
+    let c = found.into_iter().find_map(|e| match cx.u.entities[e].kind {
         EntKind::Concept(c) => Some(c),
         _ => None,
     })?;
