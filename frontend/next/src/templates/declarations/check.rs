@@ -138,7 +138,9 @@ fn merge_defaults(cx: &mut Check, earlier: &[Option<Node>], later: &[Option<Node
 /// before it bound to their arguments.
 pub fn args_with_defaults(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId, pack: bool) -> Option<Vec<TArg>> {
     let n = tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0);
-    if pack || n >= kinds.len() {
+    // An expansion gives as many arguments as its pack has elements.
+    let expands = tid.child("template_args").is_some_and(|ta| cx.words(ta).contains(&"..."));
+    if pack || n >= kinds.len() || expands {
         return template_args_packed(cx, tid, kinds, pack);
     }
     let mut args = template_args(cx, tid, &kinds[..n])?;
@@ -241,11 +243,16 @@ pub fn template_args(cx: &mut Check, tid: &Node, kinds: &[Option<QType>]) -> Opt
 /// argument `P...` expands to one argument for each element of the
 /// packs that its pattern names.
 pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], pack: bool) -> Option<Vec<TArg>> {
-    let nodes: Vec<&Node> = tid.child("template_args").map(|ta| ta.children("template_arg").collect()).unwrap_or_default();
-    // Each argument, with the pack elements its pattern takes.
-    let mut items: Vec<(&Node, Vec<(Rc<str>, QType)>)> = Vec::new();
-    for a in nodes {
-        let expansion = a.child("type_id").and_then(|t| t.child("abstract_declarator")).is_some_and(|d| d.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "..."));
+    // Each argument node, and whether a `...` follows it.
+    let nodes: Vec<(&Node, bool)> = tid.child("template_args").map(|ta| ta.kids.iter().enumerate().filter_map(|(k, kid)| match kid {
+        Kid::Node(a) if a.prod == "template_arg" => Some((a, matches!(ta.kids.get(k + 1), Some(t @ Kid::Tok(_)) if cx.text(t) == "..."))),
+        _ => None,
+    }).collect()).unwrap_or_default();
+    // Each argument, with the pack elements its pattern takes: a type, or
+    // the constant of a constant pack.
+    let mut items: Vec<(&Node, Vec<(Rc<str>, Result<QType, EntityId>)>)> = Vec::new();
+    for (a, followed) in nodes {
+        let expansion = followed || a.child("type_id").and_then(|t| t.child("abstract_declarator")).is_some_and(|d| d.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "..."));
         if !expansion {
             if a.find("abstract_declarator").is_some_and(|d| cx.words(d).contains(&"...")) || cx.words(a).contains(&"...") {
                 return None;
@@ -255,14 +262,16 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
         }
         let mut toks = Vec::new();
         a.tokens(&mut toks);
-        let mut packs: Vec<(Rc<str>, Vec<QType>)> = Vec::new();
+        let mut packs: Vec<(Rc<str>, Vec<Result<QType, EntityId>>)> = Vec::new();
         for &t in &toks {
             let w = cx.toks[t].text.as_str();
             if packs.iter().any(|(n, _)| n.as_ref() == w) {
                 continue;
             }
-            if let Some(EntKind::TypePack(ts)) = names::lookup(cx, w).first().map(|&e| cx.u.entities[e].kind.clone()) {
-                packs.push((w.into(), ts));
+            match names::lookup(cx, w).first().map(|&e| cx.u.entities[e].kind.clone()) {
+                Some(EntKind::TypePack(ts)) => packs.push((w.into(), ts.into_iter().map(Ok).collect())),
+                Some(EntKind::Pack(ids)) => packs.push((w.into(), ids.into_iter().map(Err).collect())),
+                _ => {}
             }
         }
         // PACK-8: the pattern names a pack, and the packs have one length.
@@ -285,8 +294,13 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
         let saved_expanding = cx.expanding;
         if !binds.is_empty() {
             let s = cx.enter(ScopeKind::Template);
-            for (name, t) in &binds {
-                names::declare_in(cx, s, name, EntKind::Typedef(t.clone()), a.span, Linkage::None);
+            for (name, b) in &binds {
+                match b {
+                    Ok(t) => {
+                        names::declare_in(cx, s, name, EntKind::Typedef(t.clone()), a.span, Linkage::None);
+                    }
+                    Err(id) => cx.u.scopes[s].names.entry(name.clone()).or_default().push(*id),
+                }
             }
             cx.expanding = true;
         }
@@ -1981,6 +1995,7 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
                 None => (vt.params.clone(), vt.node.clone()),
             };
             match instantiate_var(cx, v, &params, &bound, &node) {
+                Some(EntityId::MAX) => return Some(crate::expressions::check::bad(span)),
                 Some(id) => {
                     cx.u.var_templates[v].specs.push((source, bound, id));
                     id
@@ -2000,7 +2015,10 @@ pub fn var_template_use(cx: &mut Check, tid: &Node) -> Option<crate::sem::tree::
 /// leaves the unit unsupported, as for a function template.
 fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], node: &Node) -> Option<EntityId> {
     let vt = cx.u.var_templates[v].clone();
-    let (ds, _, init, _) = var_parts(node)?;
+    let (ds, dn, init, _) = var_parts(node)?;
+    // A use in an unevaluated operand, or a declarator with more than a
+    // name, keeps no error of the specialization.
+    let plain = dn.find("array_suffix").is_none() && dn.find("function_suffix").is_none() && dn.find("ptr_operator").is_none();
     if cx.instantiating >= cx.depth_limit {
         cx.depth_exceeded = true;
         return None;
@@ -2036,7 +2054,13 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], 
     cx.unevaluated = saved_unevaluated;
     cx.lookup_limit = saved_limit;
     cx.instantiating -= 1;
-    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported) || cx.depth_exceeded {
+    // An error in the initializer of a specialization is an error of the
+    // program, unless the front end left a part of it unsupported.
+    let unsupported = cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Unsupported);
+    if plain && saved_unevaluated == 0 && !unsupported && !cx.depth_exceeded && !cx.trialing && cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        return r.or(Some(EntityId::MAX));
+    }
+    if cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) || unsupported || cx.depth_exceeded {
         let tail = cx.u.diags.split_off(marks);
         cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
         return None;
