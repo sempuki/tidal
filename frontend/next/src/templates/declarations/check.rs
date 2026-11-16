@@ -1648,7 +1648,7 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         // and `x.f<A>()`, which needs `template` when `x` is dependent
         // (DEP-24).
         || words.windows(2).any(|w| matches!(w[0], "." | "->" | "::") && w[1] == "template")
-        || words.windows(3).any(|w| matches!(w[0], "." | "->") && is_word(w[1]) && w[2] == "<")
+        || (0..words.len().saturating_sub(2)).any(|k| matches!(words[k], "." | "->") && is_word(words[k + 1]) && words[k + 2] == "<" && closes_as_arguments(&words[k + 3..]))
         // A pack expansion or a fold of a parameter (packs wait for a
         // later piece); `catch (...)` and a C ellipsis are not.
         || (!matches!(fd.prod, "class_def" | "union_def") && !cx.head_pack && words.iter().enumerate().any(|(k, w)| *w == "..." && words[k.saturating_sub(3)..k].iter().any(|x| params.iter().any(|(p, _, _)| p.as_ref() == *x))))
@@ -1663,6 +1663,31 @@ fn dependent_forms(cx: &Check, fd: &Node, params: &[Param]) -> bool {
         // A type named after a template-id qualifier, which can need
         // `typename` (DEP-19).
         || words.windows(4).any(|w| w[0] == ">" && w[1] == "::" && is_word(w[2]) && is_word(w[3]))
+}
+
+/// Whether the tokens after a `<` hold a matching `>` that a `(` or a
+/// `::` follows before the expression ends, as template arguments do. A
+/// `<` of a comparison meets the end of its expression first.
+fn closes_as_arguments(rest: &[&str]) -> bool {
+    let mut depth = 0i32;
+    let mut angles = 1i32;
+    for (k, w) in rest.iter().enumerate() {
+        match *w {
+            "(" | "[" | "{" => depth += 1,
+            ")" | "]" | "}" if depth == 0 => return false,
+            ")" | "]" | "}" => depth -= 1,
+            ";" | "&&" | "||" | "?" if depth == 0 => return false,
+            "<" if depth == 0 => angles += 1,
+            ">" if depth == 0 => {
+                angles -= 1;
+                if angles == 0 {
+                    return rest.get(k + 1).is_some_and(|n| matches!(*n, "(" | "::" | "{"));
+                }
+            }
+            _ => {}
+        }
+    }
+    false
 }
 
 /// An identifier or a keyword.
