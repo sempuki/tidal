@@ -546,6 +546,13 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
         Expr::new(EK::Int(0), t, Cat::PR, span)
     };
     let Some(name) = callee_name(callee) else { return unsupported(cx, "a braced list as an argument of a call that is not of a name") };
+    // ILC-6, ICS-16: a parameter of type std::initializer_list<E> waits
+    // for a later piece.
+    if let Some((found, _, _, _)) = primary::check::find(cx, name) {
+        if crate::classes::initializer_lists::check::takes_list(cx, &found) {
+            return unsupported(cx, "a braced list as an argument for a parameter of type std::initializer_list");
+        }
+    }
     let nodes = arg_nodes(list);
     let mut args: Vec<Option<Expr>> = Vec::new();
     for a in &nodes {

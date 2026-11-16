@@ -392,6 +392,8 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
                         f.live.push(id);
                     }
                 }
+                // ILC-5: the backing arrays come first.
+                vars.extend(std::mem::take(&mut cx.backing));
                 vars.push((id, i));
             }
         }

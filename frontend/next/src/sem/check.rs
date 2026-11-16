@@ -279,6 +279,11 @@ pub struct Check<'a> {
     /// The function being declared has a trailing requires clause, so a
     /// declaration of the same type is another overload (CNS-28).
     pub constrained_decl: Option<crate::source::Span>,
+    /// The backing arrays of `std::initializer_list` objects that the
+    /// declaration being checked makes, to declare before it (ILC-5),
+    /// and whether the declaration can hold them.
+    pub backing: Vec<(crate::sem::EntityId, crate::sem::tree::Init)>,
+    pub backing_ok: Option<crate::sem::Storage>,
     /// The first diagnostic of the parts of a class instantiation that a
     /// use instantiates (INST-7).
     pub lazy_mark: Option<usize>,
@@ -310,7 +315,7 @@ pub struct Check<'a> {
 impl<'a> Check<'a> {
     pub fn new(toks: &'a [Token], u: Unit) -> Check<'a> {
         let root = u.root;
-        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), binding_decl: HashMap::new(), template_constants: Default::default(), bit_binding_uses: Vec::new(), access_class: None, lookup_limit: None, declarator_made_part: false, instantiating: 0, explicit_head: false, depth_limit: 256, depth_exceeded: false, constraints_failed: false, constraint_names: Vec::new(), satisfying: Vec::new(), satisfaction_loop: false, adl_at_check: false, satisfactions: Vec::new(), head_pack: false, abbrev_types: Default::default(), abbrev_count: 0, constrained_variable: false, constrained_decl: None, lazy_mark: None, inst_errors: Vec::new(), trialing: false, fn_inst_errors: Vec::new(), explicit_insts: Vec::new(), expanding: false, prechecked: Default::default(), lambdas: Vec::new(), default_arg: false }
+        Check { u, toks, scope: root, func: None, hooks: Hooks::default(), werror: false, wflags: Vec::new(), next_id: 0, unevaluated: 0, lang_c: false, implicit_extern: false, member_of: None, friend_decl: false, friend_scope: None, defer_defaults: false, nested_bodies: Vec::new(), pending_defaults: Vec::new(), pending_noexcept: Vec::new(), local_classes: Vec::new(), deferred: Default::default(), converting: false, decltype_call: None, no_temporary: false, address_operand: false, member_aligns: Vec::new(), member_overlap: false, parser_names: Default::default(), c_names: HashMap::new(), naming_type: false, array_params: Default::default(), uses: HashMap::new(), assigned: HashMap::new(), bindings: Default::default(), bit_bindings: HashMap::new(), binding_decl: HashMap::new(), template_constants: Default::default(), bit_binding_uses: Vec::new(), access_class: None, lookup_limit: None, declarator_made_part: false, instantiating: 0, explicit_head: false, depth_limit: 256, depth_exceeded: false, constraints_failed: false, constraint_names: Vec::new(), satisfying: Vec::new(), satisfaction_loop: false, adl_at_check: false, satisfactions: Vec::new(), head_pack: false, abbrev_types: Default::default(), abbrev_count: 0, constrained_variable: false, constrained_decl: None, backing: Vec::new(), backing_ok: None, lazy_mark: None, inst_errors: Vec::new(), trialing: false, fn_inst_errors: Vec::new(), explicit_insts: Vec::new(), expanding: false, prechecked: Default::default(), lambdas: Vec::new(), default_arg: false }
     }
 
     // -----------------------------------------------------------------

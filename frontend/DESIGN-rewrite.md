@@ -583,7 +583,14 @@ parameters is an abbreviated function template: each such parameter
 invents a type parameter, with its type constraint as a constraint. A
 variable's constrained placeholder checks the type it stands for,
 without the references and qualifiers written around it. In a class specialization, unqualified lookup does not look into a
-base that its template arguments name a parameter in. A function template can have a deduced return type, which each
+base that its template arguments name a parameter in. `std::initializer_list` is a class template like another. A variable
+of type `std::initializer_list<E>` with a braced list, and `auto x = {
+... }`, which deduces `E` from elements of one type, get an array of
+`const E` that copies the elements without narrowing; a hidden variable
+declared just before the variable holds the array, and the list is made
+by its constructor from a pointer and a length. Initializer-list
+constructors, parameters, and lists made elsewhere wait for a later
+piece. A function template can have a deduced return type, which each
 specialization deduces from its body. An unqualified name that lookup
 does not find, followed by a template argument list and a call, names a
 template that argument-dependent lookup finds; a function's name before

@@ -2103,7 +2103,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
     // braced lists into (ILC rules), and `std::allocator`, whose
     // allocation constant evaluation allows (LSUP-11), are classes that
     // the first pieces of build step 5 do not model.
-    if matches!(&*name, "initializer_list" | "allocator") && cx.u.scopes[saved].name.as_ref() == "std" {
+    if &*name == "allocator" && cx.u.scopes[saved].name.as_ref() == "std" {
         return false;
     }
     if !defaults_last(cx, &defaults, head.span) {

@@ -164,6 +164,17 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
     // PACK rules: the expansions of a parenthesized or braced list.
     let rewritten = crate::templates::packs::check::rewrite(cx, init);
     let init = rewritten.as_ref().unwrap_or(init);
+    // ILC-5: a braced list for std::initializer_list<E>.
+    if crate::classes::initializer_lists::check::element(cx, ty).is_some() {
+        if let Some(b) = nodes(init).first().filter(|c| c.prod == "braced_init") {
+            let items: Vec<&Node> = b.children("init_clause").collect();
+            let Some(storage) = cx.backing_ok else {
+                cx.unsupported(init.span, "a std::initializer_list made outside a variable's declaration");
+                return None;
+            };
+            return crate::classes::initializer_lists::check::backed(cx, ty, &items, storage, init.span);
+        }
+    }
     let words = cx.words(init);
     let ns = nodes(init);
     if ty.is_ref() {
@@ -349,7 +360,16 @@ fn one_expression(cx: &mut Check, span: Span, p: &auto::check::Placeholder) {
 /// Declare a variable of a simple declaration, with its initializer.
 /// After a qualified declarator-id, the initializer sees the members of
 /// the named scope (NAM-21).
+/// `declare_variable` for a placeholder that deduced the type `ty`.
+fn declare_deduced(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&Node>, aligns: &[Node], ty: QType) -> Option<(EntityId, Init)> {
+    let mut d2 = d.clone();
+    d2.placeholder = None;
+    d2.ty = ty;
+    declare_variable(cx, s, &d2, init, aligns, &mut None)
+}
+
 pub fn declare_variable(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&Node>, aligns: &[Node], first_auto: &mut Option<QType>) -> Option<(EntityId, Init)> {
+    cx.backing.clear();
     let names::Qual::Scope(q) = d.qual else { return declare_variable_in(cx, s, d, init, aligns, first_auto) };
     let saved = cx.scope;
     // A member of an inline namespace of the named one (NS-15).
@@ -415,6 +435,16 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         if own {
             auto::check::used_in_own_initializer(cx, span, &name);
             return None;
+        }
+        // AUTO-21: `auto x = { ... }` deduces std::initializer_list<E>.
+        let braced_eq = cx.words(i).first() == Some(&"=") && nodes(i).first().is_some_and(|c| c.prod == "braced_init");
+        let plain = !p.decltype && p.constraint.is_none() && d.node.find("ptr_part").is_none() && d.node.find("array_suffix").is_none() && !cx.words(&d.node).contains(&"[");
+        if braced_eq && plain && crate::classes::initializer_lists::check::template(cx).is_some() {
+            let items: Vec<Node> = nodes(i).first().map(|b| b.children("init_clause").cloned().collect()).unwrap_or_default();
+            let refs: Vec<&Node> = items.iter().collect();
+            let t = crate::classes::initializer_lists::check::deduced(cx, &refs, i.span)?;
+            ty = t.with_cv(p.c, p.v);
+            return declare_deduced(cx, s, d, init, aligns, ty);
         }
         let e = init_expr(cx, i, p)?;
         let dn = d_node_hint(cx, d);
@@ -555,7 +585,9 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
             if !crate::classes::r#virtual::check::not_abstract(cx, &ty, span) {
                 return None;
             }
+            let saved_ok = cx.backing_ok.replace(storage);
             let r = initializer(cx, &ty, i, &name);
+            cx.backing_ok = saved_ok;
             match r {
                 Some(x) => {
                     // An array of unknown bound takes its bound from the
@@ -689,6 +721,12 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         check_constant_initializer(cx, &checked, &ty, span, rule, storage != Storage::Automatic);
     }
     if storage != Storage::Automatic && !local || (storage != Storage::Automatic && local && false) {
+        // ILC-5: the backing arrays come first.
+        if !local {
+            for (h, _) in std::mem::take(&mut cx.backing) {
+                cx.u.statics.push(h);
+            }
+        }
         if !cx.u.statics.contains(&id) && init.is_some() || (!cx.u.statics.contains(&id) && !s.is_extern) {
             cx.u.statics.push(id);
         }

@@ -790,6 +790,12 @@ pub fn direct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, span
 /// narrow (LIST-2).
 pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, copy: bool, span: Span) -> Option<Init> {
     let c = ty.class()?;
+    // ILC-3: the first phase takes the initializer-list constructors,
+    // which waits for a later piece.
+    if list && crate::classes::initializer_lists::check::has_list_ctor(cx, c) {
+        cx.unsupported(span, "a braced list for a class with an initializer-list constructor (ILC-3)");
+        return None;
+    }
     // A class whose only constructors are inherited keeps its implicit
     // default constructor (DER-8).
     if args.is_empty() && ctors(cx, c).is_empty() {
@@ -1146,6 +1152,10 @@ pub fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Opti
 pub fn construct_braced(cx: &mut Check, ty: &QType, nodes: &[&Node], list: bool, copy: bool, span: Span) -> Option<Init> {
     use crate::overloading::conversion_sequences::check::{better, sequence, Ics};
     let c = ty.class()?;
+    if crate::classes::initializer_lists::check::has_list_ctor(cx, c) {
+        cx.unsupported(span, "a braced list for a class with an initializer-list constructor (ILC-3)");
+        return None;
+    }
     // ILC-7: a class that is not an aggregate takes no designator.
     if nodes.iter().any(|n| n.prod == "designator") {
         cx.error(span, "ILC-7", format!("a designated initializer for '{}', which is not an aggregate", cx.u.classes[c].name));

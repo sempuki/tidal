@@ -2924,3 +2924,8 @@ fn dependent_bases() {
     // An unqualified name does not.
     assert_eq!(rule("template <class T> struct Base { int count = 1; }; template <class T> struct Derived : Base<T> { int get() { return count; } }; int x = Derived<int>{}.get();"), Some("unsupported"));
 }
+
+#[test]
+fn initializer_list_variables() {
+    assert_eq!(run("namespace std { template <class E> class initializer_list {   const E* b_; decltype(sizeof 0) n_;   constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {} public:   constexpr initializer_list() : b_(nullptr), n_(0) {}   constexpr decltype(sizeof 0) size() const { return n_; }   constexpr const E* begin() const { return b_; }   constexpr const E* end() const { return b_ + n_; } }; } constexpr int sum() { std::initializer_list<int> l = {1, 2, 3}; int s = 0; for (int x : l) s += x; auto m = {4, 5}; for (int x : m) s += x; return s + int(l.size()); } static_assert(sum() == 18); std::initializer_list<long> g = {7, 8}; int main() { int s = 0; for (long x : g) s += int(x); return s; } "), RunOutcome::Result(15));
+}
