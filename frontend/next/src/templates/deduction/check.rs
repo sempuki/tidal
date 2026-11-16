@@ -213,7 +213,10 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
     // PACK rules: a trailing function parameter pack takes the arguments
     // after the others.
     let fixed = if tpl.pack_param { fty.params.len() - 1 } else { fty.params.len() };
-    if (args.len() > fty.params.len() && !fty.variadic && !tpl.pack_param) || args.len() < fixed {
+    // DEFARG rules: a parameter after the arguments takes its default
+    // argument, which deduces nothing.
+    let required = if tpl.pack_param { fixed } else { tpl.node.child("declarator").or_else(|| tpl.node.child("init_declarator").and_then(|i| i.child("declarator"))).and_then(|d| d.find("parameters")).map(|ps| ps.children("parameter").take_while(|p| !p.words(&cx.toks).contains(&"=")).count()).unwrap_or(fixed).min(fixed) };
+    if (args.len() > fty.params.len() && !fty.variadic && !tpl.pack_param) || args.len() < required {
         return None;
     }
     for (p, a) in fty.params[..fixed].iter().zip(args) {
