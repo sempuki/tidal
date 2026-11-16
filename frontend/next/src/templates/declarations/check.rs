@@ -1786,6 +1786,10 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         cx.fn_inst_errors.push((f, errs, point));
         return Some(f);
     }
+    // A trial keeps its errors, which it sorts (`trial`).
+    if cx.trialing && !cx.depth_exceeded && cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        return None;
+    }
     // An error in a specialization can come from a part of the model that
     // the first piece does not have (the points of instantiation, the
     // definition checks), so it leaves the unit unsupported.
@@ -2279,10 +2283,109 @@ fn trial(cx: &mut Check, t: Option<usize>, v: Option<usize>) -> bool {
     };
     cx.trialing = saved_trialing;
     let clean = ok && cx.u.diags.len() == marks;
-    cx.u.diags.truncate(marks);
+    let tail = cx.u.diags.split_off(marks);
     cx.u.statics.truncate(statics);
-    cx.depth_exceeded = false;
-    clean
+    let depth = std::mem::replace(&mut cx.depth_exceeded, false);
+    if clean {
+        return true;
+    }
+    // DEP-P6: an error of the trial on a line that names no parameter, nor
+    // a variable whose declaration names one, is in a construct that does
+    // not depend on the arguments, which the definition reports (DEP-6,
+    // DEP-30). An error that depends on them is no error of the
+    // definition (DEP-28, DEP-32), nor is a failed static assertion
+    // (SA-5).
+    if depth || tail.iter().any(|d| d.sev == crate::diag::Severity::Unsupported) || !tail.iter().any(|d| d.sev == crate::diag::Severity::Error) {
+        return false;
+    }
+    if pack {
+        return false;
+    }
+    let (params, node) = match (t, v) {
+        (Some(t), _) => (cx.u.templates[t].params.clone(), cx.u.templates[t].node.clone()),
+        (_, Some(v)) => (cx.u.class_templates[v].params.clone(), cx.u.class_templates[v].node.clone()),
+        _ => return false,
+    };
+    let dependent = dependent_names(cx, &node, &params);
+    let independent: Vec<crate::diag::Diag> = tail.into_iter().filter(|d| d.sev == crate::diag::Severity::Error && d.rule != Some("SA-1") && !construct_names(cx, d.span, &dependent, d.rule)).collect();
+    cx.u.diags.extend(independent);
+    true
+}
+
+/// Whether the construct that starts at `at`, up to the end of its
+/// statement, names one of `names`.
+fn construct_names(cx: &Check, at: Span, names_: &std::collections::HashSet<String>, rule: Option<&str>) -> bool {
+    let Some(start) = cx.toks.iter().position(|t| t.span.file == at.file && (t.span.line, t.span.col) >= (at.line, at.col)) else { return true };
+    // A return statement converts to the result type, which can depend
+    // on the parameters, so an error of that conversion does.
+    let statement_start = cx.toks[..start].iter().rposition(|t| matches!(t.text.as_str(), ";" | "{" | "}")).map(|k| k + 1).unwrap_or(0);
+    let conversion = rule.is_some_and(|r| r.starts_with("INIT-") || r.starts_with("CONV-") || r.starts_with("RET-"));
+    if cx.toks.get(statement_start).is_some_and(|t| t.text == "return") && conversion {
+        return true;
+    }
+    let mut depth = 0i32;
+    for t in &cx.toks[start..] {
+        match t.text.as_str() {
+            "(" | "[" | "{" => depth += 1,
+            ")" | "]" | "}" if depth == 0 => return false,
+            ")" | "]" | "}" => depth -= 1,
+            ";" if depth == 0 => return false,
+            w if names_.contains(w) => return true,
+            _ => {}
+        }
+    }
+    false
+}
+
+/// The names in the definition `node` that depend on the parameters
+/// `params`: the parameters, and the variables and parameters whose
+/// declaration names a dependent name, to a fixed point.
+fn dependent_names(cx: &Check, node: &Node, params: &[Rc<str>]) -> std::collections::HashSet<String> {
+    fn walk<'n>(n: &'n Node, out: &mut Vec<&'n Node>) {
+        for k in &n.kids {
+            if let Kid::Node(c) = k {
+                if matches!(c.prod, "parameter" | "simple_decl" | "init_declarator" | "member_decl" | "condition" | "for_range_decl" | "lambda_expr") {
+                    out.push(c);
+                }
+                walk(c, out);
+            }
+        }
+    }
+    let mut decls = Vec::new();
+    walk(node, &mut decls);
+    let mut dep: std::collections::HashSet<String> = params.iter().filter(|p| !p.is_empty()).map(|p| p.to_string()).collect();
+    // An invented parameter stands for `auto` (TPL rules).
+    if params.iter().any(|p| p.is_empty()) {
+        dep.insert("auto".to_string());
+    }
+    loop {
+        let before = dep.len();
+        for d in &decls {
+            let mut toks = Vec::new();
+            d.tokens(&mut toks);
+            if toks.iter().any(|&t| dep.contains(cx.toks[t].text.as_str())) {
+                let mut ids = Vec::new();
+                fn ids_of<'n>(n: &'n Node, out: &mut Vec<&'n Node>) {
+                    for k in &n.kids {
+                        if let Kid::Node(c) = k {
+                            if c.prod == "declarator_id" {
+                                out.push(c);
+                            }
+                            ids_of(c, out);
+                        }
+                    }
+                }
+                ids_of(d, &mut ids);
+                for i in ids {
+                    dep.insert(cx.source(i).trim().to_string());
+                }
+            }
+        }
+        if dep.len() == before {
+            break;
+        }
+    }
+    dep
 }
 
 /// INST-2: the unit needs class `c` complete: a variable or a data member
@@ -2660,6 +2763,11 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         return false;
     }
     let Some(name) = head.child("class_name").map(|c| cx.source(c)) else { return false };
+    // TPL-18: the template does not have the name of a parameter.
+    if params.iter().any(|p| p.0.as_ref() == name.as_str()) {
+        cx.error(head.span, "TPL-18", format!("the class template '{}' has the name of one of its parameters", name));
+        return true;
+    }
     if shadows_param(cx, cd, &params) {
         return true;
     }
@@ -2786,6 +2894,16 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
             &declared
         }
     };
+    // DCMP-3: a defaulted comparison is no template; another defaulted
+    // member template waits for a later piece.
+    if fd.child("function_body").is_some_and(|b| cx.has_token(b, "default")) {
+        let comparison = fd.child("declarator").and_then(|d| d.find("operator_function_id")).is_some_and(|o| matches!(cx.source(o).replace(' ', "").as_str(), "operator==" | "operator!=" | "operator<=>" | "operator<" | "operator>" | "operator<=" | "operator>="));
+        if comparison {
+            cx.error(fd.span, "DCMP-3", "a defaulted comparison operator function that is a template");
+            return true;
+        }
+        return false;
+    }
     if let Some(dn) = fd.child("declarator").filter(|dn| crate::classes::constructors::check::special_name(cx, class, dn) == Some(false)) {
         if fd.prod != "function_definition" {
             return false;
@@ -3272,6 +3390,10 @@ fn instantiate_class(cx: &mut Check, v: usize, args: &[TArg], source: Option<(us
     let bad = cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error || d.sev == crate::diag::Severity::Unsupported);
     if t.class() != Some(predicted) || bad || cx.depth_exceeded {
         cx.u.class_templates[v].specs.retain(|(a, _)| a.as_slice() != args);
+        // A trial keeps its errors, which it sorts (`trial`).
+        if cx.trialing && !cx.depth_exceeded {
+            return None;
+        }
         let tail = cx.u.diags.split_off(marks);
         cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
         return None;

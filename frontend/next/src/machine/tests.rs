@@ -65,8 +65,8 @@ fn constant_evaluation_reports_its_limits() {
 #[test]
 fn an_error_after_an_unmodelled_construct_gives_no_verdict() {
     let outcome = |src: &str| crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0;
-    assert!(matches!(outcome("template <class T> struct S { int a = T::v; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
-    assert!(matches!(outcome("static_assert(1 == 2);\ntemplate <class T> struct S { int a = T::v; };"), Outcome::Reject(_)));
+    assert!(matches!(outcome("struct S { template <class U> friend class Box; };\nstatic_assert(1 == 2);"), Outcome::Unsupported(_)));
+    assert!(matches!(outcome("static_assert(1 == 2);\nstruct S { template <class U> friend class Box; };"), Outcome::Reject(_)));
     assert!(matches!(outcome("int int::* pm;"), Outcome::Reject(_)));
 }
 
@@ -2449,9 +2449,9 @@ fn function_templates_with_type_parameters() {
     // Two deductions that differ give no candidate.
     assert_eq!(rule("template <class T> T pick(T a, T b) { return a; } int f() { return pick(1, 2L); }"), Some("unsupported"));
     // A template that nothing specializes is checked with `int` for its
-    // parameters; one that this trial does not check stays unsupported.
+    // parameters; an error that depends on them is none (DEP-28).
     assert_eq!(rule("template <class T> T id(T v) { return v; }"), None);
-    assert_eq!(rule("template <class T> T id(T v) { return v.x; }"), Some("unsupported"));
+    assert_eq!(rule("template <class T> T id(T v) { return v.x; }"), None);
 }
 
 #[test]
@@ -2488,10 +2488,10 @@ fn class_templates_with_type_parameters() {
     assert_eq!(run("template <class T> struct Box { T v; T get() const { return v; } Box<T> self() const { return *this; } }; template <class A, class B> struct Pair { A a; B b; }; int main() { Box<int> b{3}; Pair<Box<int>, long> p{b, 4}; return b.self().get() + p.a.v + int(p.b); }"), RunOutcome::Result(10));
     assert_eq!(rule("template <class T> struct Box { T v; }; static_assert(sizeof(Box<char>) == 1 && sizeof(Box<long>) == 8);"), None);
     // A class template that nothing specializes is checked with `int`
-    // for its parameters; a definition that this trial does not check
-    // leaves the unit unsupported.
+    // for its parameters; a static assertion waits for a specialization
+    // (SA-5).
     assert_eq!(rule("template <class T> struct Box { T v; };"), None);
-    assert_eq!(rule("template <class T> struct Box { static_assert(sizeof(T) == 1); };"), Some("unsupported"));
+    assert_eq!(rule("template <class T> struct Box { static_assert(sizeof(T) == 1); };"), None);
 }
 
 #[test]
@@ -2963,4 +2963,20 @@ fn class_template_deduction() {
 #[test]
 fn generic_lambdas() {
     assert_eq!(run("template <class T> concept Big = sizeof(T) > 1; template <class F, class A> concept Callable = requires (F f, A a) { f(a); }; auto lam = [](Big auto x) { return 1; }; static_assert(Callable<decltype(lam), int> && !Callable<decltype(lam), char>); int main() { auto id = [](auto x) { return x; }; int base = 10; auto add = [base](auto x) { return x + base; }; int total = 0; auto acc = [&](auto v) { total += int(v); }; acc(2); acc(3.5); int (*p)(int) = [](auto x) { return x * 2; }; return id(1) + add(2) + total + p(3); } "), RunOutcome::Result(24));
+}
+
+#[test]
+fn unused_template_definitions() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // DEP-30: an error in a construct that depends on no parameter.
+    assert_eq!(rule("template <class T> void step() { goto nowhere; }"), Some("JMP-14"));
+    // DEP-28: an error that depends on the arguments is no error of the
+    // definition.
+    assert_eq!(rule("template <class T> int run(T t) { return t.missing(); }"), None);
+    // SA-5: a static assertion waits for a specialization.
+    assert_eq!(rule("template <class T> void f() { static_assert(sizeof(int) == 0); }"), None);
 }
