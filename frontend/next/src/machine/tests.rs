@@ -2982,3 +2982,16 @@ fn unused_template_definitions() {
     // SA-5: a static assertion waits for a specialization.
     assert_eq!(rule("template <class T> void f() { static_assert(sizeof(int) == 0); }"), None);
 }
+
+#[test]
+fn subsumption() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // CNS-22, ORD-13: the template whose constraints subsume the other's.
+    assert_eq!(rule("template <class T> concept A = sizeof(T) > 1; template <class T> concept B = A<T> && sizeof(T) < 9; template <A T> constexpr int f(T) { return 1; } template <B T> constexpr int f(T) { return 2; } static_assert(f(1) == 2 && f(1.0L) == 1);"), None);
+    // CNS-24: two atoms from two expressions are not identical.
+    assert_eq!(rule("template <class T> struct Box { static constexpr int f() requires (sizeof(T) > 1) { return 1; } static constexpr int f() requires (sizeof(T) > 1) && true { return 2; } }; int x = Box<int>::f();"), Some("OVL-36"));
+}

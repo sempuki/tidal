@@ -574,3 +574,179 @@ pub fn member_satisfied(cx: &mut Check, f: crate::sem::EntityId) -> Option<bool>
     cx.lambdas = saved_lambdas;
     r
 }
+
+/// A constraint in normal form (CNS-2): conjunctions and disjunctions of
+/// atomic constraints.
+#[derive(Clone, Debug)]
+pub enum Form {
+    And(Box<Form>, Box<Form>),
+    Or(Box<Form>, Box<Form>),
+    Atom(Atom),
+}
+
+/// An atomic constraint (CNS-3, CNS-4): the place of its expression in
+/// the source, and its parameter mapping, each parameter that the
+/// expression names with its argument as written, after the arguments
+/// of the concepts around it.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Atom {
+    place: (u32, u32, u32),
+    mapping: Vec<(String, String)>,
+}
+
+/// CNS-2: the normal form of the constraint expression `n`, whose names
+/// `subst` maps to their arguments. None for a form that the front end
+/// does not normalize.
+fn normal_form(cx: &Check, n: &Node, subst: &std::collections::HashMap<String, String>, depth: u32) -> Option<Form> {
+    if depth > 32 {
+        return None;
+    }
+    let nodes: Vec<&Node> = n.kids.iter().filter_map(|k| match k {
+        Kid::Node(c) => Some(c),
+        _ => None,
+    }).collect();
+    let words = cx.words(n);
+    match n.prod {
+        "requires_clause" => return normal_form(cx, nodes.first()?, subst, depth + 1),
+        "constraint_or" | "logical_or_expr" if words.contains(&"||") => {
+            let mut parts = nodes.iter().map(|c| normal_form(cx, c, subst, depth + 1));
+            let first = parts.next()??;
+            return parts.try_fold(first, |acc, p| Some(Form::Or(Box::new(acc), Box::new(p?))));
+        }
+        "constraint_and" | "logical_and_expr" if words.contains(&"&&") => {
+            let mut parts = nodes.iter().map(|c| normal_form(cx, c, subst, depth + 1));
+            let first = parts.next()??;
+            return parts.try_fold(first, |acc, p| Some(Form::And(Box::new(acc), Box::new(p?))));
+        }
+        "constraint_or" | "constraint_and" | "logical_or_expr" | "logical_and_expr" if nodes.len() == 1 => return normal_form(cx, nodes[0], subst, depth + 1),
+        "primary" if words.first() == Some(&"(") && nodes.len() == 1 => return normal_form(cx, nodes[0], subst, depth + 1),
+        _ => {}
+    }
+    // A concept-id gives the normal form of its concept's expression.
+    if let Some(tid) = n.child("id_expression").and_then(|i| i.child("unqualified_id")).and_then(|u| u.child("template_id")).filter(|_| n.prod == "primary") {
+        let name = cx.source(tid.child("template_name")?);
+        if let Some(c) = names::lookup(cx, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+            EntKind::Concept(c) => Some(c),
+            _ => None,
+        }) {
+            let args: Vec<String> = tid.child("template_args").map(|ta| ta.children("template_arg").map(|a| spelled(cx, a, subst)).collect()).unwrap_or_default();
+            return concept_form(cx, c, &args, depth);
+        }
+    }
+    let mut toks = Vec::new();
+    n.tokens(&mut toks);
+    let first = toks.first().map(|&t| cx.toks[t].span)?;
+    let mut mapping: Vec<(String, String)> = toks.iter().filter_map(|&t| subst.get(cx.toks[t].text.as_str()).map(|a| (cx.toks[t].text.clone(), a.clone()))).collect();
+    mapping.sort();
+    mapping.dedup();
+    Some(Form::Atom(Atom { place: (first.file.0, first.line, first.col), mapping }))
+}
+
+/// The normal form of the concept `c` for the arguments `args`, as
+/// written.
+fn concept_form(cx: &Check, c: usize, args: &[String], depth: u32) -> Option<Form> {
+    let con = &cx.u.concepts[c];
+    if args.len() != con.params.len() {
+        return None;
+    }
+    // The concept's node is its constraint expression.
+    let expr = &con.node;
+    let subst: std::collections::HashMap<String, String> = con.params.iter().map(|p| p.to_string()).zip(args.iter().cloned()).collect();
+    normal_form(cx, expr, &subst, depth + 1)
+}
+
+/// An argument as written, with each name that `subst` maps replaced by
+/// its argument.
+fn spelled(cx: &Check, n: &Node, subst: &std::collections::HashMap<String, String>) -> String {
+    let mut toks = Vec::new();
+    n.tokens(&mut toks);
+    toks.iter().map(|&t| {
+        let w = cx.toks[t].text.as_str();
+        subst.get(w).cloned().unwrap_or_else(|| w.to_string())
+    }).collect::<Vec<_>>().join(" ")
+}
+
+/// CNS-1: the associated constraints of a template with the parameters
+/// `params` and the constraints `constraints`, in normal form. Each of
+/// the template's parameters maps to its position, so the forms of two
+/// templates compare by position. None for no constraint, or for a form
+/// that the front end does not normalize (the bool is false then).
+pub fn associated_form(cx: &Check, params: &[std::rc::Rc<str>], constraints: &[(Option<usize>, Node)]) -> (Option<Form>, bool) {
+    let subst: std::collections::HashMap<String, String> = params.iter().enumerate().filter(|(_, p)| !p.is_empty()).map(|(k, p)| (p.to_string(), format!("#{}", k))).collect();
+    let mut out: Option<Form> = None;
+    for (k, c) in constraints {
+        let f = match k {
+            None => normal_form(cx, c, &subst, 0),
+            // A type constraint C<A...> on the parameter k is C<P, A...>.
+            Some(k) => {
+                let name = cx.words(c).first().map(|w| w.to_string());
+                let concept = name.and_then(|n| names::lookup(cx, &n).into_iter().find_map(|e| match cx.u.entities[e].kind {
+                    EntKind::Concept(x) => Some(x),
+                    _ => None,
+                }));
+                concept.and_then(|x| {
+                    let mut args = vec![format!("#{}", k)];
+                    args.extend(c.child("template_args").map(|ta| ta.children("template_arg").map(|a| spelled(cx, a, &subst)).collect::<Vec<_>>()).unwrap_or_default());
+                    concept_form(cx, x, &args, 0)
+                })
+            }
+        };
+        let Some(f) = f else { return (None, false) };
+        out = Some(match out {
+            None => f,
+            Some(o) => Form::And(Box::new(o), Box::new(f)),
+        });
+    }
+    (out, true)
+}
+
+/// The disjunctive form of `f`: a disjunction of conjunctions of atoms.
+fn dnf(f: &Form) -> Vec<Vec<Atom>> {
+    match f {
+        Form::Atom(a) => vec![vec![a.clone()]],
+        Form::Or(a, b) => {
+            let mut v = dnf(a);
+            v.extend(dnf(b));
+            v
+        }
+        Form::And(a, b) => {
+            let (x, y) = (dnf(a), dnf(b));
+            x.iter().flat_map(|p| y.iter().map(move |q| p.iter().chain(q.iter()).cloned().collect())).collect()
+        }
+    }
+}
+
+/// The conjunctive form of `f`: a conjunction of disjunctions of atoms.
+fn cnf(f: &Form) -> Vec<Vec<Atom>> {
+    match f {
+        Form::Atom(a) => vec![vec![a.clone()]],
+        Form::And(a, b) => {
+            let mut v = cnf(a);
+            v.extend(cnf(b));
+            v
+        }
+        Form::Or(a, b) => {
+            let (x, y) = (cnf(a), cnf(b));
+            x.iter().flat_map(|p| y.iter().map(move |q| p.iter().chain(q.iter()).cloned().collect())).collect()
+        }
+    }
+}
+
+/// CNS-22: whether `p` subsumes `q`.
+pub fn subsumes(p: &Form, q: &Form) -> bool {
+    let (d, c) = (dnf(p), cnf(q));
+    if d.len() * c.len() > 4096 {
+        return false;
+    }
+    d.iter().all(|conj| c.iter().all(|disj| conj.iter().any(|a| disj.contains(a))))
+}
+
+/// CNS-23: whether the constraints `f1` are at least as constrained as
+/// `f2`, where None stands for no constraint.
+pub fn at_least_as_constrained(f1: Option<&Form>, f2: Option<&Form>) -> bool {
+    match (f1, f2) {
+        (_, None) => true,
+        (None, Some(_)) => false,
+        (Some(a), Some(b)) => subsumes(a, b),
+    }
+}

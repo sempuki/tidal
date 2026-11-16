@@ -232,6 +232,21 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
         (Some(a), Some(b)) => crate::classes::derived::check::is_base(cx, a, b),
         _ => false,
     };
+    // ORD-13, CNS-23: of two functions with the same parameter types that
+    // are no templates, the more constrained.
+    let constrained_tie = |f: EntityId, g: EntityId| -> bool {
+        let (Some(x), Some(y)) = (cx.u.func(f), cx.u.func(g)) else { return false };
+        if x.ty.params != y.ty.params || crate::templates::declarations::check::template_of(cx, f).is_some() || crate::templates::declarations::check::template_of(cx, g).is_some() {
+            return false;
+        }
+        let form = |h: EntityId| cx.u.member_constraints.get(&h).map(|(n, _)| crate::templates::concepts::check::associated_form(cx, &[], &[(None, n.clone())]));
+        let (fa, fb) = (form(f), form(g));
+        if fa.as_ref().is_some_and(|x| !x.1) || fb.as_ref().is_some_and(|x| !x.1) || (fa.is_none() && fb.is_none()) {
+            return false;
+        }
+        let (pa, pb) = (fa.and_then(|x| x.0), fb.and_then(|x| x.0));
+        crate::templates::concepts::check::at_least_as_constrained(pa.as_ref(), pb.as_ref()) && !crate::templates::concepts::check::at_least_as_constrained(pb.as_ref(), pa.as_ref())
+    };
     let wins = |a: &(EntityId, Vec<Ics>), b: &(EntityId, Vec<Ics>)| -> bool {
         let mut some = false;
         for (x, y) in a.1.iter().zip(b.1.iter()) {
@@ -242,7 +257,7 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
                 some = true;
             }
         }
-        some || inherited_tie(a.0, b.0) || crate::templates::declarations::check::beats_by_template(cx, a.0, b.0) == Some(true)
+        some || inherited_tie(a.0, b.0) || crate::templates::declarations::check::beats_by_template(cx, a.0, b.0) == Some(true) || constrained_tie(a.0, b.0)
     };
     let mut best = 0;
     for i in 1..viable.len() {
@@ -256,7 +271,13 @@ pub fn resolve_with(cx: &mut Check, cands: &[EntityId], object: Option<&Expr>, a
             // the steps that the first pieces of build step 5 take, or two
             // functions that only their constraints order (CNS-22).
             let (f, g) = (viable[best].0, viable[i].0);
+            // CNS-24: neither of two constrained functions is more
+            // constrained.
             if cx.u.member_constraints.contains_key(&f) || cx.u.member_constraints.contains_key(&g) {
+                if cx.u.func(f).zip(cx.u.func(g)).is_some_and(|(x, y)| x.ty.params == y.ty.params) {
+                    cx.error_cause(span, "OVL-36", Some("CNS-24"), format!("the call of '{}' is ambiguous: neither function is more constrained", name));
+                    return None;
+                }
                 cx.unsupported(span, format!("a call of '{}' that the subsumption of constraints decides", name));
                 return None;
             }

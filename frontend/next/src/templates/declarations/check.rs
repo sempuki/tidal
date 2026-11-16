@@ -734,19 +734,39 @@ fn function_template(cx: &mut Check, fd: &Node, ds: &Node, dn: &Node, params: Ve
         return false;
     }
     let kinds: Vec<Option<QType>> = params.iter().map(|p| p.2.clone()).collect();
-    let same = found.iter().find_map(|&e| match cx.u.entities[e].kind {
-        EntKind::Template(t) if *cx.u.templates[t].fty == fty && cx.u.templates[t].kinds == kinds && cx.u.templates[t].pack_param == pack_param => Some(e),
+    // CNS-27, CNS-28: constraints written otherwise make another overload.
+    // The front end compares them as written, with each parameter by its
+    // position (TPL-20); a lambda is equivalent to no other.
+    let written = |cx: &Check, cs: &Constraints, names_: &[Rc<str>]| -> Vec<String> {
+        cs.iter().map(|(k, n)| {
+            let mut toks = Vec::new();
+            n.tokens(&mut toks);
+            let text: Vec<String> = toks.iter().map(|&t| {
+                let w = cx.toks[t].text.as_str();
+                names_.iter().position(|p| p.as_ref() == w).map(|i| format!("#{}", i)).unwrap_or_else(|| w.to_string())
+            }).collect();
+            if text.iter().any(|w| w == "[") { format!("{:?} lambda {:?}", k, n.span) } else { format!("{:?}{}", k, text.join(" ")) }
+        }).collect()
+    };
+    let my_names: Vec<Rc<str>> = params.iter().map(|p| p.0.clone()).collect();
+    let mine = written(cx, &constraints, &my_names);
+    let candidates: Vec<(EntityId, bool)> = found.iter().filter_map(|&e| match cx.u.entities[e].kind {
+        EntKind::Template(t) if *cx.u.templates[t].fty == fty && cx.u.templates[t].kinds == kinds && cx.u.templates[t].pack_param == pack_param => Some((e, written(cx, &cx.u.templates[t].constraints, &cx.u.templates[t].params) == mine)),
         _ => None,
-    });
+    }).collect();
+    // Concept arguments that are values compare by value, which waits for
+    // a later piece.
+    let values = |cs: &Constraints| cs.iter().any(|(_, n)| n.find("template_args").is_some_and(|ta| ta.children("template_arg").any(|a| a.child("type_id").is_none())));
+    if candidates.iter().any(|&(e, same)| !same && matches!(cx.u.entities[e].kind, EntKind::Template(t) if values(&cx.u.templates[t].constraints)) || values(&constraints) && !same) {
+        return false;
+    }
+    let same = candidates.iter().find(|c| c.1).map(|c| c.0);
     if let Some(e) = same {
         // A second declaration of the template, which a definition
         // completes. Constraints whose equivalence decides between a
         // redeclaration and an overload wait for a later piece.
         let EntKind::Template(t) = cx.u.entities[e].kind else { return false };
         let tpl = &cx.u.templates[t];
-        if !constraints.is_empty() || !tpl.constraints.is_empty() {
-            return false;
-        }
         // DEFARG-13: a later declaration adds no default argument.
         if let Some(p) = dn.find("parameters").and_then(|ps| ps.children("parameter").find(|p| cx.has_word(p, "="))) {
             cx.error(p.span, "DEFARG-13", "a default argument in a later declaration of a function template");
@@ -2037,10 +2057,21 @@ pub fn beats_by_template(cx: &Check, f: EntityId, g: EntityId) -> Option<bool> {
             }
             let ab = at_least_as_specialized(cx, t1, t2)?;
             let ba = at_least_as_specialized(cx, t2, t1)?;
-            // ORD-13: the more constrained template, which the first
-            // pieces of build step 5 do not order.
+            // ORD-13: of two templates that are as specialized as each
+            // other, the more constrained (CNS-23).
             if ab && ba && (!cx.u.templates[t1].constraints.is_empty() || !cx.u.templates[t2].constraints.is_empty()) {
-                return None;
+                let (a, b) = (&cx.u.templates[t1], &cx.u.templates[t2]);
+                if a.kinds != b.kinds || a.fty.params != b.fty.params {
+                    return None;
+                }
+                let (f1, ok1) = crate::templates::concepts::check::associated_form(cx, &a.params, &a.constraints);
+                let (f2, ok2) = crate::templates::concepts::check::associated_form(cx, &b.params, &b.constraints);
+                if !ok1 || !ok2 {
+                    return None;
+                }
+                let one = crate::templates::concepts::check::at_least_as_constrained(f1.as_ref(), f2.as_ref());
+                let two = crate::templates::concepts::check::at_least_as_constrained(f2.as_ref(), f1.as_ref());
+                return Some(one && !two);
             }
             Some(ab && !ba)
         }
