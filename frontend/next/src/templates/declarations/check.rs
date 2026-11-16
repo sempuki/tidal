@@ -2717,8 +2717,9 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return true;
     }
     // A default sees the class incomplete (CLS-2), which a later piece
-    // models.
-    if defaults.iter().any(|d| d.is_some()) {
+    // models for a default that names the class.
+    let class_name = cx.u.classes[class].name.clone();
+    if defaults.iter().flatten().any(|d| cx.has_token(d, &class_name)) {
         return false;
     }
     let Some(inner) = m.child("member_decl") else { return false };
