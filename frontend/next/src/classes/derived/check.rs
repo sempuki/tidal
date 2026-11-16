@@ -20,18 +20,36 @@ pub fn base_clause(cx: &mut Check, c: ClassId, key: ClassKey, n: &Node) -> bool 
         cx.error(n.span, "DER-1", "a union has a base list");
         return true;
     }
-    let mut seen: Vec<ClassId> = Vec::new();
-    for b in n.children("base_spec") {
-        let virt = cx.has_word(b, "virtual");
-        if b.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") || cx.has_word(n, "...") {
-            cx.unsupported(b.span, "a pack expansion in a base list (build step 5)");
-            return false;
-        }
+    // The bases in order, with an expansion's elements in its place
+    // (PACK rules).
+    let mut list: Vec<(&Node, &Node, QType)> = Vec::new();
+    let specs: Vec<(usize, &Node)> = n.kids.iter().enumerate().filter_map(|(k, kid)| match kid {
+        Kid::Node(b) if b.prod == "base_spec" => Some((k, b)),
+        _ => None,
+    }).collect();
+    for (k, b) in specs {
         let Some(bt) = b.child("base_type") else { return false };
+        let expansion = b.kids.iter().any(|k| matches!(k, Kid::Tok(_)) && cx.text(k) == "...") || matches!(n.kids.get(k + 1), Some(t @ Kid::Tok(_)) if cx.text(t) == "...");
+        if expansion {
+            let Some(tys) = crate::templates::packs::check::expand(cx, bt, base_type) else {
+                cx.unsupported(b.span, "a pack expansion in a base list whose pattern names no bound pack (build step 5)");
+                return false;
+            };
+            for t in tys {
+                let Some(t) = t else { return false };
+                list.push((b, bt, t));
+            }
+            continue;
+        }
         let ty = match base_type(cx, bt) {
             Some(t) => t,
             None => return false,
         };
+        list.push((b, bt, ty));
+    }
+    let mut seen: Vec<ClassId> = Vec::new();
+    for (b, bt, ty) in list {
+        let virt = cx.has_word(b, "virtual");
         let Some(d) = ty.class() else {
             if !ty.is_error() {
                 cx.error(bt.span, "DER-1", format!("the base {} is not a class", ty.show()));
