@@ -39,6 +39,9 @@ struct Guide {
     result: Vec<TArg>,
     /// A user guide's position among the class template's guides.
     extra_index: usize,
+    /// The last parameter is a function parameter pack whose pattern
+    /// names the class's pack.
+    pack: bool,
 }
 
 /// CTAD-11, CTAD-12: a `deduction_guide` with the parameters `params` of
@@ -83,7 +86,9 @@ pub fn user_guide(cx: &mut Check, n: &Node, params: Vec<crate::templates::declar
 pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, span: Span) -> Option<QType> {
     let ct = cx.u.class_templates[v].clone();
     let name = ct.name.clone();
-    if ct.pack || ct.kinds.iter().any(|k| k.is_some()) && ct.defaults.iter().zip(&ct.kinds).any(|(d, k)| k.is_some() && d.is_none()) {
+    // PACK rules: a type pack as the last parameter takes the elements
+    // that a guide's function parameter pack deduces.
+    if ct.pack && ct.kinds.last().is_some_and(|k| k.is_some()) || ct.kinds.iter().any(|k| k.is_some()) && ct.defaults.iter().zip(&ct.kinds).any(|(d, k)| k.is_some() && d.is_none()) {
         return unsupported(cx, span, "a deduction for a class template with a pack or a constant parameter without a default");
     }
     if !ct.defined {
@@ -104,12 +109,13 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
         if g.explicit && copy && !list {
             continue;
         }
-        if args.len() > g.params.len() || args.len() < g.required {
+        let fixed = if g.pack { g.params.len() - 1 } else { g.params.len() };
+        if (args.len() > g.params.len() && !g.pack) || args.len() < g.required.min(fixed) {
             continue;
         }
         let user = g.from == From::User;
         let mut bound: Vec<Option<QType>> = vec![None; if user { g.extra } else { n + g.extra }];
-        let ok = g.params.iter().zip(args).all(|(p, a)| {
+        let ok = g.params[..fixed].iter().zip(args).all(|(p, a)| {
             // CTAD-8: `T&&` with `T` a parameter of the class is no
             // forwarding reference.
             match &p.t {
@@ -119,7 +125,35 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
                 _ => crate::templates::deduction::check::match_arg(cx, p, a, &[], &mut bound),
             }
         });
-        if !ok || (!user && bound[n..].iter().any(|b| b.is_none())) {
+        if !ok {
+            continue;
+        }
+        // PACK rules: each argument after the others deduces one element
+        // of the class's pack from the pack's pattern.
+        let mut elements: Vec<QType> = Vec::new();
+        if g.pack {
+            let p = g.params.last().unwrap();
+            let mut fits = true;
+            for a in &args[fixed..] {
+                let mut each = bound.clone();
+                each[n - 1] = None;
+                if !crate::templates::deduction::check::match_arg(cx, p, a, &[], &mut each) {
+                    fits = false;
+                    break;
+                }
+                match each[n - 1].clone() {
+                    Some(t) => elements.push(t),
+                    None => {
+                        fits = false;
+                        break;
+                    }
+                }
+            }
+            if !fits {
+                continue;
+            }
+        }
+        if !user && bound[n..].iter().any(|b| b.is_none()) {
             continue;
         }
         // A user guide's parameter that its arguments leave takes its
@@ -172,6 +206,7 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
         let mut failed = false;
         for (i, b) in from_result.iter().enumerate() {
             match b {
+                _ if ct.pack && i == n - 1 => class_args.push(TArg::Pack(elements.iter().cloned().map(TArg::Type).collect())),
                 Some(t) if ct.kinds[i].is_none() => class_args.push(TArg::Type(t.clone())),
                 _ => {
                     let marks = cx.u.diags.len();
@@ -197,7 +232,16 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
             }).collect()
         };
         let mut seqs = Vec::new();
-        for (p, a) in g.params.iter().zip(args) {
+        for (j, a) in args.iter().enumerate() {
+            let (p, known) = match g.params.get(j.min(g.params.len().saturating_sub(1))) {
+                Some(p) if g.pack && j >= fixed => {
+                    let mut each = known.clone();
+                    each[n - 1] = elements[j - fixed].clone();
+                    (p, each)
+                }
+                Some(p) => (p, known.clone()),
+                None => break,
+            };
             let p = crate::templates::deduction::check::substitute(p, &known);
             let p = concrete(cx, &p, span);
             match sequence(cx, a, &p) {
@@ -408,7 +452,9 @@ fn guides(cx: &mut Check, v: usize, list: bool, given: usize, span: Span) -> Opt
         specs.ty = Some(QType::void());
         let d = crate::declarations::declarators::check::declarator(cx, &specs, dn);
         cx.leave(ts);
-        if cx.u.diags.len() > marks || d.unsupported || specs.unsupported || d.params.iter().any(|p| p.pack.is_some()) {
+        // A function parameter pack comes last, of the class's pack.
+        let pack_param = d.params.last().is_some_and(|p| p.pack.is_some());
+        if cx.u.diags.len() > marks || d.unsupported || specs.unsupported || d.params.iter().rev().skip(1).any(|p| p.pack.is_some()) || (pack_param && (!ct.pack || head.is_some())) {
             // A constructor whose parameters name the class itself, such
             // as a copy constructor, gives its guide through the copy
             // candidate.
@@ -430,22 +476,30 @@ fn guides(cx: &mut Check, v: usize, list: bool, given: usize, span: Span) -> Opt
             continue;
         }
         let required = d.params.iter().take_while(|p| p.default.is_none()).count();
-        out.push(Guide { from: if head.is_some() { From::ConstructorTemplate } else { From::Constructor }, params: f.params.clone(), required, explicit, extra, result: Vec::new(), extra_index: 0 });
+        out.push(Guide { from: if head.is_some() { From::ConstructorTemplate } else { From::Constructor }, params: f.params.clone(), required, explicit, extra, result: Vec::new(), extra_index: 0, pack: pack_param });
     }
     cx.leave(saved);
     cx.lookup_limit = saved_limit;
     if failed {
         return unsupported(cx, span, "a deduction from a class template whose constructors or members the front end does not model as guides");
     }
+    // CTAD-27: the aggregate candidate of a class template with a pack
+    // waits for a later piece.
+    if ct.pack && constructors == 0 && given > 0 {
+        return unsupported(cx, span, "a deduction for an aggregate class template with a pack (CTAD-27)");
+    }
     // CTAD-6: a class template with no constructor has a guide with no
     // parameters.
     if constructors == 0 {
-        out.push(Guide { from: From::NoParameters, params: Vec::new(), required: 0, explicit: false, extra: 0, result: Vec::new(), extra_index: 0 });
+        out.push(Guide { from: From::NoParameters, params: Vec::new(), required: 0, explicit: false, extra: 0, result: Vec::new(), extra_index: 0, pack: false });
     }
-    // CTAD-7: the copy candidate.
-    let own: Vec<TArg> = ct.params.iter().enumerate().map(|(k, p)| TArg::Type(QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: p.clone() }))))).collect();
-    let spec = QType::new(Type::Dep(Rc::new(DepType::Spec { template: v, args: own, name: ct.name.clone() })));
-    out.push(Guide { from: From::Copy, params: vec![spec], required: 1, explicit: false, extra: 0, result: Vec::new(), extra_index: 0 });
+    // CTAD-7: the copy candidate, which waits for a later piece for a
+    // class template with a pack.
+    if !ct.pack {
+        let own: Vec<TArg> = ct.params.iter().enumerate().map(|(k, p)| TArg::Type(QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: p.clone() }))))).collect();
+        let spec = QType::new(Type::Dep(Rc::new(DepType::Spec { template: v, args: own, name: ct.name.clone() })));
+        out.push(Guide { from: From::Copy, params: vec![spec], required: 1, explicit: false, extra: 0, result: Vec::new(), extra_index: 0, pack: false });
+    }
     // CTAD-11: the user guides declared before the use.
     for (gi, (gparams, _, node, limit)) in ct.guides.clone().into_iter().enumerate() {
         let saved = cx.scope;
@@ -464,18 +518,18 @@ fn guides(cx: &mut Check, v: usize, list: bool, given: usize, span: Span) -> Opt
         };
         let required = ps.iter().take_while(|p| p.default.is_none()).count();
         let explicit = node.child("explicit_spec").is_some();
-        out.push(Guide { from: From::User, params: ps.iter().map(|p| p.ty.clone()).collect(), required, explicit, extra: gparams.len(), result, extra_index: gi });
+        out.push(Guide { from: From::User, params: ps.iter().map(|p| p.ty.clone()).collect(), required, explicit, extra: gparams.len(), result, extra_index: gi, pack: false });
     }
     // CTAD-9, CTAD-10: the aggregate candidate, for a list with an
     // element for each of its first members, when the class template
     // has no user guide. Brace elision waits for a later piece.
-    if aggregate && list && given > 0 && ct.guides.is_empty() {
+    if aggregate && list && given > 0 && ct.guides.is_empty() && !ct.pack {
         // Brace elision into an array or a class whose type does not
         // depend on a parameter waits for a later piece (CTAD-10).
         if members.iter().any(|m| m.is_array() || m.class().is_some()) || given > members.len() {
             return unsupported(cx, span, "an aggregate candidate with an array or a class member, or with brace elision");
         }
-        out.push(Guide { from: From::Aggregate, params: members[..given].to_vec(), required: given, explicit: false, extra: 0, result: Vec::new(), extra_index: 0 });
+        out.push(Guide { from: From::Aggregate, params: members[..given].to_vec(), required: given, explicit: false, extra: 0, result: Vec::new(), extra_index: 0, pack: false });
     }
     Some(out)
 }
