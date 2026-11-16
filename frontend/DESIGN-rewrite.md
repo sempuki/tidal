@@ -592,8 +592,11 @@ by its constructor from a pointer and a length. In a variable's
 declaration, a braced list for a class with an initializer-list
 constructor takes the one that every element converts to (`{}` takes
 the default constructor first), with the list as its argument;
-initializer-list parameters, lists made elsewhere, and the second phase
-for such a class wait for a later piece. A function template can have a deduced return type, which each
+a braced argument of a call of one function whose parameter is
+`std::initializer_list<E>` is a list whose array is a temporary of the
+full-expression; overload sets with such parameters, lists made
+elsewhere, and the second phase for such a class wait for a later
+piece. A function template can have a deduced return type, which each
 specialization deduces from its body. An unqualified name that lookup
 does not find, followed by a template argument list and a call, names a
 template that argument-dependent lookup finds; a function's name before

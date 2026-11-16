@@ -47,6 +47,18 @@ pub fn list_of(cx: &mut Check, e: QType, span: Span) -> Option<QType> {
 /// the array and its length. None after an error, or when the front end
 /// does not model the form.
 pub fn backed(cx: &mut Check, ty: &QType, items: &[&Node], storage: Storage, span: Span) -> Option<Init> {
+    backed_with(cx, ty, items, storage, false, span)
+}
+
+/// ILC-5, ICS-16: a prvalue `std::initializer_list<E>` from a braced list
+/// outside a declaration, whose array is a temporary of the
+/// full-expression, as for a function argument.
+pub fn temporary(cx: &mut Check, ty: &QType, items: &[&Node], span: Span) -> Option<Expr> {
+    let init = backed_with(cx, ty, items, Storage::Automatic, true, span)?;
+    Some(Expr::new(EK::List(Box::new(init)), ty.unqual(), Cat::PR, span))
+}
+
+fn backed_with(cx: &mut Check, ty: &QType, items: &[&Node], storage: Storage, temporary: bool, span: Span) -> Option<Init> {
     let e = element(cx, ty)?;
     let c = ty.class()?;
     // The array and its elements, each copied as an element of a list
@@ -71,11 +83,18 @@ pub fn backed(cx: &mut Check, ty: &QType, items: &[&Node], storage: Storage, spa
     }
     let n = inits.len() as u64;
     let array = QType::new(Type::Array(std::rc::Rc::new(e.unqual().with_cv(true, e.v)), Some(n)));
-    let k = cx.backing_constexpr;
-    let var = Var { ty: array.clone(), storage, constexpr: k, constinit: false, inline: false, is_extern: false, is_static: false, param: false, defined: true, init: Some(Init::List(inits.clone())), const_init: k, used: true, maybe_unused: true, align: None };
-    let scope = cx.scope;
-    let hidden = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(var), span, scope, linkage: Linkage::None, deprecated: None });
-    cx.backing.push((hidden, Init::List(inits)));
+    // In a declaration a hidden variable holds the array; elsewhere it is
+    // a temporary of the full-expression.
+    let a = if temporary {
+        Expr::new(EK::List(Box::new(Init::List(inits))), array.clone(), Cat::PR, span).conv(crate::sem::tree::Conv::Materialize, array.clone(), Cat::X)
+    } else {
+        let k = cx.backing_constexpr;
+        let var = Var { ty: array.clone(), storage, constexpr: k, constinit: false, inline: false, is_extern: false, is_static: false, param: false, defined: true, init: Some(Init::List(inits.clone())), const_init: k, used: true, maybe_unused: true, align: None };
+        let scope = cx.scope;
+        let hidden = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(var), span, scope, linkage: Linkage::None, deprecated: None });
+        cx.backing.push((hidden, Init::List(inits)));
+        Expr::new(EK::Var(hidden), array.clone(), Cat::L, span)
+    };
     // The object: the constructor that takes a pointer to `const E` and
     // a length.
     let ptr = QType::ptr_to(e.unqual().with_cv(true, e.v));
@@ -85,7 +104,6 @@ pub fn backed(cx: &mut Check, ty: &QType, items: &[&Node], storage: Storage, spa
         cx.unsupported(span, "a std::initializer_list without a constructor from a pointer and a length");
         return None;
     };
-    let a = Expr::new(EK::Var(hidden), array, Cat::L, span);
     let a = crate::foundations::values::check::rvalue(cx, a);
     Some(Init::Ctor(ctor, vec![Arg { e: a, by_ref: false }, Arg { e: Expr::int(n as i128, size, span), by_ref: false }]))
 }

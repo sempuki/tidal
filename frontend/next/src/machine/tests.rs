@@ -2939,3 +2939,8 @@ fn initializer_list_constructors() {
     };
     assert_eq!(rule("namespace std { template <class E> class initializer_list {   const E* b_; decltype(sizeof 0) n_;   constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {} public:   constexpr initializer_list() : b_(nullptr), n_(0) {}   constexpr decltype(sizeof 0) size() const { return n_; }   constexpr const E* begin() const { return b_; }   constexpr const E* end() const { return b_ + n_; } }; } struct Bag { int total = 0; int n = 0; constexpr Bag() {} constexpr Bag(std::initializer_list<int> l) { for (int x : l) total += x; n = int(l.size()); } constexpr Bag(int a, int b) : total(a * b) {} }; constexpr int f() { Bag a{1, 2, 3}; Bag b = {4, 5}; Bag c{}; return a.total + b.total * 10 + c.total + a.n * 1000; } static_assert(f() == 3096); "), None);
 }
+
+#[test]
+fn initializer_list_parameters() {
+    assert_eq!(run("namespace std { template <class E> class initializer_list {   const E* b_; decltype(sizeof 0) n_;   constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {} public:   constexpr initializer_list() : b_(nullptr), n_(0) {}   constexpr decltype(sizeof 0) size() const { return n_; }   constexpr const E* begin() const { return b_; }   constexpr const E* end() const { return b_ + n_; } }; } constexpr int total(std::initializer_list<int> l) { int s = 0; for (int x : l) s += x; return s; } constexpr int count(const std::initializer_list<long>& l) { return int(l.size()); } static_assert(total({1, 2, 3}) == 6 && total({}) == 0 && count({1, 2}) == 2); int main() { return total({4, 5}); } "), RunOutcome::Result(9));
+}

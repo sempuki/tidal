@@ -548,9 +548,15 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
     let Some(name) = callee_name(callee) else { return unsupported(cx, "a braced list as an argument of a call that is not of a name") };
     // ILC-6, ICS-16: a parameter of type std::initializer_list<E> waits
     // for a later piece.
+    // One function whose parameters of list type take the lists.
+    let mut list_params = false;
     if let Some((found, _, _, _)) = primary::check::find(cx, name) {
         if crate::classes::initializer_lists::check::takes_list(cx, &found) {
-            return unsupported(cx, "a braced list as an argument for a parameter of type std::initializer_list");
+            let one = matches!(found[..], [f] if cx.u.func(f).is_some_and(|x| !x.ty.params.iter().any(|p| p.nonref().class().is_some_and(|c| crate::classes::initializer_lists::check::has_list_ctor(cx, c)))));
+            if !one {
+                return unsupported(cx, "a braced list as an argument for a parameter of type std::initializer_list");
+            }
+            list_params = true;
         }
     }
     let nodes = arg_nodes(list);
@@ -603,6 +609,23 @@ fn braced_call(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span) -
                     return bad(span);
                 };
                 let b = first_node(n).unwrap();
+                // ILC-6, ICS-16: a parameter of type std::initializer_list<E>
+                // takes a list of the elements.
+                if list_params && crate::classes::initializer_lists::check::element(cx, p).is_some() {
+                    let items: Vec<&Node> = b.children("init_clause").collect();
+                    let lt = p.nonref().unqual();
+                    let Some(l) = crate::classes::initializer_lists::check::temporary(cx, &lt, &items, span) else { return bad(span) };
+                    let e = if p.is_ref() {
+                        match crate::declarations::initialization::references::check::bind(cx, l, p, "INIT-7") {
+                            Some(x) => x,
+                            None => return bad(span),
+                        }
+                    } else {
+                        l
+                    };
+                    out.push(e);
+                    continue;
+                }
                 // PFX-16: the parameter is copy-initialized, so an explicit
                 // constructor takes no part.
                 let n_errs = cx.u.diags.len();
