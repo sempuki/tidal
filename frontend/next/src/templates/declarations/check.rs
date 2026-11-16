@@ -1220,6 +1220,14 @@ fn define_outside(cx: &mut Check, v: usize, k: usize, args: &[TArg]) {
             let before = cx.u.statics.len();
             crate::declarations::check::block_decl(cx, &node, false);
             let made: Vec<EntityId> = cx.u.statics[before..].to_vec();
+            // ODR-12: each unit that uses the specialization defines the
+            // member, and the definitions are one variable, as for an
+            // inline variable (INL-1).
+            for &id in &made {
+                if let Some(x) = cx.u.var_mut(id) {
+                    x.inline = true;
+                }
+            }
             cx.inst_statics.extend(made);
         }
     }

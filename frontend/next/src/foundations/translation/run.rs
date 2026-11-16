@@ -26,14 +26,47 @@ fn qualified(u: &Unit, id: crate::sem::EntityId) -> Option<String> {
     let mut parts = vec![e.name.to_string()];
     let mut s = if u.scopes[e.scope].kind == crate::sem::ScopeKind::Class { e.scope } else { u.enclosing_namespace(e.scope) };
     while let Some(p) = u.scopes[s].parent {
+        // The scope that binds a specialization's parameters adds no
+        // name.
+        if u.scopes[s].kind == crate::sem::ScopeKind::Template {
+            s = p;
+            continue;
+        }
         if !matches!(u.scopes[s].kind, crate::sem::ScopeKind::Namespace | crate::sem::ScopeKind::Class) || u.scopes[s].name.is_empty() {
             return None;
         }
-        parts.push(u.scopes[s].name.to_string());
+        parts.push(spelled_scope(u, s));
         s = p;
     }
     parts.reverse();
     Some(parts.join("::"))
+}
+
+/// The name of a scope, with the arguments of a class template
+/// specialization, so that each specialization names its own members
+/// (ODR-12).
+fn spelled_scope(u: &Unit, s: crate::sem::ScopeId) -> String {
+    use crate::sem::types::TArg;
+    let name = u.scopes[s].name.to_string();
+    if u.scopes[s].kind != crate::sem::ScopeKind::Class {
+        return name;
+    }
+    fn arg(u: &Unit, a: &TArg) -> String {
+        match a {
+            TArg::Type(t) => match t.class() {
+                Some(c) => format!("class {}", u.classes[c].name),
+                None => t.show(),
+            },
+            TArg::Value(_, v) => v.to_string(),
+            TArg::Pack(xs) => xs.iter().map(|x| arg(u, x)).collect::<Vec<_>>().join(","),
+        }
+    }
+    for ct in &u.class_templates {
+        if let Some((args, _)) = ct.specs.iter().find(|(_, c)| u.classes[*c].scope == s) {
+            return format!("{}<{}>", name, args.iter().map(|a| arg(u, a)).collect::<Vec<_>>().join(","));
+        }
+    }
+    name
 }
 
 /// Link the units of a program: each declaration with external linkage
