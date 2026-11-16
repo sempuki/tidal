@@ -53,8 +53,26 @@ pub fn range_for_stmt(cx: &mut Check, n: &Node) -> Stmt {
             cx.error_cause(re.span, "AUTO-21", Some("LSUP-1"), "a range-based for over a braced list needs a declaration of std::initializer_list");
             return Stmt::new(SK::Null, n.span);
         }
+        // RFOR-1, ILC-5: a braced list is a std::initializer_list<E>, held
+        // with its array by hidden variables of the loop.
         if re.prod == "braced_init" {
-            return unsupported(cx, n, "a range-based for over a braced list (std::initializer_list, build step 4)");
+            let items: Vec<&Node> = re.children("init_clause").collect();
+            let Some(lt) = crate::classes::initializer_lists::check::deduced(cx, &items, re.span) else { return Stmt::new(SK::Null, n.span) };
+            let saved_ok = cx.backing_ok.replace(crate::sem::Storage::Automatic);
+            cx.backing.clear();
+            let made = crate::classes::initializer_lists::check::backed(cx, &lt, &items, crate::sem::Storage::Automatic, re.span);
+            cx.backing_ok = saved_ok;
+            let Some(li) = made else { return Stmt::new(SK::Null, n.span) };
+            let il = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(local_var(lt.clone(), Some(li.clone()))), span: re.span, scope: cs, linkage: Linkage::None, deprecated: None });
+            let mut decls = std::mem::take(&mut cx.backing);
+            decls.push((il, li));
+            let decl = Stmt::new(SK::Decl(decls), re.span);
+            let init = Some(match init {
+                Some(s) => Box::new(Stmt::new(SK::Block(vec![*s, decl]), n.span)),
+                None => Box::new(decl),
+            });
+            let range = Expr::new(EK::Var(il), lt, Cat::L, re.span);
+            return class_range(cx, n, cs, &labels, init, rd, range);
         }
         let range = expr(cx, re);
         if range.ty.is_error() {
