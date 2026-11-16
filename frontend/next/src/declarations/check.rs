@@ -294,6 +294,12 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     // placeholder against the deduced type.
     let variables = n.children("init_declarator").all(|i| i.child("init").is_some() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_none()));
     let saved_cv = std::mem::replace(&mut cx.constrained_variable, variables && n.child("init_declarator").is_some());
+    // TYN-7: a declaration of a class key and a qualified name alone
+    // declares nothing.
+    if n.child("init_declarator").is_none() && !cx.has_token(ds, "friend") && ds.find("elaborated_type").is_some_and(|et| et.child("nested_name").is_some() && et.child("class_key").is_some()) {
+        cx.error(n.span, "TYN-7", "a declaration of a class with a qualified name and no declarator");
+        return None;
+    }
     // CTAD-1: the variables of the declaration can deduce a class
     // template's arguments.
     let objects = n.child("init_declarator").is_some() && n.children("init_declarator").all(|i| i.child("declarator").is_some_and(|d| d.find("function_suffix").is_none()));

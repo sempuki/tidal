@@ -51,7 +51,33 @@ fn key_of(cx: &Check, head: &Node) -> ClassKey {
 /// `elaborated_type` with a class key: the class of the name, or a new
 /// incomplete class when the scope has none (CLS rules).
 pub fn elaborated_class(cx: &mut Check, n: &Node) -> QType {
-    if n.child("nested_name").is_some() || n.child("template_id").is_some() || n.kids.iter().any(|k| matches!(k, Kid::Node(x) if matches!(x.prod, "attribute_spec" | "alignment_specifier"))) {
+    let attributes = n.kids.iter().any(|k| matches!(k, Kid::Node(x) if matches!(x.prod, "attribute_spec" | "alignment_specifier")));
+    // TARG-1: a specialization of a class template after the key.
+    if let (Some(tid), None, false) = (n.child("template_id"), n.child("nested_name"), attributes) {
+        if let Some(t) = crate::templates::declarations::check::class_template_use_in(cx, tid, None) {
+            return t;
+        }
+    }
+    // TYN-10: a qualified name names a class that lookup in the
+    // qualifier's scope finds.
+    if let (Some(nn), None, false) = (n.child("nested_name"), n.child("template_id"), attributes) {
+        let name = n.kids.iter().rev().find_map(|k| cx.token(k).filter(|t| t.kind == crate::lex::TK::Ident).map(|t| t.text.clone()));
+        if let (names::Qual::Scope(s), Some(name)) = (names::nested_name(cx, nn), name) {
+            let found = names::lookup_in(cx, s, &name);
+            return match found.iter().find_map(|&e| match cx.u.entities[e].kind {
+                EntKind::Class(c) => Some(c),
+                _ => None,
+            }) {
+                Some(c) => QType::new(Type::Class(c)),
+                None if found.is_empty() => {
+                    cx.error(n.span, "TYN-10", format!("no class '{}' in the scope that the qualifier names", name));
+                    QType::error()
+                }
+                None => cx.unsupported(n.span, "a qualified name after a class key that names no class"),
+            };
+        }
+    }
+    if n.child("nested_name").is_some() || n.child("template_id").is_some() || attributes {
         return cx.unsupported(n.span, "a qualified or template name, or an attribute, after a class key");
     }
     let Some(name) = n.find("class_name").map(|c| cx.source(c)).or_else(|| n.kids.iter().rev().find_map(|k| cx.token(k).filter(|t| t.kind == crate::lex::TK::Ident).map(|t| t.text.clone()))) else {
