@@ -80,6 +80,7 @@ pub fn declaration(cx: &mut Check, n: &Node) {
             "explicit_specialization" if crate::templates::declarations::check::explicit_specialization(cx, c) => {}
             "concept_definition" if crate::templates::concepts::check::concept_definition(cx, c) => {}
             "explicit_instantiation" if crate::templates::declarations::check::explicit_instantiation(cx, c) => {}
+            "deduction_guide" if crate::templates::class_template_deduction::check::user_guide(cx, c, Vec::new(), Vec::new()) => {}
             _ => {
                 cx.unsupported(c.span, format!("a declaration of the form {}", c.prod));
             }

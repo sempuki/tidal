@@ -2956,4 +2956,6 @@ fn class_template_deduction() {
     assert_eq!(rule("template <class T> struct Two { Two(T, int) {} Two(int, T) {} }; Two t(1, 2);"), Some("CTAD-24"));
     assert_eq!(rule("template <class T> struct Box { Box(T) {} }; Box a(1), b(2.0);"), Some("CTAD-3"));
     assert_eq!(rule("template <class T> struct Box { Box(T) {} }; Box a(1); Box* p = &a;"), Some("CTAD-2"));
+    assert_eq!(rule("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; template <class T> struct Box { Box(T) {} Box(T*) {} }; template <class T> Box(T*) -> Box<T>; Box(int) -> Box<long>; int n = 0; Box a(&n); Box b(1); static_assert(same<decltype(a), Box<int>> && same<decltype(b), Box<long>>);"), None);
+    assert_eq!(rule("template <class T> struct Box { Box(T) {} }; template <class T> Box(T*) -> Box<T>; template <class T> Box(T*) -> Box<T>;"), Some("CTAD-12"));
 }

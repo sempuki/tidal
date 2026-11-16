@@ -41,6 +41,21 @@ pub fn exec(m: &mut Machine, s: &Stmt) -> R<Flow> {
     run(m, s, None)
 }
 
+/// The end of a block after its statements gave `r`. A stop other than
+/// an exception leaves the block's objects without their destructors, as
+/// a call does, so the stop stays the outcome.
+fn close_block(m: &mut Machine, r: R<Flow>) -> R<Flow> {
+    if matches!(r, Err(ref e) if !matches!(e, crate::machine::Stop::Throw(_))) {
+        let objs = m.frames.last_mut().and_then(|f| f.blocks.pop()).unwrap_or_default();
+        for o in objs {
+            m.objs[o].alive = false;
+        }
+        return r;
+    }
+    end_block(m)?;
+    r
+}
+
 pub fn end_block(m: &mut Machine) -> R<()> {
     let objs = m.frames.last_mut().and_then(|f| f.blocks.pop()).unwrap_or_default();
     crate::classes::constructors::run::end_objects(m, objs)
@@ -106,8 +121,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                     run(m, els.as_ref().unwrap(), seek)
                 }
             })();
-            end_block(m)?;
-            r
+            close_block(m, r)
         }
         SK::Chosen(x) => match x {
             Some(x) => run(m, x, seek),
@@ -188,8 +202,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                     }
                 }
             })();
-            end_block(m)?;
-            r
+            close_block(m, r)
         }
         SK::RangeArray { id, init, range, range_init, var, bound, body } => {
             open_block(m);
@@ -219,8 +232,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                 }
                 Ok(Flow::Normal)
             })();
-            end_block(m)?;
-            r
+            close_block(m, r)
         }
         SK::Switch { id, init, cond, body, cases } => {
             open_block(m);
@@ -243,8 +255,7 @@ pub fn run(m: &mut Machine, s: &Stmt, seek: Option<&Seek>) -> R<Flow> {
                     f => f,
                 })
             })();
-            end_block(m)?;
-            r
+            close_block(m, r)
         }
         SK::Case(_, _, x) | SK::Label(_, x) => {
             // At the target the seek ends; a seek for a label further in
@@ -356,8 +367,7 @@ fn block(m: &mut Machine, items: &[Stmt], seek: Option<&Seek>) -> R<Flow> {
         let r = crate::exceptions::throw::run::unwind(m, r, |m| end_temps(m, temps));
         return crate::exceptions::throw::run::unwind(m, r, end_block);
     }
-    end_block(m)?;
-    r
+    close_block(m, r)
 }
 
 /// The value of a condition; a declared variable lives in the

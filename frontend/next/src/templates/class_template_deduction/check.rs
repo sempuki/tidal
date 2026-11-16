@@ -15,6 +15,7 @@ use std::rc::Rc;
 /// The kinds of guides (CTAD-5 to CTAD-9).
 #[derive(Clone, Copy, PartialEq)]
 enum From {
+    User,
     Constructor,
     ConstructorTemplate,
     NoParameters,
@@ -31,8 +32,48 @@ struct Guide {
     required: usize,
     explicit: bool,
     /// The number of the guide's own template parameters after the
-    /// class's (a constructor template's).
+    /// class's (a constructor template's), or a user guide's parameters.
     extra: usize,
+    /// A user guide's result: the class's arguments in terms of its own
+    /// parameters.
+    result: Vec<TArg>,
+    /// A user guide's position among the class template's guides.
+    extra_index: usize,
+}
+
+/// CTAD-11, CTAD-12: a `deduction_guide` with the parameters `params` of
+/// its head, if any. False for a form that the front end does not model,
+/// which the caller reports.
+pub fn user_guide(cx: &mut Check, n: &Node, params: Vec<crate::templates::declarations::check::Param>, defaults: Vec<Option<Node>>) -> bool {
+    if cx.func.is_some() || cx.member_of.is_some() || cx.head_pack {
+        return false;
+    }
+    let Some(name) = n.child("template_name").map(|t| cx.source(t)) else { return false };
+    let Some(tid) = n.child("template_id") else { return false };
+    // CTAD-12: the guide is declared in the scope of its class template,
+    // and its result names that template.
+    let Some(v) = names::declared_here(cx, cx.scope, &name).into_iter().find_map(|e| match cx.u.entities[e].kind {
+        EntKind::ClassTemplate(v) => Some(v),
+        _ => None,
+    }) else {
+        return false;
+    };
+    if tid.child("template_name").map(|t| cx.source(t)) != Some(name.clone()) {
+        cx.error(tid.span, "CTAD-12", format!("a deduction guide for '{}' whose result names another template", name));
+        return true;
+    }
+    if params.iter().any(|p| p.2.is_some()) {
+        return false;
+    }
+    // CTAD-12: one guide is not declared twice.
+    let text: String = cx.source(n).split_whitespace().collect();
+    if cx.u.class_templates[v].guides.iter().any(|(ps, _, g, _)| ps.len() == params.len() && cx.source(g).split_whitespace().collect::<String>() == text) {
+        cx.error(n.span, "CTAD-12", format!("a deduction guide for '{}' declared twice", name));
+        return true;
+    }
+    let limit = cx.u.entities.len();
+    cx.u.class_templates[v].guides.push((params, defaults, n.clone(), limit));
+    true
 }
 
 /// CTAD-17, CTAD-24: the specialization of the class template `v` that
@@ -66,25 +107,70 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
         if args.len() > g.params.len() || args.len() < g.required {
             continue;
         }
-        let mut bound: Vec<Option<QType>> = vec![None; n + g.extra];
+        let user = g.from == From::User;
+        let mut bound: Vec<Option<QType>> = vec![None; if user { g.extra } else { n + g.extra }];
         let ok = g.params.iter().zip(args).all(|(p, a)| {
             // CTAD-8: `T&&` with `T` a parameter of the class is no
             // forwarding reference.
             match &p.t {
-                Type::Ref(inner, true) if matches!(&inner.t, Type::Dep(d) if matches!(&**d, DepType::Param { index, .. } if (*index as usize) < n)) => {
+                Type::Ref(inner, true) if !user && matches!(&inner.t, Type::Dep(d) if matches!(&**d, DepType::Param { index, .. } if (*index as usize) < n)) => {
                     a.cat != Cat::L && crate::templates::deduction::check::match_type(&cx.u, inner, &a.ty.nonref(), &mut bound)
                 }
                 _ => crate::templates::deduction::check::match_arg(cx, p, a, &[], &mut bound),
             }
         });
-        if !ok || bound[n..].iter().any(|b| b.is_none()) {
+        if !ok || (!user && bound[n..].iter().any(|b| b.is_none())) {
             continue;
         }
+        // A user guide's parameter that its arguments leave takes its
+        // default (CTAD-11, CTAD-13).
+        if user && bound.iter().any(|b| b.is_none()) {
+            let (gparams, gdefaults, _, glimit) = ct.guides[g.extra_index].clone();
+            let names_: Vec<Rc<str>> = gparams.iter().map(|p| p.0.clone()).collect();
+            let kinds: Vec<Option<QType>> = gparams.iter().map(|p| p.2.clone()).collect();
+            let mut filled: Vec<TArg> = Vec::new();
+            let mut fine = true;
+            for (i, b) in bound.iter().enumerate() {
+                match b {
+                    Some(t) if fine => filled.push(TArg::Type(t.clone())),
+                    _ if fine => {
+                        let marks = cx.u.diags.len();
+                        fine = crate::templates::declarations::check::fill_defaults(cx, &kinds[..=i], &gdefaults, &names_, ct.scope, glimit, &mut filled, span) && cx.u.diags.len() == marks;
+                        if !fine {
+                            cx.u.diags.truncate(marks);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            if !fine {
+                continue;
+            }
+            bound = filled.into_iter().map(|a| match a {
+                TArg::Type(t) => Some(t),
+                _ => None,
+            }).collect();
+            if bound.iter().any(|b| b.is_none()) {
+                continue;
+            }
+        }
+        // CTAD-11: a user guide's result gives the class's arguments.
+        let from_result: Vec<Option<QType>> = if user {
+            let known: Vec<QType> = bound.iter().map(|b| b.clone().unwrap_or_else(QType::error)).collect();
+            let mut out: Vec<Option<QType>> = g.result.iter().map(|a| match a {
+                TArg::Type(t) => Some(concrete(cx, &crate::templates::deduction::check::substitute(t, &known), span)),
+                _ => None,
+            }).collect();
+            out.resize(n, None);
+            out
+        } else {
+            bound[..n].to_vec()
+        };
         // TPL-13: a class parameter that the guide does not deduce takes
         // its default.
         let mut class_args: Vec<TArg> = Vec::new();
         let mut failed = false;
-        for (i, b) in bound[..n].iter().enumerate() {
+        for (i, b) in from_result.iter().enumerate() {
             match b {
                 Some(t) if ct.kinds[i].is_none() => class_args.push(TArg::Type(t.clone())),
                 _ => {
@@ -101,11 +187,15 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
         if failed {
             continue;
         }
-        let known: Vec<QType> = (0..n + g.extra).map(|i| match class_args.get(i) {
-            Some(TArg::Type(t)) => t.clone(),
-            Some(_) => QType::error(),
-            None => bound[i].clone().unwrap_or_else(QType::error),
-        }).collect();
+        let known: Vec<QType> = if user {
+            bound.iter().map(|b| b.clone().unwrap_or_else(QType::error)).collect()
+        } else {
+            (0..n + g.extra).map(|i| match class_args.get(i) {
+                Some(TArg::Type(t)) => t.clone(),
+                Some(_) => QType::error(),
+                None => bound[i].clone().unwrap_or_else(QType::error),
+            }).collect()
+        };
         let mut seqs = Vec::new();
         for (p, a) in g.params.iter().zip(args) {
             let p = crate::templates::deduction::check::substitute(p, &known);
@@ -139,7 +229,13 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
             return true;
         }
         let (fa, fb) = (guides[a.0].from, guides[b.0].from);
-        (fa == From::Copy && fb != From::Copy) || (fa == From::Constructor && fb == From::ConstructorTemplate)
+        // OVL-27: a user guide that is no template wins over a guide that
+        // is one, which every other guide is.
+        let plain = |k: usize| guides[k].from == From::User && guides[k].extra == 0;
+        if plain(a.0) != plain(b.0) {
+            return plain(a.0);
+        }
+        (fa == From::User && fb != From::User) || (fb != From::User && fa == From::Copy && fb != From::Copy) || (fa == From::Constructor && fb == From::ConstructorTemplate)
     };
     let mut best = 0;
     for i in 1..viable.len() {
@@ -298,7 +394,7 @@ fn guides(cx: &mut Check, v: usize, list: bool, given: usize, span: Span) -> Opt
             continue;
         }
         let required = d.params.iter().take_while(|p| p.default.is_none()).count();
-        out.push(Guide { from: if head.is_some() { From::ConstructorTemplate } else { From::Constructor }, params: f.params.clone(), required, explicit, extra });
+        out.push(Guide { from: if head.is_some() { From::ConstructorTemplate } else { From::Constructor }, params: f.params.clone(), required, explicit, extra, result: Vec::new(), extra_index: 0 });
     }
     cx.leave(saved);
     cx.lookup_limit = saved_limit;
@@ -308,22 +404,42 @@ fn guides(cx: &mut Check, v: usize, list: bool, given: usize, span: Span) -> Opt
     // CTAD-6: a class template with no constructor has a guide with no
     // parameters.
     if constructors == 0 {
-        out.push(Guide { from: From::NoParameters, params: Vec::new(), required: 0, explicit: false, extra: 0 });
+        out.push(Guide { from: From::NoParameters, params: Vec::new(), required: 0, explicit: false, extra: 0, result: Vec::new(), extra_index: 0 });
     }
     // CTAD-7: the copy candidate.
     let own: Vec<TArg> = ct.params.iter().enumerate().map(|(k, p)| TArg::Type(QType::new(Type::Dep(Rc::new(DepType::Param { depth: 0, index: k as u32, name: p.clone() }))))).collect();
     let spec = QType::new(Type::Dep(Rc::new(DepType::Spec { template: v, args: own, name: ct.name.clone() })));
-    out.push(Guide { from: From::Copy, params: vec![spec], required: 1, explicit: false, extra: 0 });
+    out.push(Guide { from: From::Copy, params: vec![spec], required: 1, explicit: false, extra: 0, result: Vec::new(), extra_index: 0 });
+    // CTAD-11: the user guides declared before the use.
+    for (gi, (gparams, _, node, limit)) in ct.guides.clone().into_iter().enumerate() {
+        let saved = cx.scope;
+        let saved_limit = cx.lookup_limit.replace(limit);
+        cx.scope = ct.scope;
+        let gs = cx.enter(ScopeKind::Template);
+        crate::templates::declarations::check::declare_params(cx, gs, &gparams);
+        let marks = cx.u.diags.len();
+        let (ps, variadic) = crate::declarations::declarators::check::parameters(cx, node.child("parameters"));
+        let result = node.child("template_id").and_then(|tid| crate::templates::declarations::check::template_args(cx, tid, &ct.kinds[..tid.child("template_args").map(|ta| ta.children("template_arg").count()).unwrap_or(0).min(ct.kinds.len())]));
+        cx.leave(saved);
+        cx.lookup_limit = saved_limit;
+        let Some(result) = result.filter(|_| !variadic && cx.u.diags.len() == marks && !ps.iter().any(|p| p.pack.is_some())) else {
+            cx.u.diags.truncate(marks);
+            return unsupported(cx, span, "a user guide of a form that the front end does not model");
+        };
+        let required = ps.iter().take_while(|p| p.default.is_none()).count();
+        let explicit = node.child("explicit_spec").is_some();
+        out.push(Guide { from: From::User, params: ps.iter().map(|p| p.ty.clone()).collect(), required, explicit, extra: gparams.len(), result, extra_index: gi });
+    }
     // CTAD-9, CTAD-10: the aggregate candidate, for a list with an
-    // element for each of its first members. Brace elision waits for a
-    // later piece.
-    if aggregate && list && given > 0 {
+    // element for each of its first members, when the class template
+    // has no user guide. Brace elision waits for a later piece.
+    if aggregate && list && given > 0 && ct.guides.is_empty() {
         // Brace elision into an array or a class whose type does not
         // depend on a parameter waits for a later piece (CTAD-10).
         if members.iter().any(|m| m.is_array() || m.class().is_some()) || given > members.len() {
             return unsupported(cx, span, "an aggregate candidate with an array or a class member, or with brace elision");
         }
-        out.push(Guide { from: From::Aggregate, params: members[..given].to_vec(), required: given, explicit: false, extra: 0 });
+        out.push(Guide { from: From::Aggregate, params: members[..given].to_vec(), required: given, explicit: false, extra: 0, result: Vec::new(), extra_index: 0 });
     }
     Some(out)
 }

@@ -217,6 +217,10 @@ pub struct ClassTemplate {
     pub defined: bool,
     /// The constraints of its head (CNS-13), as for a function template.
     pub constraints: Vec<(Option<usize>, crate::syntax::Node)>,
+    /// The user guides (CTAD-11): the parameters of each guide's head,
+    /// their defaults, its `deduction_guide`, and the first entity
+    /// declared after it.
+    pub guides: Vec<(Vec<(Rc<str>, Span, Option<QType>)>, Vec<Option<crate::syntax::Node>>, crate::syntax::Node, EntityId)>,
     pub span: Span,
     pub limit: EntityId,
 }

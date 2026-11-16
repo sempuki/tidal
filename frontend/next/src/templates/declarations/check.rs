@@ -557,6 +557,9 @@ pub fn template_decl(cx: &mut Check, n: &Node) -> bool {
         }
         return done;
     }
+    if let Some(dg) = n.child("declaration").and_then(|d| d.child("deduction_guide")) {
+        return crate::templates::class_template_deduction::check::user_guide(cx, dg, params, defaults);
+    }
     if let Some(ad) = n.child("declaration").and_then(|d| d.child("block_decl")).and_then(|b| b.child("alias_decl")) {
         return alias_template_decl(cx, ad, params, defaults);
     }
@@ -2527,7 +2530,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
         }
         let id = cx.u.class_templates.len();
         let limit = cx.u.entities.len() + 1;
-        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, constraints, span: et.span, limit });
+        cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: et.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: false, constraints, guides: Vec::new(), span: et.span, limit });
         names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), et.span, Linkage::External);
         return true;
     }
@@ -2603,7 +2606,7 @@ fn class_template_decl(cx: &mut Check, sd: &Node, params: Vec<Param>, defaults: 
     }
     let id = cx.u.class_templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, constraints, span: head.span, limit });
+    cx.u.class_templates.push(crate::sem::ClassTemplate { name: name.as_str().into(), pack: cx.head_pack, defaults: defaults.clone(), kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: cd.clone(), scope: saved, specs: Vec::new(), explicit: Vec::new(), outside: Vec::new(), partials: Vec::new(), defined: true, constraints, guides: Vec::new(), span: head.span, limit });
     names::declare_in(cx, saved, &name, EntKind::ClassTemplate(id), head.span, Linkage::External);
     true
 }
