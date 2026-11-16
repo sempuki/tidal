@@ -8,21 +8,32 @@ use crate::source::Span;
 use crate::syntax::Node;
 
 /// `auto` or `decltype(auto)`, with the cv-qualifiers of the specifiers.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Placeholder {
+    /// The type constraint before `auto` (AUTO-13).
+    pub constraint: Option<Node>,
     pub decltype: bool,
     pub c: bool,
     pub v: bool,
     pub span: Span,
 }
 
+/// Two placeholders are equal without regard to their constraints'
+/// nodes.
+impl PartialEq for Placeholder {
+    fn eq(&self, o: &Placeholder) -> bool {
+        self.decltype == o.decltype && self.c == o.c && self.v == o.v && self.span == o.span && self.constraint.is_some() == o.constraint.is_some()
+    }
+}
+
 pub fn placeholder(cx: &mut Check, n: &Node) -> Placeholder {
     // CPT-20: the type constraint of an abbreviated function template's
-    // parameter is the invented parameter's constraint.
-    if n.child("type_constraint").is_some() && cx.abbrev_types.is_empty() {
+    // parameter is the invented parameter's constraint; AUTO-16: a
+    // variable's is checked against the deduced type.
+    if n.child("type_constraint").is_some() && cx.abbrev_types.is_empty() && !cx.constrained_variable {
         cx.unsupported(n.span, "a type constraint before a placeholder");
     }
-    Placeholder { decltype: cx.has_word(n, "decltype"), c: false, v: false, span: n.span }
+    Placeholder { constraint: n.child("type_constraint").cloned(), decltype: cx.has_word(n, "decltype"), c: false, v: false, span: n.span }
 }
 
 /// The type a placeholder stands for, from the declarator's form and the

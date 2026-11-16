@@ -419,6 +419,25 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
         let e = init_expr(cx, i, p)?;
         let dn = d_node_hint(cx, d);
         let base = auto::check::deduce(cx, p, &dn, &e)?;
+        // AUTO-16, CPT-23: the type that the placeholder stands for, without
+        // the references and qualifiers around it, satisfies its type
+        // constraint.
+        if let Some(tc) = p.constraint.clone() {
+            // `decltype(auto)` and a forwarding reference deduce a
+            // reference for the placeholder itself.
+            let alone = if p.decltype || base.is_ref() { base.clone() } else if p.c || p.v { QType { t: base.t.clone(), c: base.c && !p.c, v: base.v && !p.v } } else { base.clone() };
+            match crate::templates::concepts::check::type_constraint(cx, &tc, alone) {
+                Some(true) => {}
+                Some(false) => {
+                    cx.error(d.span, "AUTO-16", format!("the type deduced for '{}' does not satisfy its type constraint", name));
+                    return None;
+                }
+                None => {
+                    cx.unsupported(d.span, "a constrained placeholder whose constraint the front end does not check");
+                    return None;
+                }
+            }
+        }
         // A forwarding reference already deduced the lvalue reference
         // that collapsing gives (AUTO-4).
         ty = if base.is_ref() { base.clone() } else { crate::declarations::declarators::check::with_base(cx, base.clone(), &dn) };

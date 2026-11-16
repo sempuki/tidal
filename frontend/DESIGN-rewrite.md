@@ -573,7 +573,9 @@ and comes once per specialization, before any explicit specialization
 of it. An explicit instantiation declaration is checked and waits for a
 later piece. A function definition at namespace scope with `auto` or `C auto`
 parameters is an abbreviated function template: each such parameter
-invents a type parameter, with its type constraint as a constraint. A function template can have a deduced return type, which each
+invents a type parameter, with its type constraint as a constraint. A
+variable's constrained placeholder checks the type it stands for,
+without the references and qualifiers written around it. A function template can have a deduced return type, which each
 specialization deduces from its body. An unqualified name that lookup
 does not find, followed by a template argument list and a call, names a
 template that argument-dependent lookup finds; a function's name before

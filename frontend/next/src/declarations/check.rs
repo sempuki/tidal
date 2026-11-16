@@ -285,7 +285,12 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     }
     let class = declarator_class(cx, n);
     let saved = std::mem::replace(&mut cx.access_class, class);
+    // AUTO-16: variables with initializers check a constrained
+    // placeholder against the deduced type.
+    let variables = n.children("init_declarator").all(|i| i.child("init").is_some() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_none()));
+    let saved_cv = std::mem::replace(&mut cx.constrained_variable, variables && n.child("init_declarator").is_some());
     let specs = decl_specifiers(cx, ds, attrs);
+    cx.constrained_variable = saved_cv;
     cx.access_class = saved;
     let local = cx.in_function();
     let mut vars: Vec<(EntityId, Init)> = Vec::new();

@@ -2887,3 +2887,15 @@ fn abbreviated_function_templates() {
     assert_eq!(rule(&format!("{} constexpr int f(auto x, const auto& y, Small auto z) {{ return x + y + z; }} static_assert(f(1, 2L, 3) == 6);", small)), None);
     assert_eq!(rule(&format!("{} int g(Small auto z) {{ return 1; }} int bad = g(1.0);", small)), Some("OVL-35"));
 }
+
+#[test]
+fn constrained_placeholder_variables() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    let base = "template <class T, class U> constexpr bool same = false; template <class T> constexpr bool same<T, T> = true; template <class T> concept Int = same<T, int>; template <class T> concept LvalueRef = same<T, T&>; int n = 0;";
+    assert_eq!(rule(&format!("{} const Int auto& ref = n; Int auto* ptr = &n; Int auto&& moved = n + 1; LvalueRef auto&& forwarded = n; LvalueRef decltype(auto) named = (n);", base)), None);
+    assert_eq!(rule(&format!("{} Int auto a = 1.0;", base)), Some("AUTO-16"));
+}

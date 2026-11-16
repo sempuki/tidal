@@ -287,7 +287,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         params,
         span,
         unsupported: false,
-        placeholder: deduce.then(|| crate::declarations::auto::check::Placeholder { decltype: false, c: false, v: false, span }),
+        placeholder: deduce.then(|| crate::declarations::auto::check::Placeholder { constraint: None, decltype: false, c: false, v: false, span }),
         trailing: !deduce,
         attrs: Default::default(),
         node: n.clone(),
