@@ -169,7 +169,11 @@ pub fn run_program(u: &Unit) -> RunOutcome {
         for &id in &u.statics {
             let Some(v) = u.var(id) else { continue };
             let constant = v.const_init || matches!(v.init, None | Some(crate::sem::tree::Init::Default));
-            if constant || v.ty.is_ref() {
+            // A reference whose initializer is not constant binds in the
+            // order of the dynamic initializers (SINIT rules).
+            if v.ty.is_ref() && !constant && v.storage != crate::sem::Storage::Thread {
+                dynamic.push((id, usize::MAX));
+            } else if constant || v.ty.is_ref() {
                 crate::machine::exec::static_var(&mut m, id)?;
             } else {
                 m.check_size(&v.ty)?;
@@ -189,6 +193,10 @@ pub fn run_program(u: &Unit) -> RunOutcome {
             }
         }
         for (id, o) in dynamic {
+            if o == usize::MAX {
+                crate::machine::exec::static_var(&mut m, id)?;
+                continue;
+            }
             dynamic_init(&mut m, id, o)?;
         }
         let Some(main) = u.main() else { return crate::machine::unsup("the program has no main function") };

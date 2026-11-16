@@ -1202,10 +1202,33 @@ fn define_outside(cx: &mut Check, v: usize, k: usize, args: &[TArg]) {
     cx.scope = ct.scope;
     let ts = cx.enter(ScopeKind::Template);
     bind_params(cx, ts, &names_, args, ct.span);
+    // TPL-19: inside the definition, the parameters of its own head come
+    // before the names of the namespace, so they are bound for the time
+    // of the definition in the template scope of the class too.
+    let class_ts = ct.specs.iter().find(|(a, _)| a.as_slice() == args).and_then(|&(_, c)| cx.u.scopes[cx.u.classes[c].scope].parent).filter(|&s| cx.u.scopes[s].kind == ScopeKind::Template);
+    let mut shadowed: Vec<(Rc<str>, Option<Vec<EntityId>>)> = Vec::new();
+    if let Some(s) = class_ts {
+        for name in &names_ {
+            let ids = cx.u.scopes[ts].names.get(name).cloned().unwrap_or_default();
+            let old = cx.u.scopes[s].names.insert(name.clone(), ids);
+            shadowed.push((name.clone(), old));
+        }
+    }
     match node.prod {
         "function_definition" => crate::declarations::functions::definitions::check::function_definition(cx, &node),
         _ => {
+            let before = cx.u.statics.len();
             crate::declarations::check::block_decl(cx, &node, false);
+            let made: Vec<EntityId> = cx.u.statics[before..].to_vec();
+            cx.inst_statics.extend(made);
+        }
+    }
+    if let Some(s) = class_ts {
+        for (name, old) in shadowed {
+            match old {
+                Some(ids) => cx.u.scopes[s].names.insert(name, ids),
+                None => cx.u.scopes[s].names.remove(&name),
+            };
         }
     }
     cx.scope = saved_scope;
@@ -1760,6 +1783,12 @@ fn call_candidates_given(cx: &mut Check, found: &[EntityId], tid: Option<&Node>,
 /// specialized: their definitions are not checked yet, so the unit is
 /// unsupported.
 pub fn end_of_unit(cx: &mut Check) {
+    // INST-8: a static data member of a specialization that the program
+    // does not use is not defined, so its initializer does not run.
+    let unused: Vec<EntityId> = cx.inst_statics.iter().copied().filter(|&id| cx.u.var(id).is_some_and(|v| !v.used)).collect();
+    if !unused.is_empty() {
+        cx.u.statics.retain(|id| !unused.contains(id));
+    }
     // INST-2, INST-6: the errors of a class instantiation count when the
     // unit needs the class complete: an object, a member, a base, or a
     // parameter or result of a definition, of the class. Otherwise the
