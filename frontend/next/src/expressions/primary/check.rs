@@ -359,11 +359,11 @@ pub fn entity_expr(cx: &mut Check, found: &[EntityId], name: &str, span: Span) -
         let t = cx.unsupported(span, format!("the member function '{}' with a requires clause outside a call", name));
         return Expr::new(EK::Int(0), t, Cat::PR, span);
     }
-    // An overload set with a function template outside a call waits for
-    // a later piece.
-    if found.len() > 1 && found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))) {
-        let t = cx.unsupported(span, format!("the overload set '{}', which holds a function template, outside a call", name));
-        return Expr::new(EK::Int(0), t, Cat::PR, span);
+    // OVL-18: an overload set with a function template outside a call
+    // waits for a target type, which deduces the template (DED rules).
+    if found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(t) if cx.u.templates[t].class.is_none())) && found.iter().all(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_) | EntKind::Template(_))) {
+        let pick = found.iter().copied().find(|&e| cx.u.func(e).is_some()).unwrap_or(found[0]);
+        return Expr::new(EK::Func(pick), QType::error(), Cat::L, span);
     }
     let funcs: Vec<EntityId> = found.iter().copied().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Func(_))).collect();
     let pick = found.iter().copied().find(|&e| !matches!(cx.u.entities[e].kind, EntKind::Enum(_) | EntKind::Class(_))).unwrap_or(found[0]);

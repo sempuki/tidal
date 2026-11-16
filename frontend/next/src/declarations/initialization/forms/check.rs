@@ -118,7 +118,57 @@ pub fn select_overload(cx: &mut Check, e: Expr, to: &QType) -> Option<Expr> {
         crate::expressions::primary::check::no_target(cx, &e, "OVL-20");
         return None;
     };
-    let pick: Vec<EntityId> = set.into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).collect();
+    let mut pick: Vec<EntityId> = set.into_iter().filter(|&f| cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret)).collect();
+    // OVL-18, DED rules: a function template of the set gives the
+    // specialization that the target's type deduces; a function that is
+    // no specialization comes first, then the more specialized template
+    // (ORD-9).
+    if pick.is_empty() {
+        let EK::Func(id) = e.k else { return None };
+        let ent = cx.u.entities[id].clone();
+        let templates: Vec<usize> = names::lookup_in(cx, ent.scope, &ent.name).into_iter().filter_map(|f| match cx.u.entities[f].kind {
+            EntKind::Template(t) if cx.u.templates[t].class.is_none() => Some(t),
+            _ => None,
+        }).collect();
+        let mut specs: Vec<EntityId> = Vec::new();
+        let templates_empty = templates.is_empty();
+        for t in templates {
+            let tpl = cx.u.templates[t].clone();
+            if tpl.pack || tpl.fty.params.len() != want.params.len() {
+                continue;
+            }
+            let mut bound: Vec<Option<QType>> = vec![None; tpl.kinds.len()];
+            // DED rules: a reference deduces from a reference of its kind,
+            // and a forwarding reference from an lvalue reference.
+            let ok = tpl.fty.params.iter().zip(&want.params).all(|(p, a)| match (&p.t, &a.t) {
+                (Type::Ref(x, true), Type::Ref(_, false)) if !x.c && !x.v && matches!(x.t, Type::Dep(_)) => crate::templates::deduction::check::match_type(&cx.u, x, a, &mut bound),
+                (Type::Ref(x, r1), Type::Ref(y, r2)) if r1 == r2 => crate::templates::deduction::check::match_type(&cx.u, x, y, &mut bound),
+                _ => crate::templates::deduction::check::match_type(&cx.u, p, a, &mut bound),
+            }) && (tpl.fty.ret.is_error() || crate::templates::deduction::check::match_type(&cx.u, &tpl.fty.ret, &want.ret, &mut bound));
+            let Some(args) = bound.into_iter().map(|b| b.map(crate::sem::types::TArg::Type)).collect::<Option<Vec<_>>>().filter(|_| ok) else { continue };
+            if !matches!(crate::templates::concepts::check::function_satisfied(cx, t, &args), Some(true)) {
+                continue;
+            }
+            if let Some(f) = crate::templates::declarations::check::specialize(cx, t, &args) {
+                if cx.u.func(f).is_some_and(|x| x.ty.params == want.params && x.ty.ret == want.ret) {
+                    specs.push(f);
+                }
+            }
+        }
+        if specs.len() > 1 {
+            let best: Vec<EntityId> = specs.iter().copied().filter(|&f| specs.iter().all(|&g| g == f || crate::templates::declarations::check::beats_by_template(cx, f, g) == Some(true))).collect();
+            if best.len() == 1 {
+                specs = best;
+            }
+        }
+        // A deduction or an ordering that the front end does not take,
+        // as one by the result type (ORD-9), leaves no answer.
+        if specs.len() != 1 && !templates_empty {
+            cx.unsupported(e.span, "an overload set with a function template whose target type the front end does not resolve");
+            return None;
+        }
+        pick = specs;
+    }
     if pick.len() != 1 {
         cx.error(e.span, "OVL-20", "no single function of the overload set matches the target type");
         return None;

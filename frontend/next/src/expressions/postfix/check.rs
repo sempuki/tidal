@@ -376,6 +376,13 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
                         return Expr::new(EK::Int(0), t, Cat::PR, span);
                     }
                 }
+                // NAM-28: an overload set as an argument adds the
+                // namespaces of its functions' types, which waits for a
+                // later piece.
+                if rule == "NAM-8" && args.iter().any(primary::check::unresolved_set) {
+                    let t = cx.unsupported(span, format!("a call of '{}' that only argument-dependent lookup through an overload set could find", text));
+                    return Expr::new(EK::Int(0), t, Cat::PR, span);
+                }
                 if !rule.is_empty() {
                     cx.not_found(nspan, rule, &text);
                 }
