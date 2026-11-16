@@ -180,6 +180,15 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
     if ty.is_ref() {
         return references::check::initializer(cx, ty, init);
     }
+    // ILC-3: the first phase takes an initializer-list constructor.
+    if let Some(b) = nodes(init).first().filter(|c| c.prod == "braced_init") {
+        if ty.class().is_some_and(|c| crate::classes::initializer_lists::check::has_list_ctor(cx, c)) {
+            let items: Vec<&Node> = b.children("init_clause").collect();
+            if let Some(r) = crate::classes::initializer_lists::check::list_ctor_init(cx, ty, &items, words.first() == Some(&"="), init.span) {
+                return r;
+            }
+        }
+    }
     // A class with constructors (CTOR-25): a parenthesized or braced list
     // chooses a constructor; `= e` copies a value of the class or
     // converts by a converting constructor.
@@ -586,8 +595,10 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
                 return None;
             }
             let saved_ok = cx.backing_ok.replace(storage);
+            let saved_k = std::mem::replace(&mut cx.backing_constexpr, constexpr);
             let r = initializer(cx, &ty, i, &name);
             cx.backing_ok = saved_ok;
+            cx.backing_constexpr = saved_k;
             match r {
                 Some(x) => {
                     // An array of unknown bound takes its bound from the

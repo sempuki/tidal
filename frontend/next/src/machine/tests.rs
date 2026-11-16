@@ -2929,3 +2929,13 @@ fn dependent_bases() {
 fn initializer_list_variables() {
     assert_eq!(run("namespace std { template <class E> class initializer_list {   const E* b_; decltype(sizeof 0) n_;   constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {} public:   constexpr initializer_list() : b_(nullptr), n_(0) {}   constexpr decltype(sizeof 0) size() const { return n_; }   constexpr const E* begin() const { return b_; }   constexpr const E* end() const { return b_ + n_; } }; } constexpr int sum() { std::initializer_list<int> l = {1, 2, 3}; int s = 0; for (int x : l) s += x; auto m = {4, 5}; for (int x : m) s += x; return s + int(l.size()); } static_assert(sum() == 18); std::initializer_list<long> g = {7, 8}; int main() { int s = 0; for (long x : g) s += int(x); return s; } "), RunOutcome::Result(15));
 }
+
+#[test]
+fn initializer_list_constructors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(rule("namespace std { template <class E> class initializer_list {   const E* b_; decltype(sizeof 0) n_;   constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {} public:   constexpr initializer_list() : b_(nullptr), n_(0) {}   constexpr decltype(sizeof 0) size() const { return n_; }   constexpr const E* begin() const { return b_; }   constexpr const E* end() const { return b_ + n_; } }; } struct Bag { int total = 0; int n = 0; constexpr Bag() {} constexpr Bag(std::initializer_list<int> l) { for (int x : l) total += x; n = int(l.size()); } constexpr Bag(int a, int b) : total(a * b) {} }; constexpr int f() { Bag a{1, 2, 3}; Bag b = {4, 5}; Bag c{}; return a.total + b.total * 10 + c.total + a.n * 1000; } static_assert(f() == 3096); "), None);
+}

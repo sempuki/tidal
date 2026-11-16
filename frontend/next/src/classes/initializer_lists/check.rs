@@ -71,7 +71,8 @@ pub fn backed(cx: &mut Check, ty: &QType, items: &[&Node], storage: Storage, spa
     }
     let n = inits.len() as u64;
     let array = QType::new(Type::Array(std::rc::Rc::new(e.unqual().with_cv(true, e.v)), Some(n)));
-    let var = Var { ty: array.clone(), storage, constexpr: false, constinit: false, inline: false, is_extern: false, is_static: false, param: false, defined: true, init: Some(Init::List(inits.clone())), const_init: false, used: true, maybe_unused: true, align: None };
+    let k = cx.backing_constexpr;
+    let var = Var { ty: array.clone(), storage, constexpr: k, constinit: false, inline: false, is_extern: false, is_static: false, param: false, defined: true, init: Some(Init::List(inits.clone())), const_init: k, used: true, maybe_unused: true, align: None };
     let scope = cx.scope;
     let hidden = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Var(var), span, scope, linkage: Linkage::None, deprecated: None });
     cx.backing.push((hidden, Init::List(inits)));
@@ -132,4 +133,74 @@ pub fn has_list_ctor(cx: &Check, c: crate::sem::types::ClassId) -> bool {
 pub fn takes_list(cx: &Check, found: &[crate::sem::EntityId]) -> bool {
     let listy = |p: &QType| element(cx, p).is_some() || p.nonref().class().is_some_and(|c| has_list_ctor(cx, c));
     template(cx).is_some() && found.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.ty.params.iter().any(listy)) || matches!(cx.u.entities[f].kind, EntKind::Template(t) if cx.u.templates[t].fty.params.iter().any(|p| matches!(&p.nonref().t, Type::Dep(_)) || element(cx, p).is_some())))
+}
+
+/// ILC-2, ILC-3: the first phase of the initialization of class `ty`
+/// from a braced list in a variable's declaration: the
+/// initializer-list constructor that the elements convert to, called
+/// with the list. Some(None) after an error; None when the first phase
+/// does not apply, which leaves the second phase to the caller.
+pub fn list_ctor_init(cx: &mut Check, ty: &QType, items: &[&Node], copy: bool, span: Span) -> Option<Option<Init>> {
+    let c = ty.class()?;
+    let storage = cx.backing_ok?;
+    let ctors = crate::classes::constructors::check::ctors(cx, c);
+    // ILC-2: `{}` takes the default constructor if there is one.
+    if items.is_empty() && ctors.iter().any(|&f| cx.u.func(f).is_some_and(|x| x.takes_no_argument())) {
+        return None;
+    }
+    let list_ctors: Vec<(crate::sem::EntityId, QType)> = ctors.iter().filter_map(|&f| {
+        let x = cx.u.func(f)?;
+        let e = element(cx, x.ty.params.first()?)?;
+        (1..x.ty.params.len()).all(|k| x.defaults.get(k).is_some_and(|d| d.is_some())).then_some((f, e))
+    }).collect();
+    if list_ctors.is_empty() {
+        return None;
+    }
+    // The elements, checked quietly, convert to `E` (narrowing keeps the
+    // constructor viable, ILC-4).
+    let mut elems = Vec::new();
+    for it in items {
+        let x = crate::expressions::check::first_node(it)?;
+        if matches!(x.prod, "braced_init" | "designator") {
+            return None;
+        }
+        let marks = cx.u.diags.len();
+        let v = crate::expressions::check::expr(cx, x);
+        cx.u.diags.truncate(marks);
+        elems.push(v);
+    }
+    let viable: Vec<&(crate::sem::EntityId, QType)> = list_ctors.iter().filter(|(_, e)| elems.iter().all(|v| crate::overloading::conversion_sequences::check::sequence(cx, v, &e.unqual()).is_some())).collect();
+    let [(f, e)] = viable.as_slice() else {
+        if viable.len() > 1 {
+            cx.unsupported(span, "a braced list that several initializer-list constructors take");
+            return Some(None);
+        }
+        return None;
+    };
+    let (f, e) = (*f, e.clone());
+    // ILC-8: copy list initialization does not take an explicit one.
+    if copy && cx.u.func(f).is_some_and(|x| x.explicit) {
+        cx.error(span, "ILC-8", "copy list initialization chooses an explicit initializer-list constructor");
+        return Some(None);
+    }
+    let Some(lt) = list_of(cx, e, span) else { return Some(None) };
+    let Some(init) = backed(cx, &lt, items, storage, span) else { return Some(None) };
+    let arg = Expr::new(EK::List(Box::new(init)), lt.clone(), Cat::PR, span);
+    let param = cx.u.func(f).map(|x| x.ty.params[0].clone()).unwrap_or(lt);
+    let arg = if param.is_ref() {
+        match crate::declarations::initialization::references::check::bind(cx, arg, &param, "INIT-7") {
+            Some(a) => Arg { e: a, by_ref: true },
+            None => return Some(None),
+        }
+    } else {
+        Arg { e: arg, by_ref: false }
+    };
+    let n = cx.u.func(f).map(|x| x.ty.params.len()).unwrap_or(1);
+    let mut args = vec![arg];
+    for k in 1..n {
+        let Some(Some(d)) = cx.u.func(f).and_then(|x| x.defaults.get(k).cloned()) else { return Some(None) };
+        let pt = cx.u.func(f).map(|x| x.ty.params[k].clone()).unwrap_or_else(QType::error);
+        args.push(Arg { e: d, by_ref: pt.is_ref() });
+    }
+    Some(Some(Init::Ctor(f, args)))
 }

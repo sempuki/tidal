@@ -588,9 +588,12 @@ of type `std::initializer_list<E>` with a braced list, and `auto x = {
 ... }`, which deduces `E` from elements of one type, get an array of
 `const E` that copies the elements without narrowing; a hidden variable
 declared just before the variable holds the array, and the list is made
-by its constructor from a pointer and a length. Initializer-list
-constructors, parameters, and lists made elsewhere wait for a later
-piece. A function template can have a deduced return type, which each
+by its constructor from a pointer and a length. In a variable's
+declaration, a braced list for a class with an initializer-list
+constructor takes the one that every element converts to (`{}` takes
+the default constructor first), with the list as its argument;
+initializer-list parameters, lists made elsewhere, and the second phase
+for such a class wait for a later piece. A function template can have a deduced return type, which each
 specialization deduces from its body. An unqualified name that lookup
 does not find, followed by a template argument list and a call, names a
 template that argument-dependent lookup finds; a function's name before

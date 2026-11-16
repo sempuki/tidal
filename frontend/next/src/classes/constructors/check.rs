@@ -792,7 +792,7 @@ pub fn construct_init(cx: &mut Check, ty: &QType, args: Vec<Expr>, list: bool, c
     let c = ty.class()?;
     // ILC-3: the first phase takes the initializer-list constructors,
     // which waits for a later piece.
-    if list && crate::classes::initializer_lists::check::has_list_ctor(cx, c) {
+    if list && !args.is_empty() && crate::classes::initializer_lists::check::has_list_ctor(cx, c) {
         cx.unsupported(span, "a braced list for a class with an initializer-list constructor (ILC-3)");
         return None;
     }
@@ -1152,7 +1152,7 @@ pub fn list_sequence(cx: &mut Check, b: &Node, p: &QType, no_user: bool) -> Opti
 pub fn construct_braced(cx: &mut Check, ty: &QType, nodes: &[&Node], list: bool, copy: bool, span: Span) -> Option<Init> {
     use crate::overloading::conversion_sequences::check::{better, sequence, Ics};
     let c = ty.class()?;
-    if crate::classes::initializer_lists::check::has_list_ctor(cx, c) {
+    if !nodes.is_empty() && crate::classes::initializer_lists::check::has_list_ctor(cx, c) {
         cx.unsupported(span, "a braced list for a class with an initializer-list constructor (ILC-3)");
         return None;
     }
