@@ -502,6 +502,9 @@ pub struct Unit {
     /// The constructors defaulted on their first declaration, which act
     /// as the implicit ones (CTOR-2).
     pub defaulted: std::collections::HashSet<EntityId>,
+    /// The special members defaulted after their first declaration, which
+    /// are user-provided and so not trivial (CPY-27).
+    pub defaulted_later: std::collections::HashSet<EntityId>,
     /// The data members declared `[[no_unique_address]]`, which can
     /// overlap other subobjects (ATTR-9, CLS-35).
     pub overlapping: std::collections::HashSet<EntityId>,
@@ -553,6 +556,7 @@ impl Default for Unit {
             library: Default::default(),
             mem_inits: HashMap::new(),
             defaulted: Default::default(),
+            defaulted_later: Default::default(),
             overlapping: Default::default(),
             closures: HashMap::new(),
             virt: HashMap::new(),

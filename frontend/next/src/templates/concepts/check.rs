@@ -327,12 +327,31 @@ fn skipped_bool(cx: &mut Check, rest: &[&Node]) -> bool {
 }
 
 /// CPT-24: `requires (P...) { R... }` as an expression outside a
-/// constraint. A requirement there that depends on no template parameter
-/// must be valid (CPT-27), which the first pieces of build step 5 do not
-/// tell from one that does, so the expression stays unsupported.
+/// constraint, a constant of type bool. A requirement that depends on no
+/// template parameter must be valid (CPT-27): in a specialization, an
+/// expression that names none of the template's parameters and is false
+/// is an error, as it is outside a template.
 pub fn requires_expression(cx: &mut Check, n: &Node) -> Expr {
-    let t = cx.unsupported(n.span, "a requires expression outside a constraint (build step 5)");
-    Expr::new(EK::Int(0), t, Cat::PR, n.span)
+    let span = n.span;
+    match requirements(cx, n) {
+        Some(true) => Expr::int(1, QType::bool(), span),
+        Some(false) if cx.instantiating > 0 && names_template_parameter(cx, n) => Expr::int(0, QType::bool(), span),
+        Some(false) => {
+            cx.error(span, "CPT-27", "a requirement that depends on no template parameter and is not valid");
+            crate::expressions::check::bad(span)
+        }
+        None => {
+            let t = cx.unsupported(span, "a requires expression whose requirements the front end does not check (build step 5)");
+            Expr::new(EK::Int(0), t, Cat::PR, span)
+        }
+    }
+}
+
+/// Whether a token of `n` names a parameter that a specialization binds.
+fn names_template_parameter(cx: &Check, n: &Node) -> bool {
+    let mut toks = Vec::new();
+    n.tokens(&mut toks);
+    toks.iter().any(|&t| names::lookup(cx, &cx.toks[t].text).iter().any(|&e| cx.u.scopes[cx.u.entities[e].scope].kind == ScopeKind::Template))
 }
 
 /// CPT-25 to CPT-35: whether the requirements of a requires expression

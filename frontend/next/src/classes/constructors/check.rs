@@ -447,6 +447,7 @@ pub fn define(cx: &mut Check, f: EntityId, def: &Node) {
         // is the implicit one.
         if crate::classes::copy_move::check::copy_or_move(cx, c, f).is_some() {
             cx.u.defaulted.insert(f);
+            cx.u.defaulted_later.insert(f);
             if let Some(x) = cx.u.func_mut(f) {
                 x.defined = true;
             }

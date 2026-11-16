@@ -48,7 +48,7 @@ impl Special {
 /// A declared special member that is trivial: defaulted and not deleted
 /// (CTOR-23, DTOR-9, CPY-27).
 fn trivial_decl(cx: &Check, f: EntityId) -> bool {
-    cx.u.defaulted.contains(&f) && !cx.u.func(f).is_some_and(|x| x.deleted) && !cx.u.virt.contains_key(&f)
+    cx.u.defaulted.contains(&f) && !cx.u.defaulted_later.contains(&f) && !cx.u.func(f).is_some_and(|x| x.deleted) && !cx.u.virt.contains_key(&f)
 }
 
 /// Whether the special member `which` of a type is trivial and usable.
