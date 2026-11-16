@@ -755,6 +755,18 @@ pub fn call_value(cx: &mut Check, f: Expr, args: Vec<Expr>, span: Span) -> Expr 
             return surrogate_call(cx, f, &ops, &convs, args, span);
         }
     }
+    // LAM-3: the call operator template of a generic lambda gives the
+    // specialization that the arguments deduce.
+    let templates = crate::expressions::lambdas::check::call_templates(cx, &f);
+    if ops.is_empty() && !templates.is_empty() {
+        let specs = crate::templates::declarations::check::call_candidates_with(cx, &templates, &[], &args);
+        if specs.is_empty() {
+            let t = cx.unsupported(span, "a call of a generic lambda whose arguments the front end does not deduce");
+            return Expr::new(EK::Int(0), t, Cat::PR, span);
+        }
+        let Some(op) = ovl::resolve_with(cx, &specs, Some(&f), &args, span, "operator()") else { return bad(span) };
+        return call_operator(cx, f, op, args, span);
+    }
     // LAM-1, OPR-3: a call of a class object calls its call operator.
     if !ops.is_empty() {
         let Some(op) = ovl::resolve_with(cx, &ops, Some(&f), &args, span, "operator()") else { return bad(span) };

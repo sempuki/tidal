@@ -226,6 +226,12 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
         }
         add_capture(cx, &mut ctx, v, w.by_ref, e);
     }
+    // LAM-3: a parameter of type `auto` makes the call operator a
+    // template, whose body each call checks with its arguments' types.
+    let autos = n.child("parameters").map(|ps| ps.children("parameter").filter(|p| p.child("decl_specifiers").is_some_and(|ds| ds.find("placeholder").is_some())).count()).unwrap_or(0);
+    if autos > 0 {
+        return generic(cx, n, ctx, autos, (mutable, is_static, consteval), explicit_object);
+    }
     // The parameters, declared as those of any function (LAM-18).
     let (params, variadic) = crate::declarations::declarators::check::parameters(cx, n.child("parameters"));
     if explicit_object {
@@ -315,6 +321,175 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     }
     let ty = QType::new(Type::Class(class));
     Expr::new(EK::List(Box::new(Init::List(ctx.inits))), ty, Cat::PR, span)
+}
+
+/// LAM-3: a generic lambda, whose call operator is a member template of
+/// the closure type with one type parameter for each parameter of type
+/// `auto`. A capture default captures each variable of the enclosing
+/// function that the body names, since the body is checked only at a
+/// call.
+fn generic(cx: &mut Check, n: &Node, mut ctx: LambdaCtx, autos: usize, flags: (bool, bool, bool), explicit_object: bool) -> Expr {
+    let span = n.span;
+    let class = ctx.class;
+    let Some(body) = n.child("compound_stmt") else { return bad(span) };
+    if explicit_object || n.child("parameters").is_some_and(|ps| cx.has_token(ps, "...")) || n.child("type_id").is_some() || cx.has_token(body, "this") || n.child("noexcept_specifier").is_some() || !cx.lambdas.is_empty() || ctx.this_cap.is_some() {
+        return unsupported(cx, span, "a generic lambda with an explicit object parameter, a pack, a trailing return type, a noexcept specifier, 'this', or an enclosing lambda (build step 5)");
+    }
+    if let Some(by_ref) = ctx.default {
+        let names_: Vec<String> = n.child("parameters").map(|ps| ps.children("parameter").filter_map(|p| p.find("declarator_id").map(|d| cx.source(d))).collect()).unwrap_or_default();
+        let mut toks = Vec::new();
+        body.tokens(&mut toks);
+        for &t in &toks {
+            let w = cx.toks[t].text.clone();
+            if names_.iter().any(|p| *p == w) {
+                continue;
+            }
+            let Some(&v) = names::lookup(cx, &w).first() else { continue };
+            let Some(var) = cx.u.var(v) else { continue };
+            if var.storage != Storage::Automatic || !cx.u.is_local(cx.u.entities[v].scope) || is_constant(cx, v) || ctx.caps.iter().any(|c| c.0 == v) || ctx.init_vars.iter().any(|c| c.0 == v) {
+                continue;
+            }
+            let Some(e) = enclosing_use(cx, v, span) else { return bad(span) };
+            add_capture(cx, &mut ctx, v, by_ref, e);
+        }
+    }
+    // The parameters' types, with the invented parameters for `auto`.
+    cx.abbrev_types = (0..autos).map(|k| QType::new(Type::Dep(Rc::new(crate::sem::types::DepType::Param { depth: 0, index: k as u32, name: "auto".into() })))).collect();
+    let marks = cx.u.diags.len();
+    let (params, variadic) = crate::declarations::declarators::check::parameters(cx, n.child("parameters"));
+    cx.abbrev_types.clear();
+    if cx.u.diags.len() > marks || params.iter().any(|p| p.ty.is_error() || p.pack.is_some()) {
+        return bad(span);
+    }
+    let fty = FnType { ret: QType::error(), params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept: false, qualified: false, obj_cv: (!flags.0 && !flags.1, false), ref_q: None };
+    // CPT-20: a type constraint before `auto` constrains its invented
+    // parameter.
+    let constraints: Vec<(Option<usize>, Node)> = n.child("parameters").map(|ps| ps.children("parameter").filter_map(|p| p.child("decl_specifiers").and_then(|ds| ds.find("placeholder"))).enumerate().filter_map(|(k, ph)| ph.child("type_constraint").map(|tc| (Some(k), tc.clone()))).collect()).unwrap_or_default();
+    let t = cx.u.templates.len();
+    let limit = cx.u.entities.len() + 1;
+    cx.u.templates.push(crate::sem::FnTemplate { name: CALL.into(), pack: false, defaults: vec![None; autos], kinds: vec![None; autos], params: (0..autos).map(|_| Rc::from("")).collect(), node: n.clone(), scope: cx.scope, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: autos, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints, span, limit });
+    let scope = cx.u.classes[class].scope;
+    let op = names::declare_in(cx, scope, CALL, EntKind::Template(t), span, Linkage::None);
+    cx.u.access.insert(op, crate::sem::Access::Public);
+    let captures = ctx.inits.len();
+    cx.u.closures.insert(class, Closure { op, captures });
+    cx.generic_lambdas.insert(t, (ctx.clone(), flags.0, flags.1, flags.2));
+    cx.u.classes[class].complete = true;
+    let ty = QType::new(Type::Class(class));
+    Expr::new(EK::List(Box::new(Init::List(ctx.inits))), ty, Cat::PR, span)
+}
+
+/// The specialization of the call operator template `t` of a generic
+/// lambda for the types `args`: a call operator of the closure type, its
+/// body checked with the captures that the lambda made, in the scope
+/// where the lambda stands.
+pub fn specialize(cx: &mut Check, t: usize, args: &[crate::sem::types::TArg]) -> Option<EntityId> {
+    let (ctx, mutable, is_static, consteval) = cx.generic_lambdas.get(&t)?.clone();
+    let tpl = cx.u.templates[t].clone();
+    let n = tpl.node.clone();
+    let span = n.span;
+    let body = n.child("compound_stmt")?;
+    let class = tpl.class?;
+    let saved_lambdas = std::mem::take(&mut cx.lambdas);
+    let saved_member = cx.member_of.take();
+    cx.scope = tpl.scope;
+    cx.abbrev_types = crate::sem::types::TArg::types(args).into();
+    let (params, variadic) = crate::declarations::declarators::check::parameters(cx, n.child("parameters"));
+    cx.abbrev_types.clear();
+    let defaults = crate::declarations::functions::definitions::check::default_arguments(cx, &params);
+    let fty = FnType { ret: QType::error(), params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept: false, qualified: false, obj_cv: (!mutable && !is_static, false), ref_q: None };
+    let op = Func {
+        ty: Rc::new(fty.clone()),
+        params: Vec::new(),
+        defaults,
+        body: None,
+        constexpr: !consteval,
+        consteval,
+        inline: true,
+        is_static: false,
+        deleted: false,
+        noreturn: false,
+        nodiscard: false,
+        c_linkage: false,
+        pending_return: true,
+        placeholder: true,
+        used: true,
+        defined: true,
+        unsupported: None,
+        class: Some(class),
+        special: Special::None,
+        explicit: false,
+        member_static: is_static,
+        explicit_object: false,
+        obj_cv: (!mutable && !is_static, false),
+        ref_q: None,
+    };
+    // The specialization has no name, so a later call finds the template.
+    let scope = cx.u.classes[class].scope;
+    let op = cx.u.add(crate::sem::Entity { name: "".into(), kind: EntKind::Func(op), span, scope, linkage: Linkage::None, deprecated: None });
+    cx.u.access.insert(op, crate::sem::Access::Public);
+    cx.u.templates[t].specs.push((args.to_vec(), op));
+    let d = crate::declarations::declarators::check::Declared {
+        name: Some((CALL.into(), span)),
+        qual: names::Qual::None,
+        ty: QType::new(Type::Func(Rc::new(fty))),
+        params,
+        span,
+        unsupported: false,
+        placeholder: Some(crate::declarations::auto::check::Placeholder { constraint: None, decltype: false, c: false, v: false, span }),
+        trailing: false,
+        attrs: Default::default(),
+        node: n.clone(),
+        obj_cv: (!mutable && !is_static, false),
+        ref_q: false,
+        ref_kind: None,
+    };
+    // The captures are those that the lambda made: a use of another
+    // variable of the enclosing function is no capture now (LAM-9).
+    let mut frozen = ctx;
+    frozen.default = None;
+    cx.lambdas.push(frozen);
+    crate::declarations::functions::definitions::check::define(cx, op, &d, body);
+    cx.lambdas = saved_lambdas;
+    cx.member_of = saved_member;
+    Some(op)
+}
+
+/// LAM-10: a generic lambda without captures converts to a pointer to
+/// function `to`: the call operator template's parameters deduce from
+/// the function type's, and the specialization's type is that type.
+/// None when `e` is no such closure.
+pub fn generic_to_pointer(cx: &mut Check, e: &Expr, to: &QType) -> Option<Result<Expr, String>> {
+    let c = e.ty.nonref().class()?;
+    let cl = cx.u.closures.get(&c).cloned()?;
+    let EntKind::Template(t) = cx.u.entities[cl.op].kind else { return None };
+    if cl.captures > 0 {
+        return Some(Err("a lambda with captures does not convert to a pointer to function (LAM-25)".to_string()));
+    }
+    let target = to.pointee().and_then(|p| p.func().cloned());
+    let fail = || Some(Err(format!("no implicit conversion from {} to {}", e.ty.show(), to.show())));
+    let Some(target) = target else { return fail() };
+    let tpl = cx.u.templates[t].clone();
+    if target.params.len() != tpl.fty.params.len() {
+        return fail();
+    }
+    let mut bound: Vec<Option<QType>> = vec![None; tpl.kinds.len()];
+    if !tpl.fty.params.iter().zip(&target.params).all(|(p, a)| crate::templates::deduction::check::match_type(&cx.u, p, a, &mut bound)) {
+        return fail();
+    }
+    let Some(args) = bound.into_iter().map(|b| b.map(crate::sem::types::TArg::Type)).collect::<Option<Vec<_>>>() else { return fail() };
+    let f = crate::templates::declarations::check::specialize(cx, t, &args)?;
+    let fty = cx.u.func(f)?.ty.clone();
+    if fty.params != target.params || fty.ret != target.ret || (target.noexcept && !fty.noexcept) {
+        return fail();
+    }
+    Some(Ok(Expr::new(EK::Closure(f), to.unqual(), Cat::PR, e.span)))
+}
+
+/// The call operator templates of a closure type (LAM-3).
+pub fn call_templates(cx: &Check, obj: &Expr) -> Vec<EntityId> {
+    let Some(c) = obj.ty.nonref().class() else { return Vec::new() };
+    names::declared_here(cx, cx.u.classes[c].scope, CALL).into_iter().filter(|&e| matches!(cx.u.entities[e].kind, EntKind::Template(_))).collect()
 }
 
 /// An init capture (LAM-7): a new data member that its initializer

@@ -2959,3 +2959,8 @@ fn class_template_deduction() {
     assert_eq!(rule("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; template <class T> struct Box { Box(T) {} Box(T*) {} }; template <class T> Box(T*) -> Box<T>; Box(int) -> Box<long>; int n = 0; Box a(&n); Box b(1); static_assert(same<decltype(a), Box<int>> && same<decltype(b), Box<long>>);"), None);
     assert_eq!(rule("template <class T> struct Box { Box(T) {} }; template <class T> Box(T*) -> Box<T>; template <class T> Box(T*) -> Box<T>;"), Some("CTAD-12"));
 }
+
+#[test]
+fn generic_lambdas() {
+    assert_eq!(run("template <class T> concept Big = sizeof(T) > 1; template <class F, class A> concept Callable = requires (F f, A a) { f(a); }; auto lam = [](Big auto x) { return 1; }; static_assert(Callable<decltype(lam), int> && !Callable<decltype(lam), char>); int main() { auto id = [](auto x) { return x; }; int base = 10; auto add = [base](auto x) { return x + base; }; int total = 0; auto acc = [&](auto v) { total += int(v); }; acc(2); acc(3.5); int (*p)(int) = [](auto x) { return x * 2; }; return id(1) + add(2) + total + p(3); } "), RunOutcome::Result(24));
+}

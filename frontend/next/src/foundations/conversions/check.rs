@@ -195,6 +195,9 @@ pub fn implicit(cx: &mut Check, e: Expr, to: &QType, direct: bool) -> Result<Exp
     let null = is_null_constant(&e);
     // LAM-10, LAM-25: a closure converts to a pointer to function.
     if to.is_ptr() {
+        if let Some(r) = crate::expressions::lambdas::check::generic_to_pointer(cx, &e, to) {
+            return r;
+        }
         if let Some(r) = crate::expressions::lambdas::check::to_pointer(cx, &e, Some(to)) {
             return r;
         }

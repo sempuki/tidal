@@ -1713,6 +1713,10 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         if tpl.name.as_ref() == crate::classes::constructors::check::CTOR {
             return ctor_specialization(cx, t, args, fd, &mut body_mark);
         }
+        if cx.generic_lambdas.contains_key(&t) {
+            body_mark = Some(cx.u.diags.len());
+            return crate::expressions::lambdas::check::specialize(cx, t, args);
+        }
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
         // A template declared and not defined has a declaration.
         let dn = fd.child("declarator").or_else(|| fd.child("init_declarator").and_then(|i| i.child("declarator")))?;
