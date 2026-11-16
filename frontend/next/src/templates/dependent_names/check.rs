@@ -51,3 +51,15 @@ pub fn dependent(cx: &Check, nn: &Node) -> bool {
         })
     })
 }
+
+/// DEP-24: whether the qualifier `nn` of a template-id written without
+/// `template` begins with a template parameter of a specialization. The
+/// name after the qualifier was dependent in the definition, so its `<`
+/// was the less-than operator there.
+pub fn needs_template_keyword(cx: &Check, nn: &Node) -> bool {
+    let Some(first) = cx.words(nn).first().map(|w| w.to_string()) else { return false };
+    names::lookup(cx, &first).first().is_some_and(|&e| {
+        let ent = &cx.u.entities[e];
+        matches!(ent.kind, EntKind::Typedef(_)) && cx.u.scopes[ent.scope].kind == crate::sem::ScopeKind::Template
+    })
+}

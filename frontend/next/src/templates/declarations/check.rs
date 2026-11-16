@@ -2205,6 +2205,21 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         return true;
     }
     let Some((params, defaults, constraints, pack)) = m.child("template_head").and_then(|h| type_params(cx, h)) else { return false };
+    cx.head_pack = pack;
+    // A member class template defined in the class.
+    if let Some(inner) = m.child("member_decl").filter(|d| d.child("member_declarator").is_none() && d.child("decl_specifiers").is_some_and(|ds| ds.find("class_def").is_some() && ds.find("class_head").is_some_and(|h| h.child("template_id").is_none() && h.child("nested_name").is_none()))) {
+        let before = cx.u.entities.len();
+        let as_sd = Node { prod: "simple_decl", ext: None, span: inner.span, kids: inner.kids.clone() };
+        if !class_template_decl(cx, &as_sd, params, defaults, constraints) {
+            return false;
+        }
+        for e in before..cx.u.entities.len() {
+            if matches!(cx.u.entities[e].kind, EntKind::ClassTemplate(_)) {
+                cx.u.access.insert(e, access);
+            }
+        }
+        return true;
+    }
     if pack {
         return false;
     }

@@ -127,6 +127,12 @@ fn base_type(cx: &mut Check, n: &Node) -> Option<QType> {
     // TARG-1: a specialization of a class template, also after a
     // qualifier.
     if let Some(tid) = n.child("template_id").filter(|_| !cx.has_word(n, "template")) {
+        // DEP-24: a dependent qualifier needs `template` before a member
+        // template's name.
+        if let Some(nn) = n.child("nested_name").filter(|nn| crate::templates::dependent_names::check::needs_template_keyword(cx, nn)) {
+            cx.error(tid.span, "DEP-24", format!("'{}' names a member template after the dependent qualifier '{}' without the keyword 'template'", cx.source(tid), cx.source(nn)));
+            return None;
+        }
         let scope = match n.child("nested_name").map(|nn| crate::foundations::names::check::nested_name(cx, nn)) {
             None => None,
             Some(crate::foundations::names::check::Qual::Scope(s)) => Some(s),

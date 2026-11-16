@@ -102,6 +102,11 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
             // TARG-1: a specialization of a class template, also after a
             // qualifier.
             Kid::Node(c) if c.prod == "template_id" => {
+                // DEP-24: a dependent qualifier needs `template` before a
+                // member template's name.
+                if let Some(nn) = n.child("nested_name").filter(|nn| !cx.has_word(n, "template") && crate::templates::dependent_names::check::needs_template_keyword(cx, nn)) {
+                    return cx.error(c.span, "DEP-24", format!("'{}' names a member template after the dependent qualifier '{}' without the keyword 'template'", cx.source(c), cx.source(nn)));
+                }
                 let scope = match qual {
                     names::check::Qual::Scope(s) => Some(s),
                     names::check::Qual::None => None,
