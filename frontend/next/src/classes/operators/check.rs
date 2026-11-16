@@ -398,6 +398,12 @@ fn binary_with(cx: &mut Check, op: &str, l: &Expr, r: &Expr, span: Span, rewrite
     let name = name_of(op)?;
     let args = vec![l.clone(), r.clone()];
     let (members, others) = found(cx, name, &args, Some(l));
+    // DEP-9: in a specialization, argument-dependent lookup at the point
+    // of instantiation can find an operator declared after the template.
+    if cx.lookup_limit.is_some() && crate::foundations::names::check::late_argument_dependent(cx, name, &[l.ty.clone(), r.ty.clone()]) {
+        let t = cx.unsupported(span, format!("an operator '{}' in a specialization that argument-dependent lookup after the template can find", op));
+        return Some(Expr::new(EK::Int(0), t, crate::sem::tree::Cat::PR, span));
+    }
     let mut cands: Vec<Cand> = members.iter().map(|&f| Cand { f, member: true, reversed: false, negated: false, three: false }).chain(others.iter().map(|&f| Cand { f, member: false, reversed: false, negated: false, three: false })).collect();
     // The rewritten candidates of `==` and `!=`: `y == x`, and the
     // opposite of `x == y` and `y == x`.

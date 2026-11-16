@@ -356,6 +356,15 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
                 }
             }
             if found.is_empty() {
+                // DEP-9: in a specialization, argument-dependent lookup at
+                // the point of instantiation can find a later declaration.
+                if cx.lookup_limit.is_some() && rule == "NAM-8" {
+                    let tys: Vec<QType> = args.iter().map(|a| a.ty.clone()).collect();
+                    if crate::foundations::names::check::late_argument_dependent(cx, &text, &tys) {
+                        let t = cx.unsupported(span, format!("a call of '{}' in a specialization that only argument-dependent lookup after the template finds", text));
+                        return Expr::new(EK::Int(0), t, Cat::PR, span);
+                    }
+                }
                 if !rule.is_empty() {
                     cx.not_found(nspan, rule, &text);
                 }

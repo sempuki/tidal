@@ -180,11 +180,25 @@ pub fn if_stmt(cx: &mut Check, n: &Node) -> Stmt {
             f.constexpr_ifs.push(id);
         }
     }
+    // IF-22: in a specialization of a template, the discarded statement
+    // is not instantiated, but its parts that depend on no parameter are
+    // checked; the front end does not tell the two, so an error there
+    // leaves the unit unsupported.
+    let branch = |cx: &mut Check, b: &Node, skipped: bool| {
+        let marks = cx.u.diags.len();
+        let s = sub_statement(cx, b, Some((cs, "IF-10")));
+        if skipped && cx.instantiating > 0 && cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error) {
+            let tail = cx.u.diags.split_off(marks);
+            cx.u.diags.extend(tail.into_iter().filter(|d| d.sev != crate::diag::Severity::Error));
+            cx.unsupported(b.span, "an error in a discarded statement of a specialization");
+        }
+        s
+    };
     discard(cx, skip_then, 1);
-    let then = branches.first().map(|b| sub_statement(cx, b, Some((cs, "IF-10"))));
+    let then = branches.first().map(|b| branch(cx, b, skip_then));
     discard(cx, skip_then, -1);
     discard(cx, skip_else, 1);
-    let els = branches.get(1).map(|b| sub_statement(cx, b, Some((cs, "IF-10"))));
+    let els = branches.get(1).map(|b| branch(cx, b, skip_else));
     discard(cx, skip_else, -1);
     if let Some(f) = cx.func.as_mut() {
         if constexpr {

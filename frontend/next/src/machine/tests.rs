@@ -2563,7 +2563,7 @@ fn constant_template_parameters() {
     };
     assert_eq!(run("template <class T, int N> struct Arr { T v[N]; constexpr int size() const { return N; } }; template <int N> constexpr int sq = N * N; template <int N, class T> T times(T v) { return v * N; } static_assert(sizeof(Arr<int, 4>) == 16 && sq<5> == 25); int main() { Arr<char, 3> a; return times<3>(2) + a.size(); }"), RunOutcome::Result(9));
     assert_eq!(rule("template <unsigned char N> struct Byte {}; Byte<1> ok; Byte<300> b;"), Some("TARG-13"));
-    assert_eq!(rule("template <int N> const int* where() { return &N; } const int* use() { return where<1>(); }"), Some("unsupported"));
+    assert_eq!(rule("template <int N> const int* where() { return &N; } const int* use() { return where<1>(); }"), Some("TPL-10"));
 }
 
 #[test]
@@ -2775,7 +2775,7 @@ fn fold_expressions() {
         Outcome::Unsupported(_) => Some("unsupported"),
     };
     assert_eq!(rule("template <class... A> constexpr int f(A... a) { return (a + ...) + (... * a) + (1 + ... + a) + (a - ... - 0); } static_assert(f(1, 2, 3) == 6 + 6 + 7 + 2); template <class... A> constexpr bool all(A... a) { return (a && ...); } static_assert(all() && all(true, true) && !all(true, false)); template <class... A> constexpr int left(A... a) { return (... - a); } static_assert(left(10, 2, 3) == 5);"), None);
-    assert_eq!(rule("template <class... A> constexpr int sum(A... a) { return (a + ...); } int x = sum();"), Some("unsupported"));
+    assert_eq!(rule("template <class... A> constexpr int sum(A... a) { return (a + ...); } int x = sum();"), Some("PACK-12"));
 }
 
 #[test]
@@ -2858,4 +2858,20 @@ fn class_instantiation_errors_when_complete() {
     assert_eq!(rule(&format!("{} Box<int>* p = nullptr;", broken)), Some("unsupported"));
     // INST-5: a scoped enumeration's enumerators wait for a use.
     assert_eq!(rule("template <class T> struct Box { enum class Kind { first = T::nothing }; }; Box<int> b;"), Some("unsupported"));
+}
+
+#[test]
+fn function_specialization_body_errors() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    // INST-7: the body of a used specialization is checked.
+    assert_eq!(rule("template <class T> int f(T t) { static_assert(sizeof(T) == 1); return 0; } int x = f(1);"), Some("SA-1"));
+    // DEP-9: an operator that only argument-dependent lookup after the
+    // template finds.
+    assert_eq!(rule("template <class T> int add(T a, T b) { return a + b; } namespace shop { struct Item {}; int operator+(Item, Item) { return 7; } } int x = add(shop::Item{}, shop::Item{});"), Some("unsupported"));
+    // IF-22: an error in a discarded statement of a specialization.
+    assert_eq!(rule("template <class T> int f(T) { if constexpr (sizeof(T) > 100) { static_assert(false); return 0; } else { return 1; } } int x = f(1);"), Some("unsupported"));
 }

@@ -1288,6 +1288,8 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     let ts = cx.enter(ScopeKind::Template);
     bind_params(cx, ts, &tpl.params, args, tpl.span);
     let fd = &tpl.node;
+    // The first diagnostic of the body, which a use instantiates (INST-7).
+    let mut body_mark = None;
     let r = (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, fd.child("decl_specifiers")?, Default::default());
         // A template declared and not defined has a declaration.
@@ -1301,6 +1303,7 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
         cx.u.templates[t].specs.push((args.to_vec(), f));
         let cs = body.and_then(|b| b.child("compound_stmt"));
         if let Some(cs) = cs {
+            body_mark = Some(cx.u.diags.len());
             crate::declarations::functions::definitions::check::define(cx, f, &d, cs);
         }
         Some(f)
@@ -1314,6 +1317,20 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[TArg]) -> Option<EntityId> {
     cx.default_arg = saved_default;
     cx.access_class = saved_access;
     cx.instantiating -= 1;
+    // INST-7: an error only in the body of a specialization that no other
+    // specialization makes counts once the program uses the function in
+    // an evaluated operand; the end of the unit decides.
+    // An immediate function that the body calls can make the
+    // specialization immediate (CEV rules), which waits for a later piece.
+    let body_only = body_mark.is_some_and(|b| !cx.u.diags[marks..b].iter().any(|d| d.sev == crate::diag::Severity::Error)) && !cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Unsupported || matches!(d.rule, Some("CEV-1" | "NAM-8")));
+    if let (Some(f), true) = (r, body_only && cx.instantiating == 0 && !cx.trialing && !cx.depth_exceeded && cx.u.diags[marks..].iter().any(|d| d.sev == crate::diag::Severity::Error)) {
+        let tail = cx.u.diags.split_off(marks);
+        let (errs, rest): (Vec<_>, Vec<_>) = tail.into_iter().partition(|d| d.sev == crate::diag::Severity::Error);
+        cx.u.diags.extend(rest);
+        let point = cx.u.entities.len();
+        cx.fn_inst_errors.push((f, errs, point));
+        return Some(f);
+    }
     // An error in a specialization can come from a part of the model that
     // the first piece does not have (the points of instantiation, the
     // definition checks), so it leaves the unit unsupported.
@@ -1598,8 +1615,24 @@ pub fn end_of_unit(cx: &mut Check) {
     // unit needs the class complete: an object, a member, a base, or a
     // parameter or result of a definition, of the class. Otherwise the
     // front end does not tell whether a use needs it.
+    // INST-7: the errors of a function specialization's body count when
+    // the program uses the function in an evaluated operand.
+    // A function declared at namespace scope after the specialization can
+    // change a call or an operator in its body at the point of
+    // instantiation at the end of the unit (INST-31, INST-32, DEP-9). A
+    // unit with an unsupported construct does not tell either.
+    let any_unsupported = cx.u.diags.iter().any(|d| d.sev == crate::diag::Severity::Unsupported);
+    for (f, errs, point) in std::mem::take(&mut cx.fn_inst_errors) {
+        let later = cx.u.entities[point.min(cx.u.entities.len())..].iter().any(|e| matches!(e.kind, EntKind::Func(_) | EntKind::Template(_)) && cx.u.scopes[e.scope].kind == ScopeKind::Namespace);
+        if cx.u.func(f).is_some_and(|x| x.used) && !later && !any_unsupported {
+            cx.u.diags.extend(errs);
+        } else if let Some(d) = errs.first() {
+            let span = d.span;
+            cx.unsupported(span, "an error in the body of a function specialization that the program does not use in an evaluated operand");
+        }
+    }
     for (c, errs) in std::mem::take(&mut cx.inst_errors) {
-        if needs_complete(cx, c) {
+        if needs_complete(cx, c) && !any_unsupported {
             cx.u.diags.extend(errs);
         } else if let Some(d) = errs.first() {
             let span = d.span;

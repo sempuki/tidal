@@ -627,8 +627,11 @@ not check without a diagnostic, an error in a
 specialization other than one in the declarations of a class
 specialization whose argument classes are complete (which counts once
 the unit has an object, a member, a base, or a definition's parameter
-or result of the class), a call whose argument-dependent lookup would
-see later declarations, a definition with a dependent form (`.template`, a
+or result of the class) and one in the body of a function
+specialization that the unit uses in an evaluated operand, with no
+function declared at namespace scope after it and no unsupported
+construct in the unit, a discarded statement's error, a call or an
+operator whose argument-dependent lookup would see later declarations, a definition with a dependent form (`.template`, a
 member named with template arguments after `.` or `->`, a type named
 after a parameter without `typename`, `using enum` of a parameter's
 member, a base whose template arguments hold a parameter) or an
