@@ -339,7 +339,46 @@ pub fn functional_cast(cx: &mut Check, n: &Node) -> Expr {
     if ct.kids.len() == 1 && cx.words(ct) == ["auto"] {
         return decay_copy(cx, n, span);
     }
-    let to = cast_type(cx, ct);
+    // CTAD-1: a class template named without arguments takes the
+    // arguments that the list deduces.
+    let deduced = match crate::templates::class_template_deduction::check::named_template(cx, ct) {
+        Some(v) => {
+            let list = n.child("braced_init").is_some();
+            let items: Vec<&Node> = match n.child("braced_init") {
+                Some(b) => b.children("init_clause").filter_map(first_node).collect(),
+                None => n.child("expression_list").map(|l| l.children("argument").filter_map(first_node).collect()).unwrap_or_default(),
+            };
+            if items.iter().any(|c| matches!(c.prod, "braced_init" | "designator")) || cx.has_token(n, "...") {
+                let t = cx.unsupported(span, "a deduction of class template arguments from a nested braced list, a designator, or an expansion");
+                return Expr::new(EK::Int(0), t, Cat::PR, span);
+            }
+            let mut es = Vec::new();
+            for c in items {
+                let e = expr(cx, c);
+                if e.ty.is_error() {
+                    return bad(span);
+                }
+                es.push(e);
+            }
+            let Some(t) = crate::templates::class_template_deduction::check::deduce(cx, v, &es, list, false, span) else { return bad(span) };
+            // CTAD-25: a constructor takes the arguments as they are.
+            if t.class().is_some_and(|c| crate::classes::constructors::check::has_ctors(cx, c)) {
+                if es.len() == 1 && es[0].ty.nonref().unqual().t == t.unqual().t && !list {
+                    let mut x = rvalue(cx, es.remove(0));
+                    x.span = span;
+                    return x;
+                }
+                let Some(i) = crate::classes::constructors::check::construct_init(cx, &t, es, list, false, span) else { return bad(span) };
+                return Expr::new(EK::List(Box::new(i)), t, Cat::PR, span);
+            }
+            Some(t)
+        }
+        None => None,
+    };
+    let to = match deduced {
+        Some(t) => t,
+        None => cast_type(cx, ct),
+    };
     if to.is_error() {
         return bad(span);
     }

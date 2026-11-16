@@ -48,7 +48,40 @@ fn new_inner(cx: &mut Check, n: &Node, span: Span) -> Expr {
     // The type: a `new_type`, or a `type_id` in parentheses.
     let (mut ty, bounds) = if let Some(t) = n.child("new_type") {
         let specs: Vec<&Node> = t.children("type_specifier").collect();
+        // CTAD-1: a class template named without arguments takes the
+        // arguments that the initializer deduces.
+        let simple = t.child("new_ptr").is_none() && t.child("new_bounds").is_none();
+        let saved_ctad = std::mem::replace(&mut cx.ctad_ok, simple);
         let (base, ph, _, unsup) = crate::foundations::types::check::type_specifiers(cx, &specs, t.span);
+        cx.ctad_ok = saved_ctad;
+        let deduced = if let Some((v, _, c, vol)) = cx.ctad_found.take() {
+            let list = init.and_then(|i| i.child("braced_init")).is_some();
+            let items: Vec<&Node> = match init {
+                None => Vec::new(),
+                Some(i) => match i.child("braced_init") {
+                    Some(b) => b.children("init_clause").filter_map(first_node).collect(),
+                    None => i.child("expression_list").map(|l| l.children("argument").filter_map(first_node).collect()).unwrap_or_default(),
+                },
+            };
+            if items.iter().any(|c| matches!(c.prod, "braced_init" | "designator")) || init.is_some_and(|i| cx.has_token(i, "...")) {
+                return unsupported(cx, span, "a deduction of class template arguments from a nested braced list, a designator, or an expansion");
+            }
+            let mut es = Vec::new();
+            for c in items {
+                let e = expr(cx, c);
+                if e.ty.is_error() {
+                    return bad(span);
+                }
+                es.push(e);
+            }
+            let Some(t) = crate::templates::class_template_deduction::check::deduce(cx, v, &es, list, false, span) else { return bad(span) };
+            Some(t.with_cv(c, vol))
+        } else {
+            None
+        };
+        if let Some(t) = deduced {
+            (t, None)
+        } else {
         if unsup {
             return bad(span);
         }
@@ -71,6 +104,7 @@ fn new_inner(cx: &mut Check, n: &Node, span: Span) -> Expr {
             ty = crate::declarations::declarators::check::ptr_part(cx, ty, p);
         }
         (ty, t.child("new_bounds"))
+        }
     } else {
         let Some(t) = n.child("type_id") else { return bad(span) };
         (crate::declarations::declarators::check::type_id(cx, t), None)

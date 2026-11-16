@@ -262,6 +262,20 @@ pub fn deduce(cx: &mut Check, v: usize, args: &[Expr], list: bool, copy: bool, s
     Some(crate::templates::declarations::check::class_specialization(cx, v, args, span))
 }
 
+/// CTAD-1: the class template that the node `n` names with no argument
+/// list, as one name.
+pub fn named_template(cx: &Check, n: &Node) -> Option<usize> {
+    let name = cx.source(n);
+    let name = name.trim();
+    if name.is_empty() || !name.chars().all(|c| c.is_alphanumeric() || c == '_') {
+        return None;
+    }
+    names::lookup(cx, name).first().and_then(|&e| match cx.u.entities[e].kind {
+        EntKind::ClassTemplate(v) => Some(v),
+        _ => None,
+    })
+}
+
 /// ORD-1 to ORD-3 for guides: the parameters of `g2` for the first
 /// `count` arguments deduce from those of `g1`, with each type without
 /// its reference and its top-level cv-qualifiers (ORD-2).
