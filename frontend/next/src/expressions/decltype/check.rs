@@ -18,6 +18,9 @@ pub fn decltype_of(e: &Expr) -> QType {
 /// type of an unparenthesized name of a variable or a function (DTY-1).
 pub fn decltype_of_named(cx: &Check, e: &Expr) -> QType {
     let declared = match &e.k {
+        // A constant template parameter of a specialization is a prvalue
+        // of its type, without the const of its variable.
+        EK::Var(id) if cx.template_constants.contains(id) => cx.u.var(*id).map(|v| v.ty.unqual()),
         EK::Var(id) => cx.u.var(*id).map(|v| if cx.bindings.contains(id) { v.ty.nonref() } else { v.ty.clone() }),
         EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
         // DTY rules: a member access names the member's declared type.
@@ -75,6 +78,9 @@ pub fn decltype_spec(cx: &mut Check, n: &Node) -> QType {
     }
     let mut declared = match &e.k {
         EK::Var(id) if cx.binding_decl.contains_key(id) => cx.binding_decl.get(id).cloned(),
+        // A constant template parameter of a specialization is a prvalue
+        // of its type, without the const of its variable.
+        EK::Var(id) if cx.template_constants.contains(id) => cx.u.var(*id).map(|v| v.ty.unqual()),
         EK::Var(id) => cx.u.var(*id).map(|v| if cx.bindings.contains(id) { v.ty.nonref() } else { v.ty.clone() }),
         EK::Func(id) => cx.u.func(*id).map(|f| QType::new(Type::Func(f.ty.clone()))),
         _ => None,

@@ -23,6 +23,17 @@ pub type Param = (Rc<str>, Span, Option<QType>);
 /// the type constraint of each parameter that has one (its index).
 pub type Constraints = Vec<(Option<usize>, Node)>;
 
+/// The kind of a constant parameter of type `auto`: a dependent type
+/// that names `auto`.
+pub fn auto_kind() -> QType {
+    QType::new(Type::Dep(Rc::new(DepType::Opaque { name: "auto".into() })))
+}
+
+/// Whether `t` is the kind of a constant parameter of type `auto`.
+pub fn is_auto_kind(t: &QType) -> bool {
+    matches!(&t.t, Type::Dep(d) if matches!(&**d, DepType::Opaque { name } if name.as_ref() == "auto"))
+}
+
 /// A template template parameter's kind (`type_params`).
 pub fn is_template_kind(k: &Option<QType>) -> bool {
     k.as_ref().is_some_and(|t| t.is_func())
@@ -80,6 +91,8 @@ fn template_fits(cx: &Check, kind: &QType, r: crate::sem::types::TplRef) -> bool
     let same = |p: &QType, a: &Option<QType>| match a {
         None => p.is_void(),
         Some(a) if a.is_func() => p.is_func(),
+        // A placeholder matches any type of the other head (TARG-17).
+        Some(a) if is_auto_kind(a) || is_auto_kind(p) => !p.is_void() && !p.is_func(),
         Some(a) => !p.is_void() && !p.is_func() && (p.unqual() == a.unqual() || (p.is_integral() || p.is_enum()) && (a.is_integral() || a.is_enum())),
     };
     let fixed = if pack { kinds.len() - 1 } else { kinds.len() };
@@ -143,6 +156,14 @@ pub fn type_params(cx: &mut Check, head: &Node) -> Option<(Vec<Param>, Vec<Optio
             if ds.find("enum_def").is_some() || ds.find("class_def").is_some() || ds.find("union_def").is_some() {
                 cx.error(ds.span, "TPL-33", "a constant template parameter that defines a class or an enumeration");
                 return None;
+            }
+            // TARG-13: a parameter of type `auto` takes the type of its
+            // argument (`auto_kind`).
+            if cx.source(ds).trim() == "auto" && p.find("ptr_part").is_none() {
+                let id = p.find("declarator_id")?;
+                out.push((cx.source(id).as_str().into(), id.span, Some(auto_kind())));
+                defaults.push(default);
+                continue;
             }
             let marks = cx.u.diags.len();
             let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
@@ -469,6 +490,10 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
 /// constant parameter of type `ty`. It converts as a converted constant
 /// expression: an enumeration only from itself, and no narrowing.
 fn constant_of(cx: &mut Check, e: &crate::sem::tree::Expr, v: i128, ty: &QType, span: Span) -> Option<TArg> {
+    // A parameter of type `auto` takes the argument's type.
+    if is_auto_kind(ty) {
+        return Some(TArg::Value(e.ty.unqual(), v));
+    }
     let scoped = matches!(ty.t, Type::Enum(en) if cx.u.enums[en].scoped);
     let other_enum = (ty.is_enum() || matches!(e.ty.t, Type::Enum(en) if cx.u.enums[en].scoped)) && e.ty.unqual().t != ty.t;
     if (scoped || other_enum) && e.ty.unqual().t != ty.t || crate::foundations::conversions::check::is_narrowing(cx, e, ty) {
@@ -2024,6 +2049,7 @@ fn trial(cx: &mut Check, t: Option<usize>, v: Option<usize>) -> bool {
     // A constant parameter takes 1.
     let mut args: Vec<TArg> = kinds.iter().map(|k| match k {
         k if is_template_kind(k) => TArg::Template(picks.next().unwrap()),
+        Some(t) if is_auto_kind(t) => TArg::Value(QType::new(Type::Int(crate::sem::types::IntK::Int)), 1),
         None => TArg::Type(QType::new(Type::Int(crate::sem::types::IntK::Int))),
         Some(t) => TArg::Value(t.clone(), 1),
     }).collect();
@@ -2690,7 +2716,10 @@ fn class_partial(cx: &mut Check, cd: &Node, head: &Node, tid: &Node, params: Vec
     }
     let primary_kinds = ct.kinds.clone();
     let nodes: Vec<Node> = tid.child("template_args").map(|ta| ta.children("template_arg").cloned().collect()).unwrap_or_default();
-    if nodes.len() != primary_kinds.len() || !cx.u.class_templates[v].specs.is_empty() || nodes.iter().any(|a| cx.words(a).contains(&"...")) {
+    // A pattern for a parameter of type `auto` or a template template
+    // parameter waits for a later piece (DED-12).
+    let other_kind = primary_kinds.iter().any(|k| is_template_kind(k) || k.as_ref().is_some_and(is_auto_kind));
+    if other_kind || nodes.len() != primary_kinds.len() || !cx.u.class_templates[v].specs.is_empty() || nodes.iter().any(|a| cx.words(a).contains(&"...")) {
         return false;
     }
     cx.scope = home;
