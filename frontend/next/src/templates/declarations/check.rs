@@ -1355,7 +1355,50 @@ fn record_inst(cx: &mut Check, kind: char, v: usize, args: &[TArg], def: bool, s
 /// that the template-id leaves out come from the function's type
 /// (DED-32). False for another form, such as a declaration that is not
 /// a definition.
+/// TSP-1, TSP-6: `template <> R C<A>::f(P) { ... }`, the explicit
+/// specialization of a member function of the class template
+/// specialization C<A>: the member's body is this definition, unless a
+/// use made the member from the template before. None for another form.
+fn member_specialization(cx: &mut Check, fd: &Node) -> Option<bool> {
+    let dn = fd.child("declarator")?;
+    let nn = dn.find("declarator_id")?.find("qualified_name")?.child("nested_name")?;
+    let [Kid::Node(tid), _] = nn.kids.as_slice() else { return None };
+    if tid.prod != "template_id" {
+        return None;
+    }
+    let name = cx.source(dn.find("declarator_id")?.find("qualified_name")?.child("unqualified_id")?);
+    if name.starts_with('~') || fd.child("decl_specifiers").is_none() {
+        return Some(false);
+    }
+    // TSP-8: no default argument.
+    if let Some(p) = dn.find("parameters").and_then(|ps| ps.children("parameter").find(|p| cx.has_word(p, "="))) {
+        cx.error(p.span, "TSP-8", "a default argument in an explicit specialization of a member function");
+        return Some(true);
+    }
+    let marks = cx.u.diags.len();
+    let t = class_template_use_in(cx, tid, None)?;
+    let Some(c) = t.class() else {
+        return Some(cx.u.diags.len() > marks);
+    };
+    let fs: Vec<EntityId> = names::declared_here(cx, cx.u.classes[c].scope, &name).into_iter().filter(|&e| cx.u.func(e).is_some()).collect();
+    let [f] = fs[..] else { return Some(false) };
+    // TSP-6: a use made the member from the template before.
+    if cx.u.func(f).is_some_and(|x| x.used) {
+        cx.error(dn.span, "TSP-6", format!("an explicit specialization of the member '{}' after a use that made it from the template", name));
+        return Some(true);
+    }
+    if let Some(x) = cx.u.func_mut(f) {
+        x.body = None;
+        x.defined = false;
+    }
+    crate::declarations::functions::definitions::check::function_definition(cx, fd);
+    Some(true)
+}
+
 fn explicit_function(cx: &mut Check, fd: &Node) -> bool {
+    if let Some(done) = member_specialization(cx, fd) {
+        return done;
+    }
     let (Some(ds), Some(dn)) = (fd.child("decl_specifiers"), fd.child("declarator")) else { return false };
     let Some(did) = dn.find("declarator_id") else { return false };
     let tid = did.find("template_id");
