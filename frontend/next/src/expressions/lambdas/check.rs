@@ -65,11 +65,10 @@ struct Written {
 /// `lambda_expr`.
 pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     let span = n.span;
-    if n.child("lambda_template").is_some() {
-        return unsupported(cx, span, "a lambda with a template head (a generic lambda, build step 5)");
-    }
+    // A requires clause after the parameters can name them, which the
+    // constraint checks of a later piece see.
     if n.child("requires_clause").is_some() {
-        return unsupported(cx, span, "a lambda with a requires clause (build step 5)");
+        return unsupported(cx, span, "a lambda with a requires clause after its parameters (build step 5)");
     }
     let Some(body) = n.child("compound_stmt") else { return bad(span) };
     let specs: Vec<&str> = n.children("lambda_specifier").map(|s| cx.first_word(s)).collect();
@@ -229,7 +228,7 @@ pub fn lambda_expr(cx: &mut Check, n: &Node) -> Expr {
     // LAM-3: a parameter of type `auto` makes the call operator a
     // template, whose body each call checks with its arguments' types.
     let autos = n.child("parameters").map(|ps| ps.children("parameter").filter(|p| p.child("decl_specifiers").is_some_and(|ds| ds.find("placeholder").is_some())).count()).unwrap_or(0);
-    if autos > 0 {
+    if autos > 0 || n.child("lambda_template").is_some() {
         return generic(cx, n, ctx, autos, (mutable, is_static, consteval), explicit_object);
     }
     // The parameters, declared as those of any function (LAM-18).
@@ -353,21 +352,41 @@ fn generic(cx: &mut Check, n: &Node, mut ctx: LambdaCtx, autos: usize, flags: (b
             add_capture(cx, &mut ctx, v, by_ref, e);
         }
     }
-    // The parameters' types, with the invented parameters for `auto`.
-    cx.abbrev_types = (0..autos).map(|k| QType::new(Type::Dep(Rc::new(crate::sem::types::DepType::Param { depth: 0, index: k as u32, name: "auto".into() })))).collect();
+    // The parameters of the template head, then the invented parameters
+    // for `auto` (LAM-3).
+    let (head, mut constraints) = match n.child("lambda_template") {
+        Some(lt) => {
+            let saved_pack = cx.head_pack;
+            let r = crate::templates::declarations::check::type_params(cx, lt);
+            cx.head_pack = saved_pack;
+            match r {
+                Some((ps, defaults, cs, pack)) if !pack && defaults.iter().all(|d| d.is_none()) => (ps, cs),
+                _ => return unsupported(cx, span, "a lambda whose template head has a pack or a default (build step 5)"),
+            }
+        }
+        None => (Vec::new(), Vec::new()),
+    };
+    let k = head.len();
+    let saved_scope = cx.scope;
+    let ts = cx.enter(ScopeKind::Template);
+    crate::templates::declarations::check::declare_params(cx, ts, &head);
+    cx.abbrev_types = (0..autos).map(|j| QType::new(Type::Dep(Rc::new(crate::sem::types::DepType::Param { depth: 0, index: (k + j) as u32, name: "auto".into() })))).collect();
     let marks = cx.u.diags.len();
     let (params, variadic) = crate::declarations::declarators::check::parameters(cx, n.child("parameters"));
     cx.abbrev_types.clear();
+    cx.leave(saved_scope);
     if cx.u.diags.len() > marks || params.iter().any(|p| p.ty.is_error() || p.pack.is_some()) {
         return bad(span);
     }
     let fty = FnType { ret: QType::error(), params: params.iter().map(|p| p.ty.clone()).collect(), variadic, noexcept: false, qualified: false, obj_cv: (!flags.0 && !flags.1, false), ref_q: None };
     // CPT-20: a type constraint before `auto` constrains its invented
     // parameter.
-    let constraints: Vec<(Option<usize>, Node)> = n.child("parameters").map(|ps| ps.children("parameter").filter_map(|p| p.child("decl_specifiers").and_then(|ds| ds.find("placeholder"))).enumerate().filter_map(|(k, ph)| ph.child("type_constraint").map(|tc| (Some(k), tc.clone()))).collect()).unwrap_or_default();
+    constraints.extend(n.child("parameters").map(|ps| ps.children("parameter").filter_map(|p| p.child("decl_specifiers").and_then(|ds| ds.find("placeholder"))).enumerate().filter_map(|(j, ph)| ph.child("type_constraint").map(|tc| (Some(k + j), tc.clone()))).collect::<Vec<_>>()).unwrap_or_default());
+    let kinds: Vec<Option<QType>> = head.iter().map(|p| p.2.clone()).chain((0..autos).map(|_| None)).collect();
+    let param_names: Vec<Rc<str>> = head.iter().map(|p| p.0.clone()).chain((0..autos).map(|_| Rc::from(""))).collect();
     let t = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(crate::sem::FnTemplate { name: CALL.into(), pack: false, defaults: vec![None; autos], kinds: vec![None; autos], params: (0..autos).map(|_| Rc::from("")).collect(), node: n.clone(), scope: cx.scope, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: autos, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints, span, limit });
+    cx.u.templates.push(crate::sem::FnTemplate { name: CALL.into(), pack: false, defaults: vec![None; kinds.len()], kinds, params: param_names, node: n.clone(), scope: cx.scope, fty: Rc::new(fty), pack_param: false, pack_name: None, abbrev: autos, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints, span, limit });
     let scope = cx.u.classes[class].scope;
     let op = names::declare_in(cx, scope, CALL, EntKind::Template(t), span, Linkage::None);
     cx.u.access.insert(op, crate::sem::Access::Public);
@@ -392,8 +411,13 @@ pub fn specialize(cx: &mut Check, t: usize, args: &[crate::sem::types::TArg]) ->
     let class = tpl.class?;
     let saved_lambdas = std::mem::take(&mut cx.lambdas);
     let saved_member = cx.member_of.take();
+    // The head's parameters are bound to their arguments in a scope of
+    // their own, and the invented ones give `auto` its types.
     cx.scope = tpl.scope;
-    cx.abbrev_types = crate::sem::types::TArg::types(args).into();
+    let k = tpl.kinds.len() - tpl.abbrev;
+    let ts = cx.enter(ScopeKind::Template);
+    crate::templates::declarations::check::bind_params(cx, ts, &tpl.params[..k], &args[..k], span);
+    cx.abbrev_types = crate::sem::types::TArg::types(&args[k..]).into();
     let (params, variadic) = crate::declarations::declarators::check::parameters(cx, n.child("parameters"));
     cx.abbrev_types.clear();
     let defaults = crate::declarations::functions::definitions::check::default_arguments(cx, &params);

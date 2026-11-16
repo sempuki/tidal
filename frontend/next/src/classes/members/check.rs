@@ -1355,6 +1355,11 @@ pub fn member_access(cx: &mut Check, base: Expr, arrow: bool, id: &Node, span: S
         (name, found)
     };
     let Some(&f) = found.first() else {
+        // An operator function's name with template arguments waits for a
+        // later piece.
+        if name.starts_with("operator") && name.contains('<') {
+            return cx_unsupported(cx, span, "a member operator function named with template arguments");
+        }
         cx.error(span, "PFX-11", format!("no member named '{}'", name));
         return bad(span);
     };
