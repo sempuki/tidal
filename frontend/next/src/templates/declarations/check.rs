@@ -271,7 +271,13 @@ pub fn args_with_defaults(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], d
         return template_args_packed(cx, tid, kinds, pack);
     }
     let mut args = template_args(cx, tid, &kinds[..n])?;
-    fill_defaults(cx, kinds, defaults, names_, scope, limit, &mut args, tid.span).then_some(args)
+    let marks = cx.u.diags.len();
+    let filled = fill_defaults(cx, kinds, defaults, names_, scope, limit, &mut args, tid.span);
+    // TARG-6: a parameter without an argument has a default.
+    if !filled && cx.u.diags.len() == marks && defaults.get(args.len()).is_some_and(|d| d.is_none()) {
+        cx.error(tid.span, "TARG-6", format!("{} template arguments for a template of {} parameters without defaults", n, kinds.len()));
+    }
+    filled.then_some(args)
 }
 
 /// Fill `args` up to the parameters' number from their defaults.
@@ -441,6 +447,10 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
     }
     let fixed = if pack { kinds.len().checked_sub(1)? } else { kinds.len() };
     if items.len() < fixed || (!pack && items.len() != kinds.len()) {
+        // TARG-6: more arguments than parameters.
+        if !pack && items.len() > kinds.len() && !cx.expanding {
+            cx.error(tid.span, "TARG-6", format!("{} template arguments for a template of {} parameters", items.len(), kinds.len()));
+        }
         return None;
     }
     let mut out = Vec::new();
@@ -460,8 +470,21 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
             }
             cx.expanding = true;
         }
+        let marks = cx.u.diags.len();
         let arg = match kind {
-            None => a.child("type_id").map(|t| TArg::Type(crate::declarations::declarators::check::type_id(cx, t))),
+            None => {
+                let t = a.child("type_id").map(|t| TArg::Type(crate::declarations::declarators::check::type_id(cx, t)));
+                // TARG-7: an expression for a type parameter: a literal, or
+                // a name of a variable, a function, or an enumerator.
+                let expression = crate::expressions::check::first_node(a).is_some_and(|node| match node.child("literal") {
+                    Some(_) => true,
+                    None => node.prod == "primary" && node.child("id_expression").and_then(|i| i.child("unqualified_id")).is_some_and(|u| u.kids.len() == 1 && names::lookup(cx, cx.source(u).trim()).first().is_some_and(|&e| matches!(cx.u.entities[e].kind, EntKind::Var(_) | EntKind::Func(_) | EntKind::Enumerator { .. }))),
+                });
+                if t.is_none() && expression && !mentions_param(cx, a) {
+                    cx.error(a.span, "TARG-7", format!("the expression '{}' as the argument of a type parameter", cx.source(a)));
+                }
+                t
+            }
             Some(k) if k.is_func() => {
                 let name = cx.source(a);
                 match template_ref(cx, name.trim(), a.span) {
@@ -470,10 +493,21 @@ pub fn template_args_packed(cx: &mut Check, tid: &Node, kinds: &[Option<QType>],
                         cx.error(a.span, "TARG-18", format!("the template '{}' does not take the argument lists of the template template parameter", name.trim()));
                         None
                     }
+                    // TARG-7: a class, a variable template, or a concept.
+                    None if !mentions_param(cx, a) && !names::lookup(cx, name.trim()).is_empty() => {
+                        cx.error(a.span, "TARG-7", format!("'{}' as the argument of a template template parameter, which takes a class template", name.trim()));
+                        None
+                    }
                     _ => None,
                 }
             }
-            Some(ty) => constant_arg(cx, a).and_then(|(e, v)| constant_of(cx, &e, v, ty, a.span)),
+            Some(ty) => {
+                let r = constant_arg(cx, a);
+                if r.is_none() && cx.u.diags.len() == marks && !mentions_param(cx, a) {
+                    not_constant(cx, a);
+                }
+                r.and_then(|(e, v)| constant_of(cx, &e, v, ty, a.span))
+            }
         };
         cx.leave(saved);
         cx.expanding = saved_expanding;
@@ -509,6 +543,42 @@ fn constant_of(cx: &mut Check, e: &crate::sem::tree::Expr, v: i128, ty: &QType, 
 
 /// The value of a template argument for a constant parameter: an
 /// expression, or a name that the parser read as a type.
+/// Whether the argument `a` names a parameter of a template whose
+/// definition is being checked, or a pack, whose value is not known.
+fn mentions_param(cx: &Check, a: &Node) -> bool {
+    let mut toks = Vec::new();
+    a.tokens(&mut toks);
+    toks.iter().any(|&t| names::lookup(cx, &cx.toks[t].text).first().is_some_and(|&e| match &cx.u.entities[e].kind {
+        EntKind::Var(v) => v.param && cx.u.scopes[cx.u.entities[e].scope].kind == ScopeKind::Template,
+        EntKind::Typedef(t) => crate::templates::deduction::check::has_dep(t),
+        EntKind::Pack(_) | EntKind::TypePack(_) | EntKind::Unsupported(_) => true,
+        _ => false,
+    }))
+}
+
+/// TARG-7, TARG-13: the argument `a` of a constant parameter is a type,
+/// or no constant of integral or enumeration type.
+fn not_constant(cx: &mut Check, a: &Node) {
+    let Some(node) = crate::expressions::check::first_node(a) else { return };
+    if node.prod == "type_id" {
+        let found = names::lookup(cx, cx.source(node).trim());
+        if !found.iter().any(|&e| matches!(cx.u.entities[e].kind, EntKind::Var(_) | EntKind::Func(_) | EntKind::Enumerator { .. } | EntKind::Template(_))) {
+            cx.error(a.span, "TARG-7", format!("the type '{}' as the argument of a constant parameter", cx.source(a)));
+        }
+        return;
+    }
+    // TARG-13: an arithmetic value that is floating or not a constant;
+    // another type waits for a later piece.
+    let marks = cx.u.diags.len();
+    let e = crate::expressions::check::expr(cx, node);
+    let e = crate::foundations::values::check::rvalue(cx, e);
+    cx.u.diags.truncate(marks);
+    let arithmetic = e.ty.is_integral() || e.ty.is_enum() || e.ty.is_floating();
+    if arithmetic {
+        cx.error(a.span, "TARG-13", format!("the argument '{}' of a constant parameter is no constant expression of integral or enumeration type", cx.source(a)));
+    }
+}
+
 fn constant_arg(cx: &mut Check, a: &Node) -> Option<(crate::sem::tree::Expr, i128)> {
     let node = crate::expressions::check::first_node(a)?;
     let e = if node.prod == "type_id" {
