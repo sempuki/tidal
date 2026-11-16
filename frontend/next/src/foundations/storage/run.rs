@@ -126,7 +126,10 @@ pub fn convert(m: &Machine, p: Ptr, to: &QType) -> Ptr {
         return p;
     }
     let off = offset(m, &p);
-    if let Some(q) = reach(m, p.obj, off, to) {
+    // STG-13: a byte pointer from a pointer to an object of another type
+    // names the bytes of that object, also where a byte member starts.
+    let bytes_of_object = is_byte(m, to) && m.type_at(&p).is_some_and(|t| !is_byte(m, &t) && !t.is_void());
+    if let Some(q) = reach(m, p.obj, off, to).filter(|_| !bytes_of_object) {
         return q;
     }
     Ptr { obj: p.obj, path: Vec::new(), array: false, view: Some(View { off, size: size(m, to).max(1), bytes: is_byte(m, to), origin: off }) }
