@@ -177,6 +177,20 @@ pub fn named_type(cx: &mut Check, n: &Node) -> QType {
 /// The type the type specifiers of a declaration give, the placeholder
 /// if any, whether they define a type, and whether a part is
 /// unsupported.
+/// CTAD-1: the class template that a type name without an argument list
+/// names, in the decl-specifiers of variables.
+fn deduced_template(cx: &Check, x: &Node) -> Option<usize> {
+    if !cx.ctad_ok || x.kids.len() != 1 {
+        return None;
+    }
+    let Kid::Tok(_) = x.kids[0] else { return None };
+    let name = cx.text(&x.kids[0]);
+    names::check::lookup(cx, name).first().and_then(|&e| match cx.u.entities[e].kind {
+        EntKind::ClassTemplate(v) => Some(v),
+        _ => None,
+    })
+}
+
 pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<QType>, Option<Placeholder>, bool, bool) {
     let mut kw: Vec<&str> = Vec::new();
     let (mut c, mut v) = (0, 0);
@@ -194,6 +208,10 @@ pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<Q
             "simple_type" => {
                 if x.kids.len() == 1 && matches!(x.kids[0], Kid::Tok(_)) && is_fundamental(cx.text(&x.kids[0])) {
                     kw.push(cx.text(&x.kids[0]));
+                } else if let Some(v) = deduced_template(cx, x) {
+                    // CTAD-1: the arguments come from the initializer.
+                    cx.ctad_found = Some((v, x.span, false, false));
+                    ty = Some(QType::error());
                 } else {
                     ty = Some(named_type(cx, x));
                 }
@@ -246,6 +264,10 @@ pub fn type_specifiers(cx: &mut Check, specs: &[&Node], span: Span) -> (Option<Q
     if let Some(p) = &mut ph {
         p.c = c > 0;
         p.v = v > 0;
+    }
+    if let Some(found) = &mut cx.ctad_found {
+        found.2 = c > 0;
+        found.3 = v > 0;
     }
     (ty, ph, defines, unsup)
 }

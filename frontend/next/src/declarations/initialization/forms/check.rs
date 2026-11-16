@@ -357,6 +357,36 @@ pub fn init_expr(cx: &mut Check, init: &Node, p: &auto::check::Placeholder) -> O
     Some(expr(cx, one))
 }
 
+/// CTAD-1: the arguments that an initializer gives a deduction, whether
+/// they are a braced list, and whether it copy-initializes. None after
+/// an error or for a form that the front end does not deduce from.
+fn deduction_arguments(cx: &mut Check, init: Option<&Node>) -> Option<(Vec<Expr>, bool, bool)> {
+    let Some(i) = init else { return Some((Vec::new(), false, false)) };
+    let words = cx.words(i);
+    let ns = nodes(i);
+    let eq = words.first() == Some(&"=");
+    let (items, list): (Vec<Node>, bool) = if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
+        (b.children("init_clause").filter_map(|it| first_node(it).cloned()).collect(), true)
+    } else if words.first() == Some(&"(") {
+        (ns.first().map(|l| l.children("argument").filter_map(|a| first_node(a).cloned()).collect()).unwrap_or_default(), false)
+    } else {
+        (ns.first().map(|n| vec![(*n).clone()]).unwrap_or_default(), false)
+    };
+    if items.iter().any(|c| matches!(c.prod, "braced_init" | "designator")) || cx.words(i).contains(&"...") {
+        cx.unsupported(i.span, "a deduction of class template arguments from a nested braced list, a designator, or an expansion");
+        return None;
+    }
+    let mut args = Vec::new();
+    for n in &items {
+        let e = expr(cx, n);
+        if e.ty.is_error() {
+            return None;
+        }
+        args.push(e);
+    }
+    Some((args, list, eq))
+}
+
 /// AUTO-20, with AUTO-11 for `decltype(auto)`.
 fn one_expression(cx: &mut Check, span: Span, p: &auto::check::Placeholder) {
     if p.decltype {
@@ -432,6 +462,38 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     // The declared type, after a placeholder is deduced.
     let mut ty = d.ty.clone();
     let mut init_e: Option<Expr> = None;
+    // CTAD-25: the arguments that chose the guide initialize the
+    // variable as they are, so a lambda keeps its closure type.
+    let mut init_pre: Option<Init> = None;
+    if let Some((v, sp, c, vol)) = s.ctad {
+        let template = cx.u.class_templates[v].name.clone();
+        // CTAD-2: the name stands alone, under no declarator operator.
+        if d.node.find("ptr_part").is_some() || d.node.find("array_suffix").is_some() || cx.words(&d.node).contains(&"[") {
+            cx.error(sp, "CTAD-2", format!("the class template '{}' without arguments under a declarator operator", template));
+            return None;
+        }
+        let (args, list, copy) = deduction_arguments(cx, init)?;
+        let t = crate::templates::class_template_deduction::check::deduce(cx, v, &args, list, copy, span)?;
+        // CTAD-3: each declarator deduces the same type.
+        match first_auto {
+            Some(prev) if *prev != t => {
+                cx.error(d.span, "CTAD-3", format!("the declarators deduce different specializations of '{}'", template));
+                return None;
+            }
+            Some(_) => {}
+            None => *first_auto = Some(t.clone()),
+        }
+        ty = t.with_cv(c, vol);
+        if !list && init.is_some() {
+            let class_with_ctors = ty.class().is_some_and(|k| crate::classes::constructors::check::has_ctors(cx, k));
+            init_pre = match (copy, args.len()) {
+                (true, 1) => Some(Init::Expr(copy_init(cx, args.into_iter().next()?, &ty.unqual(), "INIT-7")?)),
+                (false, 1) if args[0].ty.nonref().unqual().t == ty.unqual().t => Some(Init::Expr(copy_init(cx, args.into_iter().next()?, &ty.unqual(), "INIT-7")?)),
+                (false, _) if class_with_ctors => Some(crate::classes::constructors::check::construct_init(cx, &ty.unqual(), args, false, false, span)?),
+                _ => None,
+            };
+        }
+    }
     if let Some(p) = &d.placeholder {
         let Some(i) = init else {
             auto::check::needs_initializer(cx, span, &name);
@@ -573,6 +635,7 @@ fn declare_variable_in(cx: &mut Check, s: &Specs, d: &Declared, init: Option<&No
     // The point of declaration is before the initializer (NAM-1), so the
     // initializer can name the variable.
     let init_value: Init = match (init, init_e) {
+        (Some(_), None) if init_pre.is_some() => init_pre.unwrap(),
         (Some(_), Some(e)) => {
             if e.ty.is_error() {
                 return None;

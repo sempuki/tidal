@@ -275,7 +275,7 @@ pub fn args_with_defaults(cx: &mut Check, tid: &Node, kinds: &[Option<QType>], d
 }
 
 /// Fill `args` up to the parameters' number from their defaults.
-fn fill_defaults(cx: &mut Check, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId, args: &mut Vec<TArg>, span: Span) -> bool {
+pub fn fill_defaults(cx: &mut Check, kinds: &[Option<QType>], defaults: &[Option<Node>], names_: &[Rc<str>], scope: crate::sem::ScopeId, limit: EntityId, args: &mut Vec<TArg>, span: Span) -> bool {
     while args.len() < kinds.len() {
         let k = args.len();
         let Some(Some(d)) = defaults.get(k).cloned() else { return false };
@@ -310,7 +310,7 @@ fn fill_defaults(cx: &mut Check, kinds: &[Option<QType>], defaults: &[Option<Nod
 /// Declare the parameters in the scope `ts` at a definition: a type
 /// parameter as a dependent type, a constant parameter as a variable of
 /// its type whose value is not known.
-fn declare_params(cx: &mut Check, ts: crate::sem::ScopeId, params: &[Param]) {
+pub fn declare_params(cx: &mut Check, ts: crate::sem::ScopeId, params: &[Param]) {
     for (k, (name, span, kind)) in params.iter().enumerate() {
         match kind {
             // A template template parameter is modeled only in a

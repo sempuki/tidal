@@ -25,6 +25,9 @@ pub struct Specs {
     pub friend: bool,
     /// `auto` or `decltype(auto)` (`declarations/auto`).
     pub placeholder: Option<auto::check::Placeholder>,
+    /// A class template named without an argument list, whose arguments
+    /// the initializer deduces (CTAD-1), with its cv-qualifiers.
+    pub ctad: Option<(usize, crate::source::Span, bool, bool)>,
     pub typedef: bool,
     pub is_static: bool,
     pub is_extern: bool,
@@ -225,6 +228,7 @@ pub fn decl_specifiers(cx: &mut Check, n: &Node, attrs: attributes::check::Attrs
     }
     constexpr::check::specifier_pairs(cx, &s);
     let (ty, ph, defines, unsup) = types::check::type_specifiers(cx, &type_specs, n.span);
+    s.ctad = cx.ctad_found.take();
     s.ty = ty;
     s.placeholder = ph;
     s.defines_type = defines;
@@ -289,7 +293,12 @@ pub fn simple_decl(cx: &mut Check, n: &Node) -> Option<Stmt> {
     // placeholder against the deduced type.
     let variables = n.children("init_declarator").all(|i| i.child("init").is_some() && i.child("declarator").is_some_and(|d| d.find("function_suffix").is_none()));
     let saved_cv = std::mem::replace(&mut cx.constrained_variable, variables && n.child("init_declarator").is_some());
+    // CTAD-1: the variables of the declaration can deduce a class
+    // template's arguments.
+    let objects = n.child("init_declarator").is_some() && n.children("init_declarator").all(|i| i.child("declarator").is_some_and(|d| d.find("function_suffix").is_none()));
+    let saved_ctad = std::mem::replace(&mut cx.ctad_ok, objects);
     let specs = decl_specifiers(cx, ds, attrs);
+    cx.ctad_ok = saved_ctad;
     cx.constrained_variable = saved_cv;
     cx.access_class = saved;
     let local = cx.in_function();

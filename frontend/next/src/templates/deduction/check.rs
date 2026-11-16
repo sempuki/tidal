@@ -121,7 +121,7 @@ pub fn match_exact(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Opti
 
 /// Match the parameter type `p` against the argument type `a`, binding
 /// the template parameters in `bound`. False when they do not match.
-fn match_type(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
+pub fn match_type(u: &crate::sem::Unit, p: &QType, a: &QType, bound: &mut [Option<QType>]) -> bool {
     if !has_dep(p) {
         return true;
     }
@@ -263,7 +263,7 @@ pub fn deduce_call(cx: &Check, t: usize, explicit: &[TArg], args: &[Expr]) -> Op
 
 /// Match the parameter type `p` against the argument `a` of a call,
 /// binding the template parameters in `bound` (DED rules).
-fn match_arg(cx: &Check, p: &QType, a: &Expr, explicit: &[TArg], bound: &mut [Option<QType>]) -> bool {
+pub fn match_arg(cx: &Check, p: &QType, a: &Expr, explicit: &[TArg], bound: &mut [Option<QType>]) -> bool {
     let known: Vec<QType> = bound.iter().map(|b| b.clone().unwrap_or_else(QType::error)).collect();
     let p = if explicit.is_empty() { p.clone() } else { substitute_known(p, bound, &known) };
     if !has_dep(&p) {

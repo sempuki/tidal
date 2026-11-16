@@ -336,6 +336,17 @@ fn call_inner(cx: &mut Check, callee: &Node, list: Option<&Node>, span: Span, to
             return r;
         }
     }
+    // After a qualifier: the function templates of its scope, of a
+    // namespace or static members of a class.
+    if let Some(id) = callee_name(callee).filter(|id| id.find("nested_name").is_some() && !cx.has_token(id, "template")) {
+        if let (Some(tid), Some(nn)) = (id.find("template_id"), id.find("nested_name")) {
+            if let crate::foundations::names::check::Qual::Scope(s) = crate::foundations::names::check::nested_name(cx, nn) {
+                if let Some(r) = qualified_template_call(cx, s, tid, &args, span) {
+                    return r;
+                }
+            }
+        }
+    }
     if let Some(name) = callee_name(callee) {
         if let Some((mut found, rule, text, nspan)) = primary::check::find(cx, name) {
             // NAM-27, NAM-29: an unqualified name also finds the functions
@@ -524,6 +535,29 @@ fn template_id_call(cx: &mut Check, tid: &Node, args: &[Expr], span: Span) -> Op
             }
         }
     }
+    if found.is_empty() {
+        return None;
+    }
+    let specs = crate::templates::declarations::check::call_candidates(cx, &found, Some(tid), args);
+    let f = choose_with_templates(cx, &[], &specs, args, span, &name)?;
+    crate::declarations::functions::definitions::check::note_use(cx, f, tid.span);
+    let fty = QType::new(Type::Func(cx.u.func(f).unwrap().ty.clone()));
+    let callee = Expr::new(EK::Func(f), fty, Cat::L, tid.span);
+    Some(finish_call(cx, callee, Some(f), args.to_vec(), span, None))
+}
+
+/// A call `Q::f<A...>(args)` of the function templates that the scope
+/// `s` declares. A member template of a class takes part when it is
+/// static. None for another form.
+fn qualified_template_call(cx: &mut Check, s: crate::sem::ScopeId, tid: &Node, args: &[Expr], span: Span) -> Option<Expr> {
+    let name = cx.source(tid.child("template_name")?);
+    let found: Vec<EntityId> = crate::foundations::names::check::lookup_in(cx, s, &name).into_iter().filter(|&e| match cx.u.entities[e].kind {
+        EntKind::Template(t) => {
+            let tpl = &cx.u.templates[t];
+            tpl.class.is_none() || tpl.node.child("decl_specifiers").is_some_and(|ds| cx.has_token(ds, "static"))
+        }
+        _ => false,
+    }).collect();
     if found.is_empty() {
         return None;
     }

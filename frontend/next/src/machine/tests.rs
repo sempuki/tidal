@@ -2944,3 +2944,16 @@ fn initializer_list_constructors() {
 fn initializer_list_parameters() {
     assert_eq!(run("namespace std { template <class E> class initializer_list {   const E* b_; decltype(sizeof 0) n_;   constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {} public:   constexpr initializer_list() : b_(nullptr), n_(0) {}   constexpr decltype(sizeof 0) size() const { return n_; }   constexpr const E* begin() const { return b_; }   constexpr const E* end() const { return b_ + n_; } }; } constexpr int total(std::initializer_list<int> l) { int s = 0; for (int x : l) s += x; return s; } constexpr int count(const std::initializer_list<long>& l) { return int(l.size()); } static_assert(total({1, 2, 3}) == 6 && total({}) == 0 && count({1, 2}) == 2); int main() { return total({4, 5}); } "), RunOutcome::Result(9));
 }
+
+#[test]
+fn class_template_deduction() {
+    let rule = |src: &str| match crate::check_source(src, Path::new("t.cpp"), &crate::Options::default()).0 {
+        Outcome::Reject(ds) => ds[0].rule,
+        Outcome::Accept => None,
+        Outcome::Unsupported(_) => Some("unsupported"),
+    };
+    assert_eq!(run("template <class A, class B> constexpr bool same = false; template <class A> constexpr bool same<A, A> = true; template <class T> struct Box { T v; Box(T x) : v(x) {} }; template <class T, class U> struct Pair { T first; U second; }; template <class F> struct Defer { F f; Defer(F g) : f(g) {} ~Defer() { f(); } }; int main() { Box a(1); Box b = a; Pair p{1, 'c'}; static_assert(same<decltype(b), Box<int>> && same<decltype(p), Pair<int, char>>); int n = 0; { Defer g([&] { n = 5; }); } return a.v + p.first + n; } "), RunOutcome::Result(7));
+    assert_eq!(rule("template <class T> struct Two { Two(T, int) {} Two(int, T) {} }; Two t(1, 2);"), Some("CTAD-24"));
+    assert_eq!(rule("template <class T> struct Box { Box(T) {} }; Box a(1), b(2.0);"), Some("CTAD-3"));
+    assert_eq!(rule("template <class T> struct Box { Box(T) {} }; Box a(1); Box* p = &a;"), Some("CTAD-2"));
+}
