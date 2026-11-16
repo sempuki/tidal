@@ -472,10 +472,10 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
         };
     }
     if first.prod == "function_definition" {
-        // A constructor or destructor with a requires clause (CNS-16,
-        // CNS-19) waits for a later piece.
-        if first.child("requires_clause").is_some() && first.child("declarator").is_some_and(|dn| crate::classes::constructors::check::special_name(cx, id, dn).is_some()) {
-            cx.unsupported(m.span, "a constructor or destructor with a requires clause (build step 5)");
+        // A destructor with a requires clause (CNS-19) waits for a later
+        // piece.
+        if first.child("requires_clause").is_some() && first.child("declarator").is_some_and(|dn| crate::classes::constructors::check::special_name(cx, id, dn) == Some(true)) {
+            cx.unsupported(m.span, "a destructor with a requires clause (build step 5)");
             return false;
         }
         if let Some(dn) = first.child("declarator").filter(|dn| crate::classes::constructors::check::special_name(cx, id, dn).is_some()) {
@@ -491,7 +491,25 @@ fn member_after<'n>(cx: &mut Check, id: ClassId, m: &'n Node, first: &'n Node, a
                 None => Some(Default::default()),
             };
             if let Some(specs) = specs {
+                // CNS-16: a constructor's requires clause, which overload
+                // resolution checks (CNS-11). One on a copy or move
+                // constructor decides which special members are eligible
+                // (CPY-4, CNS-21), which waits for a later piece.
+                let constraint = first.child("requires_clause").cloned();
+                let class_name = cx.u.classes[id].name.clone();
+                if constraint.is_some() && dn.find("parameters").and_then(|ps| ps.children("parameter").next()).is_some_and(|p| cx.has_token(p, &class_name)) {
+                    cx.unsupported(m.span, "a copy or move constructor with a requires clause (build step 5)");
+                    return false;
+                }
+                let before = crate::classes::constructors::check::ctors(cx, id);
+                let saved_constrained = std::mem::replace(&mut cx.constrained_decl, constraint.as_ref().map(|c| c.span));
                 let ok = crate::classes::constructors::check::member(cx, id, Some(&specs), dn, Some(first), *access, ctor_bodies);
+                cx.constrained_decl = saved_constrained;
+                if let Some(rc) = constraint {
+                    if let Some(f) = crate::classes::constructors::check::ctors(cx, id).into_iter().find(|f| !before.contains(f)) {
+                        cx.u.member_constraints.insert(f, (rc, cx.scope));
+                    }
+                }
                 if ok {
                     virtual_dtor(cx, id, specs.is_virtual, first, dn);
                 }

@@ -211,7 +211,8 @@ pub fn member<'n>(cx: &mut Check, c: ClassId, specs: Option<&Specs>, dn: &'n Nod
     }
     // CTOR-1, CLS-9: a constructor declared twice.
     let fty = d.ty.func().cloned();
-    if ctors(cx, c).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref()) && !cx.deferred.contains(&e)) {
+    // CNS-28: constraints make another overload of the same type.
+    if cx.constrained_decl.is_none() && ctors(cx, c).into_iter().any(|e| cx.u.func(e).is_some_and(|f| Some(&*f.ty) == fty.as_ref()) && !cx.deferred.contains(&e) && !cx.u.member_constraints.contains_key(&e)) {
         cx.error_cause(dn.span, "CTOR-1", Some("CLS-9"), "a constructor declared twice in its class");
         return true;
     }
