@@ -2340,12 +2340,24 @@ fn instantiate_var(cx: &mut Check, v: usize, params: &[Rc<str>], args: &[TArg], 
     bind_params(cx, ts, params, args, vt.span);
     let r = (|| {
         let specs = crate::declarations::check::decl_specifiers(cx, ds, Default::default());
-        if specs.unsupported || specs.placeholder.is_some() {
+        if specs.unsupported {
             return None;
         }
-        let ty = specs.ty.clone()?;
+        // AUTO rules: `auto` takes the type of the initializer.
+        let (ty, deduced) = match &specs.placeholder {
+            Some(p) if !p.decltype && plain => {
+                let e = crate::declarations::initialization::forms::check::init_expr(cx, init, p)?;
+                let t = crate::declarations::auto::check::deduce(cx, p, dn, &e)?;
+                (t, Some(e))
+            }
+            Some(_) => return None,
+            None => (specs.ty.clone()?, None),
+        };
         let ty = if specs.constexpr { ty.with_cv(true, ty.v) } else { ty };
-        let i = crate::declarations::initialization::forms::check::initializer(cx, &ty.unqual(), init, &vt.name)?;
+        let i = match deduced {
+            Some(e) => crate::sem::tree::Init::Expr(crate::declarations::initialization::forms::check::copy_init(cx, e, &ty.unqual(), "INIT-7")?),
+            None => crate::declarations::initialization::forms::check::initializer(cx, &ty.unqual(), init, &vt.name)?,
+        };
         let var = crate::sem::Var { ty, storage: crate::sem::Storage::Static, constexpr: specs.constexpr, constinit: false, inline: true, is_extern: false, is_static: false, param: false, defined: true, init: Some(i), const_init: specs.constexpr, used: false, maybe_unused: false, align: None };
         let id = cx.u.add(crate::sem::Entity { name: vt.name.clone(), kind: EntKind::Var(var), span: vt.span, scope: ts, linkage: Linkage::External, deprecated: None });
         cx.u.statics.push(id);

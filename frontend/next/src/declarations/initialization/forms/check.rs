@@ -326,7 +326,7 @@ pub fn initializer(cx: &mut Check, ty: &QType, init: &Node, name: &str) -> Optio
 
 /// The value of an initializer that is a single expression, for a
 /// placeholder to deduce from.
-fn init_expr(cx: &mut Check, init: &Node, p: &auto::check::Placeholder) -> Option<Expr> {
+pub fn init_expr(cx: &mut Check, init: &Node, p: &auto::check::Placeholder) -> Option<Expr> {
     let ns = nodes(init);
     let words = cx.words(init);
     let one = if let Some(b) = ns.first().filter(|c| c.prod == "braced_init") {
