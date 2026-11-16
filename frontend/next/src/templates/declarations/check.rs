@@ -2716,9 +2716,9 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         }
         return true;
     }
-    // A default sees the class incomplete (CLS-2), and constraints on a
-    // member wait for a later piece.
-    if defaults.iter().any(|d| d.is_some()) || !constraints.is_empty() {
+    // A default sees the class incomplete (CLS-2), which a later piece
+    // models.
+    if defaults.iter().any(|d| d.is_some()) {
         return false;
     }
     let Some(inner) = m.child("member_decl") else { return false };
@@ -2743,7 +2743,7 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
         if fd.prod != "function_definition" {
             return false;
         }
-        return ctor_template(cx, class, fd, dn, params, defaults, access);
+        return ctor_template(cx, class, fd, dn, params, defaults, constraints, access);
     }
     // Conversion function templates and literal operator templates wait
     // for a later piece.
@@ -2788,9 +2788,14 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
     if d.params.iter().rev().skip(1).any(|p| p.pack.is_some()) || (pack_param && (!cx.head_pack || fty.variadic)) {
         return false;
     }
+    // CPT-11: a trailing requires clause adds to the head's constraints.
+    let mut member_constraints = constraints;
+    if let Some(rc) = fd.child("requires_clause") {
+        member_constraints.push((None, rc.clone()));
+    }
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
-    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: name.clone(), pack: cx.head_pack, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: member_constraints, span, limit });
     let e = names::declare_in(cx, saved, &name, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
@@ -2798,7 +2803,12 @@ pub fn member_template(cx: &mut Check, class: crate::sem::types::ClassId, m: &No
 
 /// TPL rules: a constructor template of the class `class`, defined in
 /// the class. Its specializations are constructors (CTOR-1).
-fn ctor_template(cx: &mut Check, class: crate::sem::types::ClassId, fd: &Node, dn: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>, access: crate::sem::Access) -> bool {
+fn ctor_template(cx: &mut Check, class: crate::sem::types::ClassId, fd: &Node, dn: &Node, params: Vec<Param>, defaults: Vec<Option<Node>>, constraints: Constraints, access: crate::sem::Access) -> bool {
+    // CPT-11: a trailing requires clause adds to the head's constraints.
+    let mut ctor_constraints = constraints;
+    if let Some(rc) = fd.child("requires_clause") {
+        ctor_constraints.push((None, rc.clone()));
+    }
     if shadows_param(cx, fd, &params) || expands_no_pack(cx, fd) {
         return true;
     }
@@ -2831,7 +2841,7 @@ fn ctor_template(cx: &mut Check, class: crate::sem::types::ClassId, fd: &Node, d
     let id = cx.u.templates.len();
     let limit = cx.u.entities.len() + 1;
     let ctor: Rc<str> = crate::classes::constructors::check::CTOR.into();
-    cx.u.templates.push(FnTemplate { name: ctor.clone(), pack: cx.head_pack, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: Vec::new(), span, limit });
+    cx.u.templates.push(FnTemplate { name: ctor.clone(), pack: cx.head_pack, defaults, kinds: params.iter().map(|p| p.2.clone()).collect(), params: params.into_iter().map(|p| p.0).collect(), node: fd.clone(), scope: saved, fty: Rc::new(fty), pack_param, pack_name: d.params.last().and_then(|p| p.pack.clone()), abbrev: 0, specs: Vec::new(), explicit: Vec::new(), class: Some(class), constraints: ctor_constraints, span, limit });
     let e = names::declare_in(cx, saved, &ctor, EntKind::Template(id), span, Linkage::External);
     cx.u.access.insert(e, access);
     true
